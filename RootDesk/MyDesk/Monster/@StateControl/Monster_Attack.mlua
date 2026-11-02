@@ -11,6 +11,8 @@ script Monster_Attack extends StateType
 	property integer attackId = 0
 	property integer executionId = 0
 	property boolean active = false
+	property boolean groggyAfterReturn = false
+	property number groggyDuration = 0
 
 	method void OnEnter()
 		-- One state entry owns both approach and return callbacks.
@@ -77,9 +79,15 @@ script Monster_Attack extends StateType
 		self.motion:CompleteMotion()
 		self.attack:ResolveAttack()
 		if not self:IsCurrent(id) then return end
+		-- 패링 성공이면 처음 위치 복귀를 마친 뒤 그로기에 들어간다(복귀 중에는 그로기가 아니다).
+		local snapshot = self.attack._T.snapshot
+		if snapshot ~= nil and snapshot.resolved and snapshot.result ~= nil and snapshot.result.kind == "PARRY" then
+			self.groggyAfterReturn = true
+			self.groggyDuration = snapshot.rules.GroggyDurationSec
+		end
 		local duration = self.motion:PerformReturnMotion()
 		if duration < 0 or duration ~= duration or duration == math.huge then
-			self.ParentComponent:ChangeState("IDLE")
+			self:FinishAttack()
 			return
 		end
 		self.returnDue = self.control:GetActionTime() + duration
@@ -90,6 +98,19 @@ script Monster_Attack extends StateType
 		if self.returnDue < 0 or not self:IsCurrent(id) then return end
 		self.returnDue = -1
 		self.motion:CompleteMotion()
+		self:FinishAttack()
+	end
+
+	method void FinishAttack()
+		-- 복귀가 끝난 ATTACK만 그로기 또는 IDLE로 넘어가며, 그로기가 거부되면 IDLE로 돌아간다.
+		if self.groggyAfterReturn then
+			local duration = self.groggyDuration
+			self.groggyAfterReturn = false
+			---@type MonsterStunComponent
+			local stun = self.entity:GetComponent("script.MonsterStunComponent")
+			if isvalid(stun) then stun:ApplyGroggy(duration) end
+			if self.ParentComponent.CurrentStateName ~= "ATTACK" then return end
+		end
 		self.ParentComponent:ChangeState("IDLE")
 	end
 
@@ -97,9 +118,10 @@ script Monster_Attack extends StateType
 		-- Invalidate first, then clear timers and the movement they owned.
 		self.executionId = self.executionId + 1
 		self.active = false
+		self.groggyAfterReturn = false
 		self.attackDue = -1
 		self.returnDue = -1
-		if isvalid(self.attack) and self.attack.AttackSequence == self.attackId then self.attack.TelegraphResponse = ""; self.attack.TelegraphRemaining = 0 end
+		if isvalid(self.attack) and self.attack.AttackSequence == self.attackId then self.attack.TelegraphResponse = ""; self.attack.TelegraphRemaining = 0; self.attack.TelegraphCells = "" end
 		if isvalid(self.motion) then self.motion:CancelMotion() end
 	end
 

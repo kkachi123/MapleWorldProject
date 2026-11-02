@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-02 / coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-02 / 최신: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로, 독립 tester 대기). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -510,6 +510,128 @@
 | RootDesk/MyDesk/UIPopup.mlua | 97e1d7f3b5f3eeb525e5805b1126962dca1d33ac9cd6e40516630599854c6fed |
 | RootDesk/MyDesk/UIToast.mlua | baa498d9bb1745186cc098e45294dfe29db27f4fbafb98179d5fbb76064ec7e2 |
 | map/map01.map | 874b96b0a5af7d8be282ff53ba1162cf516cba75270bb2ab660e5c2eb09ef990 |
+| ui/CombatScreen.ui | f0b37dd5142332caeb33e77cb10b32fc48f669e4db5aa868b58c24b78444ffe6 |
+| ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
+| ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |
+| ui/ToastGroup.ui | 9c29998895c5fecc54bacbbdf0a8ca2c472d95fadbc5cb30fe46bed7c7fc444f |
+
+
+## 2026-11-02 coder V11-F01~F05 구현·기본 검증 인계
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §14의 CombatCore-V11-F01~F05뿐이다. 모든 수치(0.20, ×0.40, 반격 2.0·×2.2, 슬로우 2.0·×0.5, 그로기 1.5, AttackDamage 12, AttackInterval 3.0)·CSV 3종·D01~D03 판정 규칙·8패턴 영역·LandingAnchor·피해 합성/내림·플레이어 애니메이션·.ui는 바꾸지 않았다. 기준은 커밋 a289eb7(제품은 6614b20과 동일) / Bundle 1ac324e6…9de4(52경로)이며 시작 전 같은 방법으로 재계산해 일치를 확인했다.
+- 실제 연결: 시작 시 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186. MapBuilder TileMapMode=0(MapleTile). Maker 로그 시각 22:48~23:03.
+- 시험값(AttackInterval 일시 상향, 패턴 목록 단일 행 교체, 그로기 6초 시험값)은 모두 Play 내부 서버 프로브이며 Stop으로 폐기했다. 반영한 영구 변경은 아래 제품 변경뿐이다.
+
+### F05 원인 판정 — 규칙상 정상, 제품 무수정 (변경 전 기준 버전에서 실행)
+- 방법: 실제 `maker_keyboard_input`으로 LeftArrow를 홀드해 Pos1(x=-1.5)에 머문 채(서버 상태 MOVE 유지) 서버 프로브로 8패턴을 한 번씩 강제 공격시키고, 패턴 ID·판정 순간 플레이어 x·서버 상태·kind·HP·HitEvent 합계를 기록했다. 패턴 행만 단일 행으로 교체했고 판정·영역은 제품 경로 그대로다.
+
+| 대응형 | 패턴 | 서버 영역 | 판정 순간 x / 서버 상태 | 네이티브 피격 | HP 감소 / HitEvent 합계 | 결과 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 뒤 회피형(LEFT) | normal/special/parry.left | -0.5~2.0 | -1.5 / MOVE | 없음 | 0 / 0 | 피해 없음, HUD 회피(EVADE) |
+| 앞 회피형(RIGHT) | normal/special/parry.right | -2.0~0.5 | -1.5 / MOVE | 있음 | 12 / 12 | HIT |
+| 가드형(GUARD) | normal/parry.guard | -2.0~2.0 | -1.5 / MOVE | 있음 | 12 / 12 | HIT(가드 없음) |
+
+- 판정: 뒤 회피형은 Pos1에서 기대대로 EVADE·피해 0이다. 앞 회피형·가드형이 Pos1에서 맞는 것은 D01의 정상 동작이다(영역이 Pos1을 포함한다). 사용자 사례의 패턴은 미상이므로 앞 회피형·가드형이었다면 정상이고, 뒤 회피형에서 맞는 재현은 나오지 않았다(결함 아님).
+- 입력 지연 점검(키보드): 같은 키 이벤트의 클라이언트 시각 78.363에 클라이언트 상태 IDLE→MOVE가 같은 프레임에 일어났고, 서버 상태 IDLE→MOVE는 서버 시계 77.890이다. 같은 프로브의 MOVE→IDLE 복귀(클라이언트 82.244 / 서버 81.755)에서 시계 차 ≈0.49초가 나와 진입 시 차 0.473초와 같다. 따라서 서버 수락 지연은 약 1프레임 이내로 본다. 홀드 중에는 RETURNING으로 넘어가지 않았고 해제 뒤에만 복귀했다(OUTBOUND 0.243초 도착→HOLD, 해제 뒤 RETURNING 0.24초). 미실시: UI 버튼 누름 경로의 수락 지연 측정(Entity 이벤트 주입이 실제 터치가 아님), 예고 시작 뒤 플레이어 방향 전환이 시작 시 Scale 기준 검증과 어긋나는지 시험.
+
+### 항목별 실제 변경
+| ID | 변경 파일 | 요약 |
+| --- | --- | --- |
+| F02 | RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua, RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | 패링 성공 판정(PARRY) 시 ResolveAttack은 더 이상 즉시 ApplyGroggy를 호출하지 않는다. Monster_Attack이 ResolveAttack 직후 결과가 PARRY면 groggyAfterReturn(지속시간은 스냅샷 규칙값)을 기록하고 기존 복귀 모션을 그대로 수행한다. 복귀 완료(OnReturnComplete) 또는 복귀 모션 거부 시 FinishAttack이 ApplyGroggy를 호출해 STUN으로 가고, 거부되면 IDLE로 간다. 반격 창은 기존 GrantCounter(성공 시점)를 그대로 쓴다. 취소(CancelExecution) 때 플래그를 초기화한다. |
+| F04 | RootDesk/MyDesk/Models/Monsters/주황버섯.model(ModelBuilder) | 방식 (a). StateAnimationComponent.ActionSheet에 "stun" 키 하나를 추가하고 기존 hit RUID(aec9504d5dc24aceb5646b79d30abad4)를 연결했다. move·stand·jump·hit·die 다섯 키의 값은 그대로다. .mlua 변경 없음. 새 클립·자원 검색·제작 없음. |
+| F01 | RootDesk/MyDesk/Combat/AttackAreaMarkComponent.mlua(신규, Maker가 .codeblock 생성), RootDesk/MyDesk/Models/MapObjects/AttackAreaMark.model(ModelBuilder 신규), map/map01.map(MapBuilder: BattlePosMark1~3 3개 배치), MonsterAttackComponent.mlua, Monster_Attack.mlua | MonsterAttackComponent에 @Sync TelegraphCells("111" 형식, 칸1~3 중 앵커 x가 서버 영역 min~max 안에 있으면 "1")를 추가해 PrepareAttack에서 TelegraphResponse와 함께 설정하고 ResolveAttack·CancelPendingAttack·Monster_Attack.CancelExecution에서 같이 비운다. 맵에 3개 표시 엔티티(model AttackAreaMark: TransformComponent·네이티브 PixelRendererComponent·AttackAreaMarkComponent, 위치 x=-1.5/0/1.5, y=0.98, z=0, Scale 25 = 4×4 논리 픽셀 → 1.0×1.0 월드 단위)를 두고, 소유 클라이언트가 MonsterManager의 현재 몬스터·대결 플레이어를 확인한 뒤 자기 CellIndex 칸만 반투명 빨강(알파 0.45)으로 칠한다. 새 RUID·.ui 없음. 표시는 서버 동기 값만 읽으며 판정·피해에는 관여하지 않는다. |
+| F03 | RootDesk/MyDesk/Monster/MonsterStunComponent.mlua, MonsterAttackComponent.mlua | 별 StarVortex 부착 파티클을 크기 0.2→0.5, 부착 높이 0.65→0.9로 키웠다. 서버 확정 PARRY에서만 MonsterAttackComponent가 stun:NotifyParry(접촉 지점 x=(플레이어 x+몬스터 x)/2, y=몬스터 y+패턴 AreaOffsetY)를 호출하고, MonsterStunComponent의 @Sync ParryEffect(Vector3, z는 같은 위치 반복에도 동기화되도록 한 순번)가 바뀌면 소유 클라이언트가 네이티브 BasicParticleType.SparkRadialExplosion(크기 1.5, 1회)을 재생한다. 저스트·가드·패링 실패에는 호출하지 않는다. 맵 이탈·종료 시 파티클을 제거한다. HUD 문구·.ui 무변경. |
+| F05 | 없음 | 위 판정대로 무수정. |
+
+- 건드리지 않은 것: CombatRuleData·MonsterAttackPatternData·AttackSkillData CSV, 주황버섯 ActionSheet의 기존 다섯 키, HitComponent·MonsterHealthComponent의 HIT 진입 조건, PlayerStateControl 등 플레이어 쪽, CombatInputController(HUD 문구 포함).
+- Maker 부산물: Models/MapObjects.directory, Combat/AttackAreaMarkComponent.codeblock이 refresh로 생겼다. 이 둘은 지문 대상 외(이전 묶음 정의 유지)다. 빌더가 주황버섯.model을 다시 쓰며 줄 끝이 CRLF→LF로 바뀌고 변경한 ActionSheet 값의 형식 버전 문자열이 26.7.0.0→26.10.0.0이 됐다. 의미 비교(JSON)에서 이외의 차이는 없음을 확인했다(stun 키 제거 후 형식 버전 문자열 1곳만 다름).
+
+### 실제 기본 검증 (Maker MCP, 같은 Bundle 기준 통합 Play를 여러 회차로 수행)
+- 빌드: Refresh 후 build 로그 80건, 모두 Info(LIA 1114/1115, 기존 동적 참조 노이즈 유형 — 새 NotifyParry 항목 포함). 오류 0·경고 0. 별도 normal 로그의 제품 오류 없음.
+- F02 패링 흐름(서버 프로브, 제품 경로 판정): 패턴 parry.guard, 가드 시작이 타격 0.10초 전. 결과 PARRY·피해 0, 타임라인(전투 시계 기준): 0.00 시작 x=3.00(Home 3.00)→0.55 판정 PARRY·반격 가능→0.55~1.07 ATTACK 상태로 복귀(그로기 아님, 별 표시 없음)→1.07 STUN x=3.00(GroggyRemaining 1.48)→2.53 잔여 0.02→2.57 IDLE. 그로기 길이 ≈1.50초(복귀 완료부터), 반격 창은 성공 시점 0.55부터 약 2.0초(2.55에 CounterReady false). 다음 공격(case2)은 x=3.00(Home)에서 시작해 착지 x=0.10으로 점프했다. 그로기 진입 로그는 Monster_Attack.FinishAttack 호출이다.
+- F02 대조: 가드 0.45초 전(패링 창 밖) → GUARD·HP -4(12×0.4 내림)·그로기 없음·접촉 파티클 없음. 저스트(RIGHT 회피 시작 0.12초 전) → JUST·슬로우 적용·그로기 없음·접촉 파티클 없음(case3 요약 줄은 clear_logs로 잃었지만 같은 구간 로그에 slow applied·defense JUST가 있고 groggy applied·parry effect 로그는 없었다).
+- F03: PARRY 판정마다 `parry effect serial=N x=0.0 y=0.981`이 한 번만 나왔고(소유 클라이언트), GUARD·JUST에는 없었다. 육안 확인은 아래 한계.
+- F04: 클라이언트 AnimationClipEvent 추적: HIT→clip=hit, IDLE→clip=stand, STUN→clip=stun(ActionSheet "stun"=hit RUID), 종료 IDLE→clip=stand. 실제 패링 흐름에서도 STUN 진입에서 clip=stun, 그로기 종료에서 clip=stand를 확인했다. 복귀 중에는 stun 클립이 나오지 않았다(복귀 중 기존 모션 유지). SpriteRUID 속성 읽기는 클립 파이프라인이 속성을 바꾸지 않아 근거로 쓰지 않았다.
+- F01: 8패턴 서버 영역→TelegraphCells: normal.left/special.left/parry.left(-0.5~2.0)=011, normal.right/special.right/parry.right(-2.0~0.5)=110, normal.guard/parry.guard(-2.0~2.0)=111. 같은 프로브의 클라이언트 표시 판정 로그가 각 패턴의 칸과 일치하게 켜졌고 판정 직후 모두 꺼졌다(제품 로그 `area mark cell=…` — 이후 로그 소음을 줄이려 제거). 예고 중 슬로우·팝업·사망·Stop에서 칸이 유지·제거되는 경로는 별도 시험하지 않았다(표시는 서버 동기 TelegraphCells 값에만 묶여 있고, 복귀 중 정지 뒤 Stop→재Play에서 칸이 모두 꺼져 있음은 V08에서 확인). 스크린샷에서 칸 1·3이 반투명 빨강(배경과 섞여 주황빛)으로 보이고 몬스터 판정 높이(몬스터 y+0.4 중심, 높이 1.0)와 맞는 위치임을 확인했다.
+- V02: 중앙(x=0)에서 8패턴 모두 HIT, HP 감소=HitEvent 합계=12. 가드 4.8→4(경감 뒤 한 번 내림) 일치.
+- V03: 패링 창 경계 대표 두 점(0.10초 전 PARRY, 0.45초 전 GUARD)과 F05 8패턴(범위 밖 EVADE 포함)을 확인했다. 전체 경계 열(정확히 0.20·직후 등)은 이번에 다시 하지 않았다.
+- V04: 패링 성공 뒤 실제 ↑ 입력으로 수동 공격 `manual cast count=10 factor=2.2`, 이후 CounterReady false(소비). 반격 보너스 규칙 전체 경계는 재시험하지 않았다.
+- V06: (1) 패링→복귀→그로기(2.57 IDLE). (2) 그로기(시험 6초) 중 실제 ↑ 공격: 서버 상태 STUN 유지, 몬스터 HP 100→80(10타), GroggyRemaining이 계속 감소해 시작 +6.0초(전투 시계 7.05)에 IDLE, 조기 해제·연장 없음. 클라이언트에서 같은 피격으로 로컬 상태가 HIT로 보인 순간에 hit 클립 이벤트가 한 번 관측됐으나 서버 상태는 STUN이고 hit RUID가 stun RUID와 같아 화면 변화는 없다(기존 구조의 클라이언트 쪽 HIT 신호로 보이며 이번에 바꾸지 않음, tester가 화면 확인).
+- V07: 패링 뒤 복귀 중 popup 열기(x≈0.31에서 정지, 전투 시계 12.87 고정, 약 24초 정지). 닫은 뒤 전투 시계가 이어져 x가 0.31→0.41…→3.00으로 복귀하고 STUN 진입(GroggyRemaining 시험값 6.00)했다. 정지 중 위치·그로기 값 불변. 닫기는 팝업 실시간이 아니라 프로브가 `_UIPopup:Close()`를 직접 호출했다(client TimerService가 정지해 타이머로 닫을 수 없었음, 제품 문제 아님). 슬로우·예고 중 팝업의 칸 유지·재개는 이번에 다시 하지 않았다.
+- V08: (1) 복귀 중(x=0.10) 몬스터 치명 피해(MonsterHealthComponent.ApplyDamage): 0.04초 뒤 DEAD, STUN·그로기 진입 없음(isStunned false, GroggyRemaining 0), 3초 동안 변화 없음. (2) 팝업 정지 중 복귀(패링 직후)에서 실제 maker_stop → 새 Play: 몬스터 IDLE x=3.00, isStunned false, GroggyRemaining 0, 칸 표시 없음(서버 cells='', 클라이언트 3칸 모두 false), 슬로우 0·배율 1, pause false, 반격 false, ParryEffect 순번 0, popup 닫힘, 첫 자연 공격 정상. 플레이어 사망·다른 맵 전환은 이번에 하지 않았다.
+- V10: 실제 키 입력으로 Right(MOVE→복귀→IDLE, x 0→1.5→0), Down 2초 홀드(GUARD, isGuarding true, 서버 GUARD→IDLE), ↑ 탭(ATTACK 10타 factor 1, 반격 없음 시 ×1)과 Left 홀드(F05)를 확인했다. UI 버튼 경로·동시 입력 전 조합은 재시험하지 않았다.
+- 미실시: V05 슬로우 전 구간 적분 재확인, V09 CSV 변경 시험(CSV 무변경, 로드 `rules=1 patterns=8` 확인만), V12.
+
+### 화면 근거와 한계(F03 값 제안)
+- 해상도 558×314 스크린샷으로 확인한 것: BattlePos 칸의 위치·크기·반투명 빨강(F01), 부착 파티클의 로컬 좌표·스케일이 부모(몬스터 Scale 2)에 곱해진다는 사실(attached Nova local y=1.5가 몬스터 발 기준 약 3.0~3.2 위에 중심). 별 스파크·접촉 폭발은 이 해상도·캡처 타이밍에서 형태를 확정할 수 없었다(작은 스파크가 희미하게만 보임).
+- 제안값(사용자 V11에서 판단): 별 크기 0.5, 높이 0.9(몬스터 월드 기준 머리 위 약 0.7). 접촉 효과는 SparkRadialExplosion 크기 1.5, 위치는 패링 판정 순간 플레이어·몬스터 x의 중간, 높이는 몬스터 y+0.4(공격 영역 중심). 더 눈에 띄는 형태·색을 원하면 사용자가 선택한다(자원 검색·제작은 하지 않았다).
+- F01 칸 알파는 0.40으로 화면을 확인한 뒤 0.45로 올렸고 최종 값의 화면 재확인은 하지 않았다.
+
+### 프로브 오류와 제품 오류의 구분
+- 보정용 프로브에서 `Dictionary()` 생성자 사용 오류(LEA-2011 3건)와 Stop 시 남은 프로브 타이머의 LEA-3051 MemoryLeak 1건이 났다. 모두 시험 스크립트 문제이며 제품 오류는 관측되지 않았다.
+- 칸·파티클·클립 확인은 로그 중심이고 육안 확인은 위 한계가 있다. V11(체감)·CF-F07 연출·V12 외부 환경은 이번에도 미실시다.
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공 뒤 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것: (1) F05를 같은 조건(실제 LeftArrow 홀드 Pos1)에서 8패턴 독립 재확인하고 UI 버튼·방향 전환 시나리오 추가. (2) F02: 패링→복귀→그로기 순서·1.5초·다음 공격 Home 시작·복귀 중 슬로우/팝업/피격/사망/Stop. (3) F04: 그로기 중 hit 클립(복귀 중에는 아님)·종료 후 stand·그로기 중 피격 시 클라이언트 HIT 신호가 화면을 바꾸지 않는지. (4) F01: 8패턴 칸과 예고 중 슬로우·팝업·사망·Stop 제거를 육안으로. (5) F03: 패링에만 접촉 파티클, 별 크기·높이의 가시성. (6) 회귀 V01·V02·V03·V06~V08·V10과 관련 경로의 V04·V05·V09. 사용자 V11 재확인과 V12 외부 환경은 AI 결과로 대신하지 않는다.
+
+### 2026-11-02 최종 제품 버전 묶음 (V11-F01~F05)
+- 이전 묶음(1ac324e6…9de4, 52경로)의 경로 표에 신규 2경로(Combat/AttackAreaMarkComponent.mlua, Models/MapObjects/AttackAreaMark.model)를 더한 54경로. 계산법은 이전과 같다(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256). 이전 묶음을 HEAD(a289eb7)에서 같은 방법으로 재계산해 1ac324e6…9de4와 일치함을 확인했다. 변경·추가 파일은 7개: AttackAreaMarkComponent.mlua(신규), AttackAreaMark.model(신규), 주황버섯.model, Monster_Attack.mlua, MonsterAttackComponent.mlua, MonsterStunComponent.mlua, map/map01.map. 나머지 47개는 이전과 같다.
+- Bundle SHA-256: d2b578021b563a54a2a2d5ff4370a7a6b1cb79bf3fa1718b36f8bc5b332c0fbb.
+
+| 경로 | SHA-256 |
+| --- | --- |
+| Global/CollisionGroupSet.collisiongroupset | c6a33dc595d425728b980c9cf72c0a80bd45083f46c551132e5b2e685a946c0c |
+| Global/CustomFontGroupSet.config | 3c7e40e9602860125192282e447b4a6bc311f8eac634e8e7b8ef77f80615ccc5 |
+| Global/DefaultPlayer.model | e3bc65e512b3584965b998450e1cf3d678b363d286dd2f7cc90e357396b9f31d |
+| Global/WorldConfig.config | dc16d685bba16467b68dafeab8a21a1277f3c0cc5cca7d8cd723ea3bbbaf86e1 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.csv | 4d7bf5cf7d6a5482b9177c079a9b9bb807a24d097a61a62b1a1a20c358d261a7 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.userdataset | 27953aadbc211679672a8dfc5eb9fa2f76f223aac243af95e895932af4e9cc6f |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.csv | 0b9265a2869b23de01f4edf5eebded066b6fb9f23f8643a52946f43a2bfc6983 |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.userdataset | e22d0b765e17c629eed9661ee9735d12ff4c7326257cc50e96037942e04adeb7 |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.csv | fa7be991121754a53d752a73912368124fc73647934d2f3072f6be0a4974363f |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.userdataset | 2ad214ba74aa111fba2c0975913ce7be376c004771b468c21dc3c001f75620b2 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv | cd87d73d7d79cab23ced404e1ac989c5548e643a65482959d9fb97bd353ca7ed |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.userdataset | 59bba89881cc2815cf9a1e47767d9c124c1a535f562459cd3335131eb35ce888 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv | db655856dcbdbe8dc9eab9ae9dca93cb573b4a44c9088ad9563be6efc50c7c81 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.userdataset | b10bd13cc602f12bd50ed1ea92c8ecce07a29e9734b7899e76b9e3e30fd798b1 |
+| RootDesk/MyDesk/@Assist/RangeGizmo/AttackRangeGizmo.model | 84c9e6ab606a1a54edf7490124de4a308d678efccfb6ad53c748de5c621b234e |
+| RootDesk/MyDesk/Combat/AttackAreaMarkComponent.mlua | 9c0e9b5bbc2ba588e021aeca0ac9f9dcaacdc6223ddae17ea955dcf2c8544907 |
+| RootDesk/MyDesk/Combat/CombatPauseComponent.mlua | 6a20d8c1a1b46fd50bc0a62695900fac3decc2def68b69124082eef8e2bf5f8b |
+| RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua | 3c592e5296af804136a372900abe87267ae7027ce6f4c737ebda17c92cb8bfbe |
+| RootDesk/MyDesk/Managers/MonsterManager.mlua | 6cea8d7f99f55b50dc4dd0a96a0973c12cc7a934151b9d8d3a50dc7ab6bb2aab |
+| RootDesk/MyDesk/Models/MapObjects/AttackAreaMark.model | 954a3ef24d26150150de52b5fe6a738276561b18da0129c762e3899e72a1466b |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model | 1b7686acda7c84412676a7157681156cbef5f693e4b3c0872d609c5cf61c3b9d |
+| RootDesk/MyDesk/Monster/@StateControl/MonsterStateControl.mlua | 3346a2b1c0a35752e32978bed6d34ce5b7295d9545639d9dc90e95eb8a27c395 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua | 578acaa625570909d0eebf2a46332d7f429b3aed351c0b098c7fc6f3d6a60db8 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Defense.mlua | 3443b93e831d12eaf978a10260bd869c06754efd3cb7f41648526639a4e269d1 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Stun.mlua | 7ab182ba9ea1326190c178e7f1ee95ed33533a7699fac33f8d08ab061b9acbaf |
+| RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | a1735e7f50fc694a08133bfd2a012b2438051fe7b0fa45e55e7bc123b9d9a164 |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | a7a4508fd600b47548fe2a9182d371ab2dc06cbd3941070e5774228fa716993b |
+| RootDesk/MyDesk/Monster/MonsterDefenseComponent.mlua | d1ba0a0c5cb80dc54b93f75ed9103b705609519d7c49c06251a9125be81321da |
+| RootDesk/MyDesk/Monster/MonsterHealthComponent.mlua | 86ccd4916ab7b0c67ee0b71d4e02a1a48e4df8011038dbdcc94a833981455379 |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | 69ad2f52be603d7fedde3223678094968d859cd209f9771895ab1175ce29e3c9 |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 7b78fa679702b47f867bd5e0bf14e2b48b95baa782108468c01a32e8fa4dadbc |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeGizmo.mlua | 96d2d66ccdc13300ad879f3327cf64cc68495c63fe11384a1be39e0a19c2dc53 |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeTuner.mlua | ef5736711550c7f647d767ee08296beb8366df9cb8bce6f5cc9b5100cd544a9a |
+| RootDesk/MyDesk/Player/@Assist/Skill/PlayerSkillEffectTable.mlua | 5127ff02cf93c65e92837b46716c371cd6c89f78b985165b90e1a5ca6a0f8845 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateControl.mlua | 1bf98ade664f48f2263c791520e30f03a7eb54545bf7ac7fef7ff7d60eb1de86 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateSet.stateset | 1e02d40cef0870718aaca2645f8d65e630d2f57fbca5b9970e27c0be3c83ce52 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Attack.mlua | a450fed1c16ebee0ca6b06cde326fe8af23ac3c05101202d2b16bae47045d772 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Guard.mlua | fa140dbdd70352876af80555417cbf58a849ae6a0e250d536a34875c714cf02f |
+| RootDesk/MyDesk/Player/@StateControl/Player_Move.mlua | 8a4ac39d4ee33f12199be95d3663123698876ff51badbfebc5870c762063b9c0 |
+| RootDesk/MyDesk/Player/PlayerCombatComponent.mlua | ebbe5f75a580523619c35729f4965ea170deef0e82b8cbc4f2443d229f90d612 |
+| RootDesk/MyDesk/Player/PlayerEvadeComponent.mlua | ae130137842bb0b0a74020b2adc395e6750f25b4a72f736a9f08bcb72b241e50 |
+| RootDesk/MyDesk/Player/PlayerGuardComponent.mlua | 297f85f1b2754bb2fe5fc28d0820f39147e7293fbda29f4c377a4a64c227596f |
+| RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | 1ee406d747b8a3edece94fc7b4f74500f94c65e6fb3d398df531332f284f5d79 |
+| RootDesk/MyDesk/Player/PlayerInputComponent.mlua | 3268e06bd6726009b2dc9b8fa2e8d00072dee5662eb1f195cdc3085fa8103705 |
+| RootDesk/MyDesk/Player/PlayerMoveComponent.mlua | c794253d08b222280a563675b7dd778dc6802b765faa68cf34153d10136f10fd |
+| RootDesk/MyDesk/UI/CombatHpBarController.mlua | 8a908f5bac7f723ae6326a836932c8959d0a2d846f7654e21f6acf5da841e36e |
+| RootDesk/MyDesk/UI/CombatInputController.mlua | 16b323c5e3c9d3cb0290e78dc3cc7b0e840c6709e42d08ceb40ebeed835c7288 |
+| RootDesk/MyDesk/UIPopup.mlua | 97e1d7f3b5f3eeb525e5805b1126962dca1d33ac9cd6e40516630599854c6fed |
+| RootDesk/MyDesk/UIToast.mlua | baa498d9bb1745186cc098e45294dfe29db27f4fbafb98179d5fbb76064ec7e2 |
+| map/map01.map | 1e9dbe01ec2139a7da3a2129399620b187592559856a5d4959b537b72d11fa65 |
 | ui/CombatScreen.ui | f0b37dd5142332caeb33e77cb10b32fc48f669e4db5aa868b58c24b78444ffe6 |
 | ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
 | ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |

@@ -10,6 +10,7 @@ script MonsterAttackComponent extends AttackComponent
 	@Sync property string TelegraphResponse = ""
 	@Sync property string TelegraphAttribute = ""
 	@Sync property number TelegraphRemaining = 0
+	@Sync property string TelegraphCells = ""
 	@Sync property integer AttackSequence = 0
 
 	method any GetManager()
@@ -70,10 +71,17 @@ script MonsterAttackComponent extends AttackComponent
 		local snapshot = { id = self.AttackSequence, map = map, player = player, pattern = pattern, rules = rules,
 			landing = anchors[pattern.LandingAnchor], shape = BoxShape(Vector2((minimum + maximum) * 0.5, 0), Vector2(maximum - minimum, pattern.AreaHeight), 0), resolved = false }
 		self._T.snapshot = snapshot
+		-- 서버 영역 안에 앵커가 들어가는 BattlePos 칸(1~3)만 "1"로 표시해 클라이언트에 전달한다.
+		local cells = ""
+		for index = 1, 3 do
+			local anchorX = anchors[index].TransformComponent.WorldPosition.x
+			cells = cells .. ((anchorX >= minimum and anchorX <= maximum) and "1" or "0")
+		end
 		self.TelegraphResponse = pattern.ResponseType
 		self.TelegraphAttribute = pattern.AttackAttribute
 		self.TelegraphRemaining = pattern.TelegraphLeadSec
-		if Environment:IsMakerPlay() then log("[VRF] CombatCore telegraph id=" .. tostring(snapshot.id) .. " pattern=" .. pattern.id .. " min=" .. tostring(minimum) .. " max=" .. tostring(maximum)) end
+		self.TelegraphCells = cells
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore telegraph id=" .. tostring(snapshot.id) .. " pattern=" .. pattern.id .. " min=" .. tostring(minimum) .. " max=" .. tostring(maximum) .. " cells=" .. cells) end
 		return snapshot
 	end
 
@@ -110,6 +118,7 @@ script MonsterAttackComponent extends AttackComponent
 		self._T.resolving = false
 		self.TelegraphResponse = ""
 		self.TelegraphRemaining = 0
+		self.TelegraphCells = ""
 		local combat = snapshot.player:GetComponent("script.PlayerCombatComponent")
 		if isvalid(combat) then
 			combat:RecordDefense(not snapshot.result.success and not snapshot.nativeHit and "EVADE" or snapshot.result.kind)
@@ -119,8 +128,12 @@ script MonsterAttackComponent extends AttackComponent
 			local control = self.Entity:GetComponent("script.MonsterStateControl")
 			if isvalid(control) then control:ApplySlow(snapshot.rules.SlowDurationSec, snapshot.rules.SlowRate) end
 		elseif snapshot.result.kind == "PARRY" then
+			-- 그로기는 Monster_Attack이 처음 위치 복귀를 마친 뒤 시작한다. 여기서는 접촉 지점 효과만 알린다.
 			local stun = self.Entity:GetComponent("script.MonsterStunComponent")
-			if isvalid(stun) then stun:ApplyGroggy(snapshot.rules.GroggyDurationSec) end
+			if isvalid(stun) then
+				local playerPosition = snapshot.player.TransformComponent.WorldPosition
+				stun:NotifyParry((playerPosition.x + position.x) * 0.5, position.y + snapshot.pattern.AreaOffsetY)
+			end
 		end
 		if Environment:IsMakerPlay() then log("[VRF] CombatCore defense id=" .. tostring(snapshot.id) .. " kind=" .. snapshot.result.kind .. " rate=" .. tostring(snapshot.result.rate) .. " clock=" .. tostring(snapshot.hitTime)) end
 	end
@@ -152,6 +165,7 @@ script MonsterAttackComponent extends AttackComponent
 		self._T.resolving = false
 		self.TelegraphResponse = ""
 		self.TelegraphRemaining = 0
+		self.TelegraphCells = ""
 	end
 
 	@ExecSpace("ServerOnly")

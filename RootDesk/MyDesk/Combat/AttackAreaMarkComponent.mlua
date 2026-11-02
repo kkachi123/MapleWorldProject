@@ -1,0 +1,65 @@
+@Component
+script AttackAreaMarkComponent extends Component
+
+	property integer CellIndex = 1
+	property number CellAlpha = 0.45
+
+	@ExecSpace("ClientOnly")
+	method boolean EnsurePixel()
+		-- 클라이언트 픽셀 버퍼는 준비된 뒤 한 번만 초기화하고 처음에는 투명으로 둔다.
+		local pixel = self.Entity.PixelRendererComponent
+		if not isvalid(pixel) then return false end
+		if not self._T.ready then
+			pixel:ResetWithColor(4, 4, Color(1, 0.12, 0.12, 0))
+			pixel.SortingLayer = "MapLayer0"
+			pixel.OrderInLayer = 1
+			self._T.ready = true
+			self._T.shown = false
+		end
+		return true
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetShown(boolean shown)
+		-- 표시 값이 달라질 때만 색을 바꾼다. 판정은 서버가 확정한 칸 정보만 따른다.
+		if not self:EnsurePixel() then return end
+		if self._T.shown == shown then return end
+		self._T.shown = shown
+		self.Entity.PixelRendererComponent:FillColor(Color(1, 0.12, 0.12, shown and self.CellAlpha or 0))
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 로컬 소유 대결의 서버 동기화 칸 정보만 읽고, 대결이 없거나 끝나면 즉시 숨긴다.
+		local player = _UserService.LocalPlayer
+		local map = self.Entity.CurrentMap
+		if not isvalid(player) or not isvalid(map) or player.CurrentMap ~= map then self:SetShown(false); return end
+		if self._T.map ~= map then
+			self._T.map = map
+			local managerEntity = map:GetChildByName("MonsterManager", false)
+			self._T.manager = isvalid(managerEntity) and managerEntity:GetComponent("script.MonsterManager") or nil
+		end
+		local manager = self._T.manager
+		local monster = isvalid(manager) and manager.CurrentMonster or nil
+		if not isvalid(monster) or manager.CurrentPlayer ~= player or monster.CurrentMap ~= map then self:SetShown(false); return end
+		local attack = monster:GetComponent("script.MonsterAttackComponent")
+		if not isvalid(attack) then self:SetShown(false); return end
+		local cells = attack.TelegraphCells
+		self:SetShown(string.sub(cells, self.CellIndex, self.CellIndex) == "1")
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵 수명이 끝나면 표시와 참조를 함께 정리한다.
+		if self._T.ready then self:SetShown(false) end
+		self._T.map = nil
+		self._T.manager = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- Stop에서 남은 표시를 만들지 않는다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end
