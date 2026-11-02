@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-02 / coder REV-F01 수정·기본 검증 완료(새 Bundle 1ac324e6…9de4), 독립 tester→reviewer 재검증·사용자 V11 대기. 직전 2026-10-29 QA2·리뷰는 이전 버전 근거.
+- 상태·갱신일: 2026-11-02 / coder REV-F01 수정·기본 검증 완료(새 Bundle 1ac324e6…9de4), 독립 tester 3회차 REV-F01 수치 PASS 기록(QA 기록 절), reviewer 재검증·사용자 V11 대기. 직전 2026-10-29 QA2·리뷰는 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -27,6 +27,44 @@
 제품 구현 완료 기록 없음. coder는 제품 편집 전 사전 문맥·소유자 점검 단계에서 중단됐다. 구현 ledger도 아직 생성되지 않았다. MapBuilder 읽기는 map01 id=0a0972ef-ad23-4e24-af63-afbd53120c1d, TileMapMode=0을 확인했다. 실제 Maker 연결/모드·런타임 검증은 조회 거절로 미확인이다. 사용자 재개 명령 후 실제 변경 범위와 환경을 확인해 이어간다.
 
 ## QA 기록
+
+### 2026-11-02 독립 QA 3회차 — REV-F01
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA/QA2의 PASS를 이번 실행으로 세지 않았다.
+- 대상: coder 커밋 6614b20 / 52파일 Bundle SHA-256 1ac324e61f5668a43fb5d0232399aa75299322bbb59143c8cb70080f080d9de4. 시험 전·후 manifest 52/52 byte 일치(Bundle 재계산 동일, git status 제품 변경 없음). 이전 e8a20728…a49 대비 변경은 MonsterAttackComponent.mlua:134, PlayerHealthComponent.mlua:38이며 두 파일을 소스로도 읽어 확인했다.
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId 970621b29ba945369d3dc8e90c301186. TileMapMode는 기존 기록 0(MapleTile)을 따르며 이번에 MapBuilder를 다시 읽지 않았다. 재개 전 build 로그는 coder 갱신본(Info 79, 오류·경고 0)을 그대로 사용했고 이 회차에서 refresh하지 않았다. Play context server_main/client. Maker 로그 시각 19:11~19:20, 오류/경고 로그 0(normal 전체 Info만).
+- 실행 방식 구분: (A) 서버 프로브 = 지정 패턴 1행 임시 교체(`_CombatRuleCatalog.patterns`), 몬스터 AttackInterval 일시 상향, 몬스터 `StateComponent:ChangeState("ATTACK")`로 공격 시작, 플레이어 가드는 서버 `ChangeState("GUARD")`, 저스트는 `PlayerEvadeComponent:SetEvading`+`EvadeDirection` 부여. 판정(EvaluateDefense)·피해(CalcDamage→ResolveIncomingDamage)·native AttackFast/HitEvent·HP는 제품 경로이며 HitEvent는 플레이어 엔티티 핸들러로 TotalDamage와 Damages 합계를 읽었다. (B) 실제 입력 = maker_keyboard_input의 DownArrow/RightArrow/LeftArrow/W 실제 키 이벤트가 클라이언트 PlayerInputComponent→PlayerStateControl→서버 상태 진입까지 이어진 경로. 서버 스크립트는 "방어 입력이 서버에서 수락된 순간"에 몬스터 ATTACK을 시작시키는 시험 트리거만 맡았고 방어 상태·시작시각은 실제 입력이 만들었다. 모든 시험값(AttackDamage, 패턴, 간격, WeaponAttack, 몬스터/플레이어 HP, 패링·저스트 창)은 Play 내부에서만 바꿨고 Stop→다음 Play 기준값(dmg12/interval3/rows8/가드.4/패링·저스트 .2/Weapon1) 확인으로 폐기를 확인했다.
+
+| ID·조건 | 방식 | 실제 결과 (HP delta / HitEvent.TotalDamage / Damages 합계) | 판정 |
+| --- | --- | --- | --- |
+| REV-F01 무가드 일반 (12.7) | A | 12 / 12 / 12, kind HIT | PASS |
+| REV-F01 특수 무가드 (12.7) | A | 12 / 12 / 12 | PASS |
+| REV-F01 특수+가드 홀드 (12.7) | A(서버 가드) + B(DownArrow 실제 홀드, special.left) | A 12/12/12, B 12/12/12 (kind HIT) | PASS |
+| REV-F01 일반 가드 (12.7) | A(normal.guard·normal.left) + B(DownArrow, normal.guard) | 모두 5/5/5, kind GUARD rate .4 (구 코드 기대 4와 구별) | PASS |
+| REV-F01 패링 공격 실패 가드 (12.7) | A 가드 시작 hit-1.13s·hit-0.254s(창 밖) + B DownArrow, 가드 시작 hit-.52s·기본 창 .2 | 모두 5/5/5, kind GUARD | PASS |
+| REV-F01 유효 패링 성공 (12.7) | A 가드 시작 hit-.103s + B DownArrow, 시험 한정 ParryWindowSec .9(손 타이밍으로 .2 창 불가) | A·B 모두 0/0/0, kind PARRY, native 이벤트 1건 0피해 | PASS (B의 창 폭은 시험 값) |
+| REV-F01 유효 저스트 회피 (12.7) | A SetEvading RIGHT(텔레그래프 잔여 .12s 이하에서 부여, 시작시각 직접 미계측, native 이벤트 1건) + B RightArrow 실제, 시험 한정 JustWindowSec .9 | A 0/0/0 kind JUST. B kind JUST, 플레이어가 x=1.5로 이동해 범위 밖이므로 native HitEvent 없음, HP delta 0 | PASS (B는 범위 밖 회피, 창 폭 시험 값) |
+| 저스트 방향 불일치 (12.7, 보조) | A SetEvading LEFT + B LeftArrow 실제(RIGHT 예고) | A 12/12/12 HIT. B 플레이어 x=-1.5, native HitEvent 1건 12/12/12 | PASS (보조, 방향 일치 필수 경계 불변) |
+| 다른 소수 보조 | A | 7.5 가드 3/3/3(구 선내림 2), 12.99 가드 5/5/5·무가드 12/12/12, 13.99 특수+가드 13/13/13, 0.9 무가드·가드 0/0/0(native 이벤트 1건 0피해) | PASS |
+| 기본12 회귀 | A | 무가드 12, 가드 4(12*.4=4.8 내림), 특수+가드 12, 패링 0, 저스트 0 (각 HP=TotalDamage=Damages) | PASS |
+| QA-F01 회귀 몬스터 처치 상한 (HP5, Weapon10) | B 실제 W (몬스터·플레이어 HitEvent 핸들러, Weapon10은 Play 내부) | 몬스터 HP 5→0 감소 5, HitEvent 1건 TotalDamage 5, Damages 5, IsCritical 0, DEAD 전이 1회 | PASS(수치) |
+| QA-F01 후속 치명·후속 제외 (HP25, Weapon10) | B 실제 W | HP 감소 25, HitEvent 3건 합계 25(10,10,5), Damages 25, DEAD 1회. 10타 예약 중 사망 후 추가 이벤트 없음 | PASS(수치) |
+| 플레이어 사망 경계 (HP5, D12.7, 무가드) | A 몬스터 ATTACK | 5→-7, delta 12, 이벤트 1건 12/12, IsDead true, DEAD 전이 1회 (플레이어 쪽 HP 하한 없음은 기존 범위 밖 관찰과 동일) | PASS (경계만, 별도 표시) |
+
+#### 판정 요약
+- 기준 1 (소수 12.7 HP delta=TotalDamage=Damages 합계: 무가드·특수/가드홀드=12, 일반·패링실패 가드=5, 유효 저스트/패링=0): PASS. 대표 경우(DownArrow 가드, RightArrow/LeftArrow 회피)는 실제 키 입력 경로로 독립 확인했다. 패링 성공과 저스트 성공의 실제 입력은 .2초 창을 손 타이밍으로 맞출 수 없어 시험 한정으로 창만 .9로 넓혔다(창 경계 자체는 이번 변경과 무관, 기존 QA 근거 범위). 창 .2 안에서 맞춘 성공은 서버 프로브(A)로 확인했다.
+- 기준 2 (기본12 가드4/특수12/성공0): PASS (서버 프로브).
+- 기준 3 (QA-F01 처치 상한·사망 1회·후속 제외): PASS(수치, 실제 W).
+- 기준 4 (플레이어 사망 경계): PASS(경계만). 그 외 슬로우/그로기/팝업/DataSet 로드·V01~V12의 나머지 회귀는 이번 변경(두 파일 각 1줄)과 무관해 재실행하지 않았다. 새 전수 실행으로 세지 않는다.
+- NOT_RUN / 미완료: V11(사용자 직접 PC/모바일 가독성·체감·음향·피격/die), CF-F07 연출, V12 외부(실제 두 사용자·비전투 몬스터·다른 맵), 실제 mouse/touch 입력, 창 .2 안의 손 입력 패링/저스트 성공, 가드 시작이 타격 이후인 경우의 별도 관찰(그 경우는 가드 상태가 아니라 HIT로 처리됨).
+
+#### 시험 오류·불확실성 분리
+- A 회차에서 서버 `SetEvading`을 직접 호출하면 서버 MOVE epoch가 올라가 클라이언트 epoch와 어긋난다. 그 직후 같은 Play에서 시도한 첫 RightArrow 저스트(kind HIT, EvadeDirection 빈 값)는 이 시험 상태 오염이 원인이라 제품 결과로 세지 않고, Stop→새 Play에서 A 호출 없이 다시 실행한 결과(kind JUST, evadeDir RIGHT)만 사용했다. 제품 오류로 보지 않는다.
+- QA-F01 두 번째 시험 첫 스크립트가 몬스터 사망 뒤 재생성(DoSpawn) 전에 시작해 죽은 개체에 Hp를 세팅했다. 해당 시도의 결과는 사용하지 않고 `MonsterManager:DoSpawn()` 후 새 개체에서 다시 실행한 결과만 사용했다. 몬스터 사망 뒤 자동 재생성이 없는 것은 기존 동작(DoSpawn은 OnBeginPlay에서만 호출)이다.
+- 서버 프로브 중 몬스터 자연 공격은 AttackInterval 상향으로 막았고, 각 회차의 hit 시각·snapshot kind로 판정 로그를 분리했다.
+
+#### 사용 종료
+- 모든 키 up. HitEvent/StateChangeEvent 핸들러 명시 Disconnect, 임시 패턴/창/AttackInterval/WeaponAttack는 Stop으로 폐기. Stop→다음 Play(19:20) baseline: dmg12.0/interval3.0/rows8/가드.4/패링·저스트.2/Weapon1/몬스터 HP100 확인, 이후 maker_stop. maker_get_current_map map01 / edit 확인(전이 중 play 응답 1회 뒤 재확인), Maker 사용 종료. 시험 후 52/52 동일 Bundle 1ac324e6…9de4.
+- 다음은 독립 reviewer: 위 REV-F01 수치 PASS와 실행 방식 구분(서버 프로브 vs 실제 키)·한계를 같은 Bundle에서 대조한다.
 
 ### 2026-10-29 독립 QA 2회차 — QA-F01 수치 재시험 PASS·리뷰 대기
 - 담당: /root/combat_core_tester_v2. coder_v4 종료·사용 양도 후 별도 실행. 제품·모델·맵·UI·DataSet·CSV·원장 수정 없음. 과거 결과를 새 실행으로 세지 않았다.
