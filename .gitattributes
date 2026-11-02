@@ -1,2 +1,10 @@
 # Maker가 읽는 파일과 QA의 바이트 지문(SHA-256)을 그대로 보존하기 위해 줄바꿈 변환을 하지 않는다.
 * -text
+
+# GitHub 언어 통계(Linguist): 게임 스크립트(.mlua)를 Lua로 집계하고, 엔진 정의와 도구·스킬 폴더는 통계에서 제외한다. 파일 내용에는 영향 없음.
+*.mlua linguist-language=Lua
+Environment/** linguist-vendored
+.agents/** linguist-vendored
+.claude/** linguist-vendored
+.codex/** linguist-vendored
+.github/** linguist-vendored
