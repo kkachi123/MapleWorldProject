@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 REV-F01 수정 회차(구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-02 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (Plan §14 Q1~Q4 결정)
-- 다음 행동·대기 사유: 사용자 Plan §14 Q1~Q4 결정 대기. 결정 전 제품 수정 없음, 3단계 자동 시작 없음.
+- 현재 담당: 사용자 (Plan §14 Q5·Q6 결정)
+- 다음 행동·대기 사유: 사용자 Q5(처리 범위)·Q6(패링 순간 강조 형태) 결정 대기 → 승인 범위만 tester F05 재현 → coder → tester → reviewer → 사용자 V11 재확인.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -124,3 +124,10 @@
 - 재개 확인(메인, 읽기 전용): git status 깨끗·origin/main과 동일(234ade1), 미완성 변경 없음. maker_get_current_map=map01/0a0972ef-ad23-4e24-af63-afbd53120c1d/edit, worldId 970621b29ba945369d3dc8e90c301186 일치.
 - planner 전달: 새 msw-planner 호출(이전 호출은 중단됨, 문서 변경 없었음).
 - planner 실제 종료(msw-planner): Plan §14에 V11-F01~F05 분류·F05 재현 조건·Q1~Q4 기록, 규칙·수치·기준 무변경. 커밋 아래 [plan].
+- 사용자 결정(2026-11-02, 선택 화면 답변):
+  - Q1/F01: 맞는 BattlePos 칸만 예고 시작부터 판정까지 반투명 빨강(판정 불변).
+  - Q2/F02: 복귀 후 그로기(사용자 원문 방식). D04·§5의 순서 변경을 사용자가 선택.
+  - Q3/F03: 별 파티클 확대·위치 조정 + 패링 순간 별도 강조 둘 다.
+  - Q4: F04 어지러움 애니메이션 자원 존재를 지금 읽기 확인한 뒤 처리 시점을 함께 판단. 아직 구현 승인 아님.
+- planner 전달: 결정 반영·F04 읽기 확인.
+- planner 실제 종료(msw-planner): Q1~Q3 결정·D04/§5 순서 변경 반영, F04 자원 없음 확인(읽기 전용, 런타임 미확인). Q5·Q6 추가. 커밋 아래 [plan].
