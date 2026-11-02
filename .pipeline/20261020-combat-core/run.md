@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 REV-F01 수정 회차(구현·검증·재검토)
-- 상태: CODING
+- 상태: REVIEWING
 - 갱신: 2026-11-02 / 메인 조율 채팅(Claude Code)
-- 현재 담당: coder msw-coder (독립 실행, Maker 단독 사용)
-- 다음 행동·대기 사유: msw-coder REV-F01 최소 수정·기본 검증·Maker edit 인계 → msw-tester → msw-reviewer → 리뷰 확정 후 msw-planner DOC-01.
+- 현재 담당: reviewer msw-reviewer (독립 실행, Maker 제어 없음)
+- 다음 행동·대기 사유: msw-reviewer가 6614b20 변경·QA3(13fe548)·미실시를 대조 → 리뷰 확정 후 msw-planner DOC-01.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -89,3 +89,8 @@
 - 기준 버전: 2026-10-29 52파일 Bundle e8a20728…a49(리뷰 대상). 저장소 기준 커밋 ad89cf3.
 - planner 범위 확인(msw-planner 실제 종료, 문서 무수정): REV-F01은 D02 "합성 뒤 정수 내림" 미구현으로 승인 범위 안, 새 규칙·수치·사용자 결정 불필요. 편집 범위 MonsterAttackComponent.mlua:134 호출의 선내림 제거, PlayerHealthComponent.mlua:38 인자 number화(:45 유일 최종 floor 유지). 플레이어 쪽 HP 상한 부재는 이번 범위 밖 관찰로 reviewer 판단에 남김.
 - coder 전달: msw-coder 호출. tester/reviewer 미호출.
+- coder 실제 종료(msw-coder): REV-F01 제품 .mlua 2파일 각 1줄 수정, WorkRecord 2026-11-02 개발절·Plan §13 기록. build 오류0/경고0, Play 프로브 기본 검증 결과는 WorkRecord. 메인 diff·두 파일 SHA-256 대조 일치, maker_get_current_map=map01/edit 확인(읽기 전용).
+- 대상 버전: coder 커밋 6614b20 / 52파일 Bundle 1ac324e61f5668a43fb5d0232399aa75299322bbb59143c8cb70080f080d9de4 (이전 e8a20728…a49 대비 2파일 변경). 이전 QA2·리뷰는 이전 버전 근거로만 취급.
+- tester 전달: msw-tester 호출. reviewer 미호출.
+- tester 실제 종료(msw-tester): 같은 Bundle 1ac324e6…9de4 전후 52/52 일치, 제품 무수정. 4개 기준 수치 PASS·FAIL 없음, 상세는 WorkRecord "2026-11-02 독립 QA 3회차 — REV-F01". QA 커밋 13fe548. 메인 두 파일 해시 재대조 일치, maker_get_current_map=map01/edit 확인(읽기 전용). Maker 사용 종료.
+- reviewer 전달: msw-reviewer 호출. Maker 제어·제품 수정 없음.
