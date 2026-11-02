@@ -131,7 +131,7 @@ script MonsterAttackComponent extends AttackComponent
 		if not isvalid(health) then return 0 end
 		local snapshot = self._T.snapshot
 		if snapshot ~= nil then snapshot.nativeHit = true end
-		return health:ResolveIncomingDamage(math.floor(self.AttackDamage), attacker)
+		return health:ResolveIncomingDamage(self.AttackDamage, attacker)
 	end
 
 	method boolean IsAttackTarget(Entity defender, string attackInfo)

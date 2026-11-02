@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-10-29 / 독립 QA2 종료·QA-F01 수치 PASS, 리뷰·사용자 V11 대기.
+- 상태·갱신일: 2026-11-02 / coder REV-F01 수정·기본 검증 완료(새 Bundle 1ac324e6…9de4), 독립 tester→reviewer 재검증·사용자 V11 대기. 직전 2026-10-29 QA2·리뷰는 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -338,6 +338,106 @@
 | RootDesk/MyDesk/Player/PlayerEvadeComponent.mlua | ae130137842bb0b0a74020b2adc395e6750f25b4a72f736a9f08bcb72b241e50 |
 | RootDesk/MyDesk/Player/PlayerGuardComponent.mlua | 297f85f1b2754bb2fe5fc28d0820f39147e7293fbda29f4c377a4a64c227596f |
 | RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | 1e1396015176a5284d4553ae816294933ebd6079f16ade8ff78064a85abf86e8 |
+| RootDesk/MyDesk/Player/PlayerInputComponent.mlua | 3268e06bd6726009b2dc9b8fa2e8d00072dee5662eb1f195cdc3085fa8103705 |
+| RootDesk/MyDesk/Player/PlayerMoveComponent.mlua | c794253d08b222280a563675b7dd778dc6802b765faa68cf34153d10136f10fd |
+| RootDesk/MyDesk/UI/CombatHpBarController.mlua | 8a908f5bac7f723ae6326a836932c8959d0a2d846f7654e21f6acf5da841e36e |
+| RootDesk/MyDesk/UI/CombatInputController.mlua | 16b323c5e3c9d3cb0290e78dc3cc7b0e840c6709e42d08ceb40ebeed835c7288 |
+| RootDesk/MyDesk/UIPopup.mlua | 97e1d7f3b5f3eeb525e5805b1126962dca1d33ac9cd6e40516630599854c6fed |
+| RootDesk/MyDesk/UIToast.mlua | baa498d9bb1745186cc098e45294dfe29db27f4fbafb98179d5fbb76064ec7e2 |
+| map/map01.map | 874b96b0a5af7d8be282ff53ba1162cf516cba75270bb2ab660e5c2eb09ef990 |
+| ui/CombatScreen.ui | f0b37dd5142332caeb33e77cb10b32fc48f669e4db5aa868b58c24b78444ffe6 |
+| ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
+| ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |
+| ui/ToastGroup.ui | 9c29998895c5fecc54bacbbdf0a8ca2c472d95fadbc5cb30fe46bed7c7fc444f |
+
+
+## 2026-11-02 coder REV-F01 수정·기본 검증 인계
+
+### 범위·원인·실제 변경
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 CombatCore-REV-F01(R02/V02/D02)뿐이다. 새 규칙·수치·기본 AttackDamage=12·DataSet·EvaluateDefense 대응표·PlayerCombatComponent.CalcDamage(QA-F01 처치 상한)·native HP 단일 소유는 바꾸지 않았다. 기준 저장소 커밋 eedeefb, 기준 Bundle e8a20728…a49.
+- 원인: 몬스터 기본 피해가 경감 전에 한 번 내림(MonsterAttackComponent)되고 PlayerHealthComponent에서 경감 뒤 다시 내림되어, 소수 AttackDamage에서 D02 "합성 뒤 한 번 내림"과 어긋났다(12.7 가드: 4).
+- 실제 변경(제품 mLua 2파일, 각 1줄):
+  - RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua:134 — `ResolveIncomingDamage(math.floor(self.AttackDamage), attacker)` → `ResolveIncomingDamage(self.AttackDamage, attacker)`. CalcDamage 서명·integer 반환 유지(override이므로 @ExecSpace 미추가).
+  - RootDesk/MyDesk/Player/PlayerHealthComponent.mlua:38 — `ResolveIncomingDamage(integer damage, Entity attacker)` → `ResolveIncomingDamage(number damage, Entity attacker)`. 반환 integer·@ExecSpace("ServerOnly") 유지, :45 `math.max(0, math.floor(damage * result.rate))`가 유일한 최종 내림. 호출자는 MonsterAttackComponent:134 하나(Grep 확인).
+- 플레이어 쪽 HP 상한(남은 HP 대비 overkill) 부재는 이번 범위 밖 관찰이며 건드리지 않았다.
+
+### 실제 기본 검증 (한 통합 Play)
+- 연결: 시작 시 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186 일치. MapBuilder는 사용하지 않았고 기존 기록의 TileMapMode=0(MapleTile)을 따른다. 맵·모델·UI 파일 변경 없음.
+- 순서: edit에서 패치 → maker_refresh_workspace(ok) → build 로그 오류0/경고0(Info 79, 기존 동적 참조 Info만) → Play → server_main maker_execute_script 한 회차 → Stop. Play 후 normal 로그에 Info 이외 로그 없음(오류/경고0). 제품 [VRF] 추가 없음(기존 CombatCore defense 로그 사용).
+- 시험 방식: Play 내부 server_main 프로브가 몬스터 AttackInterval을 일시 크게 올려 자연 공격을 막고, 기존 패턴 행에서 지정 id 1행만 해당 회차에 사용하도록 `_CombatRuleCatalog.patterns`를 임시 교체한 뒤, 실제 `StateComponent:ChangeState("ATTACK")`→PrepareAttack→시전 대기→ResolveAttack→native AttackFast/HitEvent 경로를 실행했다. 가드는 플레이어 `ChangeState("GUARD")`(PlayerGuardComponent.guardStartTime 서버 기록), 저스트는 PlayerEvadeComponent.SetEvading+EvadeDirection 설정으로 부여했다. 이 방어 입력은 키보드 입력이 아니라 서버 프로브이며 판정(EvaluateDefense)·피해(CalcDamage→ResolveIncomingDamage)·HitEvent·HP는 제품 경로다. HP delta는 PlayerComponent.Hp 전후, TotalDamage·Damages 합계는 플레이어 엔티티 HitEvent 핸들러로 읽었다.
+- 로그 시각 2026-11-02 19:06:17~19:06:34 (Maker 로그). 시험값(AttackDamage 12.7, AttackInterval, patterns 임시 교체)은 프로브 종료 시 즉시 복원: rows=8, interval=3.0, dmg=12.0 확인. HitEvent 핸들러는 Disconnect.
+
+| 조건 | AttackDamage | 판정 kind / rate | HP delta | HitEvent.TotalDamage | Damages 합계 | 결과 |
+| --- | --- | --- | --- | --- | --- | --- |
+| T1 무가드 일반 | 12.7 | HIT / 1 | 12 | 12 | 12 | PASS (기대 12) |
+| T2 특수 무가드 | 12.7 | HIT / 1 | 12 | 12 | 12 | PASS (기대 12) |
+| T3 특수+가드 | 12.7 | HIT / 1 | 12 | 12 | 12 | PASS (기대 12) |
+| T4 일반 가드 | 12.7 | GUARD / .4 | 5 | 5 | 5 | PASS (기대 5, 구 코드 4) |
+| T5 패링 실패 가드(가드 .5초 전 시작) | 12.7 | GUARD / .4 | 5 | 5 | 5 | PASS (기대 5) |
+| T6 유효 패링(가드 시작이 타격 .089초 전) | 12.7 | PARRY / 0 | 0 | 0 | 0 | PASS (기대 0, native 이벤트1·0피해) |
+| T7 유효 저스트(회피 시작이 타격 .102초 전, RIGHT) | 12.7 | JUST / 0 | 0 | 0 | 0 | PASS (기대 0) |
+| R1 무가드 | 12 | HIT / 1 | 12 | 12 | 12 | PASS 회귀 |
+| R2 일반 가드 | 12 | GUARD / .4 | 4 | 4 | 4 | PASS 회귀 (기대 4) |
+| R3 특수+가드 | 12 | HIT / 1 | 12 | 12 | 12 | PASS 회귀 |
+| R4 유효 패링 | 12 | PARRY / 0 | 0 | 0 | 0 | PASS 회귀 |
+| R5 유효 저스트 | 12 | JUST / 0 | 0 | 0 | 0 | PASS 회귀 |
+
+- 각 회차 resolved=true·nativeHit=true·native 이벤트 1건. PlayerHealthComponent의 마지막 확정 피해(lastResolved)도 HP delta와 일치.
+- 이번에 실행하지 않은 것: 실제 keyboard_input/mouse_input 방어 입력, QA-F01 몬스터 처치 상한·사망1회/후속 제외 회귀(PlayerCombatComponent·MonsterHealth 변경 없음, 소스 무변경으로 독립 QA가 확인 필요), 플레이어 사망 경계, 슬로우/그로기/팝업/DataSet 로드 회귀, 두 파일 외 경로의 전수 재실행, V11 화면 가시성·체감. 이 항목은 새 전수 실행으로 표시하지 않는다.
+- 시험 오류·한계: 프로브 중 몬스터 자연 공격(시험 전 약 4초 간격)이 프로브 전후에 몇 번 있었으나 회차 판정 로그와 분리되어 측정에 섞이지 않았다(회차마다 snapshot id·pattern·hit 시각 기록). 제품 오류는 관측되지 않았다.
+
+### 사용 종료·다음 담당
+- 최종 maker_stop 성공 후 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. 사용자 로그 clear·파일/CSV 추가 변경 없음. commit·push는 하지 않았다.
+- 다음은 독립 tester: 새 Bundle에서 소수 기본 피해(12.7)의 무가드/특수=12, 일반·패링실패 가드=5, 유효 저스트/패링=0를 실제 입력 경로로 재확인하고 기본12 회귀와 QA-F01 처치 상한·사망1회/후속 제외를 관련 회귀로 확인한다. 이전 QA2를 이 변경 경로에 그대로 적용된다고 표시하지 않는다. V11·CF-F07 연출·V12 외부 환경은 NOT_RUN/WAITING 유지, 단계 완료·3단계 진행·Features 이관 아님.
+
+### 2026-11-02 최종 제품 버전 묶음
+- 이전 2026-10-29 묶음과 같은 52경로·순서. byte SHA-256을 다시 계산해 변경 파일은 아래 두 개뿐임을 확인했다(나머지 50개는 기존과 동일). 계산법: 표 순서의 경로 + TAB + sha256 + LF를 연결한 UTF-8 문자열의 SHA-256.
+- 직전 Bundle(e8a20728…a49) 재계산도 일치. 변경 전 지문: MonsterAttackComponent eb0ee88a85fb08f87c02de448c2c4f1b89992a7117496464bbf1798233061e7d, PlayerHealthComponent 1e1396015176a5284d4553ae816294933ebd6079f16ade8ff78064a85abf86e8.
+- Bundle SHA-256: 1ac324e61f5668a43fb5d0232399aa75299322bbb59143c8cb70080f080d9de4.
+
+| 경로 | SHA-256 |
+| --- | --- |
+| Global/CollisionGroupSet.collisiongroupset | c6a33dc595d425728b980c9cf72c0a80bd45083f46c551132e5b2e685a946c0c |
+| Global/CustomFontGroupSet.config | 3c7e40e9602860125192282e447b4a6bc311f8eac634e8e7b8ef77f80615ccc5 |
+| Global/DefaultPlayer.model | e3bc65e512b3584965b998450e1cf3d678b363d286dd2f7cc90e357396b9f31d |
+| Global/WorldConfig.config | dc16d685bba16467b68dafeab8a21a1277f3c0cc5cca7d8cd723ea3bbbaf86e1 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.csv | 4d7bf5cf7d6a5482b9177c079a9b9bb807a24d097a61a62b1a1a20c358d261a7 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.userdataset | 27953aadbc211679672a8dfc5eb9fa2f76f223aac243af95e895932af4e9cc6f |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.csv | 0b9265a2869b23de01f4edf5eebded066b6fb9f23f8643a52946f43a2bfc6983 |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.userdataset | e22d0b765e17c629eed9661ee9735d12ff4c7326257cc50e96037942e04adeb7 |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.csv | fa7be991121754a53d752a73912368124fc73647934d2f3072f6be0a4974363f |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.userdataset | 2ad214ba74aa111fba2c0975913ce7be376c004771b468c21dc3c001f75620b2 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv | cd87d73d7d79cab23ced404e1ac989c5548e643a65482959d9fb97bd353ca7ed |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.userdataset | 59bba89881cc2815cf9a1e47767d9c124c1a535f562459cd3335131eb35ce888 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv | db655856dcbdbe8dc9eab9ae9dca93cb573b4a44c9088ad9563be6efc50c7c81 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.userdataset | b10bd13cc602f12bd50ed1ea92c8ecce07a29e9734b7899e76b9e3e30fd798b1 |
+| RootDesk/MyDesk/@Assist/RangeGizmo/AttackRangeGizmo.model | 84c9e6ab606a1a54edf7490124de4a308d678efccfb6ad53c748de5c621b234e |
+| RootDesk/MyDesk/Combat/CombatPauseComponent.mlua | 6a20d8c1a1b46fd50bc0a62695900fac3decc2def68b69124082eef8e2bf5f8b |
+| RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua | 3c592e5296af804136a372900abe87267ae7027ce6f4c737ebda17c92cb8bfbe |
+| RootDesk/MyDesk/Managers/MonsterManager.mlua | 6cea8d7f99f55b50dc4dd0a96a0973c12cc7a934151b9d8d3a50dc7ab6bb2aab |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model | bae907a8acecd4aafe8d8c97681facdfb36ba17f36461b718d75dc0b92b142fd |
+| RootDesk/MyDesk/Monster/@StateControl/MonsterStateControl.mlua | 3346a2b1c0a35752e32978bed6d34ce5b7295d9545639d9dc90e95eb8a27c395 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua | da35d0645b2658521d9229b59bb7e4023934bb331cc1e19123dec59b433c55ff |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Defense.mlua | 3443b93e831d12eaf978a10260bd869c06754efd3cb7f41648526639a4e269d1 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Stun.mlua | 7ab182ba9ea1326190c178e7f1ee95ed33533a7699fac33f8d08ab061b9acbaf |
+| RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | 13d0db06277f2d1f215dbd9df73f348181b00ac53a7e5aa0ebaffe0cb6d69eed |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | a7a4508fd600b47548fe2a9182d371ab2dc06cbd3941070e5774228fa716993b |
+| RootDesk/MyDesk/Monster/MonsterDefenseComponent.mlua | d1ba0a0c5cb80dc54b93f75ed9103b705609519d7c49c06251a9125be81321da |
+| RootDesk/MyDesk/Monster/MonsterHealthComponent.mlua | 86ccd4916ab7b0c67ee0b71d4e02a1a48e4df8011038dbdcc94a833981455379 |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | 9265965f9d6a30920e6675068e0e9c4d2bcafc674340268dbf0fe72c75c49af9 |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 7b78fa679702b47f867bd5e0bf14e2b48b95baa782108468c01a32e8fa4dadbc |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeGizmo.mlua | 96d2d66ccdc13300ad879f3327cf64cc68495c63fe11384a1be39e0a19c2dc53 |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeTuner.mlua | ef5736711550c7f647d767ee08296beb8366df9cb8bce6f5cc9b5100cd544a9a |
+| RootDesk/MyDesk/Player/@Assist/Skill/PlayerSkillEffectTable.mlua | 5127ff02cf93c65e92837b46716c371cd6c89f78b985165b90e1a5ca6a0f8845 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateControl.mlua | 1bf98ade664f48f2263c791520e30f03a7eb54545bf7ac7fef7ff7d60eb1de86 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateSet.stateset | 1e02d40cef0870718aaca2645f8d65e630d2f57fbca5b9970e27c0be3c83ce52 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Attack.mlua | a450fed1c16ebee0ca6b06cde326fe8af23ac3c05101202d2b16bae47045d772 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Guard.mlua | fa140dbdd70352876af80555417cbf58a849ae6a0e250d536a34875c714cf02f |
+| RootDesk/MyDesk/Player/@StateControl/Player_Move.mlua | 8a4ac39d4ee33f12199be95d3663123698876ff51badbfebc5870c762063b9c0 |
+| RootDesk/MyDesk/Player/PlayerCombatComponent.mlua | ebbe5f75a580523619c35729f4965ea170deef0e82b8cbc4f2443d229f90d612 |
+| RootDesk/MyDesk/Player/PlayerEvadeComponent.mlua | ae130137842bb0b0a74020b2adc395e6750f25b4a72f736a9f08bcb72b241e50 |
+| RootDesk/MyDesk/Player/PlayerGuardComponent.mlua | 297f85f1b2754bb2fe5fc28d0820f39147e7293fbda29f4c377a4a64c227596f |
+| RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | 1ee406d747b8a3edece94fc7b4f74500f94c65e6fb3d398df531332f284f5d79 |
 | RootDesk/MyDesk/Player/PlayerInputComponent.mlua | 3268e06bd6726009b2dc9b8fa2e8d00072dee5662eb1f195cdc3085fa8103705 |
 | RootDesk/MyDesk/Player/PlayerMoveComponent.mlua | c794253d08b222280a563675b7dd778dc6802b765faa68cf34153d10136f10fd |
 | RootDesk/MyDesk/UI/CombatHpBarController.mlua | 8a908f5bac7f723ae6326a836932c8959d0a2d846f7654e21f6acf5da841e36e |

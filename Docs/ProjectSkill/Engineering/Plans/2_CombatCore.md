@@ -190,3 +190,9 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - Bundle e8a20728629878e7ac584065a9c80b9a8a7149b6f05e8fb9a04a2d1906329a49에서 tester_v2가 actual W/native 피해를 독립 시험했다. QA-F01 원재현5·후속치명25·비치명100·보너스220·DEFENSE150/치명5·0피해의 HP/event/Damages 합계 일치와 단일 사망·후속 제외 PASS. 과거 FAIL은 §10의 당시 기록으로 보존한다.
 - V03/V04/V05/V07/V08/V10 대표 지연입력·중간시전/실패·슬로우 접근/복귀/실타격·endpoint popup·death metadata 보완 결과와 계측 한계는 [WorkRecord QA절](../WorkRecords/CombatCoreWorkRecord.md#qa-기록)을 따른다. 전체 순열·실기기·실제 다른 맵/사용자 시험으로 확대하지 않는다.
 - 최종 Stop→다음Play 기본값 확인 후 Stop/map01/edit·사용 종료. 시험 전후52파일 동일. 다음 담당은 독립 reviewer. P01b~P06 🟡 유지, V11/CF-F07 연출·기존 외부 NOT_RUN 미완료, 단계 완료·3단계 진행 아님.
+
+## 13. REV-F01 수정 인계 (2026-11-02)
+
+- 2026-10-29 리뷰 CHANGES_REQUIRED의 CombatCore-REV-F01(D02 "합성 뒤 정수 내림" 미구현)을 같은 R02/V02 범위에서 coder가 최소 수정했다. MonsterAttackComponent.mlua:134의 선내림을 제거하고 PlayerHealthComponent.ResolveIncomingDamage 인자를 number로 바꿔 경감 뒤 한 번만 내림한다. 규칙·수치·기본 AttackDamage=12는 변경 없음.
+- coder 실제 기본 검증(Play 내부 서버 프로브, 실제 키 입력 아님): AttackDamage 12.7에서 무가드·특수=12, 일반·패링 실패 가드=5, 유효 패링·저스트=0의 HP delta/TotalDamage/Damages 합계 일치, 기본12 가드4/특수12/성공0 회귀 일치. 새 Bundle·상세 근거는 WorkRecord 2026-11-02 절을 따른다.
+- 다음은 새 버전의 독립 tester→reviewer다. §11~§12의 이전 QA/QA2는 당시 버전 근거이며 이 수정 경로에 그대로 적용된다고 표시하지 않는다. P01b~P06 🟡 유지, CF-F07·V11·V12 외부 NOT_RUN 미완료, 단계 완료·3단계 진행 아님.

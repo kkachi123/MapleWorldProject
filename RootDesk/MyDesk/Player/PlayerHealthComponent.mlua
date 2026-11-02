@@ -35,7 +35,7 @@ script PlayerHealthComponent extends Component
 	end
 
 	@ExecSpace("ServerOnly")
-	method integer ResolveIncomingDamage(integer damage, Entity attacker)
+	method integer ResolveIncomingDamage(number damage, Entity attacker)
 		-- 네이티브 후보의 HitEvent 전에 같은 실행의 최종 피해만 반환한다.
 		local player = self.Entity.PlayerComponent
 		if not isvalid(player) or player:IsDead() or player.Hp <= 0 or not isvalid(attacker) then return 0 end
