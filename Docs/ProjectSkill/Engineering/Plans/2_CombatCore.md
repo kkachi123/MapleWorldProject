@@ -1,6 +1,6 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-10-29. QA-F01 수정본의 독립 QA2를 마쳤다(수치 PASS). 독립 리뷰·사용자 V11·CF-F07의 실제 연출 평가는 남아 단계 완료가 아니다.
+> 갱신: 2026-11-02. REV-F01 수정본(coder 커밋 6614b20 / Bundle 1ac324e6…9de4)의 독립 QA3 수치 PASS, 독립 리뷰 WAITING. 사용자 V11·CF-F07 실제 연출 평가·V12 외부 환경이 남아 단계 완료가 아니다.
 > 원본: [GameDesign §4](../GameDesign.md#4-조작과-전투) · [로드맵 2단계](../DevelopmentRoadmap.md) · [완료한 1단계](../Features/1_MovementInput.md).
 > 재개 시 msw-planning의 resume·build-management와 [팀 계약](../../ChatRoles/README.md)을 따른다. 이 프로젝트는 기존 GameDesign/로드맵/Plans/Features/WorkRecords 체계를 유지한다.
 
@@ -118,7 +118,7 @@ UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결
 
 ## 6. 실행 단계·요구 ID
 
-상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 작성 후 coder 기본 검증을 수집했으나 독립 확인 전이므로 🟡를 유지한다. P06은 통합 기본 검증을 시작했으며 독립 QA·리뷰·사용자 V11이 남아 🟡다. 상세 근거와 미실시는 WorkRecord 개발 절을 따른다.
+상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 coder 기본 검증과 독립 QA·리뷰 근거가 있으나 P06의 사용자 확인이 남아 🟡를 유지한다. P06은 통합 기본 검증·독립 QA(3회차까지)·독립 리뷰(2026-11-02 WAITING)를 마쳤으며 사용자 V11·CF-F07 실제 연출·V12 외부 환경이 남아 🟡다. 상세 근거와 미실시는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)를 따른다.
 
 | 순서·ID | 산출물·의존성 | 상태 |
 | --- | --- | --- |
@@ -132,7 +132,7 @@ UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결
 
 요구 매핑: R01 예고/대응, R02 방어·피해 단일 적용, R03 수동 반격 보너스, R04 슬로우, R05 그로기, R06 DataSet·보정 경계, R07 구별 가능한 표시, R08 입력·정지·중단·전투 격리 보존.
 
-실제 제품 구현이 시작되면 WorkRecords/CombatCoreWorkRecord.md 하나에 coder→tester→reviewer의 실행 근거를 순차 기록한다. run에는 원본 링크·승인·버전·담당 식별자·상태만 두며 명세/QA 원장을 복제하지 않는다. 코드를 썼을 때 즉시 해당 P항목을 🟡로, 필수 검증을 마친 항목만 ✅로 바꾼다.
+제품 구현의 실행 근거는 [CombatCoreWorkRecord](../WorkRecords/CombatCoreWorkRecord.md) 하나에 coder→tester→reviewer 순으로 기록한다. run에는 원본 링크·승인·버전·담당 식별자·상태만 두며 명세/QA 원장을 복제하지 않는다. 코드를 썼을 때 즉시 해당 P항목을 🟡로, 필수 검증을 마친 항목만 ✅로 바꾼다.
 
 ## 7. 확인 기준
 
@@ -164,7 +164,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - msw-general/references/dataset.md·authoring.md: DataSet/CSV 적용·등록·검증. 구조 파일을 바꾸면 builder-protocol과 대상별 model/map/ui 참조도 읽기.
 - msw-ui-system의 component-api.md·runtime-patterns.md: CombatScreen 표시/소유 클라이언트. 새 자원이 실제 필요할 때만 msw-search·msw-sprite-ruid 사용.
 
-현재 다음 담당은 reviewer다. 2026-10-29 coder 수정본의 독립 QA2를 마쳤고 같은 52파일 지문 전후 일치·최종 map01/edit·사용 종료를 확인했다. QA-F01 수치 재시험 PASS와 대표 경계의 근거/한계는 WorkRecord QA2절을 따른다. 이전 2026-10-25 QA는 당시 버전/실행 범위의 근거로 구분한다. V11·CF-F07의 실제 연출 평가·기존 외부 NOT_RUN은 미완료다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이다.
+현재 AI 담당 작업은 없고 다음은 사용자 V11 직접 확인이다(2026-11-02 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
 
 ## 9. Plan 변경 이력
 
@@ -197,3 +197,5 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - coder 실제 기본 검증(Play 내부 서버 프로브, 실제 키 입력 아님): AttackDamage 12.7에서 무가드·특수=12, 일반·패링 실패 가드=5, 유효 패링·저스트=0의 HP delta/TotalDamage/Damages 합계 일치, 기본12 가드4/특수12/성공0 회귀 일치. 새 Bundle·상세 근거는 WorkRecord 2026-11-02 절을 따른다.
 - 다음은 새 버전의 독립 tester→reviewer다. §11~§12의 이전 QA/QA2는 당시 버전 근거이며 이 수정 경로에 그대로 적용된다고 표시하지 않는다. P01b~P06 🟡 유지, CF-F07·V11·V12 외부 NOT_RUN 미완료, 단계 완료·3단계 진행 아님.
 - 독립 tester 3회차(2026-11-02, Bundle 1ac324e6…9de4 전후 52/52 일치): 12.7의 무가드·특수=12, 일반·패링실패 가드=5, 유효 패링·저스트=0과 기본12 회귀(가드4/특수12/성공0), QA-F01 몬스터 처치 상한·사망1회·후속 제외 수치 PASS. 대표 가드·회피는 실제 키 입력, 창 안 패링/저스트 성공은 서버 프로브(실제 입력 성공은 시험 한정 창 확대)다. 상세·한계는 [WorkRecord QA 기록](../WorkRecords/CombatCoreWorkRecord.md#qa-기록). P01b~P06 🟡 유지, V11·CF-F07 연출·V12 외부 미완료.
+- 독립 리뷰(2026-11-02, 대상 6614b20, [WorkRecord 리뷰 기록](../WorkRecords/CombatCoreWorkRecord.md#리뷰-기록)): **WAITING**. REV-F01 해소·범위 밖 제품 변경 없음. 남은 필수는 V11·CF-F07 실제 연출·V12 외부 환경. DOC-01 현황·링크 동기화는 2026-11-02 planner가 정리했다.
+- 범위 밖 관찰(새 규칙·ID 아님): 플레이어 쪽 피해의 남은 HP 상한 부재(D02상 결함 아님)와 사망 직후 플레이어 HP 문자가 음수로 보일 가능성(화면 미관찰). V11 때 사용자가 함께 보고, 처리 여부는 3단계(플레이어 HP 0 종료·승패) 계획 후보로만 남긴다.

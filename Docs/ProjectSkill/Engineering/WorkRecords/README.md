@@ -55,7 +55,7 @@ Maker 담당 기록은 자동 잠금 장치가 아니다. 과거 모드를 현�
 ## 현재 기록
 
 - MovementInput: 2026-10-20 V08 수락으로 완료·이관해 임시 기록을 정리했다. 현재 결과는 [1단계 Feature](../Features/1_MovementInput.md).
-- CombatCore: [2단계 Plan](../Plans/2_CombatCore.md)의 규칙 결정 대기. 실제 구현 시작 시 CombatCoreWorkRecord.md를 생성한다.
+- [CombatCore](CombatCoreWorkRecord.md): [2단계 Plan](../Plans/2_CombatCore.md)의 개발·QA·리뷰 근거. 2026-11-02 독립 리뷰 WAITING, 사용자 V11 확인이 남아 유지한다.
 - [CombatFoundation](CombatFoundationWorkRecord.md): [기존 후속 확인 Plan](../Plans/CombatFoundation.md) 재개 근거.
 
 최신 상태는 각각의 Plan/WorkRecord를 확인한다. 파일 삭제·단계 전환 시 이 목록과 ChatRoles의 연결도 정리한다.
