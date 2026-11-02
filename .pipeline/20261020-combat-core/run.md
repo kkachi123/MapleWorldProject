@@ -1,12 +1,12 @@
 # 20261020-combat-core
 
-- 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다.
-- 모드: 승인된 2단계 구현·검증 재개
-- 상태: REVIEWING
-- 갱신: 2026-10-29 / 메인 조율 채팅
-- 현재 담당: reviewer /root/combat_core_reviewer_v2 (독립 실행)
-- 다음 행동·대기 사유: 독립 QA2 실제 종료·동일 버전·Maker edit/사용종료 확인. reviewer가 승인 기준·actual source·새 QA 및 미실시를 대조하고 다음 담당/사용자 확인을 분류한다.
-
+- 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
+- 모드: 승인된 2단계 REV-F01 수정 회차(구현·검증·재검토)
+- 상태: CODING
+- 갱신: 2026-11-02 / 메인 조율 채팅(Claude Code)
+- 현재 담당: coder msw-coder (독립 실행, Maker 단독 사용)
+- 다음 행동·대기 사유: msw-coder REV-F01 최소 수정·기본 검증·Maker edit 인계 → msw-tester → msw-reviewer → 리뷰 확정 후 msw-planner DOC-01.
+- 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
 - 1단계 결과: [MovementInput Feature](../../Docs/ProjectSkill/Engineering/Features/1_MovementInput.md)
@@ -79,3 +79,13 @@
 
 - 독립 QA2 종료: 실제 변경·회귀 수치 PASS와 대표 입력/시간경계 보완·최종edit/사용종료 반환 확인. 제품52/52일치·V11/연출/외부환경미완료. 원문은WorkRecord QA2.
 - reviewer_v2 전달: tester 종료 및 메인 지문재대조 후 collaboration.spawn_agent /root/combat_core_reviewer_v2 실제호출. actual source/요구/QA/미실시 검토만, Maker제어없음.
+
+- 2026-10-29 reviewer_v2 실제 종료: WorkRecord 리뷰 절 CHANGES_REQUIRED — CombatCore-REV-F01, 별도 CombatCore-DOC-01(planner). 이후 사용자가 개발을 일시정지했고(ClaudeSetup.md), 실행 환경을 Claude Code로 옮겼다.
+
+## 2026-11-02 일시정지 해제·REV-F01 수정 회차 재개
+- 승인: 사용자 "/ship 2단계 CombatCore 일시정지를 해제하고 REV-F01 수정 회차를 재개해줘." 기준은 Plan D02/R02/V02와 WorkRecord 2026-10-29 리뷰의 REV-F01 최소 수정 범위. 순서 planner(범위 확인만)→msw-coder→msw-tester→msw-reviewer, 리뷰 확정 뒤 DOC-01은 msw-planner. 규칙·수치 변경·3단계 진행 금지, V11은 사용자 직접 확인으로 남긴다.
+- 실행 환경: Claude Code 데스크톱 Code 탭, 메인 Opus 5.5/high. 담당은 .claude/agents의 msw-planner·msw-coder·msw-tester·msw-reviewer를 Agent 도구로 순차 호출(각각 독립 실행). 이전 /root/... collaboration 작업자는 Codex 실행 근거로만 보존.
+- 연결 확인(메인, 읽기 전용): maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186 일치. msw-mcp mlua_api_retriever("AttackComponent") 결과 정상. 메인은 이후 Maker를 제어하지 않는다. 새 Play/QA 결과가 아니다.
+- 기준 버전: 2026-10-29 52파일 Bundle e8a20728…a49(리뷰 대상). 저장소 기준 커밋 ad89cf3.
+- planner 범위 확인(msw-planner 실제 종료, 문서 무수정): REV-F01은 D02 "합성 뒤 정수 내림" 미구현으로 승인 범위 안, 새 규칙·수치·사용자 결정 불필요. 편집 범위 MonsterAttackComponent.mlua:134 호출의 선내림 제거, PlayerHealthComponent.mlua:38 인자 number화(:45 유일 최종 floor 유지). 플레이어 쪽 HP 상한 부재는 이번 범위 밖 관찰로 reviewer 판단에 남김.
+- coder 전달: msw-coder 호출. tester/reviewer 미호출.
