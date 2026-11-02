@@ -2,23 +2,25 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 REV-F01 수정 회차(구현·검증·재검토)
-- 상태: REVIEWING
+- 상태: WAITING_USER
 - 갱신: 2026-11-02 / 메인 조율 채팅(Claude Code)
-- 현재 담당: reviewer msw-reviewer (독립 실행, Maker 제어 없음)
-- 다음 행동·대기 사유: msw-reviewer가 6614b20 변경·QA3(13fe548)·미실시를 대조 → 리뷰 확정 후 msw-planner DOC-01.
+- 현재 담당: 사용자 (V11 직접 확인)
+- 다음 행동·대기 사유: 사용자 V11 직접 확인(PC·모바일, 사망 직후 HP 문자 포함). V12 외부 환경·CF-F07 연출 미완료. 2단계 완료·3단계 시작은 사용자 결정, 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
 - 1단계 결과: [MovementInput Feature](../../Docs/ProjectSkill/Engineering/Features/1_MovementInput.md)
 - 2단계 Plan: [2_CombatCore](../../Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), D01~D04 / R01~R08 / P01~P06 / V01~V12.
 - 2단계 WorkRecord: [CombatCoreWorkRecord](../../Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md).
-- 구현 결과: WorkRecord의 P01b~P05와 2026-10-29 QA-F01 수정 개발절. 과거 독립 QA와 새 수정본의 QA를 구분하며 현재 리뷰 결과는 없음.
+- 구현 결과: WorkRecord의 P01b~P05, 2026-10-29 QA-F01 수정 개발절, 2026-11-02 coder REV-F01 수정·기본 검증 인계 절.
+- 테스트 결과: WorkRecord "2026-11-02 독립 QA 3회차 — REV-F01"(대상 6614b20). QA1·QA2는 이전 버전 근거.
+- 리뷰 결과: WorkRecord "2026-11-02 독립 리뷰 — WAITING"(대상 6614b20). 2026-10-29 CHANGES_REQUIRED는 이전 버전 근거.
 
 ## 실행·인계
-- 대상 버전: 2026-10-29 / 52파일 Bundle SHA-256 e8a20728629878e7ac584065a9c80b9a8a7149b6f05e8fb9a04a2d1906329a49. 최신 manifest는 WorkRecord 2026-10-29 개발절. 메인 byte 재확인 52/52 일치, 기존 대비 제품1파일 변경.
-- 실행 주체: 메인 /root. 과거 독립 planner/coder_v3/tester 및 현재 coder_v4/tester_v2는 실제 collaboration 실행. reviewer 이전 전달 기록은 있으나 완료 결과 없음.
-- Maker: 2026-10-29 tester_v2 actual Stop→다음Play baseline→최종Stop/map01-edit·사용종료 반환. reviewer와 메인은 제어하지 않는다.
-- 전달·완료: 1단계 사용자 V08 수락·종료 정리 완료. 2단계 P01a 완료, 제품 구현·기본 검증 및 과거 QA 완료. 새 수정본 독립 QA 진행 중이며 리뷰·사용자 V11 미완료.
+- 대상 버전: 2026-11-02 coder 커밋 6614b20 / 52파일 Bundle SHA-256 1ac324e61f5668a43fb5d0232399aa75299322bbb59143c8cb70080f080d9de4. manifest는 WorkRecord 2026-11-02 개발절. tester·reviewer 52/52 재계산 일치, 이전 e8a20728…a49 대비 제품 2파일 변경.
+- 실행 주체: 2026-11-02부터 메인 Claude Code(Opus 5.5) + Agent 도구의 msw-planner·msw-coder·msw-tester·msw-reviewer 독립 실행. 2026-10-29까지의 /root/... 작업자는 Codex collaboration 실행 근거.
+- Maker: 2026-11-02 msw-tester 최종 Stop→다음Play baseline→Stop/map01-edit·사용종료 반환, 메인 읽기 전용 재조회 edit 확인. reviewer·planner·메인은 제어하지 않는다.
+- 전달·완료: 1단계 사용자 V08 수락·종료 정리 완료. 2단계 REV-F01 수정·독립 QA3·독립 리뷰(WAITING) 결과 확인. DOC-01 완료, 사용자 V11·CF-F07 연출·V12 외부 미완료.
 
 ## 사용자 규칙 응답
 - Gate: combat-core-rules-20261020-01 (선택 화면은 표시용, 결정 원본은 사용자 답변과 Plan).
@@ -94,3 +96,7 @@
 - tester 전달: msw-tester 호출. reviewer 미호출.
 - tester 실제 종료(msw-tester): 같은 Bundle 1ac324e6…9de4 전후 52/52 일치, 제품 무수정. 4개 기준 수치 PASS·FAIL 없음, 상세는 WorkRecord "2026-11-02 독립 QA 3회차 — REV-F01". QA 커밋 13fe548. 메인 두 파일 해시 재대조 일치, maker_get_current_map=map01/edit 확인(읽기 전용). Maker 사용 종료.
 - reviewer 전달: msw-reviewer 호출. Maker 제어·제품 수정 없음.
+- reviewer 실제 종료(msw-reviewer): WAITING. REV-F01 해소, 범위 밖 변경 없음. 플레이어 HP 상한 부재는 범위 밖 관찰(새 ID 없음). 리뷰 커밋 0c1717b.
+- planner 전달: msw-planner DOC-01. 제품·Maker 무관.
+- planner 실제 종료(msw-planner): DOC-01 문서만 동기화, 규칙·수치·기준·P 상태 무변경. 커밋 아래 [plan]. 남은 메인 확인: Plans/CombatFoundation.md 19행 F07 "미실시" 표시(대상 목록 밖이라 미수정, 사용자에게 보고).
+- 이번 회차 AI 담당 종료. Maker는 map01/edit, 사용 중인 담당 없음.
