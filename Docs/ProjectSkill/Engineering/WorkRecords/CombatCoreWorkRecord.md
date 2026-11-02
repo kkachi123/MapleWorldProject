@@ -140,6 +140,33 @@
 
 ## 리뷰 기록
 
+### 2026-11-02 독립 리뷰 — WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절과 tester QA3의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다.
+- 검토 버전: coder 커밋 6614b20 / 52파일 Bundle 1ac324e61f5668a43fb5d0232399aa75299322bbb59143c8cb70080f080d9de4. reviewer가 2026-11-02 manifest 52행을 작업 트리·6614b20·13fe548 각각에서 byte SHA-256으로 재계산해 52/52 일치·Bundle 동일을 확인했다. 6614b20~1(eedeefb)에서는 두 파일만 달라 이전 Bundle e8a20728…a49가 재현된다. eedeefb..HEAD 제품 변경은 아래 두 .mlua뿐이고 나머지는 run/Plan/WR/EnvGuides 문서다. 두 .codeblock은 내용 변경 없음(Refresh 시각만 갱신).
+- 판정: **WAITING**. CombatCore-REV-F01은 해소됐다(코드·QA3 근거 충족). 현재 승인 범위의 AI 측 필수 근거는 충족됐으나 사용자 직접 확인 V11과 CF-F07 실제 연출 평가, V12 외부 환경이 필수로 남는다. DOC-01은 planner 문서 정리로 남는다(제품·재검증 불요). 이 판정은 단계 완료·3단계 진행 승인이 아니다.
+
+#### CombatCore-REV-F01 — 해소 확인
+- 실제 소스: MonsterAttackComponent.mlua:134 `ResolveIncomingDamage(self.AttackDamage, attacker)`로 number 원값을 넘기고, PlayerHealthComponent.mlua:38 인자가 `number damage`, :45 `math.max(0, math.floor(damage * result.rate))`가 유일한 내림이다. D02 "합성 뒤 정수 내림·음수 0 제한"과 일치한다. 호출자는 :134 하나(Grep), 반환 integer·@ExecSpace("ServerOnly")·native CalcDamage 서명(@ExecSpace 없음) 유지, AttackDamage는 PrepareAttack에서 finite·비음수 검증 그대로다.
+- 범위 밖 변경 없음: diff는 두 파일 각 1줄이며 EvaluateDefense/IsInWindow·PlayerCombatComponent.CalcDamage(QA-F01 상한)·MonsterHealth·DataSet·기본 AttackDamage=12는 byte 불변이다.
+- QA3 대응(2026-10-29 리뷰의 독립 재검증 항목): 12.7 무가드=12·특수 무가드=12·특수+가드 홀드=12, 일반 가드=5·실패 패링 가드=5(창 밖 두 시점+실제 DownArrow), 유효 패링=0·유효 저스트=0, 기본12 무가드12/가드4/특수+가드12/패링0/저스트0, QA-F01 HP5·Weapon10 처치 5/5/5·DEAD 1회, HP25 10·10·5 합25·후속 제외를 같은 Bundle의 native AttackFast→CalcDamage→HitEvent·HP에서 HP delta=TotalDamage=Damages 합계로 확인했다. 항목 누락 없음.
+- 실제 입력 범위의 충분성: 이번 결함은 방어 판정 결과(rate) 뒤 합성·내림 위치뿐이며, 성공 rate=0은 창 폭과 무관하게 0으로 내림된다. .2초 창 경계 코드(IsInWindow)는 byte 불변이고 경계 직전/정확/안/공격시점/직후는 QA1 V03(당시 동일 함수 내용)의 근거 범위다. QA3는 (A) 서버 프로브로 .2창 안 시작(hit-.103s 패링, 잔여 .12s 이하 저스트)의 PARRY/JUST 0피해를, (B) 실제 DownArrow/RightArrow/LeftArrow로 입력→상태→판정→피해 경로를 확인했고 (B)의 성공 창 .9는 Play 내부 시험 값으로 명시·Stop 폐기·기준값 재확인됐다. REV-F01 수락에는 충분하다. 손 타이밍 .2초 성공의 체감·가독성은 AI로 대신하지 않으며 V11에 남는다. 실제 입력 저스트 성공은 범위 밖 이동이라 native 이벤트 없음(HP 0)이고 범위 안 JUST 0피해는 (A)가 덮는다.
+
+#### 플레이어 쪽 남은 HP 상한 부재 — 결함 아님(범위 밖 관찰)
+- 관찰: 플레이어 HP5에 12.7 무가드 → Hp 5→-7, delta 12, HitEvent 12, Damages 12, DEAD 1회(QA3). QA1 V08 특수12 HP5→-7도 같은 동작이다.
+- 분류 근거: V02/R02의 문자 기준은 "최종 HP 감소=HitEvent 합계=피해 숫자, 네이티브 HP 한 번 적용"이며 플레이어 쪽은 PlayerComponent.Hp가 0에서 clamp되지 않아 세 값이 12로 일치한다. QA-F01은 MonsterHealth가 이벤트 뒤 0으로 clamp해 감소5≠이벤트10이 된 경우라 성격이 다르다. D02는 "합성 뒤 내림·음수 0"만 정하고 남은 HP 상한 규칙을 두지 않는다. 따라서 승인 요구상 결함이 아니고 새 ID를 만들지 않는다. 상한을 추가하면 새 규칙이 되어 승인 범위 밖이다.
+- 남는 점(현재 진행 차단 아님): CombatHpBarController.mlua:26이 `tostring(math.floor(current))`라 사망 직후 플레이어 HP 문자가 "-7 / 최대"로 보일 수 있다(막대 비율은 :24에서 0 clamp). 실제 화면 관찰은 이번 근거에 없다. 표시를 0으로 맞출지·피해를 남은 HP로 상한할지는 사용자/planner 판단 사항이며, GameDesign §4의 "플레이어 HP 0이면 한 판 종료"·승패는 3단계 범위다. V11 평가 때 사용자가 확인하거나 3단계 계획에서 다룬다.
+
+#### 이전 근거·미실시 표시 대조
+- QA2(e8a20728…a49)·2026-10-29 리뷰·QA1(8be49440…e21)은 Plan §13·WR 머리·QA3에서 이전 버전 근거로만 표시돼 있고 이번 PASS로 다시 세지 않았다. QA3의 "나머지 V01~V12 회귀 재실행 안 함"은 두 파일 외 byte 불변을 근거로 명시돼 있다.
+- 미실시가 PASS로 위장되지 않음: V11, CF-F07 연출, V12 외부(두 사용자·비전투 몬스터·다른 맵), 실제 mouse/touch, 손 입력 .2창 성공은 coder·QA3·Plan §13에 NOT_RUN/미완료로 남아 있다. 플레이어 사망 경계는 "경계만"으로 별도 표시됐다.
+- 문서 불일치(DOC-01에 포함): Plan 머리 3행("갱신 2026-10-29… 독립 리뷰 남음")과 §8 167행("다음 담당 reviewer, QA2"), WR "현재 재개 지점" 10행(e8a20728 기준 reviewer 대기)이 현재 상태와 다르다. 2026-10-29 리뷰가 든 DevelopmentRoadmap.md:13·:45·:103, WorkRecords/README.md:58, ChatRoles/README.md:37(당시 :36) "WorkRecord 생성 예정"도 그대로다. run.md 15·18~21행(리뷰 결과 없음·대상 버전 e8a20728)은 메인 담당이다.
+
+#### 다음 행동
+1. planner(msw-planner): CombatCore-DOC-01 — 위 현황·날짜·버전·링크만 Plan/WR 원본에 맞춘다. QA-F01 과거 FAIL→QA2 PASS, REV-F01→QA3 PASS 연결, CF-F07 수치/연출 분리, P01b~P06 🟡 유지. 규칙·검증 기준·단계 순서 변경과 결과 전문 복제 없음. 제품·Maker 변경이 없으므로 coder/tester 재실행은 필요 없다.
+2. 메인: run 상태·대상 버전 줄을 6614b20/1ac324e6…9de4와 이 리뷰 판정으로 갱신.
+3. 사용자 V11: PC·모바일에서 예고 방향/속성·.20초 체감·저스트/패링/반격 준비·소비·슬로우/어지러움·피격/die·키/버튼/터치 혼합·화면 잘림·음향을 직접 평가. 이때 플레이어 사망 직후 HP 문자 표시도 보면 된다. 새 규칙·수치 요구가 생기면 관련 D/R/V만 planner로 재검토한다.
+4. 외부 대기: V12 실제 두 사용자·비전투 몬스터·다른 맵 환경, CF-F03/CombatPause-F01 실제 맵 전환, 기기/음향·재시작·배포·성능 후속 ID는 기존 추적 유지. Plan/WR/run 보존, 3단계 자동 시작 없음.
+
 ### 2026-10-29 독립 리뷰 — CHANGES_REQUIRED
 - 담당: /root/combat_core_reviewer_v2. coder_v4→tester_v2 실제 종료 뒤 별도 실행. Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음. 아래 런타임 근거는 해당 개발/QA 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다.
 - 검토 버전: 52파일 Bundle SHA-256 e8a20728629878e7ac584065a9c80b9a8a7149b6f05e8fb9a04a2d1906329a49. reviewer도 manifest의 52/52 byte와 Bundle 일치를 확인했다. QA2는 같은 버전, 이전 QA는 당시 조건/무변경51파일 범위로만 유지됐다.
