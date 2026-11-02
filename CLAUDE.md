@@ -27,3 +27,24 @@ ship 스킬은 네 담당을 아래 프로젝트 에이전트(`.claude/agents/`)
 - 안전 지점에서 멈추고 담당은 `WAITING_ENV`로 메인에 반환한다. 메인은 `Docs/ProjectSkill/EnvGuides/`에 직접 해결 가이드를 쓰고, run이 있으면 상태를 `WAITING_ENV`로 바꾼 뒤 사용자에게 알린다.
 - 사용자가 해결했다고 말하기 전에는 재개하지 않는다. 재개할 때는 가이드의 해결 확인 호출을 먼저 실행한다.
 - 토큰·키 같은 비밀값은 가이드·run·채팅에 적지 않는다.
+
+# git 커밋·push 기준
+
+원격: `origin` = https://github.com/kkachi123/MapleWorldProject (Public), 브랜치 `main` 하나. 사용자가 2026-11-02 아래 기준의 커밋·push를 상시 승인했다.
+
+- **커밋은 메인 채팅만 한다.** 서브 에이전트(msw-*)는 commit·push를 하지 않는다. 메인이 담당의 실제 종료와 산출물을 확인한 뒤 그 결과를 한 커밋으로 묶는다.
+- **커밋 시점과 범위**
+
+  | 시점 | 포함 | 메시지 머리 |
+  | --- | --- | --- |
+  | planner 종료 | Plan·GameDesign·로드맵 변경 | `[{FeatureKey}][plan]` |
+  | coder 종료(Maker 편집 모드 인계 확인 후) | 제품 파일(.mlua·Maker 생성 .codeblock/.directory·빌더로 만든 .model/.map/.ui·DataSet)·WorkRecord 개발 절·Plan 상태 | `[{FeatureKey}][code]` |
+  | tester 종료 | WorkRecord QA 절·Plan 확인 상태(제품 변경 없음) | `[{FeatureKey}][qa]` |
+  | reviewer 종료 | WorkRecord 리뷰 절 | `[{FeatureKey}][review] {판정}` |
+  | 메인 조율 | run.md·EnvGuides·운영 문서·에이전트/설정 | `[ops]` |
+
+- **버전 고정:** coder 커밋 해시를 tester·reviewer의 대상 버전으로 쓰고, WorkRecord와 run에 기존 바이트 지문과 함께 적는다.
+- **커밋하지 않는 상태:** Play 중, 편집이 반쯤 된 상태, `WAITING_ENV` 중의 미완성 제품 변경. run에만 기록하고 다음 정상 종료 시점에 커밋한다. 사용자가 직접 바꾼 파일은 해당 범위가 아니면 커밋에 섞지 않고 알린다.
+- **메시지 본문:** run-id, 요구/결함 ID, 실제 실행한 검증과 미실시를 짧게 적고 마지막 줄에 Co-Authored-By 서명을 붙인다.
+- **push:** 위 기준의 커밋은 바로 `origin main`에 push한다. 공개 저장소이므로 push 전마다 커밋 대상에서 토큰·키·개인정보(이메일·로컬 사용자 경로)를 검사하고, 하나라도 걸리면 push하지 않고 멈춘다. 강제 push·이력 재작성·다른 브랜치 push는 사용자 요청 없이 하지 않는다.
+- `.gitignore`의 비밀값·개인 설정·런타임 제외와 `.gitattributes`의 `* -text`(바이트 보존)를 유지한다.
