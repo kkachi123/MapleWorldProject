@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-02 / 최신: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로, 독립 tester 대기). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-02 / 최신: 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -27,6 +27,67 @@
 제품 구현 완료 기록 없음. coder는 제품 편집 전 사전 문맥·소유자 점검 단계에서 중단됐다. 구현 ledger도 아직 생성되지 않았다. MapBuilder 읽기는 map01 id=0a0972ef-ad23-4e24-af63-afbd53120c1d, TileMapMode=0을 확인했다. 실제 Maker 연결/모드·런타임 검증은 조회 거절로 미확인이다. 사용자 재개 명령 후 실제 변경 범위와 환경을 확인해 이어간다.
 
 ## QA 기록
+
+### 2026-11-02 독립 QA 4회차 — V11-F01~F05
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA/QA2/QA3의 PASS는 이번 실행으로 세지 않았다.
+- 대상: coder 커밋 1447ff8 / 54경로 Bundle SHA-256 d2b578021b563a54a2a2d5ff4370a7a6b1cb79bf3fa1718b36f8bc5b332c0fbb. 시험 전·후 54/54 byte 일치(Bundle 재계산 동일, git status 제품 변경 없음). 계산은 coder 절의 manifest·방법을 그대로 썼다.
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId 970621b29ba945369d3dc8e90c301186. 기준 build 로그 80건 모두 Info(오류·경고 0). Play context server_main/client. Maker 로그 시각 23:09~23:22. TileMapMode는 기존 기록(0)을 따르며 이번에 MapBuilder를 다시 읽지 않았다.
+- 실행 방식 구분: (B) 실제 입력 = maker_keyboard_input(LeftArrow/RightArrow/DownArrow/UpArrow 실제 키 이벤트), maker_mouse_input(UI 버튼 누름·홀드). (A) 서버 프로브 = maker_execute_script로 패턴 목록을 단일 행으로 교체해 `StateComponent:ChangeState("ATTACK")`로 공격 시작, 플레이어 GUARD는 서버 `ChangeState("GUARD")`(패링 창 안 시점 맞춤), 저스트 회피는 `PlayerEvadeComponent:SetEvading`+`EvadeDirection`, 피격·사망은 `HitComponent:OnHit`(네이티브 HitEvent 경로), 팝업은 클라이언트 `_UIPopup:Open/Close`, 슬로우는 `MonsterStateControl:ApplySlow`. 판정(EvaluateDefense)·피해·그로기 진입·복귀·클립 전환·칸 표시는 모두 제품 경로이며 프로브는 시작 트리거와 관찰만 맡았다. 클라이언트에서는 AnimationClipEvent(clip 이름과 ActionSheet RUID), 칸 컴포넌트(AttackAreaMarkComponent._T.shown), TelegraphCells 동기값, 로컬 플레이어 상태를 폴링해 기록했다.
+- 시험 한정 값(모두 Play 내부, Stop으로 폐기, 다음 Play 기준값 확인): AttackInterval 9999, 패링 창 0.9(DownArrow 실제 홀드 패링), 반격 창 6초·그로기 4초/9초, 슬로우 0.02배·60초(칸·팝업 화면 확인용), 몬스터 HP·시험용 즉사 피해 999. 중간 복원 후 사용했다.
+
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| F05 뒤 회피형 (normal/special/parry.left) Pos1(x=-1.50) 실제 LeftArrow 홀드, 서버 상태 MOVE | B+A | 3패턴 모두 판정 순간 plx=-1.50 / pst=MOVE, 네이티브 피격 없음, HUD feedback=EVADE, HP 감소 0 / HitEvent 합계 0 | PASS |
+| F05 앞 회피형 (normal/special/parry.right) 같은 조건 | B+A | 3패턴 모두 네이티브 피격 있음, kind HIT, HP 감소 12 / HitEvent 12 | PASS(기대 HIT) |
+| F05 가드형 (normal.guard, parry.guard) 같은 조건 | B+A | 두 패턴 HIT, HP 감소 12 / 12(가드 없음) | PASS(기대 HIT) |
+| F05 예고 시작 뒤 방향 전환 | B(실제 RightArrow·LeftArrow, 서버가 MOVE 수락 순간 정확히 시작) | normal.right+RightArrow → 판정 시 x=+1.50, EVADE, HP 0 / 0. normal.left+LeftArrow → x=-1.50, EVADE, HP 0 / 0. 플레이어 Scale.x는 모든 이동에서 1.0 그대로라 시작 시 Scale 기준 검증과 판정 콜라이더가 어긋날 여지가 관측되지 않았다 | PASS |
+| F05 UI 버튼 경로 | B(실제 mouse 홀드) | 뒤 버튼 누름(ButtonState Pressed)→클라이언트 MOVE→normal.left 판정 시 x=-1.50, EVADE, HP 0 / 0. 앞 버튼 누름은 x=1.50 MOVE·복귀 확인. 가드 버튼 누름은 GUARD 진입·해제 확인 | PASS(아래 좌표 관찰 별도) |
+| F05 입력→서버 수락 지연(키·UI 공통) | B | 클라이언트 MOVE 진입 시각 대비 서버 MOVE 관측 시각 차 0.065~0.079초(키 3회, UI 1회, 서로 다른 시계라 지시용 값, 샘플 타이머 0.01초 포함). 수백 ms 단위 지연은 관측되지 않음 | PASS(지시 수준) |
+| F02 패링 → 복귀 → 그로기 1.5초 → IDLE | B(실제 DownArrow 홀드 + 패링 창 0.9) | 시작 x=3.00 → 판정 PARRY 피해 0, 판정 순간 x≈0.0~0.1 → 복귀 중 상태 ATTACK(isStunned false, 별 표시 없음, jump=true) → 복귀 완료 시점에 x=3.00 STUN, GroggyRemaining 1.50, stun 진입 로그 FinishAttack 호출 → 1.5초 뒤 IDLE. 그로기 길이는 전투 시계 1.50/1.51초. 접촉 시 추가 타격 없음 | PASS |
+| F02 반격 창 | B+A | 성공 시점(clock 344.493)부터 until 346.493 = 2.0초. 복귀 시간만큼 그로기 구간이 줄고 창 종료 시 CounterReady false | PASS |
+| F02 다음 공격 Home 시작 | A | 그로기 종료 IDLE 위치 x=3.00(Home)이고, 이후 시작한 모든 공격이 x=3.00에서 시작(x=2.90 점프 시작) | PASS |
+| F02 복귀 중 슬로우 | A | 복귀 중 슬로우(2초 ×0.5) 적용 → STUN 진입이 판정 후 +0.90초(0.1초 정상 + 나머지 0.4 가 두 배)로 늘어남. 그로기 deadline은 진입+1.5로 슬로우와 무관(맵 전투 시간), IDLE까지 1.51초 | PASS |
+| F02 복귀 중 팝업 | A(실제 _UIPopup) | 복귀 중 x=1.23에서 정지, 약 11초 동안 clock·x 불변(server paused=true). Close 뒤 복귀를 이어 가 x=3.00 STUN(deadline=재개 후 복귀 완료+1.5), 반격 창은 전투 시간만 흘렀다 | PASS |
+| F02 복귀 중 피격 | A(OnHit 5) | 서버 상태 ATTACK 유지(HIT 아님), HP 100→95, 복귀 계속 후 STUN 진입. 클라이언트에는 HIT 클립 이벤트가 한 번 나온다(아래 관찰) | PASS(서버 규칙) / 관찰 있음 |
+| F02 복귀 중 사망 | A(OnHit 999) | 즉시 DEAD, STUN·그로기 진입 없음(isStunned false, stunDeadline -1), 별·칸 없음, 이후 2.5초 resolutionCount 변화 없음 | PASS |
+| F02 복귀 중 Stop | B(실제 maker_stop) | 팝업으로 정지된 복귀 중(x=1.25) Stop → 다음 Play에서 몬스터 IDLE, stunned false, GroggyRemaining 0, ParryEffect (0,0,0), pause false, counter false, 칸 000, 규칙 기본값 | PASS |
+| F04 STUN 동안 hit 클립 | A(제품 STUN 진입 경로) | STUN 진입 순간 클라이언트 AnimationClipEvent clip=stun ruid=aec950…(주황버섯 ActionSheet hit와 같은 RUID)를 패링 시험 매 회(9회) 관측. 복귀 중에는 stun 클립이 나오지 않았다(clip=jump는 서버 SetVisualClip 경로, 이벤트 없음) | PASS |
+| F04 종료 후 stand | A | 그로기 만료 IDLE에서 clip=stand ruid=96e955…를 매 회 관측 | PASS |
+| F04 그로기 중 피격 | B(실제 UpArrow)+A | 실제 UpArrow 공격 10타(반격 factor 2.2) 중 서버 상태 STUN 유지·GroggyRemaining 계속 감소·deadline 만료 시 IDLE, HP 100→80. 클라이언트는 로컬 상태 HIT가 되며 clip=hit ruid=aec950…(stun RUID와 동일)가 한 번 발생. RUID가 같아 화면 클립 변화는 없으나 같은 클립이 다시 재생(처음부터)되는지는 로그로 구분 못 함 | PASS(RUID 근거) / 재생 재시작 NOT_RUN |
+| F04 사망 시 die 우선 | A | 예고 중·복귀 중·그로기 중 사망 모두 clip=hit 직후 같은 프레임에 clip=die ruid=65a2bf…, 최종 DEAD, isStunned false(별 제거) | PASS |
+| F01 8패턴 칸 = 서버 영역 | A+자연 공격 | TelegraphCells(서버)·클라이언트 칸 표시 일치: left 3패턴 011, right 3패턴 110, guard 2패턴 111(서버 영역 left -0.5~2.0, right -2.0~0.5, guard -2.0~2.0). 처음 자연 공격 13회(칸·영역 로그)에서도 동일. 칸은 동기값 수신 1프레임(≈0.03초) 뒤 켜짐 | PASS |
+| F01 예고~판정 사이 유지, 판정 뒤 꺼짐 | A+B | 각 공격에서 TelegraphCells 설정과 같은 프레임대에 칸 on, 판정 직후 sync 비워지면 칸 off(0.03초 이내) | PASS |
+| F01 슬로우 | A | 슬로우 0.02배로 예고가 25초로 늘어나도 칸 011이 계속 켜짐, 슬로우 0.5배에서 예고 0.5→1.0초 | PASS |
+| F01 팝업 | A(실제 _UIPopup) | 예고 중 팝업: TelegraphRemaining 1.51→1.458(정지 반영 직전 값), 3초 동안 변화 없음·칸 011 유지·몬스터 위치 불변. Close 뒤 같은 실행이 이어져 칸 유지(rem 0.21) | PASS |
+| F01 사망 | A | 예고 0.23초 시점 사망: 서버 TelegraphCells·Response 비움, snapshot nil, 판정(Resolve) 없음, 클라이언트 칸 011→000(0.03초), 상태 DEAD | PASS |
+| F01 Stop | B | 복귀 정지 중 Stop 뒤 새 Play에서 칸 표시 000(클라이언트 _T.shown 3칸 false) | PASS(예고 중 Stop 단독 시험은 없음, 복귀·정지 중 Stop과 Stop→재Play 기준값으로 확인) |
+| F01 스크린샷 칸 위치·색 | B | 예고 중(slow 시험값) 558×314 캡처에서 normal.left(011) 때 BattlePos2·3 위치에 반투명 빨강/주황 사각이 보이고 BattlePos1에는 없음. 몬스터 높이대와 맞음. 마크 3개 컴포넌트 값 pos x=-1.5/0/1.5, y=0.98, scale 25(1.0×1.0), MapLayer0 order 1 확인 | PASS(저해상도, 색·가독성 평가는 V11) |
+| F03 패링 성공에만 접촉 파티클 1회 | A+B | PARRY 판정마다 `parry effect serial=N x=0.0 y=0.981` 한 번씩(패링 9회: serial 1,3,5,7,9,11,13,14,18, 별 serial과 짝 번호) 관측. GUARD(HP 4), 저스트 JUST, 일반 HIT(8패턴 포함)에서는 parry effect 로그와 그로기가 없었다 | PASS |
+| F03 별 크기·높이 표시 | B | 그로기 9초 시험 중 캡처에서 몬스터 위쪽에 작은 청색 점/스파크가 희미하게만 보임(높이는 머리 위로 넉넉). 크기·가시성은 이 해상도에서 판정 불가 | NOT_RUN(육안 판정은 V11 사용자) |
+| F03 접촉 파티클 육안 | - | 순간 효과라 도구 왕복 시간 안에 캡처하지 못함. 로그(재생 serial)만 근거 | NOT_RUN(육안은 V11) |
+| F03 팝업·사망·Stop 뒤 잔존 | A+B | 그로기 중 사망 시 isStunned false(별 제거 경로), 복귀 중 팝업 뒤 Stop → 재Play 기준 ParryEffect (0,0,0)·별 없음. 시각 잔존은 로그·상태값 근거, 화면 확인 없음 | PASS(상태·로그 근거) |
+| 회귀 V01 | A+B | 8패턴 예고↔영역 일치(F01 행), HUD feedback 문구 EVADE/HIT/GUARD/PARRY/JUST가 판정과 일치 | PASS(대표) |
+| 회귀 V02 | A+B | HP 감소=HitEvent 합계: 무가드 12/12(앞 회피·가드형 12회), 가드 4/4, 패링·저스트·뒤 회피 0/0. 가드 12×0.4=4.8→4 | PASS |
+| 회귀 V03 | A+B | 패링 창 0.2 안(판정 0.086~0.10초 전 가드 시작) PARRY, 창 밖(1.0초 전 홀드) GUARD, 저스트 RIGHT 0.09초 전 SetEvading JUST(슬로우 1회), 다른 방향·전부 범위 밖 EVADE 0피해 | PASS(대표 경계, 전체 경계 열 재실행 아님) |
+| 회귀 V04 | B | 패링 뒤 실제 UpArrow: manual cast count=10 factor=2.2, 즉시 CounterReady false(소비), HP 100→80. 창이 끝난 뒤 UpArrow는 factor=1 | PASS(대표) |
+| 회귀 V05 | A | 슬로우 시 예고 0.5→1.0초, 복귀 +0.9초, 그로기는 맵 전투 시간 1.5초. 슬로우 만료 후 IDLE 정상 | PASS(대표) |
+| 회귀 V06 | B+A | 그로기 중 피격에서 서버 STUN 유지·조기 해제 없음·deadline 만료로 IDLE | PASS(대표) |
+| 회귀 V07 | A | 예고 중·복귀 중 팝업 정지·재개 | PASS(대표) |
+| 회귀 V08 | A+B | 예고·복귀·그로기 중 사망, 복귀 중 Stop→재Play 기준 확인. 플레이어 사망·다른 맵 전환은 실행하지 않음 | PASS(대표) |
+| 회귀 V09 | - | 이번 Play마다 `catalog ready rules=1 patterns=8` 로드, CSV 변경 시험 없음 | PASS(로드만) / CSV 변경 NOT_RUN |
+| 회귀 V10 | B | 실제 Left/Right/Down/Up 키, 실제 mouse로 뒤·앞·가드·공격 버튼 | PASS(대표) |
+| V11(사용자 직접) / V12 외부 / CF-F07 연출 | - | 실행하지 않음 | NOT_RUN |
+
+#### 관찰·시험 오류 분리
+- UI 버튼 좌표 관찰: 뒤·앞 버튼은 시뮬레이터에서 UI 좌표상 중심(790/1130, y 110~180 및 x=760~790 구간 반복 시도)에서 ButtonStateChange(Pressed)가 오지 않았고 x=805·1115, y=170에서만 Pressed가 왔다. 가드(960,180)·공격(960,340)은 중심에서 정상이다. 앞서 QA1도 첫 버튼 가장자리 무반응을 좌표 조건으로 기록했다. 제품 결함인지 시뮬레이터 좌표 재매핑 때문인지 이번 근거로 구분하지 못했다. 사용자 실기기(V11)에서 좌·우 버튼 전체 면적이 눌리는지 확인이 필요하다. 이것으로 F05 UI 경로 PASS를 취소하지 않았다(누름이 입력되면 판정까지 정상).
+- 클라이언트 HIT 신호: 복귀 중·그로기 중 피격에서 서버 상태는 ATTACK/STUN을 유지하지만 클라이언트 로컬 상태가 HIT가 되고 clip=hit가 발생한다. 그로기 중에는 hit와 stun RUID가 같아 화면이 같고 복귀 중에는 jump 클립이 hit 클립으로 바뀔 수 있다(이 변경 이전부터 있는 구조, 이번 변경으로 새로 생긴 것으로 판단하지 않음). 화면 확인은 하지 않았으며 reviewer·사용자 판단 대상이다.
+- 시험 오류(제품 오류 아님): (1) 첫 G 회차는 이전 snapshot 잔존으로 트리거 시각이 어긋나 무효, 같은 조건을 snapshot 시퀀스 확인으로 고쳐 G2로 다시 실행한 결과만 사용했다. (2) V4 첫 회차는 서버 GUARD 상태 중 UpArrow가 입력돼 거부되어(factor 로그 없음) 무효, 그로기 구간에 맞춰 V4b로 재실행했다. (3) 첫 저스트 프로브는 EvadeDirection을 SetEvading 앞에 줘서 방향이 초기화돼 HIT, 순서를 고쳐 JU2에서 JUST를 확인했다. (4) J2(예고 중 사망) 첫 결과는 로그를 읽기 전에 clear_logs를 호출해 잃었고, 새 몬스터로 같은 조건을 A 회차로 다시 실행한 결과만 사용했다. (5) 시험 시작 시 clear_logs를 호출해 이전 Play의 normal 로그 36건이 지워졌고(사용자 로그 보존 대상 확인 없이 호출함) 이후 회차 사이에도 호출했다. build 로그는 지우지 않았다.
+- 제품 runtime 오류·경고 로그는 관측되지 않았다.
+- 사망 직후 반격 권한(CounterReady)은 사망 직후 로그에 true였다가 2.0초 창이 끝난 뒤 false였다. 사망 시점에 즉시 소멸하는지는 이번에 구분하지 못했다(사망은 PlayerCombatComponent.ClearCounter 호출 경로가 RefreshDuelPlayer에 있어 소스상 소멸 예정, 로그로는 미확인).
+
+#### 사용 종료
+- 모든 키·마우스 up. 서버·클라이언트 프로브 타이머는 완료 시 해제, 나머지는 Stop으로 폐기. 시험값(AttackInterval, 패턴 목록, 규칙 창, 슬로우, HP)은 Play 내부뿐이며 Stop→재Play에서 기준값(interval 3.0, dmg 12, patterns 8, 규칙 .2/.4/2.0/2.2/1.5/2.0×0.5, HP 100, pause false)을 확인했다. 최종 maker_stop 성공, maker_get_current_map map01 / edit, Maker 사용 종료. 시험 후 54/54 동일 Bundle d2b57802…0fbb.
+- 다음은 독립 reviewer: 위 PASS/NOT_RUN과 실행 방식 구분(A 서버 프로브 vs B 실제 입력)·한계를 같은 Bundle에서 대조한다. 사용자 V11에서 F01~F04 체감, 별·접촉 파티클 가시성, 좌·우 UI 버튼 전체 면적, 복귀 중 피격 화면을 확인한다.
 
 ### 2026-11-02 독립 QA 3회차 — REV-F01
 - 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA/QA2의 PASS를 이번 실행으로 세지 않았다.
