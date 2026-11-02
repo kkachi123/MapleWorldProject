@@ -1,0 +1,28 @@
+@Component
+script PlayerGuardComponent extends Component
+
+	@HideFromInspector
+	property boolean isGuarding = false
+	@HideFromInspector
+	property number guardStartTime = -1
+
+	@ExecSpace("ServerOnly")
+	method void SetGuarding(boolean isHeld)
+		-- 서버 상태 진입에서만 가드 시작 시각을 기록한다.
+		if isHeld and not self.isGuarding then
+			local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+			self._T.combat = combat
+			self.guardStartTime = isvalid(combat) and combat:GetCombatTime() or -1
+		end
+		self.isGuarding = isHeld
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		self.isGuarding = false
+		self.guardStartTime = -1
+		self._T.combat = nil
+	end
+
+end

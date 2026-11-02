@@ -1,0 +1,115 @@
+@Component
+script OrangeMushroomAttack extends MonsterAttackMotion
+
+	property number JumpHeight = 0.8
+	property number JumpDuration = 0.5
+	@HideFromInspector
+	property Vector2 Home = Vector2(0, 0)
+	@HideFromInspector
+	property boolean HomeCaptured = false
+	@HideFromInspector
+	property boolean JumpActive = false
+	@HideFromInspector
+	property number JumpStartX = 0
+	@HideFromInspector
+	property number JumpTargetX = 0
+	@HideFromInspector
+	property number JumpStartTime = 0
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- 모션 수명 동안 같은 맵 전투 시계를 재사용한다.
+		self._T.pause = self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		self._T.control = self.Entity:GetComponent("script.MonsterStateControl")
+	end
+
+	@ExecSpace("ServerOnly")
+	method number JumpToLocalX(number targetLocalX)
+		-- Preserve the authored arc, rejecting an unready or invalid motion.
+		if not self.HomeCaptured or self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then return -1 end
+		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return -1 end
+		self.JumpStartX = self.Entity.TransformComponent.Position.x
+		self.JumpTargetX = targetLocalX
+		self.JumpStartTime = self._T.control:GetActionTime()
+		self.JumpActive = true
+		self:SetVisualClip("jump")
+		return self.JumpDuration
+	end
+
+	@ExecSpace("ServerOnly")
+	method number PerformAttackMotion(Entity target)
+		-- Convert the target world X to this entity's parent-local X.
+		if not isvalid(target) then return -1 end
+		local transform = self.Entity.TransformComponent
+		local targetLocalX = transform.Position.x + target.TransformComponent.WorldPosition.x - transform.WorldPosition.x
+		return self:JumpToLocalX(targetLocalX)
+	end
+
+	@ExecSpace("ServerOnly")
+	method number PerformReturnMotion()
+		-- Reuse the same arc to the captured home.
+		return self:JumpToLocalX(self.Home.x)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CompleteMotion()
+		-- The timer and update loop converge on one exact endpoint.
+		if not self.JumpActive then return end
+		self.JumpActive = false
+		local body = self.Entity.RigidbodyComponent
+		if isvalid(body) then body:SetPosition(Vector2(self.JumpTargetX, self.Home.y)) end
+		self:SetVisualClip("stand")
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CancelMotion()
+		-- Never write stand over HIT or DEAD while cancelling.
+		self.JumpActive = false
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- Only an active ATTACK owns continuous arc updates.
+		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return end
+		local body = self.Entity.RigidbodyComponent
+		if not isvalid(body) then return end
+		if not self.HomeCaptured then
+			if body:IsOnGround() then
+				local position = self.Entity.TransformComponent.Position
+				self.Home = Vector2(position.x, position.y)
+				self.HomeCaptured = true
+			end
+			return
+		end
+		if not self.JumpActive then return end
+		local state = self.Entity.StateComponent
+		if not isvalid(state) or state.CurrentStateName ~= "ATTACK" then
+			self:CancelMotion()
+			return
+		end
+		local t = math.max(0, (self._T.control:GetActionTime() - self.JumpStartTime) / self.JumpDuration)
+		if t >= 1 then
+			self:CompleteMotion()
+			return
+		end
+		local x = self.JumpStartX + (self.JumpTargetX - self.JumpStartX) * t
+		local y = self.Home.y + 4 * self.JumpHeight * t * (1 - t)
+		body:SetPosition(Vector2(x, y))
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- Entity teardown must stop any remaining arc.
+		self:CancelMotion()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- A motion is meaningful only inside its original map.
+		self:CancelMotion()
+		self.HomeCaptured = false
+		self._T.pause = nil
+		self._T.control = nil
+	end
+
+end

@@ -1,0 +1,71 @@
+@Component
+script PlayerHealthComponent extends Component
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- HP/사망 적용은 기존 네이티브 PlayerComponent가 소유한다.
+		self._T.guard = self.Entity:GetComponent("script.PlayerGuardComponent")
+		self._T.evade = self.Entity:GetComponent("script.PlayerEvadeComponent")
+	end
+
+	method boolean IsInWindow(number started, number hitTime, number window)
+		-- 승인한 양 끝 경계를 포함하며 공격 이후 입력은 소급하지 않는다.
+		return started >= 0 and started >= hitTime - window and started <= hitTime
+	end
+
+	@ExecSpace("ServerOnly")
+	method table EvaluateDefense(string response, string attribute, number hitTime, table rules)
+		-- 공격 실행마다 범위 안팎과 무관하게 수락 입력을 한 번 판정한다.
+		local result = { kind = "HIT", rate = 1, success = false }
+		local guard = self._T.guard
+		local evade = self._T.evade
+		local state = self.Entity.StateComponent
+		if isvalid(guard) and guard.isGuarding and isvalid(state) and state.CurrentStateName == "GUARD" then
+			if attribute == "PARRY" and self:IsInWindow(guard.guardStartTime, hitTime, rules.ParryWindowSec) then
+				result = { kind = "PARRY", rate = 0, success = true }
+			elseif attribute ~= "SPECIAL" then
+				result = { kind = "GUARD", rate = rules.GuardDamageRate, success = false }
+			end
+		elseif (response == "LEFT" or response == "RIGHT") and isvalid(evade) and evade.EvadeDirection == response
+			and self:IsInWindow(evade.evadeStartTime, hitTime, rules.JustWindowSec) then
+			result = { kind = "JUST", rate = 0, success = true }
+		end
+		self._T.defenseEvaluations = (self._T.defenseEvaluations or 0) + 1
+		return result
+	end
+
+	@ExecSpace("ServerOnly")
+	method integer ResolveIncomingDamage(integer damage, Entity attacker)
+		-- 네이티브 후보의 HitEvent 전에 같은 실행의 최종 피해만 반환한다.
+		local player = self.Entity.PlayerComponent
+		if not isvalid(player) or player:IsDead() or player.Hp <= 0 or not isvalid(attacker) then return 0 end
+		local attack = attacker:GetComponent("script.MonsterAttackComponent")
+		local result = isvalid(attack) and attack:GetDefenseResult(self.Entity) or nil
+		if result == nil then return 0 end
+		local amount = math.max(0, math.floor(damage * result.rate))
+		self._T.lastResolvedDamage = amount
+		self._T.lastResolvedKind = result.kind
+		self._T.hitCalls = (self._T.hitCalls or 0) + 1
+		return amount
+	end
+
+	@ExecSpace("ServerOnly")
+	@EventSender("Self")
+	handler HandleHitEvent(HitEvent event)
+		-- 확인용 합계도 네이티브 이벤트를 읽기만 하며 HP를 차감하지 않는다.
+		self._T.hitEventTotal = (self._T.hitEventTotal or 0) + event.TotalDamage
+		self._T.hitEventCount = (self._T.hitEventCount or 0) + 1
+	end
+
+	@ExecSpace("ServerOnly")
+	@EventSender("Self")
+	handler HandleStateChangeEvent(StateChangeEvent event)
+		-- 사망하면 이전 방어 입력과 반격 기회를 폐기한다.
+		if event.CurrentStateName ~= "DEAD" then return end
+		if isvalid(self._T.guard) then self._T.guard:SetGuarding(false); self._T.guard.guardStartTime = -1 end
+		if isvalid(self._T.evade) then self._T.evade:SetEvading(false); self._T.evade.evadeStartTime = -1; self._T.evade.EvadeDirection = "" end
+		local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+		if isvalid(combat) then combat:ClearCounter() end
+	end
+
+end

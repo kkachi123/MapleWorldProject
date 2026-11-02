@@ -1,0 +1,127 @@
+@Component
+script MonsterStateControl extends Component
+
+	property number AttackInterval = 3.0
+	@HideFromInspector property number attackTimer = 0
+	@Sync property number SlowRemaining = 0
+	@Sync property number ActionRate = 1
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- 기존 FSM과 맵 시계에 적 전용 진행 시계만 연결한다.
+		self._T.state = self.Entity.StateComponent
+		self._T.health = self.Entity:GetComponent("script.MonsterHealthComponent")
+		self._T.attack = self.Entity:GetComponent("script.MonsterAttackComponent")
+		self._T.pause = self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		self._T.actionClock = 0
+		self._T.slowUntil = -1
+		self._T.slowFrom = -1
+		self._T.slowRate = 1
+		if isvalid(self._T.pause) then
+			self._T.lastClock = self._T.pause:GetCombatTime()
+			self._T.pause:FreezeMonster(self.Entity)
+		end
+		self._T.lastAIClock = 0
+		if isvalid(self._T.state) then
+			self._T.state:AddState("ATTACK", Monster_Attack)
+			self._T.state:AddState("DEFENSE", Monster_Defense)
+			self._T.state:AddState("STUN", Monster_Stun)
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method number GetActionTime()
+		-- 슬로우 시작·만료 경계를 나눠 적분해 배율 변경 시 진행량이 점프하지 않는다.
+		local pause = self._T.pause
+		if not isvalid(pause) then return self._T.actionClock or 0 end
+		local now = pause:GetCombatTime()
+		local previous = self._T.lastClock or now
+		local elapsed = math.max(0, now - previous)
+		local slowed = math.max(0, math.min(now, self._T.slowUntil or -1) - math.max(previous, self._T.slowFrom or -1))
+		self._T.actionClock = (self._T.actionClock or 0) + elapsed - slowed * (1 - (self._T.slowRate or 1))
+		self._T.lastClock = now
+		return self._T.actionClock
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ApplySlow(number duration, number rate)
+		-- 현재 상대에게만 효과를 갱신하고 플레이어·UI·오디오 배율은 건드리지 않는다.
+		local attack = self._T.attack
+		local pause = self._T.pause
+		if not isvalid(attack) or not isvalid(attack:GetDuelPlayer()) or not isvalid(pause) or pause.IsPaused then return end
+		if not _CombatRuleCatalog:IsFinite(duration) or duration < 0 or not _CombatRuleCatalog:IsFinite(rate) or rate <= 0 or rate > 1 then return end
+		self:GetActionTime()
+		local renderer = self.Entity.SpriteRendererComponent
+		if not isvalid(renderer) then return end
+		local baseRate = self._T.savedPlayRate
+		if baseRate == nil then baseRate = renderer.PlayRate end
+		if not _CombatRuleCatalog:IsFinite(baseRate) or baseRate < 0 then return end
+		local now = pause:GetCombatTime()
+		self._T.slowFrom = now
+		self._T.slowUntil = now + duration
+		self._T.slowRate = rate
+		self._T.savedPlayRate = baseRate
+		self.SlowRemaining = duration
+		self.ActionRate = duration > 0 and rate or 1
+		renderer.PlayRate = baseRate * (duration > 0 and rate or 1)
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore slow applied clock=" .. tostring(now) .. " duration=" .. tostring(duration) .. " rate=" .. tostring(rate) .. " action=" .. tostring(self._T.actionClock)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearCombatEffects()
+		-- 대결 종료·사망·이탈은 적 배율과 대기 진행을 정리한다.
+		self:GetActionTime()
+		local renderer = self.Entity.SpriteRendererComponent
+		if self._T.savedPlayRate ~= nil and isvalid(renderer) then renderer.PlayRate = self._T.savedPlayRate end
+		self._T.savedPlayRate = nil
+		self._T.slowUntil = -1
+		self._T.slowFrom = -1
+		self._T.slowRate = 1
+		self.SlowRemaining = 0
+		self.ActionRate = 1
+		self.attackTimer = 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- 공격 대기와 모션은 적 진행을, 효과 만료는 맵 전투 시간을 읽는다.
+		local pause = self._T.pause
+		if not isvalid(pause) then return end
+		local actionNow = self:GetActionTime()
+		local elapsed = math.max(0, actionNow - (self._T.lastAIClock or actionNow))
+		self._T.lastAIClock = actionNow
+		local now = pause:GetCombatTime()
+		self.SlowRemaining = math.max(0, (self._T.slowUntil or -1) - now)
+		if self.SlowRemaining <= 0 and self._T.savedPlayRate ~= nil then
+			local renderer = self.Entity.SpriteRendererComponent
+			if isvalid(renderer) then renderer.PlayRate = self._T.savedPlayRate end
+			self._T.savedPlayRate = nil
+			self.ActionRate = 1
+		end
+		if pause.IsPaused then return end
+		local state = self._T.state
+		local health = self._T.health
+		if not isvalid(state) or not isvalid(health) or health.IsDead or health.Hp <= 0 then return end
+		if not isvalid(self._T.attack) or not isvalid(self._T.attack:GetDuelPlayer()) or not _CombatRuleCatalog:EnsureInitialized() then return end
+		if state.CurrentStateName ~= "IDLE" then return end
+		self.attackTimer = self.attackTimer + elapsed
+		if self.attackTimer >= self.AttackInterval then
+			self.attackTimer = 0
+			state:ChangeState("ATTACK")
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 이전 맵의 시계와 효과 참조를 해제한다.
+		self:ClearCombatEffects()
+		self._T.pause = nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- 세션 종료 시 복원 가능한 값만 돌려놓는다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

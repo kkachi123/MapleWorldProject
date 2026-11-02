@@ -1,0 +1,52 @@
+@Component
+script AttackRangeTuner extends Component
+
+	@ExecSpace("ClientOnly")
+	method void OnBeginPlay()
+		-- 엔티티/로직 수명의 참조와 시작 상태를 초기화한다.
+		if Environment:IsMakerPlay() and self.Entity == _UserService.LocalPlayer then
+			self._T.combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+		end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 현재 수명의 변경값만 처리한다.
+		if not Environment:IsMakerPlay() or self.Entity ~= _UserService.LocalPlayer then return end
+		local combat = self._T.combat
+		if not isvalid(combat) or not combat.SkillDataReady then return end
+		local offset = combat.attackOffset
+		local width = combat.AttackRangeWidth
+		local height = combat.AttackRangeHeight
+		local previous = self._T.previous
+		if previous ~= nil and (previous.x ~= offset.x or previous.y ~= offset.y or previous.width ~= width or previous.height ~= height) then
+			self:PushToServer(offset, width, height)
+		end
+		if previous == nil or previous.x ~= offset.x or previous.y ~= offset.y or previous.width ~= width or previous.height ~= height then
+			self._T.previous = {x = offset.x, y = offset.y, width = width, height = height}
+		end
+	end
+
+	@ExecSpace("Server")
+	method void PushToServer(Vector2 offset, number width, number height)
+		-- 단일 플레이어여도 배포 환경의 임의 범위 변경은 허용하지 않는다.
+		if not Environment:IsMakerPlay() then return end
+		local player = self.Entity.PlayerComponent
+		if not isvalid(player) or senderUserId ~= player.UserId then return end
+		if offset.x ~= offset.x or offset.y ~= offset.y or width ~= width or height ~= height then return end
+		if math.abs(offset.x) == math.huge or math.abs(offset.y) == math.huge or width == math.huge or height == math.huge then return end
+		if width <= 0 or height <= 0 then return end
+		local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+		if not isvalid(combat) or not combat.SkillDataReady then return end
+		combat.attackOffset = offset
+		combat.AttackRangeWidth = width
+		combat.AttackRangeHeight = height
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		self._T.previous = nil
+	end
+
+end

@@ -1,0 +1,73 @@
+@Logic
+script PlayerSkillEffectTable extends Logic
+
+	property any skillTable = nil
+	property table skillCache = {}
+	property table warned = {}
+
+	method boolean EnsureInitialized()
+		-- Logic/Component 시작 순서에 의존하지 않고 첫 사용 때 테이블을 확보한다.
+		if not isvalid(self.skillTable) then
+			self.skillTable = _DataService:GetTable("AttackSkillData")
+		end
+		return isvalid(self.skillTable)
+	end
+
+	method void WarnOnce(string key)
+		-- 같은 데이터 오류는 세션에서 한 번만 알린다.
+		if self.warned[key] then return end
+		self.warned[key] = true
+		log_warning("[PlayerSkillEffectTable] " .. key)
+	end
+
+	method any GetSkillRow(string skillName)
+		-- 초기화 순서와 무관하게 기존 데이터 행을 조회한다.
+		if not self:EnsureInitialized() then
+			self:WarnOnce("AttackSkillData unavailable")
+			return nil
+		end
+		local row = self.skillTable:FindRow("name", skillName)
+		if row == nil then self:WarnOnce("missing skill: " .. skillName) end
+		return row
+	end
+
+	method any GetSkillData(string skillName)
+		-- 기존 행을 검증하고 정상화한 읽기 전용 설정을 재사용한다.
+		if self.skillCache[skillName] ~= nil then return self.skillCache[skillName] end
+		local row = self:GetSkillRow(skillName)
+		if row == nil then return nil end
+		local data = { name = skillName, ruid = row:GetItem("ruid") }
+		local columns = {"Damage", "AttackCount", "FrameCount", "AttackOffsetX", "AttackOffsetY", "AttackRangeWidth", "AttackRangeHeight"}
+		for _, column in ipairs(columns) do
+			local value = tonumber(row:GetItem(column))
+			if value == nil or value ~= value or math.abs(value) == math.huge then
+				self:WarnOnce("invalid " .. skillName .. "." .. column)
+				return nil
+			end
+			data[column] = value
+		end
+		if data.ruid == "" or data.Damage < 0 or data.AttackCount < 1
+			or data.AttackCount ~= math.floor(data.AttackCount) or data.FrameCount <= 0
+			or data.AttackRangeWidth <= 0 or data.AttackRangeHeight <= 0 then
+			self:WarnOnce("invalid attack settings: " .. skillName)
+			return nil
+		end
+		self.skillCache[skillName] = data
+		return data
+	end
+
+	method string GetEffectRuid(string skillName)
+		-- 검증한 스킬의 기존 시각 효과를 반환한다.
+		local data = self:GetSkillData(skillName)
+		if data == nil then return "" end
+		return data.ruid
+	end
+
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self.skillTable = nil
+		self.skillCache = {}
+		self.warned = {}
+	end
+
+end

@@ -1,0 +1,281 @@
+@Component
+script PlayerCombatComponent extends AttackComponent
+
+	property string SkillName = "player.basic"
+	@TargetUserSync
+	property number SkillDamage = 1
+	@TargetUserSync
+	property number SkillAttackCount = 1
+	@TargetUserSync
+	property Vector2 attackOffset = Vector2(0, 0)
+	@TargetUserSync
+	property number AttackRangeWidth = 1
+	@TargetUserSync
+	property number AttackRangeHeight = 0.5
+	@TargetUserSync
+	property number SkillEffectDuration = 0.78
+	@TargetUserSync
+	property boolean SkillDataReady = false
+	property number HitInterval = 0.045
+	property boolean ShowAttackRangeGizmo = true
+	property number WeaponAttack = 1
+	property number frameDelaySeconds = 0.06
+	@TargetUserSync property boolean CounterReady = false
+	@TargetUserSync property number CounterRemaining = 0
+	@TargetUserSync property string DefenseFeedback = ""
+	@TargetUserSync property integer DefenseFeedbackSequence = 0
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- 엔티티/로직 수명의 참조와 시작 상태를 초기화한다.
+		self._T.attackId = 0
+		self._T.hitDeadlines = {}
+		local controller = self.Entity.PlayerControllerComponent
+		if isvalid(controller) then controller.LookDirectionX = 1 end
+		self:LoadSkillData()
+		if Environment:IsMakerPlay() then log("[VRF] PlayerCombat ready=" .. tostring(self.SkillDataReady)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method Entity GetOpponent()
+		-- 맵의 단일 소유자가 수락한 현재 상대만 사용한다.
+		local map = self.Entity.CurrentMap
+		if self._T.managerMap ~= map or not isvalid(self._T.manager) then
+			self._T.managerMap = map
+			local entity = isvalid(map) and map:GetChildByName("MonsterManager", false) or nil
+			self._T.manager = isvalid(entity) and entity:GetComponent("script.MonsterManager") or nil
+		end
+		if not isvalid(self._T.manager) then return nil end
+		return self._T.manager:GetOpponent(self.Entity)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RecordDefense(string kind)
+		-- 확정 결과의 표시만 갱신하며 성공 자체로 공격하지 않는다.
+		if not self:IsAlive() then return end
+		self.DefenseFeedback = kind
+		self.DefenseFeedbackSequence = self.DefenseFeedbackSequence + 1
+	end
+
+	@ExecSpace("ServerOnly")
+	method void GrantCounter(Entity monster, table rules)
+		-- 유효 성공은 중첩 없이 다음 수동 시전의 권한과 만료만 갱신한다.
+		if not self:IsAlive() or self:GetOpponent() ~= monster then return end
+		local pause = self:GetPauseController()
+		if not isvalid(pause) or pause.IsPaused then return end
+		self._T.bonusTarget = monster
+		self._T.bonusUntil = pause:GetCombatTime() + rules.CounterWindowSec
+		self._T.bonusMultiplier = rules.CounterDamageMultiplier
+		self.CounterReady = true
+		self.CounterRemaining = rules.CounterWindowSec
+		self._T.counterGranted = (self._T.counterGranted or 0) + 1
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore counter granted until=" .. tostring(self._T.bonusUntil) .. " factor=" .. tostring(self._T.bonusMultiplier)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearCounter()
+		-- 이전 상대·사망·만료의 기회를 지연 콜백으로 복원하지 않는다.
+		self.CounterReady = false
+		self.CounterRemaining = 0
+		self._T.bonusTarget = nil
+		self._T.bonusUntil = nil
+		self._T.bonusMultiplier = nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method void UpdateCounter()
+		-- 보너스 지속은 적 배율이 아닌 정지 가능한 맵 전투 시간을 따른다.
+		if not self.CounterReady then return end
+		local pause = self:GetPauseController()
+		if not self:IsAlive() or not isvalid(pause) or self:GetOpponent() ~= self._T.bonusTarget then self:ClearCounter(); return end
+		local remaining = (self._T.bonusUntil or -1) - pause:GetCombatTime()
+		if remaining <= 0 then self:ClearCounter(); return end
+		self.CounterRemaining = remaining
+	end
+
+	method any GetPauseController()
+		-- 맵이 바뀔 때만 전투 시계 참조를 다시 연결한다.
+		local map = self.Entity.CurrentMap
+		if self._T.pauseMap ~= map or not isvalid(self._T.pause) then
+			self._T.pauseMap = map
+			self._T.pause = nil
+			if isvalid(map) then self._T.pause = map:GetComponent("script.CombatPauseComponent") end
+		end
+		return self._T.pause
+	end
+
+	method number GetCombatTime()
+		-- 판정 시작 시각을 같은 맵의 전투 시계로 읽는다.
+		local pause = self:GetPauseController()
+		if not isvalid(pause) then return -1 end
+		return pause:GetCombatTime()
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean LoadSkillData()
+		-- 검증한 기존 행의 전투 수치를 서버에서 적용한다.
+		self.SkillDataReady = false
+		if not _CombatRuleCatalog:EnsureInitialized() then return false end
+		local data = _PlayerSkillEffectTable:GetSkillData(self.SkillName)
+		if data == nil then return false end
+		self.SkillDamage = data.Damage
+		self.SkillAttackCount = data.AttackCount
+		self.attackOffset = Vector2(data.AttackOffsetX, data.AttackOffsetY)
+		self.AttackRangeWidth = data.AttackRangeWidth
+		self.AttackRangeHeight = data.AttackRangeHeight
+		self.SkillEffectDuration = data.FrameCount * self.frameDelaySeconds
+		self._T.loadedName = self.SkillName
+		self._T.effectRuid = data.ruid
+		self.SkillDataReady = true
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean IsAlive()
+		-- 서버의 플레이어 생존 여부를 확인한다.
+		if not isvalid(self.Entity) then return false end
+		local player = self.Entity.PlayerComponent
+		return isvalid(player) and not player:IsDead() and player.Hp > 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean DoAttack()
+		-- 수락된 ATTACK의 수치·판정·효과를 고정하고 개별 타격을 예약한다.
+		if not self:IsAlive() or self._T.activeAttack then return false end
+		local pause = self:GetPauseController()
+		if not isvalid(pause) or pause.IsPaused then return false end
+		local state = self.Entity.StateComponent
+		if not isvalid(state) or state.CurrentStateName ~= "ATTACK" then return false end
+		if not self.SkillDataReady or self._T.loadedName ~= self.SkillName then
+			if not self:LoadSkillData() then return false end
+		end
+		local opponent = self:GetOpponent()
+		if not isvalid(opponent) or not _CombatRuleCatalog:IsFinite(self.WeaponAttack) or self.WeaponAttack < 0 then return false end
+		local interval = self.HitInterval
+		if interval < 0 or interval ~= interval or interval == math.huge then return false end
+		local now = pause:GetCombatTime()
+		local bonus = self.CounterReady and self._T.bonusTarget == opponent and now < (self._T.bonusUntil or -1)
+		local multiplier = bonus and self._T.bonusMultiplier or 1
+		self:CancelAttack()
+		self._T.activeAttack = true
+		local direction = self.Entity.PlayerControllerComponent.LookDirectionX
+		if direction == 0 then direction = 1 end
+		local position = self.Entity.TransformComponent.WorldPosition
+		local shape = BoxShape(Vector2(position.x + self.attackOffset.x * direction, position.y + self.attackOffset.y), Vector2(self.AttackRangeWidth, self.AttackRangeHeight), 0)
+		-- 타격 전체가 동일한 시전 스냅샷을 사용한다. 표시 간격과 실제 타격 간격은 독립이다.
+		self._T.cast = { map = self.Entity.CurrentMap, shape = shape, name = self.SkillName, damage = self.WeaponAttack * self.SkillDamage * multiplier, target = opponent, multiplier = multiplier }
+		self._T.hitsFired = 0
+		local count = math.floor(self.SkillAttackCount)
+		self._T.cast.count = count
+		local started = pause:GetCombatTime()
+		for i = 1, count do self._T.hitDeadlines[i] = started + (i - 1) * interval end
+		if bonus then
+			self._T.counterConsumed = (self._T.counterConsumed or 0) + 1
+			self:ClearCounter()
+		end
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore manual cast id=" .. tostring(self._T.attackId) .. " count=" .. tostring(count) .. " factor=" .. tostring(multiplier)) end
+		_EffectService:PlayEffect(self._T.effectRuid, self.Entity, position, 0, Vector3(-direction, 1, 1), false)
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- 보너스와 남은 타격은 각각 같은 맵 전투 시계로 갱신한다.
+		self:UpdateCounter()
+		if not self._T.activeAttack then return end
+		local pause = self:GetPauseController()
+		if not isvalid(pause) or pause.IsPaused then return end
+		local cast = self._T.cast
+		if cast == nil then return end
+		local id = self._T.attackId
+		local now = pause:GetCombatTime()
+		for index = self._T.hitsFired + 1, cast.count do
+			if self._T.cast ~= cast or id ~= self._T.attackId then return end
+			local due = self._T.hitDeadlines[index]
+			if due == nil or now < due then return end
+			self:ResolveScheduledHit(id, index)
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResolveScheduledHit(integer id, integer index)
+		-- 아직 유효한 동일 공격의 예약 타격만 실행한다.
+		if id ~= self._T.attackId or not self._T.activeAttack or not self:IsAlive() then return end
+		local pause = self:GetPauseController()
+		if not isvalid(pause) or pause.IsPaused or self._T.hitDeadlines[index] == nil then return end
+		local cast = self._T.cast
+		local state = self.Entity.StateComponent
+		if cast == nil or self.Entity.CurrentMap ~= cast.map or not isvalid(state) or state.CurrentStateName ~= "ATTACK" then return end
+		self._T.hitDeadlines[index] = nil
+		self._T.hitsFired = self._T.hitsFired + 1
+		self:AttackFast(cast.shape, cast.name, nil)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CancelAttack()
+		-- 이전 공격을 먼저 무효화한 뒤 모든 예약을 취소한다.
+		self._T.attackId = (self._T.attackId or 0) + 1
+		self._T.activeAttack = false
+		self._T.hitDeadlines = {}
+		self._T.cast = nil
+	end
+
+	method integer CalcDamage(Entity attacker, Entity defender, string attackInfo)
+		-- 보너스·기존 DEFENSE를 합성한 뒤 한 번만 내림해 HP와 숫자를 일치시킨다.
+		local cast = self._T.cast
+		if cast == nil or cast.name ~= attackInfo or cast.target ~= defender then return 0 end
+		local amount = cast.damage
+		local defense = defender:GetComponent("script.MonsterDefenseComponent")
+		if isvalid(defense) and defense.isDefending then
+			if not _CombatRuleCatalog:IsFinite(defense.DefenseRate) or defense.DefenseRate < 0 or defense.DefenseRate > 1 then return 0 end
+			amount = amount * defense.DefenseRate
+		end
+		local health = defender:GetComponent("script.MonsterHealthComponent")
+		if not isvalid(health) then return 0 end
+		local calculated = math.max(0, math.floor(amount))
+		self._T.lastFinalDamage = math.min(calculated, math.max(0, math.floor(health.Hp)))
+		if Environment:IsMakerPlay() and self._T.lastFinalDamage < calculated then
+			log("[VRF] CombatCore damage capped calculated=" .. tostring(calculated) .. " remainingHp=" .. tostring(health.Hp) .. " final=" .. tostring(self._T.lastFinalDamage))
+		end
+		return self._T.lastFinalDamage
+	end
+
+	method boolean IsAttackTarget(Entity defender, string attackInfo)
+		-- 시전 스냅샷의 상대가 여전히 현재 대결 상대일 때만 네이티브 후보를 허용한다.
+		local cast = self._T.cast
+		if cast == nil or defender ~= cast.target or not isvalid(defender) or defender.CurrentMap ~= self.Entity.CurrentMap then return false end
+		local pause = self:GetPauseController()
+		if not isvalid(pause) or pause.IsPaused or self:GetOpponent() ~= defender then return false end
+		local health = defender:GetComponent("script.MonsterHealthComponent")
+		if not isvalid(health) or health.IsDead or health.Hp <= 0 then return false end
+		return __base:IsAttackTarget(defender, attackInfo)
+	end
+
+	@ExecSpace("ServerOnly")
+	@EventSender("Self")
+	handler HandleStateChangeEvent(StateChangeEvent event)
+		-- 실제 상태 변경에 맞춰 이전 입력/공격을 정리한다.
+		if event.CurrentStateName ~= "ATTACK" then self:CancelAttack() end
+		if event.CurrentStateName == "DEAD" then self:ClearCounter() end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		self:CancelAttack()
+		self:ClearCounter()
+		self.DefenseFeedback = ""
+		self._T.pause = nil
+		self._T.pauseMap = nil
+		self._T.manager = nil
+		self._T.managerMap = nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self:CancelAttack()
+		self:ClearCounter()
+	end
+
+end

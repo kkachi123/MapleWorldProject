@@ -1,0 +1,27 @@
+@State
+script Monster_Stun extends StateType
+
+	method void OnEnter()
+		-- ChangeState가 클라이언트/서버 양쪽에서 이 훅을 실행시킬 수 있으므로, 서버 쪽 실행만 통과시킨다
+		-- (Monster_Attack/Monster_Defense와 동일한 패턴).
+		if not self.ParentComponent:IsServer() then return end
+		---@type MonsterStunComponent
+		local stun = self.ParentComponent.Entity:GetComponent("script.MonsterStunComponent")
+		if isvalid(stun) then
+			stun:SetStunned(true)
+			stun:BeginStunTimer()
+		end
+	end
+
+	method void OnExit()
+		-- 상태가 소유하던 예약과 동작을 해제한다.
+		if not self.ParentComponent:IsServer() then return end
+		---@type MonsterStunComponent
+		local stun = self.ParentComponent.Entity:GetComponent("script.MonsterStunComponent")
+		if isvalid(stun) then
+			stun:SetStunned(false)
+			stun:ClearStunTimer()
+		end
+	end
+
+end

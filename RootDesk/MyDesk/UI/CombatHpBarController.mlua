@@ -1,0 +1,93 @@
+@Logic
+script CombatHpBarController extends Logic
+
+	property UITransformComponent playerFillTransform = "4bde14d9-1b07-4507-bb0f-47bc4e21a28b"
+	property SpriteGUIRendererComponent playerFillImage = "4bde14d9-1b07-4507-bb0f-47bc4e21a28b"
+	property TextGUIRendererComponent playerLabel = "6ee6b176-95fd-4b38-8579-08e20a86ad0d"
+	property number playerFullWidth = 352
+	property UITransformComponent monsterFillTransform = "ee5fbab5-6a5e-4ea1-a47c-55f48d6c1da6"
+	property SpriteGUIRendererComponent monsterFillImage = "ee5fbab5-6a5e-4ea1-a47c-55f48d6c1da6"
+	property TextGUIRendererComponent monsterLabel = "ddaf0f9d-601b-465d-b5c2-88ae1e2cff12"
+	property number monsterFullWidth = 352
+	property Entity monsterManagerEntity = "9f77dce2-10da-41fb-abe5-e9ca9c9d43ee"
+	property Entity monsterEntity = nil
+	property number lastPlayerHp = -1
+	property number lastPlayerMaxHp = -1
+	property number lastMonsterHp = -1
+	property number lastMonsterMaxHp = -1
+
+	@ExecSpace("ClientOnly")
+	method boolean UpdateBar(UITransformComponent transform, SpriteGUIRendererComponent image, TextGUIRendererComponent label, number fullWidth, number current, number maximum)
+		-- 유효한 UI 바의 크기·문자·HP 색을 변경한다.
+		if not isvalid(transform) or not isvalid(image) or not isvalid(label) then return false end
+		local ratio = 0
+		if maximum > 0 then ratio = math.max(0, math.min(1, current / maximum)) end
+		transform.RectSize = Vector2(fullWidth * ratio, transform.RectSize.y)
+		label.Text = tostring(math.floor(current)) .. " / " .. tostring(math.floor(maximum))
+		if ratio > 0.5 then image.Color = Color(0.18, 0.8, 0.44, 1)
+		elseif ratio > 0.2 then image.Color = Color(0.95, 0.77, 0.06, 1)
+		else image.Color = Color(0.91, 0.3, 0.24, 1) end
+		return true
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 현재 수명의 변경값만 처리한다.
+		local player = _UserService.LocalPlayer
+		local map = nil
+		if isvalid(player) then map = player.CurrentMap end
+		if self._T.player ~= player or self._T.map ~= map then
+			self._T.player = player
+			self._T.map = map
+			self._T.playerHealth = nil
+			if isvalid(player) then self._T.playerHealth = player.PlayerComponent end
+			self._T.manager = nil
+			if isvalid(self.monsterManagerEntity) and self.monsterManagerEntity.CurrentMap == map then
+				self._T.manager = self.monsterManagerEntity:GetComponent("script.MonsterManager")
+			end
+			self.lastPlayerHp = -1
+			self.lastPlayerMaxHp = -1
+			self.lastMonsterHp = -1
+			self.lastMonsterMaxHp = -1
+		end
+		local pc = self._T.playerHealth
+		if isvalid(pc) and (pc.Hp ~= self.lastPlayerHp or pc.MaxHp ~= self.lastPlayerMaxHp) then
+			if self:UpdateBar(self.playerFillTransform, self.playerFillImage, self.playerLabel, self.playerFullWidth, pc.Hp, pc.MaxHp) then
+				self.lastPlayerHp = pc.Hp
+				self.lastPlayerMaxHp = pc.MaxHp
+				self._T.playerDraws = (self._T.playerDraws or 0) + 1
+			end
+		end
+		local current = nil
+		if isvalid(self._T.manager) then current = self._T.manager.CurrentMonster end
+		if self.monsterEntity ~= current then
+			self.monsterEntity = current
+			self._T.monsterHealth = nil
+			if isvalid(current) then self._T.monsterHealth = current:GetComponent("script.MonsterHealthComponent") end
+			self.lastMonsterHp = -1
+			self.lastMonsterMaxHp = -1
+		end
+		local hp, maximum = 0, 0
+		local health = self._T.monsterHealth
+		if isvalid(health) then hp, maximum = health.Hp, health.MaxHp end
+		if hp ~= self.lastMonsterHp or maximum ~= self.lastMonsterMaxHp then
+			if self:UpdateBar(self.monsterFillTransform, self.monsterFillImage, self.monsterLabel, self.monsterFullWidth, hp, maximum) then
+				self.lastMonsterHp = hp
+				self.lastMonsterMaxHp = maximum
+				self._T.monsterDraws = (self._T.monsterDraws or 0) + 1
+			end
+		end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self._T.player = nil
+		self._T.playerHealth = nil
+		self._T.manager = nil
+		self._T.monsterHealth = nil
+		self._T.map = nil
+		self.monsterEntity = nil
+	end
+
+end

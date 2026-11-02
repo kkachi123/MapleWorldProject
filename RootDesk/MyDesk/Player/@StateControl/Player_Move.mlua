@@ -1,0 +1,34 @@
+@State
+script Player_Move extends StateType
+
+	method void OnEnter()
+		-- 서버 회피 판정의 진입 경계는 유지하고 위치·모션은 소유 클라이언트가 시작한다.
+		local player = self.ParentComponent.Entity
+		if self.ParentComponent:IsServer() then
+			local evade = player:GetComponent("script.PlayerEvadeComponent")
+			if isvalid(evade) then evade:SetEvading(true) end
+			return
+		end
+		if player ~= _UserService.LocalPlayer then return end
+		local evade = player:GetComponent("script.PlayerEvadeComponent")
+		if isvalid(evade) then evade:NoteClientMove() end
+		local move = player:GetComponent("script.PlayerMoveComponent")
+		if isvalid(move) then move:BeginMove() end
+	end
+
+	method void OnExit()
+		-- 이탈은 보간 취소만 담당하며 중앙 이동이나 지연 IDLE을 요청하지 않는다.
+		local player = self.ParentComponent.Entity
+		if self.ParentComponent:IsServer() then
+			local evade = player:GetComponent("script.PlayerEvadeComponent")
+			if isvalid(evade) then evade:SetEvading(false) end
+			return
+		end
+		if player ~= _UserService.LocalPlayer then return end
+		local evade = player:GetComponent("script.PlayerEvadeComponent")
+		if isvalid(evade) then evade:CloseDirection(evade:GetClientMoveEpoch()) end
+		local move = player:GetComponent("script.PlayerMoveComponent")
+		if isvalid(move) then move:CancelMovement() end
+	end
+
+end

@@ -1,0 +1,17 @@
+@Component
+script MonsterDefenseComponent extends Component
+
+	property number DefenseRate = 0.40
+
+	@HideFromInspector
+	property boolean isDefending = false
+
+	@ExecSpace("ServerOnly")
+	method void SetDefending(boolean isHeld)
+		-- DEFENSE 상태에 들어가고 나갈 때 Monster_Defense StateType이 호출한다.
+		-- MonsterHealthComponent.HandleHitEvent가 이 값을 보고 경감 여부를 판단한다(PlayerGuardComponent와
+		-- 동일한 역할 분담).
+		self.isDefending = isHeld
+	end
+
+end

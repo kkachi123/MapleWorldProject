@@ -1,0 +1,49 @@
+@State
+script Player_Attack extends StateType
+
+	property number Duration = 0.78
+	property integer timerId = 0
+	property integer executionId = 0
+
+	method void OnEnter()
+		-- 이 상태 실행이 소유할 동작과 예약을 시작한다.
+		local player = self.ParentComponent.Entity
+		local combat = player:GetComponent("script.PlayerCombatComponent")
+		if self.ParentComponent:IsServer() then
+			if isvalid(combat) then combat:DoAttack() end
+			return
+		end
+		if player ~= _UserService.LocalPlayer then return end
+		self:CancelTimer()
+		local control = player:GetComponent("script.PlayerStateControl")
+		if not isvalid(control) then return end
+		control._T.attackState = self
+		local id = self.executionId
+		local sequence = control.ActionSequence
+		local duration = self.Duration
+		if isvalid(combat) and combat.SkillEffectDuration > 0 then duration = combat.SkillEffectDuration end
+		self.timerId = _TimerService:SetTimerOnce(function()
+			if id ~= self.executionId or not isvalid(player) or not isvalid(control) then return end
+			self.timerId = 0
+			if self.ParentComponent.CurrentStateName == "ATTACK" then control:ReturnToIdle(sequence) end
+		end, duration)
+	end
+
+	method void CancelTimer()
+		-- 상태 실행을 무효화하고 소유한 지연 콜백을 해제한다.
+		self.executionId = self.executionId + 1
+		if self.timerId ~= 0 then _TimerService:ClearTimer(self.timerId) end
+		self.timerId = 0
+	end
+
+	method void OnExit()
+		-- 상태가 소유하던 예약과 동작을 해제한다.
+		if self.ParentComponent:IsServer() then
+			local combat = self.ParentComponent.Entity:GetComponent("script.PlayerCombatComponent")
+			if isvalid(combat) then combat:CancelAttack() end
+		else
+			self:CancelTimer()
+		end
+	end
+
+end

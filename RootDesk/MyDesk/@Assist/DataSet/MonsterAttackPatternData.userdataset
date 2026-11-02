@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "userdataset://8a03a273-b9d2-4f60-ad79-95520d2fcfe4",
+  "ContentType": "x-mod/userdataset",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 1,
+  "CoreVersion": "26.10.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "name": "MonsterAttackPatternData",
+      "id": "8a03a273-b9d2-4f60-ad79-95520d2fcfe4",
+      "serveronly": true,
+      "syncDataSetWebUrl": "",
+      "dynamicloading": 0
+    }
+  }
+}

@@ -1,0 +1,21 @@
+@State
+script Player_Guard extends StateType
+
+	method void OnEnter()
+		-- ChangeState가 클라이언트/서버 양쪽에서 이 훅을 실행시키므로, SetGuarding(Server RPC) 중복 호출을
+		-- 막기 위해 서버 쪽 실행만 통과시킨다.
+		if not self.ParentComponent:IsServer() then return end
+		---@type PlayerGuardComponent
+		local guard = self.ParentComponent.Entity:GetComponent("script.PlayerGuardComponent")
+		if isvalid(guard) then guard:SetGuarding(true) end
+	end
+
+	method void OnExit()
+		-- 상태가 소유하던 예약과 동작을 해제한다.
+		if not self.ParentComponent:IsServer() then return end
+		---@type PlayerGuardComponent
+		local guard = self.ParentComponent.Entity:GetComponent("script.PlayerGuardComponent")
+		if isvalid(guard) then guard:SetGuarding(false) end
+	end
+
+end

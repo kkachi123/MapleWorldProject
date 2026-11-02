@@ -1,0 +1,211 @@
+@Component
+script PlayerMoveComponent extends Component
+
+	property Entity battlePos1X = "2e7e0302-d919-41bc-817a-012f0f550bbd"
+	property Entity battlePos2X = "48e423ec-61ce-450d-b851-3f89e2a02f85"
+	property Entity battlePos3X = "a92452f6-887f-4666-9e17-21e259fbf9ec"
+	property number MoveSpeed = 6
+	property number ReturnSpeed = 6
+	@HideFromInspector
+	property string Phase = "NONE"
+	@HideFromInspector
+	property integer ExecutionId = 0
+
+	@ExecSpace("ClientOnly")
+	method void OnBeginPlay()
+		-- 수평 이동은 소유 클라이언트의 기존 Rigidbody 발판 물리만 사용한다.
+		self._T.started = _UtilLogic.ElapsedSeconds
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput boot speed=" .. tostring(self.MoveSpeed) .. " return=" .. tostring(self.ReturnSpeed)) end
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean ResolveReferences()
+		-- 맵 수명마다 앵커를 다시 연결하고 고정 컴포넌트 참조를 재사용한다.
+		local map = self.Entity.CurrentMap
+		if not isvalid(map) then return false end
+		if self._T.map ~= map then
+			self._T.map = map
+			self._T.pause = map:GetComponent("script.CombatPauseComponent")
+			self._T.back = self.battlePos1X
+			self._T.center = self.battlePos2X
+			self._T.front = self.battlePos3X
+		end
+		if not isvalid(self._T.back) or self._T.back.CurrentMap ~= map then self._T.back = map:GetChildByName("BattlePos1", true) end
+		if not isvalid(self._T.center) or self._T.center.CurrentMap ~= map then self._T.center = map:GetChildByName("BattlePos2", true) end
+		if not isvalid(self._T.front) or self._T.front.CurrentMap ~= map then self._T.front = map:GetChildByName("BattlePos3", true) end
+		self._T.body = self.Entity.RigidbodyComponent
+		self._T.transform = self.Entity.TransformComponent
+		self._T.player = self.Entity.PlayerComponent
+		self._T.state = self.Entity.StateComponent
+		if not isvalid(self._T.control) then self._T.control = self.Entity:GetComponent("script.PlayerStateControl") end
+		return isvalid(self._T.back) and isvalid(self._T.center) and isvalid(self._T.front)
+			and isvalid(self._T.body) and self._T.body.Enable and isvalid(self._T.transform)
+			and isvalid(self._T.player) and isvalid(self._T.state) and isvalid(self._T.control)
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean CanStart(string action)
+		-- 입력이나 상태를 변경하기 전에 이동·복귀 수치와 같은 맵의 참조를 검증한다.
+		if self.Entity ~= _UserService.LocalPlayer or self.Phase ~= "NONE" then return false end
+		if action ~= "LEFT" and action ~= "RIGHT" then return false end
+		if not (self.MoveSpeed > 0 and self.MoveSpeed < math.huge and self.ReturnSpeed > 0 and self.ReturnSpeed < math.huge) then
+			if not self._T.configWarned then log_warning("MovementInput: MoveSpeed/ReturnSpeed must be finite and positive"); self._T.configWarned = true end
+			return false
+		end
+		self._T.configWarned = false
+		if not self:ResolveReferences() then
+			if Environment:IsMakerPlay() then log("[VRF] MovementInput rejected reason=references") end
+			return false
+		end
+		return not self._T.player:IsDead() and self._T.player.Hp > 0
+	end
+
+	@ExecSpace("ClientOnly")
+	method number GetCombatTime()
+		-- 양쪽 절대 시각을 섞지 않고 로컬 전투 시계만 읽는다.
+		if isvalid(self._T.pause) then return self._T.pause:GetCombatTime() end
+		return _UtilLogic.ElapsedSeconds - (self._T.started or _UtilLogic.ElapsedSeconds)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetWalking(boolean walking)
+		-- 단계가 바뀔 때만 기존 아바타의 Walk/Stand를 요청하며 정지 중 연출은 건드리지 않는다.
+		if isvalid(self._T.pause) and self._T.pause._T.clockPaused then return end
+		if self._T.walking == walking then return end
+		self._T.walking = walking
+		local action = walking and MapleAvatarBodyActionState.Walk or MapleAvatarBodyActionState.Stand
+		self.Entity:SendEvent(BodyActionStateChangeEvent(true, action))
+	end
+
+	@ExecSpace("ClientOnly")
+	method void StartSegment(string phase, Entity target, number speed)
+		-- 구간 시작점·목표·속도를 고정하고 이전 보간 실행을 무효화한다.
+		self:StopHorizontalMovement()
+		self.ExecutionId = self.ExecutionId + 1
+		self.Phase = phase
+		local segment = { id = self.ExecutionId, map = self._T.map, target = target,
+			startX = self._T.transform.WorldPosition.x, targetX = target.TransformComponent.WorldPosition.x,
+			speed = speed, started = self:GetCombatTime(), sequence = self._T.control.ActionSequence }
+		self._T.segment = segment
+		self:SetWalking(true)
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput phase=" .. phase .. " id=" .. tostring(segment.id) .. " x=" .. tostring(segment.startX) .. " target=" .. tostring(segment.targetX) .. " clock=" .. tostring(segment.started)) end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void BeginMove()
+		-- 수락된 MOVE만 수평 물리 설정을 소유하고 종료 시 원래 값을 복원한다.
+		local control = self.Entity:GetComponent("script.PlayerStateControl")
+		if not isvalid(control) or not self:CanStart(control.heldAction) then return end
+		self._T.savedMotion = { speed = self._T.body.WalkSpeed, acceleration = self._T.body.WalkAcceleration }
+		self._T.body.WalkAcceleration = 100
+		self._T.returnSpeed = self.ReturnSpeed
+		local target = control.heldAction == "LEFT" and self._T.back or self._T.front
+		self:StartSegment("OUTBOUND", target, self.MoveSpeed)
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean IsReturning()
+		-- 홀드가 비어도 중앙 복귀 완료 전에는 새 동작을 받지 않는다.
+		return self.Phase == "RETURNING" or self.Phase == "FINISHING"
+	end
+
+	@ExecSpace("ClientOnly")
+	method void BeginReturn()
+		-- 마지막 해제의 현재 위치를 출발점으로 삼고 정지 중에는 구간만 준비한다.
+		if self.Phase == "NONE" or self:IsReturning() then return end
+		if not isvalid(self._T.center) or self._T.center.CurrentMap ~= self._T.map then
+			self.Phase = "FINISHING"
+			return
+		end
+		self:StartSegment("RETURNING", self._T.center, self._T.returnSpeed)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void CancelMovement()
+		-- 이전 수평 입력·물리 설정을 정리하되 위치나 새 상태는 쓰지 않는다.
+		if self.Phase == "NONE" then return end
+		self:StopHorizontalMovement()
+		local saved = self._T.savedMotion
+		if saved ~= nil and isvalid(self._T.body) then
+			self._T.body.WalkSpeed = saved.speed
+			self._T.body.WalkAcceleration = saved.acceleration
+		end
+		self._T.savedMotion = nil
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput cancel phase=" .. self.Phase .. " id=" .. tostring(self.ExecutionId)) end
+		self.ExecutionId = self.ExecutionId + 1
+		self.Phase = "NONE"
+		self._T.segment = nil
+		self._T.walking = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void StopHorizontalMovement()
+		-- X 입력을 해제하고 접지 중의 관성만 재설정한다. 공중의 중력·궤적은 보존한다.
+		local body = self._T.body
+		if not isvalid(body) then return end
+		body.MoveVelocity = Vector2(0, body.MoveVelocity.y)
+		if body:IsOnGround() then body:PositionReset() end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 발판 물리로 이동하고 마지막 한 프레임 거리에서만 목표 X를 맞춘다.
+		local segment = self._T.segment
+		if segment == nil or segment.id ~= self.ExecutionId then return end
+		if self.Entity ~= _UserService.LocalPlayer or self.Entity.CurrentMap ~= segment.map
+			or not isvalid(self._T.player) or self._T.player:IsDead() or self._T.player.Hp <= 0
+			or not isvalid(self._T.state) or self._T.state.CurrentStateName ~= "MOVE" then
+			self:CancelMovement()
+			return
+		end
+		if isvalid(self._T.pause) and self._T.pause._T.clockPaused then return end
+		if not isvalid(segment.target) or segment.target.CurrentMap ~= segment.map then self.Phase = "FINISHING" end
+		if self.Phase == "FINISHING" then
+			self:StopHorizontalMovement()
+			self._T.control:CompleteMovement(segment.sequence, segment.id)
+			return
+		end
+		if self.Phase == "HOLD" then return end
+		if delta <= 0 then return end
+		local body = self._T.body
+		if not body:IsOnGround() then
+			body.MoveVelocity = Vector2(0, body.MoveVelocity.y)
+			return
+		end
+		self:SetWalking(true)
+		local remaining = segment.targetX - self._T.transform.WorldPosition.x
+		if math.abs(remaining) > segment.speed * delta then
+			-- 현재 MapleTile의 네이티브 WalkSpeed 5에서 약 6 단위/초가 관측된다.
+			body.WalkSpeed = segment.speed / 1.2
+			body.MoveVelocity = Vector2(remaining > 0 and 1 or -1, body.MoveVelocity.y)
+			return
+		end
+		self:StopHorizontalMovement()
+		local x = segment.targetX
+		body:SetWorldPosition(Vector2(x, self._T.transform.WorldPosition.y))
+		body:PositionReset()
+		local phase = self.Phase
+		self.Phase = phase == "OUTBOUND" and "HOLD" or "FINISHING"
+		self:SetWalking(false)
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput arrived phase=" .. phase .. " id=" .. tostring(segment.id) .. " x=" .. tostring(x) .. " y=" .. tostring(self._T.transform.WorldPosition.y) .. " elapsed=" .. tostring(self:GetCombatTime() - segment.started)) end
+		if self.Phase == "FINISHING" then self._T.control:CompleteMovement(segment.sequence, segment.id) end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 남은 보간과 맵 소속 참조를 해제한다.
+		self:CancelMovement()
+		self._T.map = nil
+		self._T.pause = nil
+		self._T.back = nil
+		self._T.center = nil
+		self._T.front = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- 종료 순서와 무관하게 이전 이동의 실행을 무효화한다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

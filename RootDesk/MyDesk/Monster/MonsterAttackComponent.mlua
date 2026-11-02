@@ -1,0 +1,171 @@
+@Component
+script MonsterAttackComponent extends AttackComponent
+
+	property Entity battlePos1X = "2e7e0302-d919-41bc-817a-012f0f550bbd"
+	property Entity battlePos2X = "48e423ec-61ce-450d-b851-3f89e2a02f85"
+	property Entity battlePos3X = "a92452f6-887f-4666-9e17-21e259fbf9ec"
+	property number AttackDamage = 12
+	property Vector2 HitBoxSize = Vector2(1.0, 1.0)
+	property Vector2 HitBoxOffset = Vector2(0, 0.4)
+	@Sync property string TelegraphResponse = ""
+	@Sync property string TelegraphAttribute = ""
+	@Sync property number TelegraphRemaining = 0
+	@Sync property integer AttackSequence = 0
+
+	method any GetManager()
+		-- 현재 맵의 기존 단일 상대 관리자를 캐시한다.
+		local map = self.Entity.CurrentMap
+		if self._T.managerMap ~= map or not isvalid(self._T.manager) then
+			self._T.managerMap = map
+			local entity = isvalid(map) and map:GetChildByName("MonsterManager", false) or nil
+			self._T.manager = isvalid(entity) and entity:GetComponent("script.MonsterManager") or nil
+		end
+		return self._T.manager
+	end
+
+	@ExecSpace("ServerOnly")
+	method Entity GetDuelPlayer()
+		-- 다른 몬스터나 사용자를 현재 대결에 섞지 않는다.
+		local manager = self:GetManager()
+		if not isvalid(manager) then return nil end
+		return manager:GetDuelPlayer(self.Entity)
+	end
+
+	@ExecSpace("ServerOnly")
+	method any PrepareAttack()
+		-- 예고와 실제 영역·현재 대결·규칙을 하나의 실행에 고정한다.
+		local player = self:GetDuelPlayer()
+		local map = self.Entity.CurrentMap
+		local pause = isvalid(map) and map:GetComponent("script.CombatPauseComponent") or nil
+		local rules = _CombatRuleCatalog:GetRules({})
+		if not isvalid(player) or not isvalid(pause) or pause.IsPaused or rules == nil or self._T.modelKey == nil then return nil end
+		if not _CombatRuleCatalog:IsFinite(self.AttackDamage) or self.AttackDamage < 0 then return nil end
+		local rows = _CombatRuleCatalog:GetPatterns(self._T.modelKey)
+		if rows == nil then return nil end
+		local source = rows[math.random(1, #rows)]
+		local pattern = {}
+		for key, value in pairs(source) do pattern[key] = value end
+		local anchors = {self.battlePos1X, self.battlePos2X, self.battlePos3X}
+		for index = 1, 3 do
+			local anchor = anchors[index]
+			if not isvalid(anchor) or anchor.CurrentMap ~= map then return nil end
+		end
+		local left = anchors[1].TransformComponent.WorldPosition.x
+		local center = anchors[2].TransformComponent.WorldPosition.x
+		local right = anchors[3].TransformComponent.WorldPosition.x
+		if not (left < center and center < right) then return nil end
+		local minimum = anchors[pattern.AreaFromAnchor].TransformComponent.WorldPosition.x - pattern.AreaPaddingX
+		local maximum = anchors[pattern.AreaToAnchor].TransformComponent.WorldPosition.x + pattern.AreaPaddingX
+		local hit = player.HitComponent
+		if not isvalid(hit) then return nil end
+		local scale = player.TransformComponent.Scale
+		local offset = hit.ColliderOffset.x * scale.x
+		local halfWidth = hit.BoxSize.x * math.abs(scale.x) * 0.5
+		if (pattern.ResponseType == "LEFT" and left + offset + halfWidth >= minimum)
+			or (pattern.ResponseType == "RIGHT" and right + offset - halfWidth <= maximum) then
+			_CombatRuleCatalog:WarnOnce("telegraph escape area invalid: " .. pattern.id)
+			return nil
+		end
+		self.AttackSequence = self.AttackSequence + 1
+		local snapshot = { id = self.AttackSequence, map = map, player = player, pattern = pattern, rules = rules,
+			landing = anchors[pattern.LandingAnchor], shape = BoxShape(Vector2((minimum + maximum) * 0.5, 0), Vector2(maximum - minimum, pattern.AreaHeight), 0), resolved = false }
+		self._T.snapshot = snapshot
+		self.TelegraphResponse = pattern.ResponseType
+		self.TelegraphAttribute = pattern.AttackAttribute
+		self.TelegraphRemaining = pattern.TelegraphLeadSec
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore telegraph id=" .. tostring(snapshot.id) .. " pattern=" .. pattern.id .. " min=" .. tostring(minimum) .. " max=" .. tostring(maximum)) end
+		return snapshot
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetDefenseResult(Entity player)
+		-- 네이티브 판정 중인 정확한 대상만 확정 결과를 읽을 수 있다.
+		local snapshot = self._T.snapshot
+		if not self._T.resolving or snapshot == nil or snapshot.player ~= player or not snapshot.resolved then return nil end
+		return snapshot.result
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResolveAttack()
+		-- 범위 밖 저스트도 한 번 판정한 뒤 네이티브 피격 후보에만 피해를 적용한다.
+		local snapshot = self._T.snapshot
+		local map = self.Entity.CurrentMap
+		local pause = isvalid(map) and map:GetComponent("script.CombatPauseComponent") or nil
+		local health = self.Entity:GetComponent("script.MonsterHealthComponent")
+		local state = self.Entity.StateComponent
+		if snapshot == nil or snapshot.resolved or snapshot.map ~= map or not isvalid(pause) or pause.IsPaused then return end
+		if not isvalid(health) or health.IsDead or health.Hp <= 0 or not isvalid(state) or state.CurrentStateName ~= "ATTACK" then return end
+		if self:GetDuelPlayer() ~= snapshot.player then return end
+		local defender = snapshot.player:GetComponent("script.PlayerHealthComponent")
+		if not isvalid(defender) then return end
+		snapshot.resolved = true
+		snapshot.hitTime = pause:GetCombatTime()
+		snapshot.result = defender:EvaluateDefense(snapshot.pattern.ResponseType, snapshot.pattern.AttackAttribute, snapshot.hitTime, snapshot.rules)
+		local position = self.Entity.TransformComponent.WorldPosition
+		snapshot.shape.Position = Vector2(snapshot.shape.Position.x, position.y + snapshot.pattern.AreaOffsetY)
+		self._T.lastAttackCenter = snapshot.shape.Position
+		self._T.resolutionCount = (self._T.resolutionCount or 0) + 1
+		self._T.resolving = true
+		self:AttackFast(snapshot.shape, "monster.attack", nil)
+		self._T.resolving = false
+		self.TelegraphResponse = ""
+		self.TelegraphRemaining = 0
+		local combat = snapshot.player:GetComponent("script.PlayerCombatComponent")
+		if isvalid(combat) then
+			combat:RecordDefense(not snapshot.result.success and not snapshot.nativeHit and "EVADE" or snapshot.result.kind)
+			if snapshot.result.success then combat:GrantCounter(self.Entity, snapshot.rules) end
+		end
+		if snapshot.result.kind == "JUST" then
+			local control = self.Entity:GetComponent("script.MonsterStateControl")
+			if isvalid(control) then control:ApplySlow(snapshot.rules.SlowDurationSec, snapshot.rules.SlowRate) end
+		elseif snapshot.result.kind == "PARRY" then
+			local stun = self.Entity:GetComponent("script.MonsterStunComponent")
+			if isvalid(stun) then stun:ApplyGroggy(snapshot.rules.GroggyDurationSec) end
+		end
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore defense id=" .. tostring(snapshot.id) .. " kind=" .. snapshot.result.kind .. " rate=" .. tostring(snapshot.result.rate) .. " clock=" .. tostring(snapshot.hitTime)) end
+	end
+
+	method integer CalcDamage(Entity attacker, Entity defender, string attackInfo)
+		-- 기존 네이티브 HitEvent 전에 최종 피해를 확정한다.
+		local health = defender:GetComponent("script.PlayerHealthComponent")
+		if not isvalid(health) then return 0 end
+		local snapshot = self._T.snapshot
+		if snapshot ~= nil then snapshot.nativeHit = true end
+		return health:ResolveIncomingDamage(math.floor(self.AttackDamage), attacker)
+	end
+
+	method boolean IsAttackTarget(Entity defender, string attackInfo)
+		-- 현재 실행의 유일한 대결 상대에게만 네이티브 후보를 허용한다.
+		local snapshot = self._T.snapshot
+		if not self._T.resolving or snapshot == nil or defender ~= snapshot.player or not isvalid(defender) or defender.CurrentMap ~= self.Entity.CurrentMap then return false end
+		local player = defender.PlayerComponent
+		if not isvalid(player) or player.Hp <= 0 or player:IsDead() then return false end
+		return __base:IsAttackTarget(defender, attackInfo)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CancelPendingAttack()
+		-- 활성 공격의 식별자·예고·모션을 함께 무효화한다.
+		if self._T.activeState ~= nil then self._T.activeState:CancelExecution() end
+		self._T.activeState = nil
+		self._T.snapshot = nil
+		self._T.resolving = false
+		self.TelegraphResponse = ""
+		self.TelegraphRemaining = 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵 수명이 끝난 이전 실행과 소유자 참조를 해제한다.
+		self:CancelPendingAttack()
+		self._T.manager = nil
+		self._T.managerMap = nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- Stop 뒤 늦은 콜백은 이전 실행을 되살릴 수 없다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

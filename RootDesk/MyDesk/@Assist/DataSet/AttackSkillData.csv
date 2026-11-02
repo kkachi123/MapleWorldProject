@@ -1,0 +1,2 @@
+﻿id,name,ruid,FrameCount,Direction,Damage,AttackCount,AttackOffsetX,AttackOffsetY,AttackRangeWidth,AttackRangeHeight
+1,player.basic,5308ef85369c4f31843d6e8cde4b1012,14,-1,1,10,1.65,0.3,3,1

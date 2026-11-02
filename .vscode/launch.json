@@ -1,0 +1,9 @@
+{
+  "configurations": [
+    {
+      "name": "MSW Attach",
+      "type": "msw",
+      "request": "attach"
+    }
+  ]
+}

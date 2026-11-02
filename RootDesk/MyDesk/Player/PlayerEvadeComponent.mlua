@@ -1,0 +1,103 @@
+@Component
+script PlayerEvadeComponent extends Component
+
+	property string EvadeDirection = ""
+	@HideFromInspector
+	property boolean isEvading = false
+	@HideFromInspector
+	property number evadeStartTime = -1
+
+	@ExecSpace("ServerOnly")
+	method void SetEvading(boolean isHeld)
+		-- 서버 상태 진입에서만 회피 시작 시각을 기록한다.
+		if isHeld and not self.isEvading then
+			local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+			self._T.combat = combat
+			self.evadeStartTime = isvalid(combat) and combat:GetCombatTime() or -1
+			self.EvadeDirection = ""
+			self._T.moveEpoch = (self._T.moveEpoch or 0) + 1
+			local pending = self._T.pendingDirection
+			if pending ~= nil and pending.epoch == self._T.moveEpoch then
+				self.EvadeDirection = pending.direction
+				self._T.directionSequence = pending.sequence
+				self._T.boundEpoch = pending.epoch
+			end
+			self._T.pendingDirection = nil
+		elseif not isHeld then
+			self._T.pendingDirection = nil
+			self._T.closedEpoch = self._T.moveEpoch or 0
+		end
+		self.isEvading = isHeld
+	end
+
+
+	@ExecSpace("ClientOnly")
+	method void NoteClientMove()
+		-- 실제 클라이언트 MOVE 진입만 순번을 증가시켜 방향 요청을 해당 상태 수명에 묶는다.
+		self._T.clientMoveEpoch = (self._T.clientMoveEpoch or 0) + 1
+	end
+
+	@ExecSpace("ClientOnly")
+	method integer GetClientMoveEpoch()
+		-- 새 입력이나 복귀를 예약하지 않고 실제 진입 순번만 반환한다.
+		return self._T.clientMoveEpoch or 0
+	end
+
+	@ExecSpace("Server")
+	method void CloseDirection(integer epoch)
+		-- 클라이언트의 실제 MOVE 이탈은 아직 도착 중인 동일 순번 방향도 폐기한다.
+		if senderUserId ~= self.Entity.PlayerComponent.UserId then return end
+		if epoch < (self._T.closedEpoch or 0) or epoch > (self._T.moveEpoch or 0) + 1 then return end
+		self._T.closedEpoch = epoch
+		if self._T.pendingDirection ~= nil and self._T.pendingDirection.epoch <= epoch then self._T.pendingDirection = nil end
+	end
+
+	@ExecSpace("Server")
+	method void ConfirmDirection(string direction, integer sequence, integer epoch)
+		-- 방향 메타데이터를 같은 MOVE 순번에 한 번만 소비하며 늦은 이전 요청은 거부한다.
+		if senderUserId ~= self.Entity.PlayerComponent.UserId or sequence <= (self._T.directionSequence or 0) then return end
+		if direction ~= "LEFT" and direction ~= "RIGHT" then return end
+		local state = self.Entity.StateComponent
+		local pause = self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		if not isvalid(state) or not isvalid(pause) or pause.IsPaused or self.Entity.PlayerComponent.Hp <= 0 then return end
+		local pending = self._T.pendingDirection
+		if pending ~= nil and sequence < pending.sequence then return end
+		local current = self._T.moveEpoch or 0
+		if epoch <= (self._T.closedEpoch or 0) or epoch < current or epoch > current + 1 then return end
+		if epoch == current and state.CurrentStateName == "MOVE" and self.isEvading and self._T.boundEpoch ~= epoch then
+			self._T.directionSequence = sequence
+			self._T.boundEpoch = epoch
+			self.EvadeDirection = direction
+		elseif epoch == current + 1 and state.CurrentStateName == "IDLE" then
+			-- 동작을 시작하지 않는다. 바로 다음 동일 순번 MOVE 진입 훅만 이 값을 소비한다.
+			self._T.pendingDirection = { direction = direction, sequence = sequence, epoch = epoch }
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	@EventSender("Self")
+	handler HandleStateChangeEvent(StateChangeEvent event)
+		-- MOVE 이외 상태와 종료 경계는 미소비 방향을 폐기한다.
+		if event.CurrentStateName ~= "MOVE" then self._T.pendingDirection = nil end
+	end
+
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		self.isEvading = false
+		self.evadeStartTime = -1
+		self._T.combat = nil
+		self.EvadeDirection = ""
+		self._T.directionSequence = nil
+		self._T.pendingDirection = nil
+		self._T.moveEpoch = nil
+		self._T.clientMoveEpoch = nil
+		self._T.closedEpoch = nil
+		self._T.boundEpoch = nil
+	end
+
+	method void OnEndPlay()
+		-- Stop은 양쪽 MOVE 순번과 입력 이력을 함께 폐기한다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

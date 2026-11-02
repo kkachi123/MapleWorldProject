@@ -1,0 +1,36 @@
+@Component
+script MonsterAttackMotion extends Component
+
+	@ExecSpace("ServerOnly")
+	method void SetVisualClip(string key)
+		-- Reuse this monster's existing animation mappings.
+		local animation = self.Entity.StateAnimationComponent
+		local renderer = self.Entity.SpriteRendererComponent
+		if not isvalid(animation) or not isvalid(renderer) then return end
+		local ruid = animation.ActionSheet[key]
+		if ruid ~= nil and ruid ~= "" then renderer.SpriteRUID = ruid end
+	end
+
+	@ExecSpace("ServerOnly")
+	method number PerformAttackMotion(Entity target)
+		-- A zero-duration base implementation needs no movement.
+		return 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method number PerformReturnMotion()
+		-- Subclasses opt into a return movement.
+		return 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CompleteMotion()
+		-- Subclasses finish their current movement before hit judgment.
+	end
+
+	@ExecSpace("ServerOnly")
+	method void CancelMotion()
+		-- Subclasses release movement without overwriting the next state's clip.
+	end
+
+end

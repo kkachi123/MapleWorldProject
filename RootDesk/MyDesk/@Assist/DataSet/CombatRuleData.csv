@@ -1,0 +1,2 @@
+﻿id,JustWindowSec,ParryWindowSec,GuardDamageRate,CounterWindowSec,CounterDamageMultiplier,SlowDurationSec,SlowRate,GroggyDurationSec
+default,0.20,0.20,0.40,2.0,2.2,2.0,0.5,1.5

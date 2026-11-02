@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "userdataset://516e4e5d-5ab0-4e27-9cd8-730a5efc7ce5",
+  "ContentType": "x-mod/userdataset",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 1,
+  "CoreVersion": "26.10.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "name": "CombatRuleData",
+      "id": "516e4e5d-5ab0-4e27-9cd8-730a5efc7ce5",
+      "serveronly": true,
+      "syncDataSetWebUrl": "",
+      "dynamicloading": 0
+    }
+  }
+}

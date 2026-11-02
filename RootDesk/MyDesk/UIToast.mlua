@@ -1,0 +1,71 @@
+@Logic
+script UIToast extends Logic
+
+	property TextComponent message = "7af9e538-1713-49f7-a83e-711c0f4b4a3c"
+	property Entity toastGroup = "0bc398f9-29cb-4d89-a78d-f24742b117e8"
+	property number duration = 2
+	property number tweenDuration = 0.1
+	property boolean isTweenPlaying = false
+	property number offset = 0
+
+	@ExecSpace("ClientOnly")
+	method void OnBeginPlay()
+		-- 엔티티/로직 수명의 참조와 시작 상태를 초기화한다.
+		self.offset = -self.message.Entity.UITransformComponent.anchoredPosition.y
+		self.toastGroup.Enable = false
+	end
+
+	@ExecSpace("Client")
+	method void ShowMessage(string text)
+		-- 기존 알림을 교체하고 단일 표시 수명을 시작한다.
+		if not isvalid(self.message) or not isvalid(self.toastGroup) then return end
+		self.message.Text = text
+		self:StartTween()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void StopTween()
+		-- 기존 알림 연출의 실시간 수명과 참조를 해제한다.
+		self._T.tween = nil
+		self.isTweenPlaying = false
+	end
+
+	@ExecSpace("ClientOnly")
+	method void StartTween()
+		-- 전투 시간 정지와 독립적인 실시간 알림 연출을 시작한다.
+		self:StopTween()
+		local canvas = self.message.Entity.CanvasGroupComponent
+		local transform = self.message.Entity.UITransformComponent
+		canvas.GroupAlpha = 0
+		self.toastGroup.Enable = true
+		self.isTweenPlaying = true
+		self._T.tween = { canvas = canvas, transform = transform, started = _UtilLogic.ElapsedSeconds,
+			fade = math.max(0.001, self.tweenDuration) }
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 시간 배율 0에서도 토스트의 표시·페이드·종료를 실시간으로 갱신한다.
+		local tween = self._T.tween
+		if tween == nil then return end
+		if not isvalid(tween.canvas) or not isvalid(tween.transform) then self:StopTween(); return end
+		local time = _UtilLogic.ElapsedSeconds - tween.started
+		local alpha = math.min(1, time / tween.fade)
+		if time > self.duration then alpha = math.max(0, 1 - (time - self.duration) / tween.fade) end
+		tween.canvas.GroupAlpha = alpha
+		local value = _TweenLogic:Ease(0, 1, 1, EaseType.SineEaseIn, alpha)
+		tween.transform.anchoredPosition = Vector2(0, -self.offset * value)
+		if time >= self.duration + tween.fade then
+			self:StopTween()
+			self.toastGroup.Enable = false
+		end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self:StopTween()
+		if isvalid(self.toastGroup) then self.toastGroup.Enable = false end
+	end
+
+end

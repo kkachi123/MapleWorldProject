@@ -1,0 +1,239 @@
+@Component
+script PlayerStateControl extends Component
+
+	property string heldAction = ""
+	property table inputSources = {}
+	property table inputBlocks = {}
+	property boolean InputBlocked = false
+	property boolean PopupInputBlocked = false
+	property integer ActionSequence = 0
+
+	method void OnBeginPlay()
+		-- 엔티티/로직 수명의 참조와 시작 상태를 초기화한다.
+		if self:IsServer() then
+			local animation = self.Entity.AvatarStateAnimationComponent
+			if isvalid(animation) then
+				animation:SetActionSheet("GUARD", "sit")
+				animation:SetActionSheet("ATTACK", "attack")
+				animation:SetActionSheet("MOVE", "walk")
+			end
+		else
+			self:ResetInput()
+		end
+	end
+
+	@ExecSpace("ClientOnly")
+	method any GetMovement()
+		-- 같은 플레이어 수명 동안 이동 담당 컴포넌트를 재사용한다.
+		if not isvalid(self._T.move) then self._T.move = self.Entity:GetComponent("script.PlayerMoveComponent") end
+		return self._T.move
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean CanAcceptInput()
+		-- 소유자·생존·팝업·시스템 입력 차단을 확인한다.
+		if self.Entity ~= _UserService.LocalPlayer or self.InputBlocked or _UIPopup.isOpen then return false end
+		local move = self:GetMovement()
+		if isvalid(move) and move:IsReturning() then return false end
+		local player = self.Entity.PlayerComponent
+		local controller = self.Entity.PlayerControllerComponent
+		return isvalid(player) and not player:IsDead() and player.Hp > 0
+			and isvalid(controller) and not controller.IsUpdateBlocked
+	end
+
+	@ExecSpace("ClientOnly")
+	method string StateForAction(string action)
+		-- 입력 동작을 기존 상태 키로 변환한다.
+		if action == "LEFT" or action == "RIGHT" then return "MOVE" end
+		if action == "ATTACK" or action == "GUARD" then return action end
+		return ""
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean RequestChangeState(string action, string source)
+		-- 단일 입력 수락 지점에서 홀드 출처와 실제 상태를 처리한다.
+		if not self:CanAcceptInput() then return false end
+		local nextState = self:StateForAction(action)
+		local state = self.Entity.StateComponent
+		if nextState == "" or not isvalid(state) then return false end
+		-- 같은 홀드는 출처만 합친다. 재진입으로 패링/회피 시간을 갱신하지 않는다.
+		if action ~= "ATTACK" and self.heldAction == action and state.CurrentStateName == nextState then
+			self.inputSources[source] = true
+			return true
+		end
+		if state.CurrentStateName ~= "IDLE" then return false end
+		if nextState == "MOVE" then
+			local move = self:GetMovement()
+			if not isvalid(move) or not move:CanStart(action) then return false end
+		end
+		if action == "ATTACK" then
+			local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
+			if not isvalid(combat) or not combat.SkillDataReady then return false end
+		end
+		local previousAction = self.heldAction
+		local previousSources = self.inputSources
+		local previousSequence = self.ActionSequence
+		self.heldAction = action
+		self.inputSources = {[source] = true}
+		self.ActionSequence = self.ActionSequence + 1
+		if not state:ChangeState(nextState) then
+			self.heldAction = previousAction
+			self.inputSources = previousSources
+			self.ActionSequence = previousSequence
+			if Environment:IsMakerPlay() then log("[VRF] MovementInput rejected reason=state action=" .. action) end
+			return false
+		end
+		if nextState == "MOVE" then
+			local evade = self.Entity:GetComponent("script.PlayerEvadeComponent")
+			if isvalid(evade) then evade:ConfirmDirection(action, self.ActionSequence, evade:GetClientMoveEpoch()) end
+		end
+		self:RefreshVisuals()
+		return true
+	end
+
+	@ExecSpace("ClientOnly")
+	method void ReleaseHeldState(string action, string source)
+		-- 이 출처를 해제하고 마지막 홀드인 경우에만 종료한다.
+		if self.Entity ~= _UserService.LocalPlayer or self.PopupInputBlocked or action == "ATTACK" or self.heldAction ~= action then return end
+		self.inputSources[source] = nil
+		if next(self.inputSources) ~= nil then return end
+		self:ReturnToIdle(0)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void ReturnToIdle(integer expectedSequence)
+		-- 현재 실행과 생존 상태가 일치할 때만 IDLE로 복귀한다.
+		if self.Entity ~= _UserService.LocalPlayer then return end
+		if expectedSequence ~= 0 and expectedSequence ~= self.ActionSequence then return end
+		local state = self.Entity.StateComponent
+		local player = self.Entity.PlayerComponent
+		if not isvalid(state) or not isvalid(player) or player:IsDead() or player.Hp <= 0 then return end
+		local current = state.CurrentStateName
+		if current ~= "ATTACK" and current ~= "MOVE" and current ~= "GUARD" then return end
+		local previousAction = self.heldAction
+		local previousSources = self.inputSources
+		self.heldAction = ""
+		self.inputSources = {}
+		if current == "MOVE" then
+			local move = self:GetMovement()
+			if isvalid(move) and move.Phase ~= "NONE" then
+				move:BeginReturn()
+				self:RefreshVisuals()
+				return
+			end
+		end
+		if not state:ChangeState("IDLE") then
+			self.heldAction = previousAction
+			self.inputSources = previousSources
+		end
+		self:RefreshVisuals()
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean CompleteMovement(integer sequence, integer movementId)
+		-- 현재 복귀 실행만 IDLE로 마치고 전환 실패 시 잠금·입력 상태를 유지한다.
+		local move = self:GetMovement()
+		if not isvalid(move) or movementId ~= move.ExecutionId or sequence ~= self.ActionSequence then return false end
+		local state = self.Entity.StateComponent
+		local player = self.Entity.PlayerComponent
+		if not isvalid(state) or state.CurrentStateName ~= "MOVE" or not isvalid(player) or player:IsDead() or player.Hp <= 0 then return false end
+		local previousAction = self.heldAction
+		local previousSources = self.inputSources
+		self.heldAction = ""
+		self.inputSources = {}
+		if not state:ChangeState("IDLE") then
+			self.heldAction = previousAction
+			self.inputSources = previousSources
+			if self._T.moveFinishFailed ~= movementId then
+				self._T.moveFinishFailed = movementId
+				if Environment:IsMakerPlay() then log("[VRF] MovementInput rejected reason=finish_state id=" .. tostring(movementId)) end
+			end
+			return false
+		end
+		self._T.moveFinishFailed = nil
+		self:RefreshVisuals()
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput complete id=" .. tostring(movementId) .. " state=IDLE") end
+		return true
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetInputBlocked(boolean blocked, string source)
+		-- 차단 출처를 합산하고 진행 중 홀드 입력을 정리한다.
+		if blocked then self.inputBlocks[source] = true else self.inputBlocks[source] = nil end
+		self.InputBlocked = next(self.inputBlocks) ~= nil
+		if self.InputBlocked and not self.PopupInputBlocked then
+			-- 새 동작은 차단하지만 이미 시작한 공격의 취소 기능은 추가하지 않는다.
+			if self.heldAction ~= "ATTACK" then self:ReturnToIdle(0) end
+			self.inputSources = {}
+		end
+		self:RefreshVisuals()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetPopupInputBlocked(boolean blocked)
+		-- 팝업 진입은 새 입력만 차단하며 기존 홀드와 위치는 보존한다.
+		self.PopupInputBlocked = blocked
+		if blocked then self.inputBlocks["popup"] = true else self.inputBlocks["popup"] = nil end
+		self.InputBlocked = next(self.inputBlocks) ~= nil
+		self:RefreshVisuals()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void PreparePopupResume()
+		-- 서버 정지가 유지된 상태에서 홀드만 폐기한다. 진행 중 공격은 보존한다.
+		if self.heldAction ~= "ATTACK" then self:ReturnToIdle(0) end
+		self.inputSources = {}
+	end
+
+	@ExecSpace("ClientOnly")
+	method void RefreshVisuals()
+		-- 실제 수락된 동작과 차단 상태를 보조 UI에 반영한다.
+		local move = self:GetMovement()
+		local returning = isvalid(move) and move:IsReturning()
+		_CombatInputController:RefreshVisuals(self.heldAction, self.InputBlocked or returning)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void ResetInput()
+		-- 이전 입력과 실행 식별자를 초기화한다.
+		self.heldAction = ""
+		self.inputSources = {}
+		self.inputBlocks = {}
+		self.InputBlocked = false
+		self.PopupInputBlocked = false
+		self.ActionSequence = self.ActionSequence + 1
+		self:RefreshVisuals()
+	end
+
+	@ExecSpace("ClientOnly")
+	@EventSender("Self")
+	handler HandleStateChangeEvent(StateChangeEvent event)
+		-- 실제 상태 변경에 맞춰 이전 입력/공격을 정리한다.
+		if self.Entity ~= _UserService.LocalPlayer then return end
+		if event.CurrentStateName ~= self:StateForAction(self.heldAction) then
+			self.heldAction = ""
+			self.inputSources = {}
+		end
+		if event.CurrentStateName ~= "MOVE" then
+			local move = self:GetMovement()
+			if isvalid(move) then move:CancelMovement() end
+		end
+		self:RefreshVisuals()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		if self._T.attackState ~= nil then self._T.attackState:CancelTimer() end
+		local move = self:GetMovement()
+		if isvalid(move) then move:CancelMovement() end
+		self:ResetInput()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

@@ -1,0 +1,106 @@
+@Component
+script MonsterStunComponent extends Component
+
+	@Sync
+	@HideFromInspector
+	property boolean isStunned = false
+	@Sync property number GroggyRemaining = 0
+	@HideFromInspector property number stunDeadline = -1
+	@HideFromInspector property integer scheduledId = 0
+	@HideFromInspector property integer executionId = 0
+
+	@ExecSpace("ServerOnly")
+	method void SetStunned(boolean isHeld)
+		-- 상태 소유자만 그로기 활성값을 변경한다.
+		self.isStunned = isHeld
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ApplyGroggy(number duration)
+		-- 현재 상대만 그로기로 전환하고 같은 상태라면 만료만 갱신한다.
+		local attack = self.Entity:GetComponent("script.MonsterAttackComponent")
+		local state = self.Entity.StateComponent
+		local pause = self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		local health = self.Entity:GetComponent("script.MonsterHealthComponent")
+		if not isvalid(attack) or not isvalid(attack:GetDuelPlayer()) or not isvalid(state) or not isvalid(pause) or pause.IsPaused then return end
+		if not isvalid(health) or health.IsDead or health.Hp <= 0 or not _CombatRuleCatalog:IsFinite(duration) or duration < 0 then return end
+		self._T.requestedDuration = duration
+		if state.CurrentStateName == "STUN" then self:SetStunned(true); self:BeginStunTimer()
+		elseif not state:ChangeState("STUN") then self._T.requestedDuration = nil; return end
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore groggy applied deadline=" .. tostring(self.stunDeadline)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void BeginStunTimer()
+		-- 만료는 슬로우 진행이 아닌 정지 가능한 맵 전투 시간으로 잰다.
+		local duration = self._T.requestedDuration
+		self:ClearStunTimer()
+		self._T.pause = self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		if duration == nil then
+			local rules = _CombatRuleCatalog:GetRules({})
+			if rules == nil then return end
+			duration = rules.GroggyDurationSec
+		end
+		if not isvalid(self._T.pause) then return end
+		self.scheduledId = self.executionId
+		self.stunDeadline = self._T.pause:GetCombatTime() + duration
+		self.GroggyRemaining = duration
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- HIT로 짧아지지 않는 현재 그로기의 종료만 처리한다.
+		if self.stunDeadline < 0 or self.scheduledId ~= self.executionId or not isvalid(self._T.pause) then return end
+		self.GroggyRemaining = math.max(0, self.stunDeadline - self._T.pause:GetCombatTime())
+		if self._T.pause.IsPaused or self.GroggyRemaining > 0 then return end
+		self.stunDeadline = -1
+		local health = self.Entity:GetComponent("script.MonsterHealthComponent")
+		local state = self.Entity.StateComponent
+		if isvalid(health) and not health.IsDead and health.Hp > 0 and isvalid(state) and state.CurrentStateName == "STUN" then state:ChangeState("IDLE") end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearStunTimer()
+		-- 이전 만료와 요청을 무효화해 늦은 IDLE을 막는다.
+		self.executionId = self.executionId + 1
+		self.stunDeadline = -1
+		self.GroggyRemaining = 0
+		self._T.requestedDuration = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void UpdateStunVisual()
+		-- 머리 위 별 파티클은 현재 그로기의 표시만 소유한다.
+		if not self.isStunned then
+			if self._T.particleSerial ~= nil and self._T.particleSerial ~= 0 then _ParticleService:RemoveParticle(self._T.particleSerial) end
+			self._T.particleSerial = nil
+			self._T.visualAttempted = false
+		elseif not self._T.visualAttempted then
+			self._T.visualAttempted = true
+			self._T.particleSerial = _ParticleService:PlayBasicParticleAttached(BasicParticleType.StarVortex, self.Entity, Vector3(0, 0.65, 0), 0, Vector3(0.2, 0.2, 0.2), true)
+			if Environment:IsMakerPlay() then log("[VRF] CombatCore groggy visual serial=" .. tostring(self._T.particleSerial)) end
+		end
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnSyncProperty(string name, any value)
+		-- 서버 활성값에 맞춰 표시를 만들고 제거한다.
+		if name == "isStunned" then self:UpdateStunVisual() end
+	end
+
+	method void OnMapLeave(Entity leftMap)
+		-- 양쪽 수명의 예약과 표시를 각각 정리한다.
+		if self:IsServer() then self:ClearStunTimer(); self:SetStunned(false)
+		else
+			if self._T.particleSerial ~= nil and self._T.particleSerial ~= 0 then _ParticleService:RemoveParticle(self._T.particleSerial) end
+			self._T.particleSerial = nil
+			self._T.visualAttempted = false
+		end
+	end
+
+	method void OnEndPlay()
+		-- Stop에서 이전 별 표시나 종료 예약을 남기지 않는다.
+		self:OnMapLeave(self.Entity.CurrentMap)
+	end
+
+end

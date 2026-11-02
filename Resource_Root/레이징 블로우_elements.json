@@ -1,0 +1,75 @@
+{
+  "resource_pack": "레이징 블로우",
+  "elements": [
+    {
+      "ruid": "aa92fddf0e404d35bf6406cef6bc7ad5",
+      "action": "audio/Hit",
+      "type": "effect"
+    },
+    {
+      "ruid": "5308ef85369c4f31843d6e8cde4b1012",
+      "action": "effect",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "8f13cadae8d74120834e6b00bdae2faf",
+      "action": "effect/0",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "b69c64835da9420ebeb3ca4e365e258b",
+      "action": "effect/1",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "71d8513c51fc48c49609837f3d15160b",
+      "action": "effect/2",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "3448ba941413425bb8622c9c5059842f",
+      "action": "effect/3",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "b79cbdf6d06b487382f03d625a1fc464",
+      "action": "hit/0",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "a5fa2b779db14f93b881a873f36b7eac",
+      "action": "hit/1",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "1ce3b9be19764a70a6229665e15adf42",
+      "action": "hit/2",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "79132eeadd9b4ab090bf4845bfcfdbdb",
+      "action": "hit/3",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "3720a775e9c241fbb547c81d76598843",
+      "action": "hit/4",
+      "type": "animationclip"
+    },
+    {
+      "ruid": "644fc39bcc684c209264eb9d9a4cd6f8",
+      "action": "icon",
+      "type": "sprite"
+    },
+    {
+      "ruid": "136363d8cffd43a5a01a1de4db2b5db7",
+      "action": "iconDisabled",
+      "type": "sprite"
+    },
+    {
+      "ruid": "1a2369b54b7946ffbfeac7057f3cc165",
+      "action": "iconMouseOver",
+      "type": "sprite"
+    }
+  ]
+}

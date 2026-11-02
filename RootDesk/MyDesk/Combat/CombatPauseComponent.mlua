@@ -1,0 +1,177 @@
+@Component
+script CombatPauseComponent extends Component
+
+	@Sync
+	property boolean IsPaused = false
+
+	method void OnBeginPlay()
+		-- 맵 수명의 논리 시계와 정지 소유권을 초기화한다.
+		self._T.started = _UtilLogic.ElapsedSeconds
+		self._T.pausedSeconds = 0
+		self._T.clockPaused = false
+		self._T.frozen = {}
+		self._T.lastSessions = {}
+		if self:IsServer() then self.IsPaused = false end
+		if Environment:IsMakerPlay() then log("[VRF] CombatPause boot server=" .. tostring(self:IsServer())) end
+	end
+
+	method number GetCombatTime()
+		-- 실행 공간마다 독립된 시계에서 정지한 실시간만 제외한다.
+		local now = _UtilLogic.ElapsedSeconds
+		if self._T.started == nil then self._T.started = now end
+		if self._T.clockPaused then now = self._T.pauseStarted end
+		return now - self._T.started - (self._T.pausedSeconds or 0)
+	end
+
+	method void SetClockPaused(boolean paused)
+		-- 전투 시계의 경계만 바꾸며 진행 중 실행 식별자는 건드리지 않는다.
+		if (self._T.clockPaused == true) == paused then return end
+		local now = _UtilLogic.ElapsedSeconds
+		if paused then
+			self._T.pauseStarted = now
+		else
+			self._T.pausedSeconds = (self._T.pausedSeconds or 0) + now - self._T.pauseStarted
+		end
+		self._T.clockPaused = paused
+	end
+
+	@ExecSpace("ServerOnly")
+	method void FreezeMonster(Entity monster)
+		-- 현재 정지에 참여하는 몬스터의 물리·자동 상태 갱신 활성값을 보관한다.
+		if not self.IsPaused or not isvalid(monster) or monster.CurrentMap ~= self.Entity then return end
+		if self._T.frozen[monster.Id] ~= nil then return end
+		local body = monster.RigidbodyComponent
+		local state = monster.StateComponent
+		self._T.frozen[monster.Id] = { entity = monster, body = body, state = state,
+			bodyEnabled = isvalid(body) and body.Enable, stateEnabled = isvalid(state) and state.Enable }
+		if isvalid(body) then body.Enable = false end
+		if isvalid(state) then state.Enable = false end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SetServerPaused(boolean paused)
+		-- 피해 판정과 별도로 서버 물리·상태 갱신도 정지하고 정확한 활성값을 복원한다.
+		if self.IsPaused == paused then return end
+		self:SetClockPaused(paused)
+		self.IsPaused = paused
+		if paused then
+			self._T.frozen = {}
+			for _, health in ipairs(self.Entity:GetChildComponentsByTypeName("script.MonsterHealthComponent", true)) do
+				if isvalid(health) then self:FreezeMonster(health.Entity) end
+			end
+		else
+			for _, saved in pairs(self._T.frozen or {}) do
+				if isvalid(saved.entity) and saved.entity.CurrentMap == self.Entity then
+					if isvalid(saved.body) then saved.body.Enable = saved.bodyEnabled end
+					if isvalid(saved.state) then saved.state.Enable = saved.stateEnabled end
+				end
+			end
+			self._T.frozen = {}
+		end
+		if Environment:IsMakerPlay() then log("[VRF] CombatPause server paused=" .. tostring(paused) .. " clock=" .. tostring(self:GetCombatTime())) end
+	end
+
+	@ExecSpace("Server")
+	method void RequestPopupPause(integer session, boolean paused)
+		-- 요청자의 현재 맵과 단일 팝업 세션을 확인한 뒤 서버 정지를 승인한다.
+		local user = _UserService:GetUserEntityByUserId(senderUserId)
+		if not isvalid(user) or user.CurrentMap ~= self.Entity or session <= 0 then return end
+		local player = user.PlayerComponent
+		if paused then
+			local previous = self._T.lastSessions[senderUserId] or 0
+			local users = _UserService:GetUsersByMapComponent(self.Entity.MapComponent)
+			if session <= previous or self.IsPaused or not isvalid(player) or player.Hp <= 0 or player:IsDead() or users == nil or #users ~= 1 then
+				self:ReceivePopupPause(session, false, self.IsPaused, senderUserId)
+				return
+			end
+			self._T.lastSessions[senderUserId] = session
+			self._T.owner = user
+			self._T.ownerId = senderUserId
+			self._T.session = session
+			self:SetServerPaused(true)
+		else
+			if not self.IsPaused or self._T.ownerId ~= senderUserId or self._T.session ~= session then return end
+			if not isvalid(player) or player.Hp <= 0 or player:IsDead() then self:AbortCombat(); return end
+			-- 입력의 서버 반영 지연과 무관하게 이전 홀드의 판정 시간을 폐기한다.
+			local guard = user:GetComponent("script.PlayerGuardComponent")
+			local evade = user:GetComponent("script.PlayerEvadeComponent")
+			if isvalid(guard) then guard:SetGuarding(false); guard.guardStartTime = -1 end
+			if isvalid(evade) then evade:SetEvading(false); evade.evadeStartTime = -1 end
+			self:SetServerPaused(false)
+			self._T.owner = nil
+			self._T.ownerId = nil
+			self._T.session = nil
+		end
+		self:ReceivePopupPause(session, true, paused, senderUserId)
+	end
+
+	@ExecSpace("Client")
+	method void ReceivePopupPause(integer session, boolean accepted, boolean paused)
+		-- UI가 현재 세션인지 확인한 뒤에만 시간 배율을 변경하게 한다.
+		_UIPopup:OnPauseResponse(self, session, accepted, paused)
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetPresentationPaused(boolean paused)
+		-- 서버 승인에 맞춰 클라이언트 전투 연출과 로컬 전투 시계를 정지한다.
+		self:SetClockPaused(paused)
+		if paused then
+			self._T.presentationOwned = true
+			_UtilLogic:SetClientTimeScale(0)
+		elseif self._T.presentationOwned then
+			self._T.presentationOwned = false
+			_UtilLogic:SetClientTimeScale(1)
+		end
+		if Environment:IsMakerPlay() then log("[VRF] CombatPause client paused=" .. tostring(paused) .. " clock=" .. tostring(self:GetCombatTime())) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void AbortCombat()
+		-- 사망·맵 이탈은 재개보다 우선하며 이전 전투의 예약을 폐기한다.
+		local owner = self._T.owner
+		local ownerId = self._T.ownerId
+		local session = self._T.session
+		if isvalid(owner) and owner.CurrentMap == self.Entity then
+			local combat = owner:GetComponent("script.PlayerCombatComponent")
+			if isvalid(combat) then combat:CancelAttack() end
+		end
+		for _, saved in pairs(self._T.frozen or {}) do
+			if isvalid(saved.entity) and saved.entity.CurrentMap == self.Entity then
+				local attack = saved.entity:GetComponent("script.MonsterAttackComponent")
+				local stun = saved.entity:GetComponent("script.MonsterStunComponent")
+				if isvalid(attack) then attack:CancelPendingAttack() end
+				if isvalid(stun) then stun:ClearStunTimer() end
+			end
+		end
+		self:SetServerPaused(false)
+		self._T.owner = nil
+		self._T.ownerId = nil
+		self._T.session = nil
+		-- 접속 해제 뒤에는 받을 클라이언트가 없다. 로컬 UI 종료 정리는 독립적으로 수행한다.
+		local canNotify = ownerId ~= nil and session ~= nil and isvalid(_UserService:GetUserEntityByUserId(ownerId))
+		if canNotify then self:ReceivePopupPause(session, false, false, ownerId) end
+		if Environment:IsMakerPlay() then log("[VRF] CombatPause abort notify=" .. tostring(canNotify)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- 전역으로 남아 있는 맵에서도 정지 소유자의 이탈·사망을 감지한다.
+		if not self.IsPaused then return end
+		local owner = self._T.owner
+		if not isvalid(owner) or owner.CurrentMap ~= self.Entity then self:AbortCombat(); return end
+		local player = owner.PlayerComponent
+		if not isvalid(player) or player.Hp <= 0 or player:IsDead() then self:AbortCombat() end
+	end
+
+	method void OnEndPlay()
+		-- 맵 수명이 끝나면 정지와 UI 소유권을 해제한다.
+		if self:IsServer() then
+			if self.IsPaused then self:AbortCombat() end
+		else
+			if _UIPopup._T.pause == self then _UIPopup:AbortPopup() end
+			self:SetPresentationPaused(false)
+		end
+		self._T.frozen = {}
+	end
+
+end

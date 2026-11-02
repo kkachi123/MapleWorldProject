@@ -1,0 +1,91 @@
+@Component
+script AttackRangeGizmo extends Component
+
+	property number linesize = 0.3
+	property Entity gizmoEntity = nil
+	property any rangeInfo = nil
+
+	@ExecSpace("ClientOnly")
+	method void OnBeginPlay()
+		-- 엔티티/로직 수명의 참조와 시작 상태를 초기화한다.
+		self:EnsureGizmo()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void EnsureGizmo()
+		-- Maker의 로컬 플레이어에 한해 보조 도형을 한 번 생성한다.
+		if not Environment:IsMakerPlay() or self.Entity ~= _UserService.LocalPlayer or isvalid(self.gizmoEntity) then return end
+		local data = _DataService:GetTable("AssistModel")
+		if not isvalid(data) then return end
+		self.rangeInfo = self.Entity:GetComponent("script.PlayerCombatComponent")
+		self.gizmoEntity = _SpawnService:SpawnByModelId(data:GetCell(1, "modelid"), data:GetCell(1, "name"), Vector3.zero, self.Entity)
+		if not isvalid(self.gizmoEntity) then return end
+		local line = self.gizmoEntity.LineRendererComponent
+		if not isvalid(line) then return end
+		line.Loop = true
+		line.OrderInLayer = 999
+		line.IgnoreMapLayerCheck = true
+		self._T.line = line
+		self._T.controller = self.Entity.PlayerControllerComponent
+		self._T.color = Color(1, 0.25, 0.25, 0.85)
+		self._T.previous = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnUpdate(number delta)
+		-- 현재 수명의 변경값만 처리한다.
+		if not Environment:IsMakerPlay() or self.Entity ~= _UserService.LocalPlayer then return end
+		local combat = self.rangeInfo
+		local line = self._T.line
+		if not isvalid(combat) or not isvalid(line) or not isvalid(self.gizmoEntity) then return end
+		self.gizmoEntity.Visible = combat.ShowAttackRangeGizmo
+		if not combat.ShowAttackRangeGizmo then return end
+		local direction = 1
+		if isvalid(self._T.controller) then direction = self._T.controller.LookDirectionX end
+		if direction == 0 then direction = 1 end
+		local x = combat.attackOffset.x * direction
+		local y = combat.attackOffset.y
+		local width = combat.AttackRangeWidth
+		local height = combat.AttackRangeHeight
+		local previous = self._T.previous
+		if previous ~= nil and previous.x == x and previous.y == y and previous.width == width and previous.height == height and previous.lineSize == self.linesize then return end
+		self._T.previous = {x = x, y = y, width = width, height = height, lineSize = self.linesize}
+		local hw = width / 2
+		local hh = height / 2
+		line.Points:Clear()
+		line.Points:Add(LinePoint(Vector2(x - hw, y - hh), self._T.color, self.linesize))
+		line.Points:Add(LinePoint(Vector2(x - hw, y + hh), self._T.color, self.linesize))
+		line.Points:Add(LinePoint(Vector2(x + hw, y + hh), self._T.color, self.linesize))
+		line.Points:Add(LinePoint(Vector2(x + hw, y - hh), self._T.color, self.linesize))
+		self._T.rebuildCount = (self._T.rebuildCount or 0) + 1
+	end
+
+	@ExecSpace("ClientOnly")
+	method void DisposeGizmo()
+		-- 소유한 보조 엔티티와 도형 캐시를 해제한다.
+		if isvalid(self.gizmoEntity) then self.gizmoEntity:Destroy() end
+		self.gizmoEntity = nil
+		self.rangeInfo = nil
+		self._T.line = nil
+		self._T.previous = nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapEnter(Entity enteredMap)
+		-- 새 맵 수명에 필요한 보조 표시를 연결한다.
+		self:EnsureGizmo()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnMapLeave(Entity leftMap)
+		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
+		self:DisposeGizmo()
+	end
+
+	@ExecSpace("ClientOnly")
+	method void OnEndPlay()
+		-- 종료 시 소유한 타이머와 참조를 해제한다.
+		self:DisposeGizmo()
+	end
+
+end

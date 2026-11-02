@@ -1,0 +1,113 @@
+@State
+script Monster_Attack extends StateType
+
+	property Entity entity = nil
+	property MonsterAttackComponent attack = nil
+	property MonsterAttackMotion motion = nil
+	property number attackDue = -1
+	property number returnDue = -1
+	property any pause = nil
+	property any control = nil
+	property integer attackId = 0
+	property integer executionId = 0
+	property boolean active = false
+
+	method void OnEnter()
+		-- One state entry owns both approach and return callbacks.
+		if not self.ParentComponent:IsServer() then return end
+		self:CancelExecution()
+		self.entity = self.ParentComponent.Entity
+		self.pause = self.entity.CurrentMap:GetComponent("script.CombatPauseComponent")
+		self.control = self.entity:GetComponent("script.MonsterStateControl")
+		---@type MonsterAttackComponent
+		local attack = self.entity:GetComponent("script.MonsterAttackComponent")
+		self.attack = attack
+		---@type MonsterAttackMotion
+		local motion = self.entity:GetComponent(MonsterAttackMotion)
+		self.motion = motion
+		if not isvalid(self.attack) or not isvalid(self.motion) or not isvalid(self.pause) or not isvalid(self.control) then
+			log_warning("[Monster_Attack] Attack or motion component missing")
+			self.ParentComponent:ChangeState("IDLE")
+			return
+		end
+		local snapshot = self.attack:PrepareAttack()
+		if snapshot == nil then
+			log_warning("[Monster_Attack] Battle position missing")
+			self.ParentComponent:ChangeState("IDLE")
+			return
+		end
+		self.active = true
+		self.attackId = snapshot.id
+		self.attack._T.activeState = self
+		local duration = self.motion:PerformAttackMotion(snapshot.landing)
+		if duration < 0 or duration ~= duration or duration == math.huge or snapshot.pattern.TelegraphLeadSec < duration then
+			self:CancelExecution()
+			self.ParentComponent:ChangeState("IDLE")
+			return
+		end
+		self.attackDue = self.control:GetActionTime() + snapshot.pattern.TelegraphLeadSec
+	end
+
+	method void OnUpdate()
+		-- 접근·복귀 예약은 전투 시계만 따르며 정지 중 식별자와 진행을 보존한다.
+		if not self.ParentComponent:IsServer() or not self.active or not isvalid(self.pause) or self.pause.IsPaused then return end
+		local now = self.control:GetActionTime()
+		if self.attackDue >= 0 then self.attack.TelegraphRemaining = math.max(0, self.attackDue - now) / self.control.ActionRate end
+		if self.attackDue >= 0 and now >= self.attackDue then
+			self:OnAttackComplete(self.executionId)
+		elseif self.returnDue >= 0 and now >= self.returnDue then
+			self:OnReturnComplete(self.executionId)
+		end
+	end
+
+	method boolean IsCurrent(integer id)
+		-- Late callbacks must not affect another attack or a dead entity.
+		if not self.active or id ~= self.executionId or not isvalid(self.entity) then return false end
+		if not isvalid(self.attack) or not isvalid(self.motion) then return false end
+		if not isvalid(self.pause) or self.pause.IsPaused then return false end
+		---@type MonsterHealthComponent
+		local health = self.entity:GetComponent(MonsterHealthComponent)
+		return isvalid(health) and not health.IsDead and health.Hp > 0 and self.ParentComponent.CurrentStateName == "ATTACK"
+	end
+
+	method void OnAttackComplete(integer id)
+		-- Finish movement before judging; a counter can kill us during judgment.
+		if self.attackDue < 0 or not self:IsCurrent(id) then return end
+		self.attackDue = -1
+		self.motion:CompleteMotion()
+		self.attack:ResolveAttack()
+		if not self:IsCurrent(id) then return end
+		local duration = self.motion:PerformReturnMotion()
+		if duration < 0 or duration ~= duration or duration == math.huge then
+			self.ParentComponent:ChangeState("IDLE")
+			return
+		end
+		self.returnDue = self.control:GetActionTime() + duration
+	end
+
+	method void OnReturnComplete(integer id)
+		-- Only this still-active ATTACK may return to IDLE.
+		if self.returnDue < 0 or not self:IsCurrent(id) then return end
+		self.returnDue = -1
+		self.motion:CompleteMotion()
+		self.ParentComponent:ChangeState("IDLE")
+	end
+
+	method void CancelExecution()
+		-- Invalidate first, then clear timers and the movement they owned.
+		self.executionId = self.executionId + 1
+		self.active = false
+		self.attackDue = -1
+		self.returnDue = -1
+		if isvalid(self.attack) and self.attack.AttackSequence == self.attackId then self.attack.TelegraphResponse = ""; self.attack.TelegraphRemaining = 0 end
+		if isvalid(self.motion) then self.motion:CancelMotion() end
+	end
+
+	method void OnExit()
+		-- State interruption and normal exit share the same cleanup.
+		if not self.ParentComponent:IsServer() then return end
+		self:CancelExecution()
+		if isvalid(self.attack) and self.attack._T.activeState == self then self.attack._T.activeState = nil end
+	end
+
+end

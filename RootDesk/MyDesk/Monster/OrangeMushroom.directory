@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "directory://c278b439d19c4c558c7c3c6071c56d61",
+  "ContentType": "x-mod/directory",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.7.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "entry_id": "directory://c278b439d19c4c558c7c3c6071c56d61",
+      "name": "OrangeMushroom",
+      "lock": false,
+      "folding": false,
+      "nameEditable": true
+    }
+  }
+}

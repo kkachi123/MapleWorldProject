@@ -1,0 +1,23 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "directory://c4817cf4a73843cd948ecd514c0272b7",
+  "ContentType": "x-mod/directory",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.7.0.0",
+  "StudioVersion": "0.1.0.0",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "entry_id": "directory://c4817cf4a73843cd948ecd514c0272b7",
+      "name": "@StateControl",
+      "lock": false,
+      "folding": false,
+      "nameEditable": true
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "Id": "",
+  "GameId": "",
+  "EntryKey": "codeblock://7328f8d0-5c8f-4608-92a5-e8dbad52e70b",
+  "ContentType": "x-mod/codeblock",
+  "Content": "",
+  "Usage": 0,
+  "UsePublish": 1,
+  "UseService": 0,
+  "CoreVersion": "26.7.0.0",
+  "StudioVersion": "",
+  "DynamicLoading": 0,
+  "ContentProto": {
+    "Use": "Json",
+    "Json": {
+      "CoreVersion": {
+        "Major": 0,
+        "Minor": 2
+      },
+      "ScriptVersion": {
+        "Major": 1,
+        "Minor": 1
+      },
+      "Description": "",
+      "Id": "7328f8d0-5c8f-4608-92a5-e8dbad52e70b",
+      "Language": 1,
+      "Name": "CombatHpBarController",
+      "Type": 5,
+      "Source": 0,
+      "Target": null
+    }
+  }
+}

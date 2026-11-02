@@ -1,0 +1,9 @@
+﻿id,modelId,ResponseType,AttackAttribute,LandingAnchor,AreaFromAnchor,AreaToAnchor,AreaPaddingX,AreaHeight,AreaOffsetY,TelegraphLeadSec
+normal.left,castleenemy,LEFT,NORMAL,2,2,3,0.5,1,0.4,0.5
+normal.guard,castleenemy,GUARD,NORMAL,2,1,3,0.5,1,0.4,0.5
+normal.right,castleenemy,RIGHT,NORMAL,2,1,2,0.5,1,0.4,0.5
+special.left,castleenemy,LEFT,SPECIAL,2,2,3,0.5,1,0.4,0.5
+special.right,castleenemy,RIGHT,SPECIAL,2,1,2,0.5,1,0.4,0.5
+parry.left,castleenemy,LEFT,PARRY,2,2,3,0.5,1,0.4,0.5
+parry.guard,castleenemy,GUARD,PARRY,2,1,3,0.5,1,0.4,0.5
+parry.right,castleenemy,RIGHT,PARRY,2,1,2,0.5,1,0.4,0.5

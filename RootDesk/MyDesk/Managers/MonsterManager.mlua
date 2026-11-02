@@ -1,0 +1,138 @@
+@Component
+script MonsterManager extends Component
+
+	property table data = {}
+	property Entity SpawnPosition = "79330cf4-8561-4790-a95e-45727196d17c"
+	@Sync
+	@HideFromInspector
+	property Entity CurrentMonster = nil
+	@Sync
+	@HideFromInspector
+	property Entity CurrentPlayer = nil
+
+	@ExecSpace("ServerOnly")
+	method void OnInitialize()
+		-- 기존 몬스터 데이터의 식별자와 모델 연결을 읽는다.
+		self.data = {}
+		local source = _DataService:GetTable("MonsterData")
+		if not isvalid(source) then log_warning("[MonsterManager] MonsterData missing"); return end
+		for i = 1, source:GetRowCount() do
+			local id = tonumber(source:GetCell(i, "id"))
+			local name = source:GetCell(i, "name")
+			local modelId = source:GetCell(i, "modelid")
+			if id ~= nil and name ~= nil and name ~= "" and modelId ~= nil and modelId ~= "" then
+				table.insert(self.data, { id = id, name = name, modelid = modelId })
+			else log_warning("[MonsterManager] Invalid MonsterData row " .. tostring(i)) end
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnBeginPlay()
+		-- 맵이 소유하는 기존 단일 몬스터를 생성한다.
+		self:DoSpawn()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void RefreshDuelPlayer()
+		-- 현재 맵의 유일한 생존 사용자만 수락하고 모호한 대결은 중단한다.
+		local map = self.Entity.CurrentMap
+		local users = isvalid(map) and _UserService:GetUsersByMapComponent(map.MapComponent) or nil
+		local player = nil
+		if users ~= nil and #users == 1 then
+			local candidate = users[1]
+			local pc = isvalid(candidate) and candidate.PlayerComponent or nil
+			local health = isvalid(self.CurrentMonster) and self.CurrentMonster:GetComponent("script.MonsterHealthComponent") or nil
+			if isvalid(pc) and pc.Hp > 0 and not pc:IsDead() and isvalid(health) and not health.IsDead and health.Hp > 0 then player = candidate end
+		end
+		if self.CurrentPlayer == player then return end
+		local previous = self.CurrentPlayer
+		self.CurrentPlayer = player
+		if previous ~= nil then
+			if isvalid(previous) then
+				local combat = previous:GetComponent("script.PlayerCombatComponent")
+				if isvalid(combat) then combat:ClearCounter(); combat:CancelAttack() end
+			end
+			self:ClearOpponentExecution()
+		end
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore duel player=" .. tostring(isvalid(player) and player.Id or "none")) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearOpponentExecution()
+		-- 상대 교체·소유자 이탈은 이전 공격·효과를 되살리지 않는다.
+		local monster = self.CurrentMonster
+		if not isvalid(monster) then return end
+		local attack = monster:GetComponent("script.MonsterAttackComponent")
+		local control = monster:GetComponent("script.MonsterStateControl")
+		local stun = monster:GetComponent("script.MonsterStunComponent")
+		if isvalid(attack) then attack:CancelPendingAttack() end
+		if isvalid(control) then control:ClearCombatEffects() end
+		if isvalid(stun) then stun:ClearStunTimer(); stun:SetStunned(false) end
+		local health = monster:GetComponent("script.MonsterHealthComponent")
+		local state = monster.StateComponent
+		if isvalid(health) and not health.IsDead and health.Hp > 0 and isvalid(state) and (state.CurrentStateName == "ATTACK" or state.CurrentStateName == "STUN") then state:ChangeState("IDLE") end
+	end
+
+	@ExecSpace("ServerOnly")
+	method Entity GetDuelPlayer(Entity monster)
+		-- 모든 공격·효과는 같은 관리자의 현재 대결 쌍만 사용한다.
+		self:RefreshDuelPlayer()
+		if monster ~= self.CurrentMonster or not isvalid(monster) or monster.CurrentMap ~= self.Entity.CurrentMap then return nil end
+		return self.CurrentPlayer
+	end
+
+	@ExecSpace("ServerOnly")
+	method Entity GetOpponent(Entity player)
+		-- 상대가 없거나 다른 사용자가 요청하면 대상을 임의로 선택하지 않는다.
+		self:RefreshDuelPlayer()
+		if player ~= self.CurrentPlayer or not isvalid(player) or player.CurrentMap ~= self.Entity.CurrentMap then return nil end
+		return self.CurrentMonster
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetCurrentMonster()
+		-- 기존 조회 진입점은 유지한다.
+		return self.CurrentMonster
+	end
+
+	@ExecSpace("ServerOnly")
+	method void DoSpawn()
+		-- 새 상대 생성에 성공한 경우에만 이전 대결을 무효화한다.
+		local map = self.Entity.CurrentMap
+		if not isvalid(map) or not isvalid(self.SpawnPosition) or #self.data == 0 then log_warning("[MonsterManager] Map, spawn marker or monster data missing"); return end
+		local row = self.data[math.random(1, #self.data)]
+		local position = self.SpawnPosition.TransformComponent.WorldPosition
+		local monster = _SpawnService:SpawnByModelId(row.modelid, row.name, position, map)
+		if not isvalid(monster) then log_warning("[MonsterManager] Spawn failed: " .. row.modelid); return end
+		local previous = self.CurrentMonster
+		self:ClearOpponentExecution()
+		if isvalid(self.CurrentPlayer) then
+			local combat = self.CurrentPlayer:GetComponent("script.PlayerCombatComponent")
+			if isvalid(combat) then combat:ClearCounter(); combat:CancelAttack() end
+		end
+		self.CurrentPlayer = nil
+		self.CurrentMonster = monster
+		local attack = monster:GetComponent("script.MonsterAttackComponent")
+		local modelKey = row.modelid
+		if string.sub(modelKey, 1, 8) == "model://" then modelKey = string.sub(modelKey, 9) end
+		if isvalid(attack) then attack._T.modelKey = modelKey end
+		if isvalid(previous) and previous ~= monster then previous:Destroy() end
+		if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawned parent=" .. monster.Parent.Name .. " x=" .. tostring(position.x)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- 접속·사망·이탈의 변화만 기존 단일 대결 참조에 반영한다.
+		self:RefreshDuelPlayer()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnEndPlay()
+		-- 맵 수명이 끝나면 현재 대결의 실행과 참조를 정리한다.
+		self:ClearOpponentExecution()
+		self.CurrentPlayer = nil
+		self.CurrentMonster = nil
+		self.data = {}
+	end
+
+end

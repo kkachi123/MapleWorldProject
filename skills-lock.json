@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "skills": {
+    "maplestory-skill-maker": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-content-skill/skills/maplestory-skill-maker/SKILL.md",
+      "computedHash": "d5c567ad774aea72547e11d42901a8561f41be5be161e56c2762165fcb9b331c"
+    },
+    "msw-avatar": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-avatar/SKILL.md",
+      "computedHash": "9834e7b8091705c32af13523a92857178b543a738788dcffb196d5ec1a2677f1"
+    },
+    "msw-behaviourtree": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-behaviourtree/SKILL.md",
+      "computedHash": "143dcad5e54b152e0c7ae7b29a10a6b9706468f8d029862072d4996d4b0ab9cb"
+    },
+    "msw-combat-system": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-combat-system/SKILL.md",
+      "computedHash": "0052a62b5516541b5e8c62285668b2cb7e6855c93520c1b4e26e0a6a1a6b6050"
+    },
+    "msw-defaultplayer": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-defaultplayer/SKILL.md",
+      "computedHash": "9b7a1ece5c6cf3254b77988344eabc8c3b82665287ab8aa89d1fac776f3f493c"
+    },
+    "msw-general": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-general/SKILL.md",
+      "computedHash": "b05b5d46095236e45c5e763c94e8d319e9d5fc6237c362d2f54ea1c8282a1b5a"
+    },
+    "msw-packages": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-packages/SKILL.md",
+      "computedHash": "fff1bf1d72cf14cce2a6398bd7a0f29021382b9eb15ec4a8212953415feba321"
+    },
+    "msw-painter": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-painter/SKILL.md",
+      "computedHash": "5708d0f0b7997f3d15789aa9ac55e301775611d900128da04fee7134c33814aa"
+    },
+    "msw-planning": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-planning/SKILL.md",
+      "computedHash": "201d01684edec46e760c485ee6d04548f499d12e03537161a286c9cc23f65d2b"
+    },
+    "msw-scripting": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-scripting/SKILL.md",
+      "computedHash": "209c6f4f5e507030bca0f03649a127810cd3b996d37820385a695b1fd9b31b1c"
+    },
+    "msw-search": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-search/SKILL.md",
+      "computedHash": "bcc58d891858279fe7fb5ec17936face2bf06b4837f2683f8bd3c5ab105dfd08"
+    },
+    "msw-sprite-ruid": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-sprite-ruid/SKILL.md",
+      "computedHash": "218f5f6fdd23ae68704a22d66780c0a6a124aa186439f658634917bf89b41329"
+    },
+    "msw-ui-kit": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-ui-kit/SKILL.md",
+      "computedHash": "4a481f759e2c693f7a7d7d8aeafbf27a2628c16d95d05aaa23c73f3e5370d7a6"
+    },
+    "msw-ui-system": {
+      "source": "MSW-Git/msw-ai-coding-plugins-official",
+      "sourceType": "github",
+      "skillPath": "plugins/msw-maker-base-skill/skills/msw-ui-system/SKILL.md",
+      "computedHash": "4b3a8bfa782f71cfb7364fcd5b167938853262266d6ab923395c7acb906ff33e"
+    }
+  }
+}
