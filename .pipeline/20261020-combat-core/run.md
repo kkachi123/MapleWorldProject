@@ -1,11 +1,11 @@
 # 20261020-combat-core
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
-- 모드: 승인된 2단계 REV-F01 수정 회차(구현·검증·재검토)
-- 상태: WAITING_USER
+- 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
+- 상태: CODING
 - 갱신: 2026-11-02 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (Plan §14 Q5·Q6 결정)
-- 다음 행동·대기 사유: 사용자 Q5(처리 범위)·Q6(패링 순간 강조 형태) 결정 대기 → 승인 범위만 tester F05 재현 → coder → tester → reviewer → 사용자 V11 재확인.
+- 현재 담당: coder msw-coder (독립 실행, Maker 단독 사용)
+- 다음 행동·대기 사유: msw-coder F05 원인 확인·F01~F04 구현·기본 검증·Maker edit 인계 → msw-tester → msw-reviewer → 사용자 V11 재확인.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -131,3 +131,9 @@
   - Q4: F04 어지러움 애니메이션 자원 존재를 지금 읽기 확인한 뒤 처리 시점을 함께 판단. 아직 구현 승인 아님.
 - planner 전달: 결정 반영·F04 읽기 확인.
 - planner 실제 종료(msw-planner): Q1~Q3 결정·D04/§5 순서 변경 반영, F04 자원 없음 확인(읽기 전용, 런타임 미확인). Q5·Q6 추가. 커밋 아래 [plan].
+- 사용자 결정(2026-11-02, 선택 화면 답변):
+  - Q5: "StateAnimationComponent보면 hit 애니메이션 존재. 이걸 사용해줘. 확인하고 성공하면 추가로 애니메이션 세팅이 필요할때는 지금처럼 세팅된 animation 확인하고 뭘 쓸지 물어봐." → F04는 기존 hit 애니메이션을 그로기(STUN) 모션으로 사용, 런타임 확인 필요. 이에 따라 F05·F01~F04를 2단계에서 구현·검증하기로 승인(F04 포함 범위). 앞으로 추가 애니메이션 설정은 기존 세팅 확인 후 사용자에게 선택을 묻는다.
+  - Q6: 접촉 지점 이펙트(네이티브 파티클).
+- planner 전달: Q5·Q6 반영·구현 범위 확정.
+- planner 실제 종료(msw-planner): Q5·Q6 반영, Plan §14 coder 인계 범위 확정, 미결정 없음. 커밋 아래 [plan].
+- coder 전달: msw-coder 호출(기준 6614b20 / Bundle 1ac324e6…9de4). tester/reviewer 미호출.
