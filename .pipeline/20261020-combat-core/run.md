@@ -2,9 +2,9 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: TESTING
+- 상태: REVIEWING
 - 갱신: 2026-11-03 / 메인 조율 채팅(Claude Code)
-- 현재 담당: tester msw-tester (V11-F08·F09, 대상 a921c76)
+- 현재 담당: reviewer msw-reviewer (V11-F08·F09, 대상 a921c76)
 - 다음 행동·대기 사유: 리뷰 WAITING(결함 없음, 대상 b89de46). 사용자 V11 재확인 대기(확인 항목은 Plan §15 끝 절). 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
@@ -195,3 +195,5 @@
 - coder 실제 종료(msw-coder): 커밋 a921c76. F08 원인=hit 비반복 클립(이벤트 1회 재생 뒤 stand), SetStunned에서 표시 클립 고정. F09 문구 제거·칸 속성색. clear_logs 미호출. Maker map01/edit.
 - 대상 버전: 커밋 a921c76. 작업 트리 54경로 Bundle 377a5ccc5f42de649117004aad7520cff9a73eae80c9e1096bb3e3bf3f780363 = 커밋 + 미커밋 Maker 재저장 3경로(userdataset 2·주황버섯 모델, 의미 차이 없음). 재저장 3파일은 사용자 범위라 커밋에 섞지 않음.
 - coder 범위 밖 관찰: IDLE 상태 일반 사망 시 화면이 die가 아닌 stand(die도 비반복 추정). 이번 변경은 그로기 중 사망만 die 고정. 결함 후보·사용자 판단.
+- tester 실제 종료(msw-tester): QA6 전부 PASS, FAIL·NEEDS_DECISION 없음. 커밋 5a6ec07. clear_logs 미호출 확인. Maker map01/edit.
+- tester 관찰(범위 밖): 일반 사망(IDLE·공격 중) 시 화면 stand 유지 재현, 그로기 만료와 타격 겹침 시 0.5초 HIT, 생성 직후 0.3초 연출 프레임.
