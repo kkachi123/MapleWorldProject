@@ -1,13 +1,15 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-03 / 최신: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-03 / 최신: 독립 리뷰 REV-F02·V11-F10·V11-F11 **WAITING**(리뷰 기록 첫 절, 5c4eda3 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80 재계산 일치, 제품 변경 6경로, 고칠 결함 없음, H1 규칙상 정상, 사용자 V11 대기). 그 전: 독립 QA 7회차 REV-F02·V11-F10·V11-F11·H1(QA 기록 첫 절, 커밋 5c4eda3 / 작업 트리 Bundle fdca556d…ee80 54/54 전후 일치, 전부 PASS·FAIL 없음·결함 후보 없음, 육안·0.20초 손 타이밍·CSV 파일 변경 반영·실제 키 해제 타이밍 NOT_RUN, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
 ## 현재 재개 지점
 
-2026-11-03 기준: msw-coder가 V11-F06을 구현·기본 검증했고(커밋 b89de46 / 54경로 Bundle b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf, 맨 아래 2026-11-03 개발절), 별도 msw-tester가 같은 Bundle에서 독립 QA 5회차(커밋 a43b1b5, F01~F06 수치·로그 PASS·FAIL 없음, 육안·창 0.20 손 타이밍·CSV 변경 반영·F04 클립 재계측 NOT_RUN), 별도 msw-reviewer가 F01~F06 일괄 리뷰 **WAITING**(커밋 2dbaa07, 새 결함 없음)을 판정했다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 직접 확인이다. 확인 항목 7개는 리뷰 기록 첫 절 "다음 행동" 4번에, 비차단 재확인 공백(2칸 패턴 패링 → 복귀 중 팝업 정지·재개, 복귀 중 Stop → 재Play 기본값)은 같은 절 "같은 버전 확인"에 있으며, 둘 다 [Plan §15 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 남은 필수: V11, CF-F07 실제 연출 평가(수치 근거만 확보), V12 외부 환경과 기존 외부 후속 ID. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. P01b~P06은 🟡 유지, 3단계 미시작. 범위 밖 관찰인 플레이어 사망 직후 HP 문자 음수 표시 가능성은 V11 확인 항목 7번에 포함됐다(처리 여부는 3단계 계획 후보).
+2026-11-03(리뷰 뒤) 기준: Plan §17 회차(REV-F02·V11-F10·V11-F11)는 msw-coder 구현·기본 검증(로컬 커밋 5c4eda3, 맨 아래 2026-11-03 개발절) → 별도 msw-tester 독립 QA 7회차(작업 트리 Bundle fdca556d1e14533c143c6a07e40b3971b5ebfa8d4e885bded1fb24be2940ee80, 54/54 전후 일치, H1 포함 전부 PASS) → 별도 msw-reviewer 독립 리뷰 **WAITING**(결함 없음, 5c4eda3 커밋 트리 Bundle 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79 / 작업 트리 fdca556d…ee80 재계산 일치, QA7 근거가 커밋 트리에도 적용)까지 마쳤다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 확인이다. 확인 항목 5개는 리뷰 기록 첫 절 "사용자 V11 확인 항목"에 있고 [Plan §17 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 그 뒤 Plan §18(머쉬맘 전환, MM-01·MM-02)은 사용자 재개 지시와 §18 질문 답을 받은 다음 시작한다. 남은 필수: V11, CF-F07 실제 연출 평가, V12 외부 환경과 기존 외부 후속 ID. P01b~P06은 🟡 유지, 3단계 미시작.
+
+이전 재개 지점(2026-11-03, b89de46 기준): msw-coder가 V11-F06을 구현·기본 검증했고(커밋 b89de46 / 54경로 Bundle b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf, 맨 아래 2026-11-03 개발절), 별도 msw-tester가 같은 Bundle에서 독립 QA 5회차(커밋 a43b1b5, F01~F06 수치·로그 PASS·FAIL 없음, 육안·창 0.20 손 타이밍·CSV 변경 반영·F04 클립 재계측 NOT_RUN), 별도 msw-reviewer가 F01~F06 일괄 리뷰 **WAITING**(커밋 2dbaa07, 새 결함 없음)을 판정했다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 직접 확인이다. 확인 항목 7개는 리뷰 기록 첫 절 "다음 행동" 4번에, 비차단 재확인 공백(2칸 패턴 패링 → 복귀 중 팝업 정지·재개, 복귀 중 Stop → 재Play 기본값)은 같은 절 "같은 버전 확인"에 있으며, 둘 다 [Plan §15 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 남은 필수: V11, CF-F07 실제 연출 평가(수치 근거만 확보), V12 외부 환경과 기존 외부 후속 ID. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. P01b~P06은 🟡 유지, 3단계 미시작. 범위 밖 관찰인 플레이어 사망 직후 HP 문자 음수 표시 가능성은 V11 확인 항목 7번에 포함됐다(처리 여부는 3단계 계획 후보).
 
 이전 재개 지점(2026-11-02, 6614b20 기준): 2026-11-02 사용자 재개 명령에 따라 msw-coder가 REV-F01을 최소 수정·기본 검증했고(커밋 6614b20 / 52파일 Bundle 1ac324e6…9de4, 아래 2026-11-02 개발절), 별도 msw-tester가 같은 Bundle에서 독립 QA 3회차 수치 PASS, 별도 msw-reviewer가 WAITING을 판정했다(각각 QA 기록·리뷰 기록 첫 절). 최종 map01/edit·Maker 사용 종료·제품 지문 전후 동일 확인. DOC-01 현황·링크 동기화는 2026-11-02 planner가 정리했다. 현재 AI 담당 작업은 없고 다음은 사용자 V11 직접 확인이다. 남은 필수: V11, CF-F07 실제 연출 평가(수치 근거만 확보), V12 외부 환경과 기존 외부 후속 ID. 결함 경과: QA-F01은 QA1 FAIL→QA2 수치 PASS, REV-F01은 2026-10-29 리뷰 지적→QA3 수치 PASS·리뷰 해소. 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. P01b~P06은 🟡 유지, 3단계 미시작. V11 때 함께 볼 범위 밖 관찰: 플레이어 사망 직후 HP 문자 음수 표시 가능성(새 규칙 아님, 처리 여부는 3단계 계획 후보).
 
@@ -29,6 +31,52 @@
 제품 구현 완료 기록 없음. coder는 제품 편집 전 사전 문맥·소유자 점검 단계에서 중단됐다. 구현 ledger도 아직 생성되지 않았다. MapBuilder 읽기는 map01 id=0a0972ef-ad23-4e24-af63-afbd53120c1d, TileMapMode=0을 확인했다. 실제 Maker 연결/모드·런타임 검증은 조회 거절로 미확인이다. 사용자 재개 명령 후 실제 변경 범위와 환경을 확인해 이어간다.
 
 ## QA 기록
+
+### 2026-11-03 독립 QA 7회차 — REV-F02·V11-F10·V11-F11·H1
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA와 coder 개발절의 PASS는 이번 실행으로 세지 않았다. **maker_clear_logs는 한 번도 호출하지 않았다**(Maker 로그는 시각·`[QA7S]`(서버)·`[QA7C]`(클라이언트)·`[QA7V]`(검증 프로브)·`[QA7W]`(선택 경계)·`[QA7M]`/`[QA7U]`/`[QA7H]`/`[QA7R]`/`[QA7G]` 표지로 파일에 저장해 걸러 읽음). 시험 스크립트는 `_TimerService` 타이머를 만들지 않고 `wait` 루프만 써 `LEA-3051`이 나지 않았다.
+- 대상: coder 커밋 5c4eda3(기준 a921c76) / 작업 트리 54경로 Bundle SHA-256 fdca556d1e14533c143c6a07e40b3971b5ebfa8d4e885bded1fb24be2940ee80(= 커밋 + 미커밋 Maker 재저장 3경로, 건드리지 않음). 계산법은 coder 절 manifest의 54경로(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결). 경로 행은 표를 **이름으로 모아** 계산했고(coder 절이 늘어 줄 번호가 밀림) 시험 시작과 끝에 같은 값이며 두 계산의 54개 경로별 해시 목록도 `diff` 일치다. 시작과 끝 git status는 Maker 재저장 3경로(M)와 메인·planner 문서뿐이다.
+- 환경: 시작 시 maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId 970621b29ba945369d3dc8e90c301186. TileMapMode는 기존 기록(0 MapleTile)을 따르며 이번에 MapBuilder를 다시 읽지 않았다. Refresh는 하지 않았다(파일 무변경, Maker 재저장 방지). build 로그 81건 모두 Info, 오류 0·경고 0(시험 전·후 같음). Play 4회(최초 Play 1회, Stop 뒤 재Play 3회), Stop 4회. 최종 Stop 뒤 map01 / edit. Maker 로그 시각 19:45~20:03. Error·Warning 레벨 로그는 시험 시간대에 [QA7V] 검증 프로브가 일부러 만든 CombatRuleCatalog 경고 13건뿐이다(14건 중 baseline 제외 13항목 각 1건). 19:36~19:40의 경고·LEA-3051 1건은 coder의 이전 Play 로그다.
+- 실행 방식 구분: (A) 서버·클라이언트 프로브 = maker_execute_script(server_main·client, 각 컨텍스트에서 한 번에 스크립트 하나만 돈다 — 새 스크립트가 이전 것을 멈춰 병렬 모니터는 서버/클라이언트로 나눴다). 서버는 `_UtilLogic.ServerElapsedSeconds`로, 클라이언트도 같은 시계로 기록해 시간축이 같다. 시험 헬퍼는 서버 `_CombatRuleCatalog._T.QA`와 클라이언트 `_CombatInputController._T.QA`에 두었고 Stop으로 폐기됐다(재Play에서 nil 확인). (B) 실제 키 입력 = maker_keyboard_input(DownArrow 가드·LeftArrow/RightArrow 이동·UpArrow 공격). 도구 왕복이 수 초라 판정 창 안에 손을 맞출 수 없어, **키 입력으로 시작·유지하는 시험은 서버 프로브가 플레이어 상태(GUARD/MOVE)를 감지한 직후 예고를 시작하는 방식**으로 했고 창 값은 시험 값으로 넓혔다. 타이밍이 중요한 해제(H1 홀드 떼기)는 실제 키 `down` 홀드 뒤 클라이언트가 입력 수락 지점 `PlayerStateControl:ReleaseHeldState`(키 해제 핸들러가 부르는 같은 함수)를 `TelegraphRemaining` 기준으로 호출했다 — 논리 경로 검사다. (C) 화면 근거 = maker_screenshot(558×314) 몬스터 영역(330,165)~(400,222)의 평균 절대 RGB 차이와 사람이 읽은 장면.
+- 시험 한정 값(모두 Play 내부, Stop으로 폐기, 마지막 재Play에서 기본값 확인: JustWindowSec 0.2·ParryWindowSec 0.2·CounterWindowSec 2.0·GuardDamageRate 0.4·AttackInterval 3.0·패턴 4행·Weight 2·2·2·1): `_CombatRuleCatalog.rules["default"]`의 Just·Parry 창 3.0(B·B2·C2·D·E·H1·PL·PR 실제 키 시험을 위해, LG는 Parry 0.1), CounterWindowSec 8(반격 소비 시험 한정), 단일 행 패턴 목록과 `TelegraphLeadSec`(0.6~6.0, 시험 행), `math.random` 일시 교체(한 번 호출 동안 고정 단위로 무작위 칸 고정, 즉시 복원), 몬스터 AttackInterval 9999·HP 5·`ApplyGroggy(25)`·`ApplySlow(8, 0.5)`·`ApplyDamage(999)`, 플레이어 HP 보충. CSV·제품 파일은 바꾸지 않았다.
+
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| REV-F02 IDLE 사망(실제 UpArrow) | A+B | HP 5, 서버 IDLE→실제 ↑ 공격(`manual cast`)→DEAD. 사망 +0.00·+0.2·+1.2·+2.5초 서버 SpriteRUID=ActionSheet die, 상태 DEAD, IsDead true, HP 0, paused false. (참고: 이 실행에서 클라이언트 프로브가 이전 몬스터의 사망을 보고 먼저 UIPopup을 열어 첫 ↑ 입력은 팝업 입력 차단으로 무시됐고, 팝업을 닫은 뒤 입력으로 처치했다. 순서 실수이며 입력 차단은 기대 동작) | PASS |
+| REV-F02 ATTACK 시작 직후·점프 중·착지 대기·복귀 점프·HIT·슬로우+점프(S2·S3·S3b·S4·S5·S6, 서버 `ApplyDamage(999)`) | A | 모두 사망 시점(+0.00)부터 +0.2·+1.2·+2.5초까지 서버 clip=die, DEAD. 점프 중 사망은 몸이 y만 0.58로 낙하하고 x 고정. S6은 사망 때 PlayRate 0.5→1.0 복원, die 유지. 클라이언트 SpriteRUID·상태는 같은 몬스터에 대해 `DEAD\|die`로 한 번 바뀐 뒤 stand·jump·hit로 바뀐 줄이 없다(변경만 기록) | PASS |
+| REV-F02 그로기 중 사망(실제 UpArrow, S7) | A+B | `ApplyGroggy(25)`로 STUN\|hit 유지 중 실제 ↑ → 클라이언트 STUN→HIT\|hit(타격 이벤트 1회)→DEAD\|die. 서버 +0.00부터 +8.0초까지 die, isStunned false | PASS |
+| REV-F02 실제 UIPopup 열고 닫기 중·후 사망 표시 | A+C | S7 사망 +3.4초에 `_UIPopup:Open`(실제 코드, 서버 paused=true 승인) → 열린 동안 사망 +4.0·+6.0 서버 clip die·paused true → `OnClickCancel`(취소 버튼 핸들러) → `popup closed`, +8.0초 paused false·die 유지. 열린 스크린샷은 팝업이 몬스터를 가려 근거가 안 되고, 닫은 뒤 스크린샷은 눌린 die 프레임으로 읽힘(몬스터 영역 차이: die 기준 22.6, stand 기준 44.3. S1 처치 뒤 팝업 닫은 장면과 같은 값) | PASS(팝업 클릭은 마우스가 아니라 취소 핸들러 호출) |
+| REV-F02 Stop 뒤 재Play stand 시작 | A+C | 사망(서버 DEAD\|die 확인) 뒤 Stop → Play: 서버 t=1.36초 IDLE\|stand·IsDead false·HP 100, 클라이언트 t=2.92초 IDLE\|stand, 재Play 스크린샷은 stand 계열(stand 기준 20.8·die 기준 44.5). 시험 값(규칙·창·AttackInterval·패턴 4행)도 기본으로 돌아옴 | PASS |
+| V11-F10 로드(4행·AreaTarget) | A+파일 읽기 | CSV는 4행(`AreaTarget` 열 추가), normal.*·special.left·special.right·special.any 없음. 매 Play `[VRF] CombatCore catalog ready rules=1 patterns=4`. 런타임 행 id·ResponseType·속성·앵커·Weight 2·2·2·1·AreaTarget FIXED·FIXED·NEAREST·RANDOM | PASS |
+| V11-F10 검증 거부(V09) | A | 실제 DataSet 행을 복사해 한 항목씩 변경한 ValidateRows 호출을 같은 입력 두 번씩: baseline ok/ok, AreaTarget 빈 값·BOGUS·nil, ANY+FIXED, LEFT+NEAREST, RIGHT+RANDOM, RANDOM 앵커 1/1, NEAREST 앵커 0/2, FIXED 앵커 0/0, FIXED 앵커 3/2, SPECIAL+GUARD, Weight 0, Weight abc, 선행 시간 < 창이 모두 REJECT/REJECT, 항목마다 경고 1건(두 번째 호출은 늘지 않음). 필수 열 누락(`ReadRows`에 없는 열 요구)은 nil(전체 거부). 거부 뒤 카탈로그 Ready true·4행 유지. CSV 파일 자체를 바꾼 열 누락 시험은 하지 않음 | PASS(CSV 파일 변경 NOT_RUN) |
+| V11-F10 패턴 선택·무작위 칸 경계 | A | 합 7: 단위 0·1.999/7→parry.left, 2/7·3.999/7→parry.right, 4/7·5.999/7→parry.any, 6/7·0.9999999999→special.random(누적 [0,2)·[2,4)·[4,6)·[6,7), CSV 행 순서). 700표본 199/192/198/111. SelectRandomCell: 0·0.3·0.3333→1, 1/3·0.34·0.6666→2, 2/3·0.67·0.9999999999→3, 600표본 197/201/202 | PASS |
+| V11-F10 RANDOM 칸·플레이어 위치 무관·예고 뒤 불변 | A | 플레이어 Pos2(x=0.0)일 때 난수 고정 0.1/0.5/0.9: 칸 1→영역 -2.0~-1.0·cells 100·유효방향 R, 칸 2→-0.5~0.5·010·LR, 칸 3→1.0~2.0·001·L, TelegraphAttribute SPECIAL. 예고 뒤 플레이어가 중앙→Pos3으로 움직이는 동안에도(E1) 판정 영역은 예고 때 값 -2.0~-1.0·cells 100 그대로. 예고 중 UIPopup(PU2: 칸 3, 영역 1.0~2.0)도 영역·cells 불변, 클라이언트 칸 표시 `3:[SPECIAL]`(1·2번 칸은 꺼짐), 팝업 중 남은 예고 시간 4.441→4.352(정지), 닫은 뒤 2.028로 재개 | PASS |
+| V11-F10 special.random 판정(실제 키 입력 포함) | A+B | 무대응 범위 안(A·A2·플레이어 Pos2): HIT, 피해 12=HitEvent 12, HUD "피격". 범위 밖(C·C3: 칸 1·3, 플레이어 중앙): nativeHit nil, HP 0, HUD "회피". 실제 DownArrow 가드(창 3.0 시험값, 가드 시작이 판정 1.03초 전) 범위 안(B): UNGUARDABLE·rate 1, HP -12=HitEvent 12, 패링·슬로우·반격 권한·그로기 없음 → **↓ 패링 불성공**. 같은 시험값에서 PARRY 속성(B2, parry.any)은 실제 ↓로 PARRY·피해 0·반격 권한·그로기 → 시험값이 실제로 패링을 허용하는 상태였음(대조) | PASS(창 3.0은 시험값) |
+| V11-F10 RANDOM 저스트·슬로우·반격 권한 | A+B | 실제 LeftArrow(칸 2, 범위 안 출발 E2): JUST·rate 0, 슬로우 2.0초 ×0.5(`slow applied duration=2.0 rate=0.5`), 반격 권한 ×2.2, HUD "저스트 회피 성공"+"반격 준비"+"상대 슬로우". 실제 RightArrow(칸 1, 범위 밖 중앙에서 출발 E1·E1b·E1c·E1d·E1e): JUST·rate 0, nativeHit nil, 같은 결과. 반격 소비(E1e): 반격 권한 부여 뒤 입력 수락 지점의 ATTACK 요청(논리 경로, 지연 때문에 실제 ↑ 3번은 창 안에 못 맞춤)이 `manual cast ... factor=2.2` | PASS(반격 소비는 논리 경로) |
+| V11-F10 고정 칸 쪽 방향·중앙 복귀는 저스트 아님 | A+B | 칸 1에서 LeftArrow(고정 칸 쪽): evDir=LEFT, 결과 HIT(영역 안에 머무름)·JUST 아님(H1a·H1b). 칸 3에서 RightArrow도 HIT. 중앙 복귀는 홀드 뒤 떼기(H1e)에서 EVADE 0, JUST 아님 | PASS |
+| V11-F10 parry.any 회귀(Pos1·Pos2·Pos3) | A+B | 실제 LeftArrow 홀드 Pos1에서 parry.any: 대상 칸 1·영역 -2.0~-1.0·유효방향 R(H1d). Pos2(B2): 칸 2·010·LR, 실제 ↓로 PARRY. 실제 RightArrow 홀드 Pos3(H1f-R): 칸 3·001·L, HIT 12=HitEvent 12 | PASS |
+| V11-F10 parry.left·parry.right 회귀 | A+B+C | parry.left(실제 ↓ 가드로 PARRY): 클라이언트 관측 ATTACK\|jump(x 2.92)→착지 ATTACK\|stand x=0.75(영역 -0.5~2.0의 중앙)→판정(PARRY·피해 0)→복귀 ATTACK\|jump→**x=3.00 처음 위치에서** STUN\|hit 1.5초→IDLE\|stand. parry.right: 착지 x=-0.75(영역 -2.0~0.5의 중앙), 같은 흐름. F02 복귀 뒤 그로기·F08 그로기 hit·2칸 중간 착지 유지(parry.left 첫 실행 PL은 서버 모니터가 멈춰 판정 로그만 있고, PL2·PR을 클라이언트 모니터로 판정에 사용) | PASS |
+| V11-F10 일반(NORMAL)·가드형(GUARD) 유형(시험 데이터 근거) | A+B | NORMAL 시험 행(parry.any 복사, 속성만 NORMAL, D): 실제 ↓ 가드 → GUARD·rate 0.4, 피해 4=HitEvent 4(12×0.4=4.8→4), HUD "가드 · 피해 경감". GUARD 유형 시험 행(속성 NORMAL, 앵커 1~3, FIXED): cells 111·영역 -2.0~2.0·유효방향 없음, 실제 ↓ 가드 → GUARD·0.4, HP -4. 실제 데이터에는 없음 | PASS(시험 데이터 근거) |
+| V11-F11 가드 중 범위 안 "가드 불가" | A+B | 위 B: 실제 ↓ 가드 중 special.random 범위 안: `[VRF] defense kind=UNGUARDABLE rate=1`, nativeHit true, HP -12=HitEvent 12, 클라이언트 defenseText "가드 불가" 색 (1.00, 0.43, 0.36), 456.078→457.076초 약 1.0초 뒤 비워짐. 슬로우·반격·그로기 없음 | PASS |
+| V11-F11 가드 중 범위 밖 "회피"·무가드 "피격"·일반 가드 문구 | A+B | 가드 중 범위 밖(C2, 칸 1): UNGUARDABLE이나 nativeHit nil → RecordDefense가 EVADE로 대체, HP 0, HUD "회피"(0.65, 0.83, 1.00). 무가드 범위 안(A2): HUD "피격"(1.00, 0.43, 0.36). 일반 가드(D): "가드 · 피해 경감"(0.65, 0.83, 1.00)·40%. 패링 속성 늦은 가드(LG, 창 0.1·가드 시작이 판정 2.05초 전): GUARD·0.4·HP -4. 패링 성공(B2·PL·PR): "패링 성공"(0.88, 0.65, 1.00)·피해 0. 예고 문구(telegraphText)는 모든 실행에서 빈 문자열 | PASS |
+| HP = HitEvent = 숫자(V02 대표) | A | A·A2 12=12, B 12=12, D 4=4, LG 4=4, GUARD 유형 4, H1a·H1d·H1f 12=12, 범위 밖·저스트·패링은 0=0 | PASS(대표) |
+| H1 끝 칸 홀드 중 special.random이 그 칸일 때(홀드 유지) | A+B | 실제 LeftArrow 홀드 Pos1(x=-1.50, 콜라이더 -1.75~-1.25), 칸 1(영역 -2.0~-1.0) 두 번(H1a·H1b-4 등): 판정 순간 콜라이더가 영역과 겹침(overlap true), nativeHit true, HIT, HP -12=HitEvent 12. RightArrow·Pos3 대칭(H1c-R: 콜라이더 1.25~1.75, 영역 1.0~2.0): HIT 12. parry.any 끝 칸(Pos1 H1d-1·H1d-2, Pos3 H1f-R): HIT 12 | PASS(규칙상 정상, 겹침) |
+| H1 홀드를 떼어 중앙 복귀하는 서로 다른 시점 | A+B(홀드 시작)+논리 경로(해제) | 실제 키 홀드 Pos1 후 클라이언트가 `TelegraphRemaining`≤θ에서 해제. θ 0.289초(H1b-1): 복귀 중, 판정 뒤 읽은 위치 x=-0.79(콜라이더 -1.04~-0.54, 영역 -2.0~-1.0과 겹침, 여유 0.04) → nativeHit true, HIT 12. θ 0.170·0.087·0.020초(H1b-2·3·4): 해제 효과가 판정 뒤(x=-1.50 홀드 중) → HIT 12. θ 0.535(H1e-1)·0.448(H1e-2)·0.372(H1e-3)초: 판정 때 x=0.00(콜라이더 -0.25~0.25, 겹침 false), nativeHit nil, EVADE·HP 0·HUD "회피". Pos3(RightArrow) θ 0.443(H1e-4): x=0.00, EVADE 0. **겹치는데 피해 없음 또는 안 겹치는데 피해는 한 건도 없었다** → 결함 후보 없음 | PASS(실제 키 해제 타이밍은 NOT_RUN) |
+| 기존 기능 대표 회귀(V06·V10·V01) | A+B | 실제 UpArrow 공격 반복(`manual cast count=10`, 처치·그로기 중 타격·팝업 입력 차단), 실제 DownArrow 가드·LeftArrow/RightArrow 이동·복귀, 패링→반격 권한(0.88,0.65,1 문구)→그로기 흐름, 팝업 열기·닫기 승인(`CombatPause paused=true/false`·`popup closed`). 예고 문구 없음·칸 속성색(특수 칸 `[SPECIAL]`) | PASS(대표) |
+| 사람 육안(die 모습·가드 불가 문구 느낌·난이도·구별)·0.20초 손 타이밍·Weight 체감 | - | 실행하지 않음. 스크린샷은 내가 읽은 장면과 픽셀 차이만 | NOT_RUN(V11 사용자) |
+| CSV 파일을 바꿔 열 누락·값 변경을 Refresh로 반영하는 시험(V09) | - | 하지 않음(제품 파일 무수정 원칙). CSV 새 열 적용은 Refresh 뒤 런타임이 4행·AreaTarget을 읽는 것으로만 확인 | NOT_RUN |
+| 실제 마우스·터치로 UIPopup 버튼 클릭, 실기기·모바일, V12 외부, 플레이어 사망·실제 맵 이동, CF-F07 연출 | - | 실행하지 않음 | NOT_RUN |
+
+#### 관찰·시험 오류 분리
+- 제품 결함 후보 없음. 새 결함 ID 없음. FAIL·NEEDS_DECISION 없음.
+- 시험 오류(제품 오류 아님): (1) S1 첫 실행에서 클라이언트 프로브가 서버가 새 몬스터를 만들기 전(약 3초 도구 지연) 이전 몬스터의 사망을 보고 팝업을 열어, 새 몬스터 처치 입력이 막혔다. 같은 시나리오를 팝업을 닫은 뒤 다시 처치해 판정했다. (2) 서버 모니터 스크립트가 다음 서버 스크립트 디스패치에 멈춰 PL 첫 실행은 위치 시계열이 없었다. 클라이언트 모니터로 PL2·PR을 다시 실행해 판정했다. (3) 반격 소비 실제 ↑ 3번은 도구 지연으로 반격 창 2.0초(첫 시도)·8초(두 번째)를 넘겨 소비되지 않았다. 입력 수락 지점 호출(E1e)로 소비를 확인했다. (4) 첫 번째 재Play 관찰(t=7.1초)은 몬스터가 자연 공격(AttackInterval 3.0) 중이라 stand 시작 근거가 되지 않아, 세 번째 재Play(t=1.36초)를 판정에 썼다. (5) 한 번 Stop 직전 시험 스크립트가 끝나기 전에 Stop해 `second pre-Stop` 줄이 없다(판정에 쓰지 않음).
+- 관찰: (1) H1b-1의 겹침 여유는 0.04 단위로 작다. 판정 뒤 읽은 위치라 정확한 판정 순간 값이 아니며, 엔진 nativeHit true와 계산 겹침이 일치한다. (2) 팝업이 열려 있는 동안 클라이언트 `wait`는 시간 배율 0 때문에 재개되지 않는다(시험 스크립트 한정). (3) 사망 몬스터 영역에서 클라이언트 `DEAD|die`의 첫 프레임은 시험 스크립트가 사망 후 약 0.03초 뒤에 기록했다. (4) UNGUARDABLE은 범위 밖 가드에서 `[VRF] defense` 로그에는 UNGUARDABLE로 남고 HUD·RecordDefense는 EVADE로 대체된다(Plan 기대와 같음). (5) die 프레임과 die 기준 영상의 픽셀 차이가 22.6으로 stand와의 차이(44.3)보다 작지만 0은 아니다. die 클립이 정지가 아니라 시간에 따라 변하는 동안 찍어서로 보이며, 사람이 읽은 장면은 눌린 몬스터(얼굴 없음)다. 육안 평가는 사용자 몫이다.
+- 한계: 실제 키 입력으로 0.20초 창을 맞출 수 없어 창을 넓힌 시험 값으로 방향·유형·결과 종류를 검증했다(창 경계 0.20 자체는 이번 변경 경로 밖이며 재시험 안 함). 실제 키 해제 시점 시험은 입력 도구 지연 때문에 논리 경로(`ReleaseHeldState`)로 했다. 클라이언트 렌더러 실제 클립 이름 API가 없어 표시는 SpriteRUID와 스크린샷으로만 확인했다. 육안·실기기·터치 미실시.
+
+#### 판정 요약
+- REV-F02(7개 사망 경로 서버·클라이언트 die 유지, 실제 UIPopup 열고 닫기, Stop 뒤 재Play stand), V11-F10(로드·검증·선택·RANDOM 칸·판정·RANDOM 저스트·↓ 패링 불성공·반격·슬로우·parry.any/left/right 회귀·시험 데이터 유형), V11-F11("가드 불가"·"회피"·"피격"·일반 가드·패링 늦은 가드), H1(홀드 유지·해제·Pos3·parry.any 끝 칸), HP=HitEvent=숫자 대표 모두 **PASS**. FAIL·NEEDS_DECISION 없음.
+- NOT_RUN: 사람 육안 평가, 0.20초 손 타이밍과 실제 키 해제 타이밍, CSV 파일을 바꾼 반영 시험, 실제 마우스·터치 클릭·실기기, V12 외부, 플레이어 사망·실제 맵 이동, CF-F07 연출.
+- 사용 종료: 마지막 maker_stop 성공 뒤 maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. 시험 전·후 54/54 동일 Bundle fdca556d…ee80, 제품 파일 무수정. Maker 사용 종료.
+- 다음은 독립 reviewer: H1이 겹침 규칙대로임, 시험 값(창 3.0·반격 8초)이 Play 안에서만 쓰였음, 사용자 V11 확인(die 모습, 가드 불가 문구, 난이도·구별, 범위 밖에서 시작한 저스트 인정 체감)을 정리한다.
 
 ### 2026-11-03 독립 QA 6회차 — V11-F08·F09
 - 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA 1~5회차와 coder 개발절의 PASS는 이번 실행으로 세지 않았다. **maker_clear_logs는 한 번도 호출하지 않았다**(Maker 로그는 시각·`[QA6S]`(서버)·`[QA6C]`(클라이언트)·`[QA6M]`(칸·문구)·`[QA6P]` 표지로 구분해 파일로 걸러 읽음).
@@ -296,6 +344,72 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-03 독립 리뷰 — REV-F02·V11-F10·F11 WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절(REV-F02·V11-F10·V11-F11)과 QA7의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git diff·소스 대조(Grep 포함)와 작업 디렉터리 밖 임시 node 스크립트의 지문 재계산뿐이다.
+- 검토 버전: coder 로컬 커밋 5c4eda3(기준 a921c76, push 전). QA7은 미커밋 작업 트리(WR QA 절·Plan §17 상태). V11-F06 절 manifest 54행을 같은 계산법(경로 ASCII 정렬, 경로+TAB+sha256+LF의 SHA-256)으로 재계산했다. a921c76 커밋 트리 = 38e7aa22…0ba53(이전 리뷰 값과 일치), **5c4eda3 커밋 트리 = 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79**(새 값), 작업 트리 = **fdca556d1e14533c143c6a07e40b3971b5ebfa8d4e885bded1fb24be2940ee80**(coder·QA7 기재와 일치). a921c76→5c4eda3 차이 경로는 제품 6개뿐이고 개별 해시가 coder 절 값과 모두 같다. 5c4eda3→작업 트리 차이는 Maker 재저장 3경로뿐이며 해시(주황버섯 모델 d8f79eb5…, AssistModel a933d30a…, AttackSkillData c6b692fd…)가 지난 리뷰(43c5c63)에서 의미 차이 없음을 확인한 바이트와 같다. 따라서 QA7 근거는 커밋 트리에도 그대로 적용된다. 전체 저장소 diff a921c76..5c4eda3의 RootDesk·map·ui·Global 변경은 위 6경로뿐이고 .codeblock·.directory·.userdataset·.map·.ui 변경과 추적 안 된 파일은 없다. CSV는 BOM·CRLF 유지(머리말+4행, 줄마다 CR).
+- 판정: **WAITING**. 고칠 결함 없음(CHANGES_REQUIRED 없음). 세 요구의 AI 측 근거(소스 대조·coder 실측·QA7 서버/클라이언트 시계열·스크린샷 픽셀·실제 키 입력)는 Plan §17 완료 기준을 충족한다. 남은 필수는 사용자 V11 직접 확인이다. 이 판정은 2단계 완료·3단계 진행·push 승인이 아니다.
+
+#### 사용자 결정 → Plan §17 → 변경 대조
+| 사용자 결정(run 2026-11-03 절) | Plan §17 | 실제 변경 | 판단 |
+| --- | --- | --- | --- |
+| "1. 너 의견대로": 사망 시 die 고정만, fade·스테이지 전환은 4단계 | REV-F02, fade·처치 연출 제외 | MonsterHealthComponent.ApplyDamage 사망 확정 경로에 기존 MonsterAttackMotion:SetVisualClip("die") 한 번(4줄). fade·전환·새 연출 없음 | 일치·최소 |
+| "안 2 보라+특수 1칸", 특수 "약 1/7", 대상 "랜덤으로" | F10 4행·Weight 2·2·2·1·AreaTarget FIXED/NEAREST/RANDOM | CSV 4행, Catalog 검증 3줄+필수 열 1개, MonsterAttackComponent RANDOM 분기와 SelectRandomCell | 일치. 보라 셋의 2:2:2는 planner 기본안(Plan에 그렇게 적힘) |
+| 특수=가드·패링 불가 유지 + "가드 불가" 문구, 범위 밖 회피 0 유지 | F11 UNGUARDABLE rate 1, RecordDefense EVADE 대체 유지 | PlayerHealthComponent else 분기 3줄, CombatInputController 문구 1줄 | 일치·최소 |
+| 끝 칸 홀드 + 1칸 특수 가설은 tester 확인만 | H1 | 코드 변경 없음, QA7 확인 | 일치 |
+
+#### REV-F02 대조
+- 위치·역할 분리: 공통 층(MonsterHealthComponent)에서 모든 HP 0 경로가 지나는 ApplyDamage 한 곳에 넣었고, 주황버섯 전용 OrangeMushroomAttack에는 넣지 않았다(Plan 지시대로). 새 RUID·Sync 값·모델 변경 없이 ActionSheet["die"]를 읽는다.
+- 순서: IsDead=true → CancelPendingAttack(실행 무효화, CancelMotion은 stand를 쓰지 않음) → ClearCombatEffects → SetStunned(false)(그로기였다면 IsDead를 보고 die, 아니면 무동작) → SetVisualClip("die") → ChangeState("DEAD")(DEAD 잠금). 늦은 stand 쓰기 후보를 소스로 확인했다: OrangeMushroomAttack.CompleteMotion은 JumpActive일 때만 stand를 쓰는데 OnUpdate가 ATTACK이 아니면 CancelMotion만 하고, 활성 실행은 CancelExecution으로 무효화된다. MonsterStunComponent는 사망 시 die를 남긴다. HandleHitEvent는 IsDead면 반환한다. 추가 차단이 필요 없다는 coder 판단과 맞다.
+- QA7 근거: 7경로(IDLE 실제 ↑·ATTACK 시작/점프/착지 대기/복귀·HIT·슬로우+점프·그로기 실제 ↑) 서버 +2.5초(그로기 +8초)까지 die, 클라이언트 `DEAD|die` 뒤 변경 없음, 실제 UIPopup 열기(_UIPopup:Open)·닫기(취소 핸들러) 중·후 die, Stop 뒤 재Play stand. Plan 완료 기준 항목을 모두 덮는다. 팝업 버튼 마우스 클릭은 핸들러 호출로 대체했다(입력 경로는 이번 변경 밖이라 판정에 영향 없음).
+
+#### V11-F10 대조
+- 데이터 주도: 대상 칸 방식이 CSV 열(AreaTarget)이고 공통 층에 modelId 분기·주황버섯 규칙이 없다. 주황버섯 착지(영역 중앙)는 기존 OrangeMushroomAttack 그대로라 고정 칸에 착지한다. 칸 수 3은 기존 BattlePos 3앵커 전제와 같다.
+- 검증: 세 값 외(빈 값·알 수 없는 값·nil) 거부, `(ANY)==(FIXED)` 한 줄로 ANY+FIXED와 비ANY+NEAREST/RANDOM을 함께 거부, 앵커는 기존 검사(ANY 0/0, 그 밖 1~3 정수·From≤To)로 거부. 열 누락은 ReadRows 필수 열로 전체 거부. 부분 행·기본값 대체 없음. Plan 검증 목록과 같다.
+- 무작위 칸: `SelectRandomCell(unit)`은 결정적 단위 함수라 경계 프로브가 가능하고, 결과는 기존 ANY 경로(영역·cells·유효 방향·탈출 검증·스냅샷 고정)를 그대로 지난다. 예고 중 재선택이 없다(PrepareAttack 1회). QA7 경계값·600/700표본 분포·플레이어 위치 무관·예고 뒤 이동/팝업에도 영역 불변 PASS.
+- 판정 회귀: NEAREST·FIXED 경로 코드 불변. QA7 parry.any(Pos1·2·3)·parry.left/right(2칸 중간 착지·복귀 뒤 그로기·hit) PASS. NORMAL·GUARD 유형은 실제 데이터에 없어 시험 데이터 근거로만 확인(Plan 허용).
+
+#### V11-F11 대조
+- 가드+SPECIAL만 새 종류 UNGUARDABLE(rate 1, success false)로 갈린다. 결과 종류를 읽는 곳을 Grep으로 다시 확인했다: ResolveAttack의 RecordDefense(성공 아님·nativeHit 없음이면 EVADE)·JUST·PARRY 분기, Monster_Attack의 PARRY 분기, 로그, HUD. UNGUARDABLE은 슬로우·반격·그로기 어느 분기에도 걸리지 않고 범위 밖이면 "회피"로 대체된다. 피해 계산(ResolveIncomingDamage = floor(damage×rate))은 바뀌지 않아 원래 피해다. 문구 색은 기존 피격 색, 지속은 SetSignal 기존 규칙. .ui 무변경.
+- QA7: 범위 안 "가드 불가" 12=HitEvent 12·약 1.0초, 범위 밖 "회피" 0, 무가드 "피격", 일반 가드 40%, 패링 늦은 가드 40%, 패링 성공 문구 유지 PASS.
+
+#### 범위 밖 변경 없음
+- 규칙·수치: CombatRuleData·AttackSkillData·MonsterData CSV, IsInWindow·창 0.20·×0.40·반격·슬로우·그로기·AttackDamage·AttackInterval·점프 값 불변(diff에 없음). 기존 행의 패딩·높이·오프셋·선행 시간 유지, Weight만 사용자 결정대로 2로.
+- .ui·.map·.model·.codeblock·.userdataset 변경 없음. 3단계·V11-F07(수치 DataSet화)·§18(머쉬맘 리소스·이름 변경, 모델·OrangeMushroomAttack·modelId castleenemy 그대로) 착수 없음. §18은 Plan에 후보 등록만 있고 구현 승인 전 상태로 적혀 있다.
+
+#### QA7 시험값 한계가 판정에 미치는 영향
+- 창 3.0(실제 키 시험)·반격 8초: Play 내부 rules 캐시만 바꿨고 재Play에서 기본값 복귀를 확인했다. 이번 diff는 IsInWindow와 창 값을 건드리지 않았으므로 넓힌 창은 결과 종류·방향·속성 분기 검증에 충분하다. 0.20초 경계 자체는 이번 변경 경로 밖이라 재시험이 필요 없고, 손 타이밍 체감만 사용자 V11로 남는다.
+- H1 해제 시점을 `ReleaseHeldState`(키 해제 핸들러가 부르는 같은 함수) 호출로 대체: 결과는 판정 순간 콜라이더와 영역의 겹침(서버 네이티브 판정)으로 정해지므로 규칙 판정에는 충분하다. 실제 손으로 떼는 시점의 난이도만 사용자 몫이다.
+- 반격 소비는 입력 수락 지점 호출(논리 경로)로 확인했다. 반격 소비 코드는 이번 변경 밖이다.
+- 시험 행의 TelegraphLeadSec(0.6~6.0)은 Play 내부 값이다. 실제 데이터 0.5에서의 반응 여유는 사용자 V11이다.
+
+#### H1 결론
+- 규칙대로 동작한다. 판정 순간 겹치면 HIT·원래 피해, 안 겹치면 EVADE·0이며, 겹치지 않는데 피해가 난 사례가 없다. R02 결함 아님. 사용자 결정(범위 밖 회피 0 유지)과 맞고 코드·입력 규칙은 바꿀 필요가 없다.
+- 체감 참고(사용자 V11 평가 대상, 결함 아님): QA7 측정상 끝 칸 홀드 중 special.random이 그 칸에 오면 예고 남은 시간 약 0.37초 이상에서 떼야 피하고 약 0.29초 이하이면 맞는다(H1b-1 겹침 여유 0.04). 실제 선행 0.5초에서는 떼는 반응 여유가 짧다. 1/7 × 1/3 확률로만 생기는 경우다.
+
+#### clear_logs 확인
+- coder 절과 QA7 절 모두 maker_clear_logs 미호출을 적었고 run 235·238도 같다. QA7이 coder 시각대(19:36~19:40) 경고·LEA-3051을 그대로 읽어 구분한 기록은 로그가 지워지지 않았다는 정황과 맞다. reviewer는 Maker 로그를 직접 보지 않았다.
+
+#### 미커밋 문서 대조
+- GameDesign §4.2·§5·§8 미커밋 diff: 현재 상대=1번 마을(헤네시스) Stage 10 최종보스 머쉬맘, 현재 구현은 주황버섯 리소스, 리소스 교체·이름 변경은 §18 다음 회차, 일반 몬스터 주황버섯·초록버섯은 §5대로 남음, 마을 표기 "1번 마을(헤네시스)", 중간보스 미정. run "2026-11-03 일시정지"·"재개" 절의 사용자 말과 일치한다. 규칙·수치 변경 없음.
+- 로드맵 미커밋 diff: 같은 내용과 §18 후보·6단계 일반 몬스터 질문 절차. 일치한다.
+- 비차단 메모: (1) GameDesign §4.2 "보라 세 가지가 나머지를 같게 나눈다"는 planner 기본안(Plan §17·run 220)인데 "사용자 결정" 문장 안에 있다. 이 문장은 이번 diff 이전부터 있던 것이며 사용자 V11 때 확인하면 된다. (2) 로드맵 "다음 재개 지점"과 Plan §17 상태 칸이 "reviewer 대기"로 남아 있다. 회차 종료 정리 때 planner·메인이 맞춘다. (3) run 232는 planner 문서를 coder 로컬 커밋에 묶는다고 적었지만 5c4eda3에는 Plan·WR만 들어 있고 GameDesign·로드맵은 아직 미커밋이다. 회차 종료 커밋에 넣어야 한다.
+
+#### NOT_RUN (PASS로 세지 않음)
+- 사람 육안(die 모습·"가드 불가" 문구·특수 칸 구별), 0.20초 손 타이밍·실제 키 해제 타이밍, CSV 파일을 바꿔 Refresh로 반영하는 시험, 실제 마우스·터치 팝업 클릭·실기기, V12 외부, 플레이어 사망·실제 맵 이동, CF-F07 연출.
+
+#### 다음 행동
+1. 메인: run 대상 버전에 5c4eda3 커밋 트리 9208e0aa…da79 / 작업 트리 fdca556d…ee80과 이 판정 WAITING을 적는다. CLAUDE.md 회차 단위 기준에 따라 회차 종료 커밋에 QA7 절·이 리뷰 절·Plan §17 상태·미커밋 GameDesign·로드맵을 넣고, Maker 재저장 3경로는 넣지 않고 사용자에게 알린다. push 전 비밀값·개인정보 검사는 메인 몫이다.
+2. 사용자 V11 확인(아래).
+3. planner(문서만, 비차단): Plan §17 상태 칸·WR 머리·로드맵 재개 지점을 리뷰 WAITING과 사용자 V11 대기로 맞춘다. 규칙·수치·기준은 바꾸지 않는다.
+4. coder/tester: 지금 할 일 없음. §18은 사용자 재개 지시와 §18 질문 답 뒤에 시작한다.
+
+#### 사용자 V11 확인 항목
+- HP 0 뒤 die 모습이 사망 경로와 관계없이 유지되는지(팝업 열고 닫은 뒤 포함).
+- 보라 중심 4패턴과 특수 1칸 무작위의 난이도·구별, 특수 비중 약 1/7과 보라 셋 2:2:2 비중의 체감.
+- 특수 가드 때 "가드 불가" 문구가 보이고 이해되는지.
+- 범위 밖에서 시작한 저스트 인정 체감: 특수 칸이 다른 칸일 때 그 칸에서 멀어지는 방향으로 움직이면 위험 없이 저스트(슬로우·반격 ×2.2)가 된다. planner 해석이며 너무 쉬운지 판단이 필요하다.
+- 끝 칸 홀드 중 그 칸 특수가 오면 짧은 반응 시간 안에 떼야 피하는 점(H1 체감).
 
 ### 2026-11-03 독립 리뷰 — V11-F08·F09 WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절(2026-11-03 V11-F08·F09)과 QA6의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git diff·소스 대조, node 스크립트(작업 디렉터리 밖 임시 스크립트)의 지문 재계산, ModelBuilder 읽기와 userdataset JSON 비교뿐이다.
