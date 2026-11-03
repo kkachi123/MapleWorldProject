@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-03 / 최신: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-03 / 최신: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -296,6 +296,54 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-03 독립 리뷰 — V11-F08·F09 WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절(2026-11-03 V11-F08·F09)과 QA6의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git diff·소스 대조, node 스크립트(작업 디렉터리 밖 임시 스크립트)의 지문 재계산, ModelBuilder 읽기와 userdataset JSON 비교뿐이다.
+- 검토 버전: coder 커밋 a921c76(기준 b89de46), QA 커밋 5a6ec07. V11-F06 절 manifest 54행을 같은 계산법(경로 ASCII 정렬, 경로+TAB+sha256+LF의 SHA-256)으로 재계산했다. b89de46 = b985aa4b…4dbf(표 54행 개별 해시 0건 불일치), 작업 트리 = **377a5ccc5f42de649117004aad7520cff9a73eae80c9e1096bb3e3bf3f780363**(coder·QA6 기재와 일치, coder가 적은 변경 6경로 개별 해시도 일치). 커밋 트리 자체(a921c76 = 5a6ec07 = HEAD)는 38e7aa22e05a0a71cc90ca6680278f4352315788cedbfabc7256e4d44dd0ba53이다. b89de46→a921c76 제품 변경은 mlua 3개(AttackAreaMarkComponent·MonsterStunComponent·CombatInputController)뿐이고, a921c76→작업 트리 차이는 미커밋 Maker 재저장 3경로뿐이다. a921c76..HEAD는 run·Plan·WR 문서만 바뀌었다(QA6 제품 무수정). .codeblock·.ui·.map·.model·CSV 변경 없음. 검토 시 git status는 그 3경로(M)뿐.
+- 판정: **WAITING**. 새로 고칠 결함 없음(CHANGES_REQUIRED 없음). F08·F09의 AI 측 근거(코드 대조·coder 실측·QA6 서버/클라이언트 SpriteRUID 시계열·스크린샷 픽셀)는 Plan §16 완료 기준을 충족한다. 남은 필수는 사용자 V11 육안 확인이다. 이 판정은 2단계 완료·3단계 진행 승인이 아니다.
+
+#### 미커밋 Maker 재저장 3경로 — 의미 차이 없음, 커밋 제외 타당
+- AssistModel·AttackSkillData userdataset: JSON 전체 비교에서 차이는 `CoreVersion` 26.7.0.0 → 26.10.0.0 한 값뿐이다.
+- 주황버섯 모델(ModelBuilder.read, HEAD 대 작업 트리): 컴포넌트 14개 목록 동일, properties·children·이름·id 동일, ActionSheet 6키(move·stand·jump·hit·die·stun, stun=hit RUID aec950…) 동일. 값 차이는 (1) HitComponent.ColliderOffset x 0.045 → 0.0449999869(float32 표기, 같은 값), (2) 스크립트 컴포넌트 값 17개 새 직렬화 — MonsterStateControl·MonsterAttackComponent·MonsterDefenseComponent·MonsterStunComponent·OrangeMushroomAttack의 Enable=true와 attackTimer 0·isDefending false·isStunned false·stunDeadline -1·scheduledId 0·executionId 0·Home (0,0)·HomeCaptured false·JumpActive false·JumpStartX/TargetX/StartTime 0. 모두 해당 .mlua 선언 기본값과 같다(Grep 대조). (3) 값은 같고 형식 버전 문자열만 바뀐 항목 7개. 런타임 의미 차이 없음.
+- 판단: coder가 이 파일들을 쓰지 않았고(F08은 .mlua로 해결) 사용자 V11 중 Maker 저장으로 보이므로, 제품 커밋에 섞지 않은 처리는 CLAUDE.md "사용자가 직접 바꾼 파일은 범위가 아니면 섞지 않고 알린다"에 맞다. QA6는 이 3경로가 포함된 작업 트리를 시험했지만 의미 차이가 없어 근거가 커밋 트리(38e7aa22…)에도 그대로 적용된다. 이 리뷰의 [review] 커밋에도 넣지 않는다. 처리(별도 커밋 또는 유지)는 사용자에게 알리고 사용자가 정한다. 참고: 스크립트 기본값이 모델에 고정됐으므로 이후 해당 .mlua 기본값을 바꾸면(예: V11-F07 DataSet화) 모델 값이 우선한다. 지금 값은 모두 기본값과 같아 영향 없음.
+
+#### V11-F08 대조 (MonsterStunComponent.SetStunned)
+- 원인 근거와 수정의 일치: coder 실측은 "ActionSheet stun 키·RUID는 정상이고 ACE clip=stun도 오지만 hit가 비반복 클립이라 한 번 재생 뒤 렌더러 기본 표시(SpriteRUID=stand, 복귀 완료 CompleteMotion이 씀)로 돌아간다"이다. 수정은 그로기 동안 서버 SpriteRUID를 ActionSheet "stun"(=hit RUID)으로 고정하는 것이라 원인과 직접 맞는다. 이미 있던 MonsterAttackMotion.SetVisualClip(ActionSheet 값 재사용)만 써서 새 RUID·Sync 값·모델 변경이 없다. 변경은 SetStunned 한 메서드 12줄이다. 최소 범위로 판단한다.
+- 서버 상태·HIT·수치 불변: Monster_Stun·MonsterHealthComponent·MonsterManager·HitComponent 경로 byte 불변. SetStunned는 isStunned 쓰기 순서를 그대로 두고 표시 클립만 덧붙였다. ApplyGroggy·BeginStunTimer·OnUpdate 만료·HandleHitEvent의 HIT 진입 조건(STUN 제외)은 diff에 없다. QA6에서 STUN 유지·GroggyRemaining 감소·HP=HitEvent=숫자 대표 PASS.
+- 정리 경로 잔존: 호출처 5곳을 확인했다. (1) Monster_Stun.OnEnter → stun, (2) OnExit(자연 만료·ClearOpponentExecution의 IDLE 전환) → stand, (3) ApplyDamage 사망: IsDead=true 뒤 SetStunned(false) → die, 이어지는 DEAD 전환의 OnExit는 wasHeld=false라 아무것도 쓰지 않아 die를 덮지 않는다, (4) MonsterManager.ClearOpponentExecution → stand(사망이면 die), (5) MonsterStunComponent.OnMapLeave/OnEndPlay 서버 분기 → stand. 그로기가 아니던 SetStunned(false)는 즉시 반환해 공격 취소·정리 때 jump/stand를 덮지 않는다. 그로기 중 ApplyGroggy 재호출은 같은 RUID를 다시 쓴다(QA6 연장 그로기에서 hit 유지 확인). QA6가 상대 교체·DoSpawn·OnMapLeave 직접 호출·Stop 두 경로를 실행했고 잔존 없음(맵 이탈은 논리 경로, 실제 맵 이동 NOT_RUN).
+- QA6 근거 수준: 세 조건 모두 서버·클라이언트 SpriteRUID 시계열과 스크린샷 픽셀(그로기 구간 vsHit 0~8.8, vsStand 73 이상)로 판정했고 이벤트 로그만으로 PASS하지 않았다. Plan §16 완료 기준("실제로 보이는 표시")과 맞다. 한계(클라이언트 실제 클립 이름 API 없음, 스크린샷 약 0.18초 간격, 정렬 ±0.15초, 사람 육안 아님)는 QA6에 그대로 적혀 있다.
+
+#### V11-F09 대조
+- 문구: CombatInputController에서 예고 문구 계산 블록만 지우고 telegraphText에 항상 빈 문자열을 쓴다. .ui 엔티티·바인딩 유지(.ui 무변경). defenseText(저스트 회피 성공·패링 성공·가드·피해 경감·회피·피격)·counterText(반격 준비)·effectText(상대 그로기·슬로우)의 문구·색·지속 코드는 byte 불변. 사용자 결정 "결과·상태 문구는 그냥 두는 걸로"와 맞다.
+- 색·알파: NORMAL (1, 0.85, 0.4) / SPECIAL (1, 0.43, 0.36) / PARRY (0.88, 0.65, 1), 알파 CellAlpha 0.45 — Plan 표·이전 문구 색과 같다. 기존 빨강(1, 0.12, 0.12)은 남지 않았고 투명 기본색만 (1,1,1,0)으로 바뀌었다(알파 0이라 화면 차이 없음).
+- 켜고 끄는 시점: 켜짐 판단은 그대로 서버 TelegraphCells의 칸 문자이고, 숨김 경로(대결 없음·상대 없음·OnMapLeave)는 기존 호출에 속성 인자만 더했다. TelegraphAttribute는 PrepareAttack에서 TelegraphCells 바로 앞에 같은 실행으로 설정된다(MonsterAttackComponent 140·142행), MonsterAttackComponent 무변경 조건 충족.
+- 속성 미상 숨김: 세 값이 아니면 칸을 숨기고 0.25초를 넘기면 `[VRF]` 한 번(Maker Play만). 캐시는 켜짐과 속성을 함께 비교한다. QA6 "XYZ" 숨김·같은 칸 NORMAL→SPECIAL→PARRY 갱신 PASS.
+- 가드형: 주황버섯 데이터에 없고 GUARD 처리는 바뀌지 않았다. 색은 속성만으로 정해지므로 가드형도 속성색이다. QA6 색값 픽셀 근거는 normal.left 단일 행에 속성을 직접 바꾼 시험값이며, Plan이 말한 "가드형(111) 시험 행"은 coder 기본 검증에서만 실행됐다. 색 결정 코드가 칸 집합·대응 유형을 보지 않으므로 같은 근거로 본다(공백 아님).
+- 잔여 위험(비차단, 결함 아님): 공격 종료 뒤 TelegraphAttribute가 이전 값으로 남는다(기존 동작). 다음 공격에서 칸 동기가 속성 동기보다 먼저 클라이언트에 닿으면 이전 속성색이 1프레임 보일 수 있다. 서버는 속성을 먼저 쓰고 QA6에서 관측되지 않았다. 사용자 V11에서 색 깜빡임이 보이면 공격 종료 시 속성 초기화를 후보로 둔다.
+
+#### 범위 대조
+- 규칙·수치(창 0.20, 가드 ×0.40, 반격 ×2.2, 슬로우, 그로기 1.5, AttackDamage 12 등)·9패턴·Weight·CSV·.ui·.map·.model 변경 없음. 3단계·V11-F07(몬스터 수치 DataSet화) 착수 없음. 요구가 Plan §16에서 빠지거나 늘어난 곳은 없다.
+- Plan §16 NOT_RUN 공백(2칸 패턴 복귀 중 팝업 V07·Stop 재Play V08)은 QA6에서 parry.left·parry.right로 메워졌다. 2026-11-03 F01~F06 리뷰가 남긴 비차단 공백은 해소로 본다.
+
+#### tester 관찰 분류
+- **일반 사망(IDLE·공격 중) 화면 stand 유지 → CombatCore-REV-F02로 추적(결함 후보, 이번 변경 범위 밖, 사용자 범위 결정 필요, 비차단).** 근거: coder 기준선(b89de46)과 QA6 재현 모두 DEAD에서 서버 SpriteRUID가 stand로 남고 ACE clip=die는 한 번만 나온다. 원인은 F08과 같은 구조(die도 비반복 클립이라 한 번 재생 뒤 렌더러 기본 표시로 돌아감)로 보이며, 몬스터 재생성 경로가 없어 HP 0 상태의 몬스터가 stand로 계속 보인다. a921c76이 만든 회귀가 아니라 이전부터의 동작이지만, 이번 변경으로 그로기 중 사망만 die가 고정돼 두 경우의 표시가 갈라졌다. Plan §7 V06 "기존 hit/die 가시성 보존"·V11 "die 구별"·CF-F07 피격/die 연출과 직접 닿으므로 V11 주관 평가로만 두지 않고 ID로 추적한다. 다만 수정은 §16 승인 범위(그로기 표시) 밖이고 Plan §16 "바꾸지 않는 것"의 DEAD 흐름 근처를 건드리므로 사용자가 (a) 2단계 V11 회차에 포함(예상 범위: DEAD 진입 시 기존 SetVisualClip("die")로 표시 고정, 서버 상태 흐름·수치 불변, .mlua만) 또는 (b) CF-F07·이후 몬스터 모션 단계로 미룸을 정한다. planner가 사용자 답을 받아 Plan에 기록한다.
+- 그로기 만료와 타격이 겹칠 때 0.5초 HIT(stand 표시): 서버가 STUN→IDLE→HIT로 기존 HIT 규칙대로 지나간 결과다. F08 완료 기준(그로기 구간 hit)과 충돌하지 않는다. HIT 클립도 같은 비반복 구조라 짧게만 보이는 것은 REV-F02와 같은 표시 계열이므로 REV-F02 결정 때 함께 볼 수 있다. 별도 ID 없음.
+- 생성 직후 0.3초 연출 프레임: DoSpawn 직후 네이티브 생성 표시로 보이며 이번 변경과 무관. 결함 아님.
+- TelegraphAttribute 잔존: 이전 리뷰 분류 유지(판정이 읽지 않음). 이번 F09로 칸 색이 이 값을 읽게 됐지만 칸이 꺼진 동안은 보이지 않는다. 위 잔여 위험 1프레임만 남는다.
+
+#### clear_logs 확인
+- QA6 절과 run 198행 모두 maker_clear_logs 미호출을 적었다. coder 절도 미호출을 적었다. reviewer는 Maker 로그를 직접 볼 수 없으므로 담당 기록과 메인 확인을 근거로 한다. QA6가 coder 시각대 로그(14:38 LEA-2007)를 그대로 읽어 구분한 기록은 로그가 지워지지 않았다는 정황과 맞다.
+
+#### NOT_RUN (PASS로 세지 않음)
+- 사람 육안: 그로기 hit 모션, 노랑·적색·보라 칸 가독성과 색만으로의 속성 구별, 색약 접근성, 별·접촉 파티클.
+- 0.20초 창 손 타이밍, V09 CSV 변경 반영, 실기기·터치(좌·우 버튼 전체 면적), 플레이어 사망 중 칸 정리, 실제 다른 맵 이동, V12 외부, CF-F07 연출.
+
+#### 다음 행동
+1. 메인: run 대상 버전을 a921c76(커밋 트리 38e7aa22…, 작업 트리 377a5ccc…)과 이 판정 WAITING으로 갱신하고 이 절만 `[CombatCore][review] WAITING`으로 커밋한다. 미커밋 Maker 재저장 3경로는 넣지 않고 사용자에게 알린다.
+2. 사용자 결정: CombatCore-REV-F02(일반 사망 die 미유지)를 V11 회차에 포함할지 미룰지.
+3. planner(문서만, 비차단): Plan §16 상태 칸 "reviewer 대기" → 리뷰 WAITING, REV-F02 추적 위치, WR 머리 "현재 재개 지점"(b89de46 기준으로 남음)과 로드맵 "다음 재개 지점"(F08·F09 미반영) 동기화. 규칙·수치·검증 기준은 바꾸지 않는다.
+4. coder/tester: 지금 할 일 없음. 사용자가 REV-F02 포함을 정하면 그 ID만 coder→tester→reviewer로 돈다.
+5. 사용자 V11(PC·모바일 직접): 그로기 동안 hit 모션이 실제로 보이는지(피격 없음·그로기 중 공격·슬로우 겹침), 예고 문구 없이 칸 위치·색만으로 방향·속성(일반 노랑·특수 적색·패링 보라)을 구별할 수 있는지와 가독성, 공격 사이 칸 색 깜빡임 여부, 결과·상태 문구 유지 확인, 일반 사망 때 몬스터 표시(REV-F02). 이전 리뷰의 V11 항목 중 (1)·(3)의 문구·빨간 칸 평가는 Plan §16대로 이것으로 대체되고 나머지는 유지된다.
 
 ### 2026-11-03 독립 리뷰 — V11-F01~F06 WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 1447ff8 대상 이전 reviewer 호출은 기록 없이 중단돼 F01~F05 몫까지 이번에 한 번에 판정했다. 아래 런타임 근거는 coder 개발절(2026-11-02 V11, 2026-11-03 F06)과 QA4·QA5의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다.
