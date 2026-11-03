@@ -483,7 +483,7 @@ coder 기본 검증(실제 Maker 근거, 키 입력이 필요 없는 부분은 P
 
 ### NOT_RUN 공백 (이번 회차에서 함께 메움)
 
-- F02 2칸 패턴 조합: 2칸(LEFT 또는 RIGHT) 패링 → 복귀 중 팝업 정지·재개(V07), 복귀 중 Stop → 재Play 기본값(V08). QA5에서는 ANY 1건만 확인됐다. 이번 F08이 복귀 완료·그로기 진입 경로를 건드릴 수 있으므로 tester 필수로 올린다(coder도 대표 1건 권장).
+- F02 2칸 패턴 조합: 2칸(LEFT 또는 RIGHT) 패링 → 복귀 중 팝업 정지·재개(V07), 복귀 중 Stop → 재Play 기본값(V08). QA5에서는 ANY 1건만 확인됐다. 이번 F08이 복귀 완료·그로기 진입 경로를 건드릴 수 있으므로 tester 필수로 올린다(coder도 대표 1건 권장). **2026-11-03 QA 6회차에서 확인 완료(PASS)**: parry.left 복귀 중 팝업 7.6초 정지 후 재개, parry.right 복귀 중 팝업 정지 상태에서 Stop → 재Play 기본값(WorkRecord QA 6회차 표).
 - F04 클립 재계측(QA5 NOT_RUN)과 그로기 중 hit 재생 재시작 여부(QA4 NOT_RUN)는 F08 완료 기준으로 흡수한다.
 - 그대로 남는 것: 창 0.20 손 타이밍, V09 CSV 파일 변경 반영, 실기기·터치, V12 외부 환경, CF-F07 사용자 평가.
 
@@ -506,7 +506,7 @@ coder 기본 검증(실제 Maker 근거, 키 입력이 필요 없는 부분은 P
 
 | ID | 결정 | 영향 R/V | 상태 |
 | --- | --- | --- | --- |
-| V11-F08 | 승인된 F04 범위의 결함 후보, 원인 확인·최소 수정 | R05·R07 / V06·V07·V08·V11·CF-F07 | 🟡 구현·기본 검증 완료(2026-11-03, MonsterStunComponent), tester 대기. 원인: hit(stun) 클립이 비반복이라 한 번 재생 뒤 stand 복귀, 서버 표시 클립 고정으로 수정 |
-| V11-F09 | 예고 문구 제거, 칸 속성색(기존 문구 색·알파 0.45), 가드형은 속성색 | R01·R07 / V01·V07·V08·V10·V11 | 🟡 구현·기본 검증 완료(2026-11-03, CombatInputController·AttackAreaMarkComponent), tester 대기 |
+| V11-F08 | 승인된 F04 범위의 결함 후보, 원인 확인·최소 수정 | R05·R07 / V06·V07·V08·V11·CF-F07 | 🟡 구현·기본 검증 완료(2026-11-03, MonsterStunComponent). 독립 QA 6회차(2026-11-03, a921c76) PASS: 세 조건에서 그로기 전체 hit·종료 뒤 stand·복귀 중 jump·그로기 중 사망 die, 상대 교체·Stop·맵 이탈(논리 경로) 뒤 잔존 없음(서버·클라이언트 SpriteRUID 시계열 + 스크린샷 픽셀 비교). 사람 육안·실제 맵 이동 NOT_RUN. reviewer 대기. 범위 밖 관찰: 일반 사망(그로기 아님)은 서버 SpriteRUID가 stand로 남아 die가 화면에 유지되지 않음(재현) — reviewer·사용자 판단 |
+| V11-F09 | 예고 문구 제거, 칸 속성색(기존 문구 색·알파 0.45), 가드형은 속성색 | R01·R07 / V01·V07·V08·V10·V11 | 🟡 구현·기본 검증 완료(2026-11-03, CombatInputController·AttackAreaMarkComponent). 독립 QA 6회차 PASS: 9패턴 문구 없음·서버 영역 칸 속성색(픽셀 역산 색 일치)·같은 칸 속성 변경 갱신·속성 미상 숨김·결과 문구 유지·팝업 유지·몬스터 사망·Stop. 가드형은 Play 내부 속성 값 변경 근거. 사람 육안·색약 접근성 NOT_RUN. reviewer 대기 |
 
-다음 흐름: coder F08·F09 한 회차 → 같은 버전 독립 tester(위 NOT_RUN 공백 포함) → reviewer → 사용자 V11 재확인. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+다음 흐름: coder F08·F09 한 회차(완료) → 같은 버전 독립 tester(위 NOT_RUN 공백 포함, 2026-11-03 QA 6회차 완료·PASS) → reviewer → 사용자 V11 재확인. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
