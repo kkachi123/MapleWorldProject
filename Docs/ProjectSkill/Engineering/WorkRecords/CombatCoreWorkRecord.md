@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-03 / 최신: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-03 / 최신: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -250,6 +250,67 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-03 독립 리뷰 — V11-F01~F06 WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 1447ff8 대상 이전 reviewer 호출은 기록 없이 중단돼 F01~F05 몫까지 이번에 한 번에 판정했다. 아래 런타임 근거는 coder 개발절(2026-11-02 V11, 2026-11-03 F06)과 QA4·QA5의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다.
+- 검토 버전: coder 커밋 b89de46 / 54경로 Bundle b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf. reviewer가 F06 절 manifest 54행을 node 스크립트(경로 ASCII 정렬, 경로+TAB+sha256+LF의 SHA-256)로 작업 트리·b89de46·a43b1b5(QA5)·HEAD에서 재계산해 54/54·Bundle 동일을 확인했다. 같은 manifest로 1447ff8·f7b3244(QA4)는 d2b57802…0fbb, a289eb7·6614b20은 1ac324e6…9de4가 재현된다. 1447ff8..b89de46에서 바뀐 manifest 경로는 coder 기재대로 10개다. 검토 시 git status 깨끗.
+- 판정: **WAITING**. 새 결함 ID 없음. F01~F06의 AI 측 근거(코드 대조·QA4/QA5 수치·로그)는 승인 범위를 충족한다. 남은 필수는 사용자 V11 직접 확인, CF-F07 실제 연출, V12 외부 환경이다. 이 판정은 2단계 완료·3단계 진행 승인이 아니다.
+
+#### 같은 버전 확인 — F01~F05 근거가 F06 변경 뒤에도 유효한가
+- QA5(b89de46)에서 다시 확인됨: F01 칸 표시(1칸·2칸·ANY 고정 칸), F02 대표(ANY 패링→복귀→Home x=3.0 STUN→약 1.5초→IDLE), F03 접촉 파티클 로그 1회, F05 전체, V02·V04~V08·V10 대표.
+- QA4(1447ff8)에서만 확인되고 이월된 것과 이월 근거:
+  - F04 STUN hit 클립·사망 die 우선: 주황버섯 model·Monster_Stun·MonsterStunComponent 해시가 두 manifest에서 같고, 아래 구조 비교에서 model 의미 차이도 0이다. 이월 타당.
+  - F03 별 크기·높이, 파티클 재생 경로: MonsterStunComponent byte 불변. 이월 타당(육안은 원래 NOT_RUN).
+  - F02 복귀 중 팝업·피격·슬로우·사망·Stop 조합: **재확인 공백(차단 아님)**. Monster_Attack은 모션 호출 1줄만 바뀌었고 OrangeMushroomAttack의 복귀(PerformReturnMotion→Home)·CompleteMotion·CancelMotion·OnUpdate는 byte 불변이다. 다만 2칸 패턴의 복귀 출발점이 착지 x(±0.75)로 바뀌었고 QA5의 복귀 대표는 ANY(1칸) 1건이다. 같은 시계·같은 상태 경로라 위험은 낮다고 판단하며 필수 재시험으로 두지 않는다. tester를 다시 부를 일이 생기면 함께 볼 조건: 2칸 패턴 패링→복귀 중 팝업 정지·재개, 복귀 중 Stop→재Play 기본값.
+- .codeblock: 1447ff8..b89de46에 변경 없음. MonsterAttackMotion·OrangeMushroomAttack .codeblock에는 메서드 이름이 들어 있지 않아(Grep 0건) PerformAttackMotion 서명 변경과 무관하다. QA5 build 로그 80건 오류·경고 0.
+
+#### 구조 파일 의미 비교 (ModelBuilder/MapBuilder 읽기, node)
+- 주황버섯 model a289eb7→b89de46: 차이 2개뿐. ActionSheet에 `stun` = aec9504d5dc24aceb5646b79d30abad4(hit와 같은 RUID) 추가, 그 값의 ValueType 형식 버전 문자열 26.7.0.0→26.10.0.0. 1447ff8→b89de46 차이 0. 줄 끝 CRLF→LF는 의미 차이 아님. F04 의도 범위 안이다.
+- map01 a289eb7→1447ff8: BattlePosMark1~3 엔티티 3개 추가뿐(modelId attackareamark, x -1.5/0/1.5, y 0.98, Scale 25×25×1, PixelRenderer, AttackAreaMarkComponent CellIndex 1/2/3). 기존 엔티티 의미 차이 0. 1447ff8→b89de46(Maker 재저장): 같은 세 엔티티의 Transform에서 Scale `$type` 표기 제거와 기본값 Rotation (0,0,0)·ZRotation 0 명시뿐. 값 변화 없음.
+- AttackAreaMark model은 1447ff8에서 새로 생겼다(a289eb7에 없음). 1447ff8→b89de46 의미 차이 0. Components는 Transform·PixelRenderer·script.AttackAreaMarkComponent, Values는 Scale 하나.
+- MapObjects.directory도 1447ff8에서 새로 생겼고 b89de46에서는 StudioVersion "" → "0.1.0.0" 한 줄만 바뀌었다.
+- 결론: 구조 파일 변경은 F01·F04 의도 범위와 Maker 재저장 표기 차이뿐이다. raw JSON 편집이나 수정은 하지 않았다.
+
+#### F06 승인 범위 대조 (Plan §15·사용자 결정 1~4)
+- ANY 조준: PrepareAttack에서 FindNearestCell로 예고 시작 순간 최근접 칸을 한 번 고정한다(동률 순서 2→1→3, epsilon 1e-6, 추적 없음). 유효 방향은 Pos2 좌·우, Pos1 오른쪽, Pos3 왼쪽(targetCell ≥2 → LEFT, ≤2 → RIGHT)이다. 기존 LEFT/RIGHT 탈출 검증은 그대로이고, ANY는 각 유효 방향 도착 x ± (|offset| + halfWidth)가 [minX, maxX] 밖인지 따로 검사한다. ResolveAttack은 snapshot.validDirs를 EvaluateDefense에 넘기고, 회피 분기는 `validDirs[EvadeDirection] == true`와 창 안 시작일 때만 JUST다. 가드 분기는 byte 불변이다. QA5의 Pos1/2/3·동률·경계·이동 뒤 조준 불변·중앙 복귀 비저스트 근거와 일치한다.
+- 2칸 중앙 착지: OrangeMushroomAttack.PerformAttackMotion(cells, minX, maxX)만 영역 중앙 `(minX+maxX)/2`를 부모 로컬 x로 바꿔 JumpToLocalX한다(NaN·역순이면 -1). 공통 층의 Monster_Attack·MonsterAttackMotion 기본 구현은 칸 문자열과 x 범위만 전달·반환 0이다. 착지 위치 규칙은 주황버섯 모션에 한정되고, 이후 보스 모션이 같은 인자로 다른 착지를 정할 수 있다. 공통 snapshot의 landing 필드와 CSV LandingAnchor는 제거됐다.
+- Weight: CSV 필수 열, 로더가 ≤0·비수치를 거부(전체 카탈로그 거부·경고 1회). SelectPattern은 r = unit × 합계를 CSV 행 순서로 누적 비교하고 마지막 행을 끝값 처리한다. 9행 모두 1이라 균등이다. QA5의 거부 시험과 900회 선택 분포와 일치한다.
+- 가드형 제외: CSV에서 normal.guard·parry.guard 2행이 빠졌고 GUARD 처리 코드는 남아 있다. QA5의 가드형 확인은 Play 내부 메모리 시험 행으로 "시험 데이터 근거"라고 표시돼 있어, 실제 데이터 PASS로 섞이지 않았다.
+- 바뀌지 않아야 할 것: CombatRuleData·AttackSkillData CSV는 a289eb7..b89de46 변경 없음(CSV 변경은 MonsterAttackPatternData뿐). 패턴 CSV의 padding 0.5·height 1·offset 0.4·lead 0.5, 기존 LEFT 2-3·RIGHT 1-2 앵커는 그대로다. JumpHeight 0.8·JumpDuration 0.5와 공격 수치·창 0.20·가드 0.40·반격·슬로우·그로기 수치를 바꾸는 diff는 없다. F06 변경은 승인된 1~4 범위를 넘지 않는다. .ui·.model·.map 변경은 Maker 재저장 3개 파일뿐이다.
+
+#### QA 관찰 분류 (모두 결함 아님, 새 ID 없음)
+- ANY 끝 칸 문구 "[좌·우]"와 실제 한 방향 차이: Plan §15가 허용한 일반형 표현이고, 칸 표시가 조준 칸을 알린다. 사용자 V11의 가독성 판단 대상. 바꾸려면 planner 문구 결정이 필요하다.
+- 끝 칸 홀드 중 새 저스트 불가, 복귀 중 반대 입력 무시: §15 설계와 기존 이동·복귀 잠금(입력 예약 없음) 그대로다. 난이도는 V11 판단.
+- TelegraphAttribute 잔존: 공격 종료 뒤 마지막 값이 남지만 Response가 비어 HUD에 나오지 않는다. 이전 버전부터의 동작이며 판정이 이 값을 읽지 않는다. 정리 여부는 후속 선택 사항.
+- UI 뒤·앞 버튼이 시뮬레이터에서 가장자리(x=805/1115)에서만 눌림(QA4): 제품 결함인지 시뮬레이터 좌표 재매핑인지 근거가 없다. F06은 .ui·버튼 코드를 바꾸지 않았다. 사용자 실기기 V11에서 전체 면적을 확인한다. 실기기에서도 재현되면 그때 결함으로 등록한다.
+- 복귀·그로기 중 피격 시 클라이언트 로컬 HIT·hit 클립(QA4): 서버 상태(ATTACK/STUN)와 규칙은 정상이다. 이번 변경 이전부터 있는 클라이언트 표시 구조이고, 그로기 중에는 RUID가 같아 화면이 같다. 복귀 중 jump→hit 전환이 거슬리는지는 V11·CF-F07 연출 판단 대상.
+- 플레이어 사망 직후 HP 문자 음수 가능성: 2026-11-02 리뷰 분류 유지(결함 아님, 3단계 계획 후보, V11에서 함께 확인).
+
+#### QA4 계약 위반 기록
+- QA4 tester가 시작 직후와 회차 사이에 maker_clear_logs를 호출해 이전 Play의 normal 로그 36건을 보존 확인 없이 지웠다(build 로그는 유지, QA4 절 시험 오류 (4)(5)·run 144행). 사용자 로그 무단 삭제 금지 위반이다. 메인이 사용자에게 보고했고 QA5 지시에 금지를 명시했으며, QA5는 미호출을 기록했다(QA5 절·run 167행).
+- 판정 영향: 지워진 것은 이전 Play 로그이고, QA4 판정에 쓴 근거는 지운 뒤 새로 실행한 회차의 로그다. 결과를 잃은 J2는 새 몬스터로 다시 실행한 결과만 썼다. QA4 PASS는 무효로 보지 않는다. 다만 지워진 36건의 내용은 복구·확인할 수 없다.
+
+#### NOT_RUN (PASS로 세지 않음)
+- 실제 입력으로 0.20초 창 안 손 타이밍 저스트·패링 성공(실제 키 성공은 시험 한정 창 8.0/0.9, 창 0.2 안은 서버 프로브), 0.200 등호 경계.
+- V09 CSV 파일 변경→Refresh→Play 반영(시험 행 ValidateRows로 대체).
+- F04 클립 재계측(QA5), 그로기 중 hit 클립 재생 재시작 여부(QA4).
+- 육안 전체: 별 크기·가시성, 접촉 파티클, 1칸 공격 구별, 2칸 중간 착지 모션, 칸 색·가독성.
+- 위 F02 복귀 중 조합의 2칸 패턴 재확인.
+- V11 사용자 직접, CF-F07 실제 연출, V12 외부(두 사용자·비전투 몬스터·다른 맵).
+
+#### 다음 행동
+1. 메인: run 상태·대상 버전을 b89de46 / b985aa4b…74dbf와 이 리뷰 판정 WAITING으로 갱신한다. 이 절을 `[CombatCore][review] WAITING`으로 커밋한다.
+2. planner(문서만, 차단 아님): 이 WR 머리 "현재 재개 지점"(6614b20 기준으로 남음)과 Plan 머리·§15 끝의 "다음 흐름"을 리뷰 완료·사용자 V11 대기로 맞춘다. 규칙·수치·검증 기준은 바꾸지 않는다.
+3. coder/tester: 지금 할 일 없음. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다.
+4. 사용자 V11(PC·모바일 직접):
+   - 1칸(ANY) 공격이 칸 표시로 구별되는지, "[좌·우]" 문구가 끝 칸에서 헷갈리지 않는지, 끝 칸 홀드 중 대응 불가 난이도.
+   - 2칸 공격의 두 칸 중간 착지 모션 모양.
+   - F01 빨간 칸 표시의 색·가독성, F02 복귀 후 그로기 흐름, F03 별 크기·높이와 패링 접촉 파티클, F04 그로기 hit 모션.
+   - 복귀 중 피격 시 jump→hit 클립 전환이 거슬리는지.
+   - 좌·우 UI 버튼 전체 면적이 눌리는지(실기기·터치).
+   - 0.20초 창 손 타이밍 체감, 패턴 선택(Weight 균등) 체감.
+   - 플레이어 사망 직후 HP 문자 표시.
+5. 외부 대기: V12, CF-F07 연출, 기존 외부 후속 ID는 기존 추적 유지. P01b~P06 🟡 유지, 3단계 자동 시작 없음.
 
 ### 2026-11-02 독립 리뷰 — WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절과 tester QA3의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다.
