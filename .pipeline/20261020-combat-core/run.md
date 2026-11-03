@@ -2,9 +2,9 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: TESTING
+- 상태: REVIEWING
 - 갱신: 2026-11-03 / 메인 조율 채팅(Claude Code)
-- 현재 담당: tester msw-tester (QA5, F01~F06 같은 버전, Maker 담당)
+- 현재 담당: reviewer msw-reviewer (F01~F06 일괄, Maker 제어 없음)
 - 다음 행동·대기 사유: 2026-11-03 사용자 V11 추가 결정(V11-F06 착지점·가드형 제외·1칸 공격·가중치) Plan 반영 → coder → tester(QA5) → reviewer(1447ff8 리뷰는 중단, 새 버전으로 한 번에) → 사용자 V11 재확인.
 - 환경 가이드: 없음
 ## 원본 연결
@@ -164,3 +164,5 @@
 - coder 실제 종료(msw-coder): F06 구현, build 오류0/경고0, 기본 검증은 WorkRecord 2026-11-03 F06 개발절. 미커밋 3파일은 빌더 의미 비교로 형식 차이뿐 확인 후 포함. 메인 maker_get_current_map=map01/edit 확인(읽기 전용).
 - 대상 버전: coder 커밋 b89de46 / 54경로 Bundle b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf (1447ff8 대비 10경로 변경).
 - tester 전달: msw-tester 호출(QA5). maker_clear_logs 금지 명시.
+- tester 실제 종료(msw-tester): QA5 FAIL·NEEDS_DECISION 없음, 전후 Bundle 54/54 일치, maker_clear_logs 미호출. NOT_RUN: 0.20초 손 타이밍, CSV 변경 반영, 육안, V11/V12. 메인 maker_get_current_map=map01/edit 확인.
+- reviewer 전달: msw-reviewer 호출(F01~F06 일괄).
