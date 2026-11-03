@@ -941,3 +941,64 @@
 | ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
 | ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |
 | ui/ToastGroup.ui | 9c29998895c5fecc54bacbbdf0a8ca2c472d95fadbc5cb30fe46bed7c7fc444f |
+
+## 2026-11-03 coder V11-F08·F09 구현·기본 검증 인계
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §16의 CombatCore-V11-F08(그로기 중 hit 모션 실제 표시)·V11-F09(예고 문구 제거·칸 속성색)뿐이다. 규칙·수치(0.20, ×0.40, 반격, 슬로우 2.0·×0.5, 그로기 1.5, AttackDamage 12, AttackInterval 3.0, JumpDuration 0.5·JumpHeight 0.8), CSV·DataSet, 9패턴·Weight, D01~D04, 서버 상태 흐름(IDLE/HIT/ATTACK/STUN/DEAD)과 HitComponent·MonsterHealthComponent의 HIT 진입 조건, 주황버섯 ActionSheet 값, 결과·상태 문구(defenseText·counterText·effectText), .ui·.map·모델, V11-F07, 3단계는 바꾸지 않았다. 새 클립·자원은 쓰지 않았다(기존 hit 클립 RUID aec950… = ActionSheet "stun"·"hit").
+- 기준 버전: 커밋 b89de46. 같은 방법(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256)으로 b89de46의 54경로를 git show로 재계산해 b985aa4b…4dbf 일치를 확인했다. 시작 시 작업트리 Bundle은 b0019098…f5b0이었고 차이는 Maker 재저장 미커밋 3파일(아래)뿐이다.
+- 실제 연결: 시작 시 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186. 맵 TileMapMode=0(MapleTile, 앞 회차 기록; 이번에는 구조 파일을 바꾸지 않아 MapBuilder를 다시 읽지 않았다). Maker 로그 시각 14:29~14:43. **maker_clear_logs는 한 번도 호출하지 않았다.** 로그는 시각·`[VRF8]`(이번 회차 임시 계측 표지)·`[VRF]` 표지로 파일에 저장해 걸러 읽었다.
+- 미커밋 Maker 재저장 3파일(AssistModel.userdataset·AttackSkillData.userdataset의 CoreVersion 한 줄, 주황버섯 모델의 형식 버전·부동소수 표기·스크립트 기본값 직렬화)은 되돌리거나 건드리지 않았다. **주황버섯 모델을 빌더로 다시 쓰지 않았다**(F08은 .mlua로 해결, 모델 무수정). 따라서 이 세 파일은 이번 변경이 아니며 지문에는 포함된다.
+
+### V11-F08 원인 확정 (실측)
+- 방법: 패링(가드 시작이 타격 0.12초 전, 패턴 단일 행 교체) → 복귀 → 그로기 → IDLE을 서버 프로브(상태·SpriteRUID·isStunned·GroggyRemaining)와 소유 클라이언트 프로브(StateComponent.CurrentStateName·SpriteRendererComponent.SpriteRUID·PlayRate·AnimationClipEvent·StateChangeEvent)로 같은 시간축(ServerElapsedSeconds)에 기록했다. 클라이언트에서 "화면에 실제로 보이는 값"을 읽는 API는 없다(SpriteRendererComponent.ClipName은 deprecated로 항상 빈 문자열, SpriteRUID는 서버 쓰기만 따라가고 AnimationClipEvent는 속성을 바꾸지 않는다). 그래서 실제 표시는 play 카메라 스크린샷(maker_screenshot)에서 몬스터 영역 픽셀을 IDLE(stand) 기준 영상과 비교해 판정했다(같은 위치·정지 프레임이면 차이 평균 0, 고통 얼굴 hit 끝 프레임은 차이 ≈78~80, 중간 프레임은 ≈50, 확대 그림과 눈으로 대조).
+- 관측 1 (이벤트 vs 속성): IDLE에서 서버 ChangeState("HIT")만 해도 클라이언트에 ACE clip=hit가 오지만 SpriteRUID는 stand로 그대로다(IDLE→HIT 0.5초 사이 stand 유지). 그로기 진입도 같다: ACE clip=stun(=hit RUID) 직후 클라이언트 SpriteRUID는 stand(복귀 완료 CompleteMotion이 쓴 값)였다.
+- 관측 2 (화면): ApplyGroggy(30)을 IDLE에서 바로 준 경우(SpriteRUID 변화 없음) 직후 스크린샷은 hit 중간 프레임(차이 49.8)이고, 같은 방식의 그로기 중 플레이어 실제 ↑ 공격 뒤(약 2초 후) 스크린샷은 stand(차이 4.25)였다. 실제 패링 흐름(복귀→그로기, 그로기 연장 30초)의 그로기 중 스크린샷도 stand(차이 0.85)였다. 서버가 SpriteRUID에 hit 클립을 직접 쓴 경우(IDLE 시험)는 직후 0, 이후 세 장 모두 78.57 고정(고통 얼굴 끝 프레임을 유지)이었다.
+- 관측 3 (피격 중 클라이언트 상태): 그로기 중 플레이어 ↑ 공격에서 서버 상태는 STUN을 유지하지만 클라이언트 로컬 상태가 STUN→HIT로 바뀌고 ACE clip=hit가 한 번 나온 뒤 서버 그로기 종료(ACE stand, HIT→IDLE)까지 HIT로 남았다(자동 IDLE 복귀 없음, 화면은 이미 stand).
+- 확정: 원인은 Plan 후보 3·4의 변형이다. ActionSheet "stun" 키·RUID는 정상(stun=aec950…, 그로기 진입마다 ACE clip=stun)이지만 hit는 짧은 비반복 클립이라 상태 이벤트로는 한 번 재생된 뒤 렌더러 기본 표시(SpriteRUID=stand)로 돌아간다. 그로기 1.5초 동안 hit 모습이 남지 않으며, 복귀 완료 직전 서버가 stand를 써 두는 것도 같은 결과로 이어진다. 후보 2(클라이언트 로컬 HIT)는 관측됐지만 stand 복귀 원인이 아니라(자동 IDLE 없음) 결과를 바꾸지 않는다. 후보 1(동기값 덮어쓰기 순서)은 단독으로 분리해 확인하지 않았다(위 설명만으로 모든 관측이 설명된다).
+
+### V11-F08 수정 (최소 범위, .mlua 한 곳)
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | SetStunned(boolean)에서 그로기가 켜지면 기존 MonsterAttackMotion.SetVisualClip("stun")으로 서버 표시 클립을 ActionSheet "stun"(=hit RUID)로 고정하고, 실제로 그로기였다가 꺼질 때 stand로 되돌린다(사망으로 끝나면 "die"를 남긴다, health.IsDead는 ApplyDamage가 상태 변경 전에 먼저 true로 둔다). 그로기가 아니던 SetStunned(false) 호출(공격 취소·정리)은 아무것도 쓰지 않는다. 복귀 중 jump(JumpToLocalX)·CompleteMotion의 stand 쓰기는 그대로라 그로기 시작 시점에만 hit로 바뀐다. 상태 규칙·타이머·서버 HIT 진입 조건·ActionSheet 값·모델은 무변경. |
+- 모션 클래스가 없거나 유효하지 않으면 아무것도 하지 않는다. 새 Sync 값·새 RUID 없음.
+
+### V11-F08 수정 후 확인 (Play 내부, 서버·클라이언트 동시 기록)
+| 조건 | 결과 |
+| --- | --- |
+| (a) 피격 없는 실제 흐름(자연 1.5초) | 서버 상태 ATTACK(jump)→STUN 14.04에 SpriteRUID hit(stun) + 클라이언트 같은 시각 ACE clip=stun, 클라이언트 SpriteRUID hit(stun) 유지 → 그로기 1.5초 뒤 서버 IDLE\|stand, 클라이언트 ACE clip=stand·IDLE\|stand. 복귀 중에는 jump 유지(ATTACK\|jump), 그로기 시작 시점에만 hit. 스크린샷(그로기 연장 중): 고통 얼굴 hit 프레임 유지 |
+| (b) 그로기 중 실제 ↑ 공격 | 클라이언트 STUN→HIT(ACE clip=hit 1회) 뒤에도 SpriteRUID hit(stun) 유지, 공격 이펙트·피해 숫자와 함께 스크린샷 모두 hit 프레임. 그로기 종료 뒤 스크린샷 stand. 서버 상태 STUN 유지·GroggyRemaining 감소(조기 해제 없음)·몬스터 HP는 HitEvent 경로(수동 공격 10타씩) 그대로 |
+| (c) 슬로우 겹침(ApplySlow 8초×0.5) | PlayRate 0.5가 되었으나 SpriteRUID hit(stun) 유지, 스크린샷 hit. 서버 그로기 기한은 전투 시간 기준 그대로 |
+| 그로기 중 사망(ApplyDamage 999) | 서버 STUN→DEAD, isStunned false, SpriteRUID die. 클라이언트 ACE clip=die·SCE HIT→DEAD, 스크린샷은 die 프레임이 고정(HP 0). die가 hit보다 우선한다 |
+| 2칸 패턴(parry.left) 복귀 중 팝업(V06·V07) | 판정 PARRY 직후 x=0.75에서 팝업 → 서버 paused 5초 동안 ATTACK\|jump 유지·위치 고정 → 닫은 뒤 복귀가 이어져 STUN 진입 시 hit(stun)로 바뀌고 1.5초 뒤 IDLE\|stand |
+| Stop 뒤 재Play(V08) | (1) 그로기(30초) 중 maker_stop → 재Play: 몬스터 IDLE·SpriteRUID stand·isStunned false·GroggyRemaining 0·ParryEffect (0,0,0)·칸 표시 없음·패턴 9행·AttackInterval 기준값. (2) 2칸 패턴(parry.right) 복귀 중 팝업 정지(x=-0.75)에서 maker_stop → 재Play: paused false·칸·응답·반격 false·패턴 9행·플레이어 IDLE, 팝업 닫힘, 클라이언트 IDLE·stand·칸 표시 없음. 런타임 오류 로그 없음 |
+- HP=HitEvent=숫자(V02 대표, 제품 경로): 일반 무대응 HIT 12/12, 저스트 JUST 0/0, 가드 GUARD 4/4(12×0.4=4.8→4), 패링 PARRY 0/0 후 그로기 진입(V03 대표 경계). 이번 변경은 이 경로에 관여하지 않는다.
+
+### V11-F09 변경
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/UI/CombatInputController.mlua | 공격 예고 문구(telegraphText) 계산 블록을 삭제하고 항상 빈 문자열("", 흰색)로 둔다. .ui 엔티티·바인딩은 그대로(.ui 무변경). defenseText·counterText·effectText(저스트 회피 성공·패링 성공·가드·피격·회피·반격 준비·상대 그로기·슬로우)는 문구·색·지속 그대로 |
+| RootDesk/MyDesk/Combat/AttackAreaMarkComponent.mlua | 칸 색을 서버 동기 MonsterAttackComponent.TelegraphAttribute로 정한다: NORMAL (1, 0.85, 0.4) / SPECIAL (1, 0.43, 0.36) / PARRY (0.88, 0.65, 1), 알파는 기존 CellAlpha 0.45. 표시 캐시는 켜짐 여부와 속성을 함께 비교해(같은 칸에 속성이 바뀐 연속 공격도 새 색 반영) 속성 값이 달라질 때만 FillColor한다. 켜져야 하는데 속성이 세 값이 아니면(빈 값·동기화 순서 차이 포함) 그 칸을 숨기고, 0.25초를 넘겨 계속되면 `[VRF] AttackAreaMark unknown attribute` 한 번만 남긴다. 기존 단일 빨강(1, 0.12, 0.12)은 더 쓰지 않으며 투명 기본색은 (1,1,1,0). 칸 선택(TelegraphCells)·켜는 시점·끄는 조건은 F01과 같다(MonsterAttackComponent 무변경 — 같은 실행의 속성 동기값이 칸 정보와 함께 PrepareAttack에서 설정됨을 확인) |
+- 확인(Play 내부): (1) 9패턴 각각을 제품 경로로 한 번씩 실행(패턴 단일 행 교체): 클라이언트 칸 속성 표시 normal.left -NN / special.left -SS / parry.left -PP / normal.right NN- / special.right SS- / parry.right PP- / normal.any -N- / special.any -S- / parry.any -P-(서버 TelegraphCells 011·110·010과 일치), 모든 구간에서 telegraphText.Text는 빈 문자열, 판정 뒤 칸이 꺼졌고 결과 문구(피격)는 이전처럼 표시됐다. (2) 가드형 시험 데이터(Play 내부 단일 행, 칸 111·예고 40초): NORMAL·SPECIAL·PARRY 순으로 켜 스크린샷의 칸 픽셀을 배경(칸 없는 같은 프레임)과 알파 0.45로 역산해 색을 확인했다 — 노랑 (1, 0.85, 0.4)·적색 (1, 0.43, 0.36)·보라 (0.88, 0.65, 1)가 세 칸 모두에서 오차 ±0.01로 일치("시험 데이터 근거"). 같은 칸 연속 공격에서 속성이 NORMAL→SPECIAL→PARRY로 바뀌면 칸이 계속 켜진 채 새 색으로 갱신됐다. (3) 속성 미상: 서버에서 TelegraphAttribute를 "XYZ"로 바꾸자 칸 픽셀이 배경과 같아져(숨김) 확인했다. (4) 2칸 패턴 복귀 중 팝업·Stop·재Play 뒤 칸 표시 없음(위 표).
+
+### 실제 기본 검증 요약
+- 빌드: Refresh 후 build 로그 81건 모두 Info(LIA 동적 참조 노이즈, 앞 회차와 같은 유형), 오류 0·경고 0. 새 .mlua가 없어 .codeblock 변경 없음.
+- Play 5회(최초 통합 계측·수정 전 원인 실측 / 수정 후 통합 확인 / 9패턴·팝업·Stop 회귀 / Stop 뒤 재Play 기본값 2회). 모든 Play는 maker_stop으로 닫았고 시험값(AttackInterval 9999, 패턴 단일 행 교체, 그로기 연장 6~60초, 슬로우 8초, 예고 40초, 플레이어 HP 보충, 속성 "XYZ")은 Play 내부에만 두었다. 재Play에서 패턴 9행·AttackInterval 기준값·규칙값 정상.
+
+### 프로브 오류와 제품 오류의 구분, 관찰
+- 시험 스크립트 문제: (1) 이전 몬스터를 폴링하던 클라이언트 프로브가 DoSpawn(교체) 뒤에도 돌아 `LEA-2007 nil StateComponent`를 약 370건 냈다(14:38:38~52, 제품 오류 아님). (2) Stop 때 남은 클라이언트 프로브 타이머로 `LEA-3051 MemoryLeak(MakerScript)` 1건(14:42:06). (3) Stop과 같은 순간에 찍은 서버 로그 한 줄(T2)은 Play 정리가 시작돼 상태가 흔들려 읽혔다 — 같은 조작을 Stop 없이 다시 실행해 정상 값(그로기 켜짐 시 SpriteRUID hit)을 확인했다. 제품 runtime 오류·경고는 관측되지 않았다.
+- 관찰(이번 범위 밖, 바꾸지 않음): 수정 전 기준선에서 IDLE의 몬스터가 사망하면(DEAD) 화면이 die가 아니라 stand 프레임으로 보였다(die 클립도 비반복이라 끝난 뒤 기본 표시 stand로 돌아가는 것으로 보이며, 스크린샷 차이 0·HP 0/100). 이번 변경 이후 그로기 중 사망은 die가 고정되어 표시가 다르다. 일반 사망의 die 유지 여부는 사용자 확인(V11) 또는 별도 결함 후보로 판단한다.
+- 클라이언트 로컬 HIT: 그로기 중 피격 시 클라이언트가 STUN→HIT로 보이는 구조는 그대로다(서버 상태는 STUN). 화면은 hit 고정이라 문제 없다.
+
+### 실패/미확인/미실시 (PASS로 세지 않음)
+- 사용자 직접 평가(V11): 문구 없이 칸 위치·색만으로 방향·속성 구별과 노랑·적색·보라 칸 가독성, 그로기 hit 모션이 실제 눈에 어떻게 보이는지(여기서는 스크린샷 픽셀·프레임 대조), 별·접촉 파티클, 좌·우 UI 버튼 전체 면적(실기기·터치), 사람 손 0.20초 창 타이밍, Weight 체감. V12 외부 환경, V09 CSV 파일 변경 반영, 플레이어 사망·다른 맵 전환, 모바일 화면, 속성색의 색약 접근성은 미실시.
+- 스크린샷 해상도(558×314)와 간격 한계: hit 프레임 유지는 연속 스크린샷 3~4장과 클라이언트 SpriteRUID·이벤트 시계열로 확인했다. 1.5초 전체를 연속 프레임으로 녹화한 것은 아니다. 짧은 자연 그로기(1.5초)의 육안 확인은 도구 왕복 시간 때문에 연장 그로기(시험값)로 대신했고, 자연 1.5초는 클라이언트 SpriteRUID 시계열로만 확인했다.
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공 뒤 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것: (1) F08 세 조건(피격 없음·그로기 중 실제 ↑ 공격·슬로우 겹침)에서 그로기 전체 구간 hit 표시, 종료 뒤 stand, 복귀 중 jump, 사망 시 die — 클라이언트 SpriteRUID 시계열(상태·ACE와 같은 시간축)과 스크린샷 두 방식을 함께 쓰고 기존 이벤트 근거만으로 PASS 하지 않는다. (2) F09 9패턴 칸 색·예고 문구 없음·결과 문구 유지·속성 미상 숨김·가드형 시험 데이터, 팝업 중 유지·사망·Stop 뒤 잔존 없음. (3) 회귀 V02·V03 대표, V06(복귀 중 jump 유지)·V07·V08(2칸 패턴 복귀 중 팝업·Stop 포함), V10 대표. 주의: maker_clear_logs를 호출하지 말고 시각·표지로 구분해 읽는다(로그가 매우 커서 파일로 저장된 분량을 걸러 읽는 것이 편하다). SetStunned 변경이 그로기 정리 경로(ClearOpponentExecution·OnMapLeave·OnEndPlay·사망)에서도 stand/die를 쓰므로 이 경로들(상대 교체·Stop·맵 이탈)의 표시 잔존 여부를 함께 본다. 육안·V11·V12는 사용자 몫이다.
+
+### 2026-11-03 최종 제품 버전 묶음 (V11-F08·F09)
+- 이전 묶음(b985aa4b…4dbf, 54경로)과 같은 경로 집합·계산법(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256)이다. b89de46을 같은 방법으로 재계산해 b985aa4b…4dbf 일치를 확인한 뒤 작업트리를 계산했다. b89de46 대비 변경된 경로는 6개로, 이번 변경 3개(AttackAreaMarkComponent.mlua·MonsterStunComponent.mlua·CombatInputController.mlua)와 Maker 재저장 3개(AssistModel.userdataset·AttackSkillData.userdataset·주황버섯 모델, 이번에 수정하지 않음)다. 나머지 48개는 b89de46과 같다. .codeblock·.directory는 대상 외다.
+- Bundle SHA-256: 377a5ccc5f42de649117004aad7520cff9a73eae80c9e1096bb3e3bf3f780363.
+- 변경 경로 SHA-256: Combat/AttackAreaMarkComponent.mlua 09df43555df7528ef68043d44c4927183401c878f09aa63cedaf6695fa8b495f · Monster/MonsterStunComponent.mlua 165d8b5ec9bff3bbbb2b0feda73cfb42a53141f55657a5772b97efafac27cd34 · UI/CombatInputController.mlua 5e42865cdf8b15813aa2a5a8a47bd26b3587fa1387152735ae76a4e1a7bec21d · Models/Monsters/주황버섯 모델 d8f79eb5991229e9699edf7206725e767797b3630215c171278c08173e3eb732 · @Assist/DataSet/AssistModel.userdataset a933d30aa5042bac273f904dd56058ff506a4db62b8af33490dfa41bdc915665 · AttackSkillData.userdataset c6b692fdd73e8ed144b2b32255dc95fe531e9bfb7d09591f8672841c441aeedd. 나머지 48경로 해시는 이전 묶음(V11-F06) 표와 같다.

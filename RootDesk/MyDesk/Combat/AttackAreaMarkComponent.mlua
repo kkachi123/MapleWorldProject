@@ -10,22 +10,45 @@ script AttackAreaMarkComponent extends Component
 		local pixel = self.Entity.PixelRendererComponent
 		if not isvalid(pixel) then return false end
 		if not self._T.ready then
-			pixel:ResetWithColor(4, 4, Color(1, 0.12, 0.12, 0))
+			pixel:ResetWithColor(4, 4, Color(1, 1, 1, 0))
 			pixel.SortingLayer = "MapLayer0"
 			pixel.OrderInLayer = 1
 			self._T.ready = true
 			self._T.shown = false
+			self._T.attribute = ""
 		end
 		return true
 	end
 
 	@ExecSpace("ClientOnly")
-	method void SetShown(boolean shown)
-		-- 표시 값이 달라질 때만 색을 바꾼다. 판정은 서버가 확정한 칸 정보만 따른다.
+	method any GetAttributeColor(string attribute)
+		-- 칸 색은 공격 속성이 정한다(일반 노랑·특수 적색·패링 보라). 알 수 없는 속성은 nil이다.
+		if attribute == "NORMAL" then return Color(1, 0.85, 0.4, self.CellAlpha) end
+		if attribute == "SPECIAL" then return Color(1, 0.43, 0.36, self.CellAlpha) end
+		if attribute == "PARRY" then return Color(0.88, 0.65, 1, self.CellAlpha) end
+		return nil
+	end
+
+	@ExecSpace("ClientOnly")
+	method void SetShown(boolean shown, string attribute)
+		-- 켜짐 여부와 속성이 달라질 때만 색을 바꾼다. 켜야 하는데 속성을 모르면 숨긴다(동기화 1프레임 차이는 조용히 숨김). 판정은 서버가 확정한 칸 정보만 따른다.
 		if not self:EnsurePixel() then return end
-		if self._T.shown == shown then return end
-		self._T.shown = shown
-		self.Entity.PixelRendererComponent:FillColor(Color(1, 0.12, 0.12, shown and self.CellAlpha or 0))
+		local color = shown and self:GetAttributeColor(attribute) or nil
+		if shown and color == nil then
+			self._T.unknownSince = self._T.unknownSince or _UtilLogic.ElapsedSeconds
+			if not self._T.unknownLogged and _UtilLogic.ElapsedSeconds - self._T.unknownSince > 0.25 and Environment:IsMakerPlay() then
+				self._T.unknownLogged = true
+				log("[VRF] AttackAreaMark unknown attribute cell=" .. tostring(self.CellIndex) .. " value='" .. tostring(attribute) .. "'")
+			end
+		else
+			self._T.unknownSince = nil
+			self._T.unknownLogged = false
+		end
+		local key = color ~= nil and attribute or ""
+		if self._T.attribute == key then return end
+		self._T.attribute = key
+		self._T.shown = color ~= nil
+		self.Entity.PixelRendererComponent:FillColor(color ~= nil and color or Color(1, 1, 1, 0))
 	end
 
 	@ExecSpace("ClientOnly")
@@ -33,7 +56,7 @@ script AttackAreaMarkComponent extends Component
 		-- 로컬 소유 대결의 서버 동기화 칸 정보만 읽고, 대결이 없거나 끝나면 즉시 숨긴다.
 		local player = _UserService.LocalPlayer
 		local map = self.Entity.CurrentMap
-		if not isvalid(player) or not isvalid(map) or player.CurrentMap ~= map then self:SetShown(false); return end
+		if not isvalid(player) or not isvalid(map) or player.CurrentMap ~= map then self:SetShown(false, ""); return end
 		if self._T.map ~= map then
 			self._T.map = map
 			local managerEntity = map:GetChildByName("MonsterManager", false)
@@ -41,17 +64,17 @@ script AttackAreaMarkComponent extends Component
 		end
 		local manager = self._T.manager
 		local monster = isvalid(manager) and manager.CurrentMonster or nil
-		if not isvalid(monster) or manager.CurrentPlayer ~= player or monster.CurrentMap ~= map then self:SetShown(false); return end
+		if not isvalid(monster) or manager.CurrentPlayer ~= player or monster.CurrentMap ~= map then self:SetShown(false, ""); return end
 		local attack = monster:GetComponent("script.MonsterAttackComponent")
-		if not isvalid(attack) then self:SetShown(false); return end
+		if not isvalid(attack) then self:SetShown(false, ""); return end
 		local cells = attack.TelegraphCells
-		self:SetShown(string.sub(cells, self.CellIndex, self.CellIndex) == "1")
+		self:SetShown(string.sub(cells, self.CellIndex, self.CellIndex) == "1", attack.TelegraphAttribute)
 	end
 
 	@ExecSpace("ClientOnly")
 	method void OnMapLeave(Entity leftMap)
 		-- 맵 수명이 끝나면 표시와 참조를 함께 정리한다.
-		if self._T.ready then self:SetShown(false) end
+		if self._T.ready then self:SetShown(false, "") end
 		self._T.map = nil
 		self._T.manager = nil
 	end
