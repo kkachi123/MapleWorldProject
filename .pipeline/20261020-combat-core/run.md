@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: REVIEWING
+- 상태: WAITING_USER
 - 갱신: 2026-11-03 / 메인 조율 채팅(Claude Code)
-- 현재 담당: reviewer msw-reviewer (F01~F06 일괄, Maker 제어 없음)
-- 다음 행동·대기 사유: 2026-11-03 사용자 V11 추가 결정(V11-F06 착지점·가드형 제외·1칸 공격·가중치) Plan 반영 → coder → tester(QA5) → reviewer(1447ff8 리뷰는 중단, 새 버전으로 한 번에) → 사용자 V11 재확인.
+- 현재 담당: 사용자 (V11 직접 확인)
+- 다음 행동·대기 사유: 리뷰 WAITING(결함 없음, 대상 b89de46). 사용자 V11 재확인 대기. 문서 상태 동기화는 msw-planner(문서만). 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -166,3 +166,6 @@
 - tester 전달: msw-tester 호출(QA5). maker_clear_logs 금지 명시.
 - tester 실제 종료(msw-tester): QA5 FAIL·NEEDS_DECISION 없음, 전후 Bundle 54/54 일치, maker_clear_logs 미호출. NOT_RUN: 0.20초 손 타이밍, CSV 변경 반영, 육안, V11/V12. 메인 maker_get_current_map=map01/edit 확인.
 - reviewer 전달: msw-reviewer 호출(F01~F06 일괄).
+- reviewer 실제 종료(msw-reviewer): WAITING, 결함 없음. 커밋 아래 [review]. 재확인 공백(비차단): 2칸 패턴의 F02 복귀 중 팝업·Stop 조합.
+- 사용자 V11 확인 요청: ANY 구별·끝 칸 문구·난이도, 2칸 중간 착지 모션, F01~F04 육안, 복귀 중 hit 클립, UI 좌·우 버튼 전체 면적(실기기), 0.20초 손 타이밍·Weight 체감, 사망 직후 HP 문자.
+- planner 전달: 문서 상태 동기화(WR 재개 지점, Plan 머리·§15 다음 흐름).
