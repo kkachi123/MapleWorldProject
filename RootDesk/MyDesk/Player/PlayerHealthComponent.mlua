@@ -14,7 +14,7 @@ script PlayerHealthComponent extends Component
 	end
 
 	@ExecSpace("ServerOnly")
-	method table EvaluateDefense(string response, string attribute, number hitTime, table rules)
+	method table EvaluateDefense(string response, string attribute, number hitTime, table rules, table validDirs)
 		-- 공격 실행마다 범위 안팎과 무관하게 수락 입력을 한 번 판정한다.
 		local result = { kind = "HIT", rate = 1, success = false }
 		local guard = self._T.guard
@@ -26,8 +26,9 @@ script PlayerHealthComponent extends Component
 			elseif attribute ~= "SPECIAL" then
 				result = { kind = "GUARD", rate = rules.GuardDamageRate, success = false }
 			end
-		elseif (response == "LEFT" or response == "RIGHT") and isvalid(evade) and evade.EvadeDirection == response
+		elseif isvalid(evade) and validDirs[evade.EvadeDirection] == true
 			and self:IsInWindow(evade.evadeStartTime, hitTime, rules.JustWindowSec) then
+			-- 저스트로 인정하는 방향은 실행 스냅샷이 고정한 집합이다(LEFT·RIGHT는 한 방향, ANY는 고정 칸에서 멀어지는 방향).
 			result = { kind = "JUST", rate = 0, success = true }
 		end
 		self._T.defenseEvaluations = (self._T.defenseEvaluations or 0) + 1

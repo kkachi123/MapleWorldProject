@@ -147,7 +147,7 @@ script CombatInputController extends Logic
 		local response = attack.TelegraphResponse
 		local attribute = attack.TelegraphAttribute
 		if response ~= "" then
-			local direction = response == "LEFT" and "뒤 회피 [왼쪽]" or (response == "RIGHT" and "앞 회피 [오른쪽]" or "가드 [아래]")
+			local direction = response == "LEFT" and "뒤 회피 [왼쪽]" or (response == "RIGHT" and "앞 회피 [오른쪽]" or (response == "ANY" and "방향 무관 회피 [좌·우]" or "가드 [아래]"))
 			if attribute == "SPECIAL" then
 				text = "특수 · " .. direction .. " · 가드 불가"
 				color = Color(1, 0.43, 0.36, 1)

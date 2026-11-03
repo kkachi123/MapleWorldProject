@@ -41,7 +41,8 @@ script Monster_Attack extends StateType
 		self.active = true
 		self.attackId = snapshot.id
 		self.attack._T.activeState = self
-		local duration = self.motion:PerformAttackMotion(snapshot.landing)
+		-- 공통 계층은 서버가 고정한 영역(칸 집합·x 범위)만 모션 담당에 넘기고, 착지 방식은 몬스터별 모션이 정한다.
+		local duration = self.motion:PerformAttackMotion(snapshot.area.cells, snapshot.area.minX, snapshot.area.maxX)
 		if duration < 0 or duration ~= duration or duration == math.huge or snapshot.pattern.TelegraphLeadSec < duration then
 			self:CancelExecution()
 			self.ParentComponent:ChangeState("IDLE")

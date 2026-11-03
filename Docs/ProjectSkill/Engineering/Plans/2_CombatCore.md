@@ -1,6 +1,6 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-11-03. 사용자 추가 결정으로 V11-F06(주황버섯 공격 범위·1칸 방향 무관 회피형·가중치)을 §15에 추가하고 D01·§5 데이터 계약·V01/V03/V09를 맞췄다. F06은 2단계 V11 회차에 포함해 구현이 승인됐다. 다음은 F06 coder 회차 → F01~F06 같은 버전 tester QA5 → reviewer 일괄 리뷰다.
+> 갱신: 2026-11-03. 사용자 추가 결정으로 V11-F06(주황버섯 공격 범위·1칸 방향 무관 회피형·가중치)을 §15에 추가하고 D01·§5 데이터 계약·V01/V03/V09를 맞췄다. F06은 2단계 V11 회차에 포함해 구현이 승인됐다. F06 coder 회차는 2026-11-03 구현·기본 검증을 마쳤다(Bundle b985aa4b…74dbf). 다음은 F01~F06 같은 버전 tester QA5 → reviewer 일괄 리뷰 → 사용자 V11 재확인이다.
 > 이전 갱신(2026-11-02): REV-F01 수정본(coder 커밋 6614b20 / Bundle 1ac324e6…9de4)의 독립 QA3 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 부분 피드백(§14)의 Q1~Q3 결정을 반영했다. 여기에는 D04·§5 그로기 순서 변경이 포함된다. F04 자원 읽기 확인 뒤 사용자 Q5·Q6 결정으로 V11-F05 원인 확인과 F01~F04를 2단계 안에서 구현하도록 **승인**했다(§14 "coder 인계 범위"). V11 나머지·CF-F07 실제 연출·V12 외부 환경이 남아 단계 완료가 아니다.
 > 원본: [GameDesign §4](../GameDesign.md#4-조작과-전투) · [로드맵 2단계](../DevelopmentRoadmap.md) · [완료한 1단계](../Features/1_MovementInput.md).
 > 재개 시 msw-planning의 resume·build-management와 [팀 계약](../../ChatRoles/README.md)을 따른다. 이 프로젝트는 기존 GameDesign/로드맵/Plans/Features/WorkRecords 체계를 유지한다.
@@ -358,7 +358,7 @@ modelId(castleenemy)·AreaPaddingX 0.5·AreaHeight 1·AreaOffsetY 0.4·Telegraph
 
 | ID | 결정 | 완료 기준 | 영향 R/V | 상태 |
 | --- | --- | --- | --- | --- |
-| V11-F06 | 위 사용자 결정 1~4와 역할 분리 | 주황버섯 패턴 9행·Weight 로드, 가드형 행 없음. ANY는 예고 시작 칸 고정·추적 없음·유효 방향 저스트·속성 규칙 그대로, F01은 고정 칸만 표시. 2칸 공격은 주황버섯 모션이 두 칸 중간에 착지하고 판정 시각·영역·피해는 이전과 같다. 착지점 규칙은 공통 로더·MonsterAttackComponent에 없다. 잘못된 Weight·ANY 표현은 전체 거부·1회 경고 | R01·R02·R06·R07 / V01·V03·V09·V11(회귀 V02·V04~V08·V10) | ⬜ 구현 승인, coder 미착수 |
+| V11-F06 | 위 사용자 결정 1~4와 역할 분리 | 주황버섯 패턴 9행·Weight 로드, 가드형 행 없음. ANY는 예고 시작 칸 고정·추적 없음·유효 방향 저스트·속성 규칙 그대로, F01은 고정 칸만 표시. 2칸 공격은 주황버섯 모션이 두 칸 중간에 착지하고 판정 시각·영역·피해는 이전과 같다. 착지점 규칙은 공통 로더·MonsterAttackComponent에 없다. 잘못된 Weight·ANY 표현은 전체 거부·1회 경고 | R01·R02·R06·R07 / V01·V03·V09·V11(회귀 V02·V04~V08·V10) | 🟡 coder 구현·기본 검증 완료(2026-11-03, Bundle b985aa4b…74dbf, [WorkRecord 최신 절](../WorkRecords/CombatCoreWorkRecord.md)), 독립 QA5·reviewer·사용자 V11 대기 |
 | V11-F07 | 몬스터 수치 DataSet화(후속) | 범위 밖. HP·공격력·공격 간격·점프 시간/높이를 DataSet에서 조절하고 공통/개별 값을 구분하는 방식은 V11 종료 뒤 별도 승인 회차에서 정한다. 점프 시간/속도 정책은 [MonsterCombat](MonsterCombat.md)의 미결정과 함께 결정한다 | — | ⬜ 후속, 미승인 |
 
 ### coder 인계 범위 (F06 한 회차)

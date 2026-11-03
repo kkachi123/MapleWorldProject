@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-02 / 최신: 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-03 / 최신: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로, 독립 tester QA5·reviewer 대기). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -693,6 +693,137 @@
 | RootDesk/MyDesk/UIPopup.mlua | 97e1d7f3b5f3eeb525e5805b1126962dca1d33ac9cd6e40516630599854c6fed |
 | RootDesk/MyDesk/UIToast.mlua | baa498d9bb1745186cc098e45294dfe29db27f4fbafb98179d5fbb76064ec7e2 |
 | map/map01.map | 1e9dbe01ec2139a7da3a2129399620b187592559856a5d4959b537b72d11fa65 |
+| ui/CombatScreen.ui | f0b37dd5142332caeb33e77cb10b32fc48f669e4db5aa868b58c24b78444ffe6 |
+| ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
+| ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |
+| ui/ToastGroup.ui | 9c29998895c5fecc54bacbbdf0a8ca2c472d95fadbc5cb30fe46bed7c7fc444f |
+
+## 2026-11-03 coder V11-F06 구현·기본 검증 인계
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §15 CombatCore-V11-F06뿐이다. JustWindowSec 0.20, GuardDamageRate 0.40, 반격 2.0·×2.2, 슬로우 2.0·×0.5, 그로기 1.5, AttackDamage 12, AttackInterval 3.0, JumpDuration 0.5·JumpHeight 0.8, 기존 패딩 0.5·높이 1·오프셋 0.4·선행 0.5, CombatRuleData·AttackSkillData CSV, D02~D04, 입력 규칙, LEFT/RIGHT 영역, GUARD 판정 규칙·코드, F01~F05 동작, .ui, 주황버섯 모델, 몬스터 수치 DataSet화(F07)·3단계는 바꾸지 않았다.
+- 기준 버전: coder 커밋 1447ff8(54경로 Bundle d2b57802…0fbb). 시작 전 같은 방법(아래 계산법)으로 1447ff8의 54경로를 재계산해 d2b578021b563a54a2a2d5ff4370a7a6b1cb79bf3fa1718b36f8bc5b332c0fbb와 일치함을 확인했다.
+- 실제 연결: 시작 시 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186. MapBuilder 읽기 TileMapMode=0(MapleTile). Maker 로그 시각 10:05~10:17. maker_clear_logs는 한 번도 호출하지 않았다.
+
+### 미커밋 Maker 재저장 3파일의 의미 비교 (제품 수정 전, 빌더 읽기)
+- 방법: git show로 1447ff8 판을 임시 경로에 꺼내 MapBuilder.read(...).build()/ModelBuilder.read(...).build()로 읽고, 문자열로 직렬화된 jsonString을 풀어 키 순서·숫자 표기(1↔1.0)·줄 끝을 무시한 깊은 비교를 했다(StudioVersion은 별도 보고).
+- map/map01.map: 엔티티 13개 동일. 차이는 BattlePosMark1~3(Entities[10~12]) TransformComponent 3곳에서 (a) Scale의 형식 메타 `$type`(MOD.Core.MODVector3) 제거, (b) 기본값 Rotation(0,0,0)·ZRotation 0 명시 추가뿐이다. Position(-1.5/0/1.5, 0.98, 0)·Scale(25,25,1)·QuaternionRotation·Enable·컴포넌트 목록·path/id 등 값은 동일하다. 의도하지 않은 의미 차이 없음 → Maker 재저장 형식 차이로 판정, 그대로 둔다.
+- RootDesk/MyDesk/Models/MapObjects/AttackAreaMark.model: 차이 0건(의미 동일).
+- RootDesk/MyDesk/Models/MapObjects.directory: StudioVersion `""` → `"0.1.0.0"` 한 곳뿐(나머지 동일).
+- 세 파일은 되돌리거나 직접 수정하지 않았다. map·model은 54경로 Bundle 대상이라 지문이 1447ff8과 달라졌다.
+
+### 결정 사항 (Plan이 coder에게 맡긴 항목)
+- 동률 칸 선택(ANY): 플레이어 WorldPosition.x와 BattlePos 3칸 x의 거리가 가장 작은 칸. 거리가 같으면(차이 1e-6 이하) 중앙(2)→왼쪽(1)→오른쪽(3) 순서로 먼저 본 칸을 유지한다. 같은 입력은 항상 같은 칸이다. 실제 간격(-1.5/0/1.5)의 중간점에서 -0.750→2, -0.760→1, -0.740→2, 0.750→2, 0.760→3.
+- ANY 영역 표현: CSV AreaFromAnchor=AreaToAnchor=0. 로더는 ANY에서만 0/0을 허용하고, ANY의 0이 아닌 값과 LEFT/RIGHT/GUARD의 0 또는 범위 밖·역전 값은 전체 거부한다.
+- LandingAnchor: 열을 CSV에서 제거하고 로더 필수 열·검증에서도 제거했다(무시가 아니라 제거). 착지는 데이터가 아니라 모션이 영역에서 도출하므로 데이터와 모션이 어긋날 수 없다. 다른 코드의 참조는 PrepareAttack의 `landing` 하나뿐이었고 함께 제거했다.
+- Weight: 필수 열, 유한한 양수만 허용(누락·빈 값·숫자 아님·0·음수·NaN/무한대는 카탈로그 전체 거부·1회 경고). 선택은 MonsterAttackComponent.SelectPattern(rows, unit): r=unit×가중치 합, CSV 행 순서 누적, r<누적합인 첫 행, 끝까지 못 고르면 마지막 행. unit은 PrepareAttack에서 math.random()을 넘긴다(프로브가 경계 난수를 직접 넣을 수 있도록 분리). 판정 규칙·수치가 아니라 선택 방식만 바뀌었다.
+- 저스트 방향 집합: 실행 스냅샷에 validDirs({LEFT=true}/{RIGHT=true}/ANY는 고정 칸에서 멀어지는 방향/GUARD는 빈 집합)를 고정하고 PlayerHealthComponent.EvaluateDefense(5번째 인자)가 `validDirs[evade.EvadeDirection]`과 0.20초 창으로 JUST를 판정한다. LEFT/RIGHT도 같은 집합을 쓰도록 통일해 가드 분기와 창 경계는 byte 불변이다. ANY: Pos2 조준 {LEFT,RIGHT}, Pos1 {RIGHT}, Pos3 {LEFT}.
+- ANY 탈출 검증: 유효 방향마다 도착 칸(LEFT=조준 칸-1, RIGHT=조준 칸+1)에 선 플레이어 콜라이더(오프셋 절댓값+반폭, 좌우 반전 대비)가 고정 칸 영역 [x-0.5, x+0.5]을 완전히 벗어나는지 확인하고 실패하면 시작하지 않고 1회 경고한다. 현재 간격·패딩(반폭 0.25, 오프셋 0)에서는 모두 통과한다(중단 조건 아님).
+- 공통 계층과 모션의 역할: MonsterAttackComponent는 스냅샷 area={cells("010" 형식), minX, maxX}만 만들고 Monster_Attack이 PerformAttackMotion(string cells, number minX, number maxX)로 모션 담당에 넘긴다. 영역 중앙 착지((minX+maxX)/2)는 OrangeMushroomAttack 안에만 있다. 로더·MonsterAttackComponent에는 착지점 규칙이 없다. 보스용 다중 이펙트는 이 cells를 쓰는 별도 모션이 맡는다(떨어진 칸·칸별 다중 타격 형식은 구현하지 않음).
+- 예고 문구(.ui 무변경, CombatInputController): ANY는 "방향 무관 회피 [좌·우]"로 표시하고 속성 접두·접미는 기존과 같다(예: 일반 · 방향 무관 회피 [좌·우] / 가드, 특수 · … · 가드 불가, 패링 · … / 정확히 가드). 끝 칸 조준 시 실제 유효 방향은 한쪽뿐이지만 문구는 일반형으로 두고 칸 표시(F01)가 조준 칸을 알린다. 아이콘 등 .ui 요소는 필요하지 않다고 판단했다.
+
+### 변경 파일
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv | 8행→9행(가드형 2행 제거, ANY 3행 추가), LandingAnchor 열 제거, Weight 열 추가(모두 1). BOM·CRLF 유지. .userdataset 무변경 |
+| RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua | ANY 응답 허용, 앵커 0/0 규칙, Weight 검증, LandingAnchor 제거 |
+| RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | SelectPattern·FindNearestCell 추가, ANY 칸 고정·영역·유효 방향·탈출 검증, 스냅샷 area/validDirs/targetCell, landing 제거, 텔레그래프 [VRF]에 target·dirs 추가 |
+| RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | EvaluateDefense에 validDirs 인자 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua | 모션 호출을 영역 전달로 변경 |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | PerformAttackMotion 시그니처(cells, minX, maxX) |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 영역 중앙 착지(주황버섯 한정) |
+| RootDesk/MyDesk/UI/CombatInputController.mlua | ANY 예고 문구 |
+| map/map01.map, RootDesk/MyDesk/Models/MapObjects/AttackAreaMark.model, RootDesk/MyDesk/Models/MapObjects.directory | 이번 회차에 수정하지 않음. Maker 재저장 형식 차이만(위 비교). Bundle에는 map·model이 들어 있어 지문만 달라짐 |
+
+### 실제 기본 검증 (Maker MCP, Play 2회: 최초 Play 통합 + 예고 도중 Stop 뒤 재Play)
+- 빌드: Refresh 2회. 첫 build 로그에 Monster_Attack의 `LEA-1102 number PerformAttackMotion(Entity target)`(시그니처 변경 직후 낡은 결과)가 있었고, 호출 파일에 주석만 고쳐 다시 Refresh하자 사라졌다. 이후 build 로그 80건 모두 Info(LIA 1114/1115 동적 참조 노이즈), 오류 0·경고 0.
+- 방법: 모든 판정 경로는 Play 내부 server_main 프로브가 제품 경로(PrepareAttack→Monster_Attack→ResolveAttack→EvaluateDefense→네이티브 AttackFast→HitEvent)를 그대로 실행하게 했다. 패턴 목록을 단일 행으로 교체하고 몬스터 상태를 ATTACK으로 보냈으며, 저스트/패링 입력은 회피 방향·시작 시각, 가드 시작 시각 필드를 판정 전에 기록했다. 가드·좌우 홀드는 클라이언트 PlayerStateControl.RequestChangeState("…","probe.…")로 실제 입력 수락 지점을 거쳐 걸었다(키보드 이벤트가 아님). 대표 실제 키 입력은 maker_keyboard_input LeftArrow 1회(아래 K1b). 시험값(AttackInterval 9999, 단일 행 교체, K1b의 JustWindowSec 4.0, 선행 4~6초)은 모두 Play 내부이며 Stop으로 폐기했다. CSV는 시험용으로 바꾸지 않아 원복할 것이 없다.
+
+| 항목 | 결과 |
+| --- | --- |
+| 로드(V01·V09) | `catalog ready rules=1 patterns=9`, 9행 id·유형·속성·앵커·Weight=1 확인, 가드형 0행, LandingAnchor 값 nil. 재Play에서도 동일 |
+| 검증 거부(V09, ValidateRows 시험 행 19건) | 허용 4건(LEFT, ANY 0/0, GUARD 일반, GUARD 패링)은 통과. Weight 누락·빈 값·abc·0·-1·nan·inf·1e999, ANY 1/1, ANY 0/2, LEFT 0/0, 역전 3/2, SPECIAL+GUARD, 잘못된 유형, 선행 시간 부족, 중복 id는 모두 거부되고 거부마다 경고 정확히 1회. 열 누락(`NoSuchColumn`)은 ReadRows nil, 실제 CSV의 Weight 열은 9행 읽힘 |
+| Weight 선택(V09) | 9행 균등 가운데값 (i-0.5)/9 → 1~9행 순서대로 선택. 경계 u=0·1/9-1e-9→normal.left, 1/9+1e-9→special.left, 2/9+1e-9→parry.left, 1-1e-12·1.0·1.5→마지막 행(parry.any). 가중치 1,2,3 행: u=0·0.1666→w1, 0.17·0.49→w2, 0.5·0.9999→w3, 1.0→마지막 w3. math.random 900회: 9행 각 82~118회(전부 선택됨), 200회 16~30회 |
+| 동률 규칙 | anchors -1.5/0/1.5: -1.5→1, 1.5→3, 0→2, -0.750→2(동률), 0.750→2(동률), -0.760→1, -0.740→2, 0.760→3, ±9→끝 칸 |
+| 2칸 착지(V01) | normal/special/parry.left 착지 x=0.75, .right는 -0.75(두 칸 중간). 판정 시각 hitDt≈0.50~0.52초, JumpDuration 0.5, 피해 12=HitEvent 합계 12 |
+| ANY Pos2 조준(플레이어 x=0) | tgt=2 cells=010 영역 -0.5~0.5 dirs=LR 착지 x=0.0. 무대응 HIT 피해 12(=HitEvent 12). 일반 LEFT/RIGHT 저스트 각각 JUST·피해 0·슬로우 ≈2.0초·반격 true. 창 밖 이른 입력(0.45초 전)은 HIT 12. 특수·패링 속성도 JUST |
+| ANY Pos1 조준(LEFT 홀드, x=-1.5) | tgt=1 cells=100 영역 -2.0~-1.0 dirs=R 착지 x=-1.5. 무대응 HIT 12, RIGHT 저스트 JUST 0(특수도), 조준 칸 쪽 LEFT는 HIT 12(저스트 아님), 패링 속성 무대응 HIT 12 |
+| ANY Pos3 조준(RIGHT 홀드, x=1.5) | tgt=3 cells=001 영역 1.0~2.0 dirs=L 착지 x=1.5. 무대응 HIT 12, LEFT 저스트 JUST 0(패링 속성도), 조준 칸 쪽 RIGHT는 HIT 12 |
+| 가드 분기(ANY, 아래 홀드) | 일반+가드=GUARD 피해 4(12×0.4 내림, =HitEvent 4), 특수+가드=HIT 12(가드 불가), 패링+창 안 가드=PARRY 0·반격 true·그로기 진입(2.5초 뒤 IDLE, 판정 0.5+복귀 0.5+그로기 1.5), 패링+창 밖 가드=GUARD 4 |
+| 가드형 시험 데이터(V01 "시험 데이터 근거", 제품 CSV 밖의 Play 내부 단일 행) | 영역 -2~2 cells=111 착지 x=0.0, dirs 빈 집합. 일반+가드=GUARD 4, 패링+창 안 가드=PARRY 0·그로기, 패링+창 밖=GUARD 4. 기존 판정과 같음 |
+| LEFT/RIGHT 회귀 | 올바른 방향 회피 JUST 0, 반대 방향(RIGHT 행에 LEFT 회피)은 HIT 12, 무대응 HIT 12 |
+| 실제 키 입력 + 예고 뒤 이동(V03, K1b) | ANY(선행 4.0초, 시험 한정 창 4.0)를 Pos2에 조준한 뒤 maker_keyboard_input LeftArrow 홀드: tgt=2 cells=010 영역 -0.5~0.5가 판정 때까지 불변, 플레이어는 판정 순간 x=-1.5로 이동해 영역 밖 → 피해 0·HitEvent 없음, kind=JUST·슬로우 1.967·반격 true. 창을 확대하지 않은 첫 시도(K1)는 입력이 사례 시작 직후(창 밖)라 kind=HIT(저스트 아님)·피해 0(영역 밖)·같은 칸 고정이었다 |
+| 탈출 검증 실패(V01) | 시험 행 AreaPaddingX=2.0의 ANY: 시작 거부, `telegraph escape area invalid: normal.any` 경고 1회, AttackSequence 불변, 몬스터 IDLE 유지, 칸 표시 없음 |
+| 팝업 중 ANY 예고(V07) | 선행 6.0초 예고 중 팝업을 열어 전투 시계 346.829가 고정(샘플 3회), cells=010·resp=ANY·remaining 5.262 불변. 닫은 뒤 이어서 진행해 hitDt=6.003, HIT 12=HitEvent 12 |
+| 예고 도중 Stop→재Play(V08) | 재Play 직후 TelegraphCells='' · Response='' · remaining 0 · pause false · AttackInterval 3.0 · 패턴 9행 · JustWindow 0.2 · evade '' · 반격 false · AttackSequence가 새로 시작(이전 값 비계승, 자연 공격 4회 뒤 4). 클라이언트 BattlePosMark 1~3은 ANY 예고 중 2번만 켜짐(cells=010), 판정 뒤·종료 뒤 모두 꺼짐 |
+| 자연 공격 | 최초 Play에서 선택된 7회 가운데 ANY·LEFT/RIGHT가 섞여 나오고 모두 정상 판정·HUD 피드백이 났다 |
+
+### 실패/미확인/미실시
+- 프로브 오류와 제품 오류의 구분: 예고 도중 Stop한 프로브의 폴링 타이머 때문에 `LEA-3051 MemoryLeak`(MakerScript 라인) 1건이 났다. 시험 스크립트 문제이며 제품 오류는 관측되지 않았다. 팝업 시험에서 클라이언트 타이머가 팝업 정지로 멈춰 첫 시도가 무산돼 직접 호출로 닫았다(제품 문제 아님).
+- 사람 손 타이밍의 0.20초 창 성공은 AI로 재현하지 않았다(저스트 입력은 시험 한정 창 확대 또는 필드 기록). 체감·가독성은 V11 몫이다.
+- V04(ANY 성공의 반격 권한 부여는 확인, 소비·만료 경계는 기존 QA 근거 범위), V05(슬로우 ≈2.0초 부여는 확인, 전 구간 적분 재시험 안 함), V06(패링 그로기 진입·종료는 확인, 복귀 중 피격·팝업 조합은 재시험 안 함), V08(플레이어/몬스터 사망·다른 맵 전환 미실시), V10(UI 버튼 전 조합·동시 입력 미실시), 모바일 화면, 화면 육안(칸·예고 문구 색, 2칸 중간 착지 모션 모양)은 미실시다. V12 외부 환경은 NOT_RUN 유지.
+- 끝 칸 ANY 난이도(방향 홀드 중에는 중앙 복귀로만 피함 → 저스트 보상 없음)는 Plan §15 설명대로 구현했고 체감 평가는 사용자 V11이다.
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공 뒤 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것: (1) 로드·검증 거부·Weight 선택(경계 난수, 필요하면 임시 CSV 시험 후 원복), (2) ANY Pos1·Pos2·Pos3 조준과 유효 방향 집합·범위 밖 EVADE·무대응 HIT, 실제 키 입력, 예고 뒤 이동 불변, (3) 가드·패링·그로기 분기와 새 착지점에서의 복귀, 슬로우·반격 권한, (4) 2칸 착지 중간 위치, 가드형 시험 데이터, (5) 팝업·Stop 회귀와 F01 칸 표시, F02~F05 회귀(공유 경로). 사용자 V11 재확인(1칸 공격 구별·난이도, 2칸 중간 착지 모션, F01~F04)과 V12는 AI 결과로 대신하지 않는다.
+
+### 2026-11-03 최종 제품 버전 묶음 (V11-F06)
+- 이전 묶음(d2b57802…0fbb, 54경로)과 같은 경로 집합·계산법(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256)이다. 1447ff8을 같은 방법으로 재계산해 d2b57802…0fbb 일치를 확인한 뒤 작업트리를 계산했다. 변경된 경로는 10개: MonsterAttackPatternData.csv, CombatRuleCatalog.mlua, AttackAreaMark.model·map/map01.map(Maker 재저장 형식 차이, 위 비교), Monster_Attack.mlua, MonsterAttackComponent.mlua, MonsterAttackMotion.mlua, OrangeMushroomAttack.mlua, PlayerHealthComponent.mlua, CombatInputController.mlua. 나머지 44개는 이전과 같다. .codeblock·.directory는 대상 외다.
+- Bundle SHA-256: b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf.
+
+| 경로 | SHA-256 |
+| --- | --- |
+| Global/CollisionGroupSet.collisiongroupset | c6a33dc595d425728b980c9cf72c0a80bd45083f46c551132e5b2e685a946c0c |
+| Global/CustomFontGroupSet.config | 3c7e40e9602860125192282e447b4a6bc311f8eac634e8e7b8ef77f80615ccc5 |
+| Global/DefaultPlayer.model | e3bc65e512b3584965b998450e1cf3d678b363d286dd2f7cc90e357396b9f31d |
+| Global/WorldConfig.config | dc16d685bba16467b68dafeab8a21a1277f3c0cc5cca7d8cd723ea3bbbaf86e1 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.csv | 4d7bf5cf7d6a5482b9177c079a9b9bb807a24d097a61a62b1a1a20c358d261a7 |
+| RootDesk/MyDesk/@Assist/DataSet/AssistModel.userdataset | 27953aadbc211679672a8dfc5eb9fa2f76f223aac243af95e895932af4e9cc6f |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.csv | 0b9265a2869b23de01f4edf5eebded066b6fb9f23f8643a52946f43a2bfc6983 |
+| RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.userdataset | e22d0b765e17c629eed9661ee9735d12ff4c7326257cc50e96037942e04adeb7 |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.csv | fa7be991121754a53d752a73912368124fc73647934d2f3072f6be0a4974363f |
+| RootDesk/MyDesk/@Assist/DataSet/CombatRuleData.userdataset | 2ad214ba74aa111fba2c0975913ce7be376c004771b468c21dc3c001f75620b2 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv | fd557b85435ee92bd2616db605d5ce88a27c1a16e79e058eb9af7fa15cf49cd5 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.userdataset | 59bba89881cc2815cf9a1e47767d9c124c1a535f562459cd3335131eb35ce888 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv | db655856dcbdbe8dc9eab9ae9dca93cb573b4a44c9088ad9563be6efc50c7c81 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.userdataset | b10bd13cc602f12bd50ed1ea92c8ecce07a29e9734b7899e76b9e3e30fd798b1 |
+| RootDesk/MyDesk/@Assist/RangeGizmo/AttackRangeGizmo.model | 84c9e6ab606a1a54edf7490124de4a308d678efccfb6ad53c748de5c621b234e |
+| RootDesk/MyDesk/Combat/AttackAreaMarkComponent.mlua | 9c0e9b5bbc2ba588e021aeca0ac9f9dcaacdc6223ddae17ea955dcf2c8544907 |
+| RootDesk/MyDesk/Combat/CombatPauseComponent.mlua | 6a20d8c1a1b46fd50bc0a62695900fac3decc2def68b69124082eef8e2bf5f8b |
+| RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua | bf287ec4e51466a827b9093d58e052c7e0eb6fe5bd22e43fcd8aa00b286c7020 |
+| RootDesk/MyDesk/Managers/MonsterManager.mlua | 6cea8d7f99f55b50dc4dd0a96a0973c12cc7a934151b9d8d3a50dc7ab6bb2aab |
+| RootDesk/MyDesk/Models/MapObjects/AttackAreaMark.model | 965f107350f59e76497a1b0a3b16cad58c11bdeaf594157e76e5b480f3f3fa29 |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model | 1b7686acda7c84412676a7157681156cbef5f693e4b3c0872d609c5cf61c3b9d |
+| RootDesk/MyDesk/Monster/@StateControl/MonsterStateControl.mlua | 3346a2b1c0a35752e32978bed6d34ce5b7295d9545639d9dc90e95eb8a27c395 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua | 9c04d255fd0af81b42eb798c1e39af2b3e3de7241621504d8490d7783d06fb62 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Defense.mlua | 3443b93e831d12eaf978a10260bd869c06754efd3cb7f41648526639a4e269d1 |
+| RootDesk/MyDesk/Monster/@StateControl/Monster_Stun.mlua | 7ab182ba9ea1326190c178e7f1ee95ed33533a7699fac33f8d08ab061b9acbaf |
+| RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | 9ef869fadce5fe12a111df55d4bf6a78812dcc5e74cc9a18567a4a523c252574 |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | e54d144379d8b30f9510295754388faca43c124d1d52590e9257feb46e4b4691 |
+| RootDesk/MyDesk/Monster/MonsterDefenseComponent.mlua | d1ba0a0c5cb80dc54b93f75ed9103b705609519d7c49c06251a9125be81321da |
+| RootDesk/MyDesk/Monster/MonsterHealthComponent.mlua | 86ccd4916ab7b0c67ee0b71d4e02a1a48e4df8011038dbdcc94a833981455379 |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | 69ad2f52be603d7fedde3223678094968d859cd209f9771895ab1175ce29e3c9 |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 88a738ebc9f5aa7b4b78d74e4164a4f103cfff690fc7e1ccbb2ce2bde5035518 |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeGizmo.mlua | 96d2d66ccdc13300ad879f3327cf64cc68495c63fe11384a1be39e0a19c2dc53 |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeTuner.mlua | ef5736711550c7f647d767ee08296beb8366df9cb8bce6f5cc9b5100cd544a9a |
+| RootDesk/MyDesk/Player/@Assist/Skill/PlayerSkillEffectTable.mlua | 5127ff02cf93c65e92837b46716c371cd6c89f78b985165b90e1a5ca6a0f8845 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateControl.mlua | 1bf98ade664f48f2263c791520e30f03a7eb54545bf7ac7fef7ff7d60eb1de86 |
+| RootDesk/MyDesk/Player/@StateControl/PlayerStateSet.stateset | 1e02d40cef0870718aaca2645f8d65e630d2f57fbca5b9970e27c0be3c83ce52 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Attack.mlua | a450fed1c16ebee0ca6b06cde326fe8af23ac3c05101202d2b16bae47045d772 |
+| RootDesk/MyDesk/Player/@StateControl/Player_Guard.mlua | fa140dbdd70352876af80555417cbf58a849ae6a0e250d536a34875c714cf02f |
+| RootDesk/MyDesk/Player/@StateControl/Player_Move.mlua | 8a4ac39d4ee33f12199be95d3663123698876ff51badbfebc5870c762063b9c0 |
+| RootDesk/MyDesk/Player/PlayerCombatComponent.mlua | ebbe5f75a580523619c35729f4965ea170deef0e82b8cbc4f2443d229f90d612 |
+| RootDesk/MyDesk/Player/PlayerEvadeComponent.mlua | ae130137842bb0b0a74020b2adc395e6750f25b4a72f736a9f08bcb72b241e50 |
+| RootDesk/MyDesk/Player/PlayerGuardComponent.mlua | 297f85f1b2754bb2fe5fc28d0820f39147e7293fbda29f4c377a4a64c227596f |
+| RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | ede3e85448ba374cd288332c1727ff9f34fdcb995767de150d888845b230bc71 |
+| RootDesk/MyDesk/Player/PlayerInputComponent.mlua | 3268e06bd6726009b2dc9b8fa2e8d00072dee5662eb1f195cdc3085fa8103705 |
+| RootDesk/MyDesk/Player/PlayerMoveComponent.mlua | c794253d08b222280a563675b7dd778dc6802b765faa68cf34153d10136f10fd |
+| RootDesk/MyDesk/UI/CombatHpBarController.mlua | 8a908f5bac7f723ae6326a836932c8959d0a2d846f7654e21f6acf5da841e36e |
+| RootDesk/MyDesk/UI/CombatInputController.mlua | c66b26266b3a57ebcaae08d481b4bd296183f6c5e1f1e455eeaa83b7c3a6dded |
+| RootDesk/MyDesk/UIPopup.mlua | 97e1d7f3b5f3eeb525e5805b1126962dca1d33ac9cd6e40516630599854c6fed |
+| RootDesk/MyDesk/UIToast.mlua | baa498d9bb1745186cc098e45294dfe29db27f4fbafb98179d5fbb76064ec7e2 |
+| map/map01.map | 02e41f3c81c09e95c49e0eb69c05e0d80d1f04845112be62d78cdda638250125 |
 | ui/CombatScreen.ui | f0b37dd5142332caeb33e77cb10b32fc48f669e4db5aa868b58c24b78444ffe6 |
 | ui/DefaultGroup.ui | 673cacd1d4717088dc75f576f35dd6147ace94a9c362ae3b73e0c54328bdef07 |
 | ui/PopupGroup.ui | 7e405a3c6de93e25dd0d6b858d172c15579c52df1e811c862df48896073c23a4 |

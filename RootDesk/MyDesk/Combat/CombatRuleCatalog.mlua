@@ -50,19 +50,27 @@ script CombatRuleCatalog extends Logic
 		local ids = {}
 		for _, row in ipairs(patternRows) do
 			if not self:HasText(row.id) or ids[row.id] or not self:HasText(row.modelId) then self:WarnOnce("invalid or duplicate pattern"); return nil end
-			if row.ResponseType ~= "LEFT" and row.ResponseType ~= "GUARD" and row.ResponseType ~= "RIGHT" then self:WarnOnce("invalid response"); return nil end
+			if row.ResponseType ~= "LEFT" and row.ResponseType ~= "GUARD" and row.ResponseType ~= "RIGHT" and row.ResponseType ~= "ANY" then self:WarnOnce("invalid response"); return nil end
 			if row.AttackAttribute ~= "NORMAL" and row.AttackAttribute ~= "SPECIAL" and row.AttackAttribute ~= "PARRY" then self:WarnOnce("invalid attribute"); return nil end
 			if row.AttackAttribute == "SPECIAL" and row.ResponseType == "GUARD" then self:WarnOnce("SPECIAL cannot request GUARD"); return nil end
 			local data = { id = row.id, modelId = row.modelId, ResponseType = row.ResponseType, AttackAttribute = row.AttackAttribute }
-			for _, key in ipairs({"LandingAnchor", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec"}) do
+			for _, key in ipairs({"AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight"}) do
 				local value = tonumber(row[key])
 				if not self:IsFinite(value) then self:WarnOnce("invalid pattern number"); return nil end
 				data[key] = value
 			end
-			for _, key in ipairs({"LandingAnchor", "AreaFromAnchor", "AreaToAnchor"}) do
-				if data[key] < 1 or data[key] > 3 or data[key] ~= math.floor(data[key]) then self:WarnOnce("invalid anchor"); return nil end
+			-- 출현 가중치는 유한한 양수만 허용한다. 끄려면 행을 지운다.
+			if data.Weight <= 0 then self:WarnOnce("invalid weight"); return nil end
+			if row.ResponseType == "ANY" then
+				-- ANY는 영역 칸을 예고 시작 때 정하므로 앵커 0/0만 허용한다.
+				if data.AreaFromAnchor ~= 0 or data.AreaToAnchor ~= 0 then self:WarnOnce("ANY area must be 0/0"); return nil end
+			else
+				for _, key in ipairs({"AreaFromAnchor", "AreaToAnchor"}) do
+					if data[key] < 1 or data[key] > 3 or data[key] ~= math.floor(data[key]) then self:WarnOnce("invalid anchor"); return nil end
+				end
+				if data.AreaFromAnchor > data.AreaToAnchor then self:WarnOnce("invalid pattern area"); return nil end
 			end
-			if data.AreaFromAnchor > data.AreaToAnchor or data.AreaPaddingX < 0 or data.AreaHeight <= 0 or data.TelegraphLeadSec < math.max(rules.JustWindowSec, rules.ParryWindowSec) then self:WarnOnce("invalid pattern area or lead"); return nil end
+			if data.AreaPaddingX < 0 or data.AreaHeight <= 0 or data.TelegraphLeadSec < math.max(rules.JustWindowSec, rules.ParryWindowSec) then self:WarnOnce("invalid pattern area or lead"); return nil end
 			ids[data.id] = true
 			if result.patterns[data.modelId] == nil then result.patterns[data.modelId] = {} end
 			table.insert(result.patterns[data.modelId], data)
@@ -92,7 +100,7 @@ script CombatRuleCatalog extends Logic
 		if self._T.attempted then return self.Ready end
 		self._T.attempted = true
 		local ruleRows = self:ReadRows(_DataService:GetTable("CombatRuleData"), {"id", "JustWindowSec", "ParryWindowSec", "GuardDamageRate", "CounterWindowSec", "CounterDamageMultiplier", "SlowDurationSec", "SlowRate", "GroggyDurationSec"})
-		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "LandingAnchor", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec"})
+		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight"})
 		if ruleRows == nil or patternRows == nil then self:WarnOnce("DataSet or required columns missing"); return false end
 		local result = self:ValidateRows(ruleRows, patternRows)
 		if result == nil then return false end

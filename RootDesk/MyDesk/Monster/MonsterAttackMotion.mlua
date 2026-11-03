@@ -12,7 +12,8 @@ script MonsterAttackMotion extends Component
 	end
 
 	@ExecSpace("ServerOnly")
-	method number PerformAttackMotion(Entity target)
+	method number PerformAttackMotion(string cells, number minX, number maxX)
+		-- The server-fixed area (cell set "111" form + world x range) is handed to the monster-specific motion.
 		-- A zero-duration base implementation needs no movement.
 		return 0
 	end

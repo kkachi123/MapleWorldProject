@@ -37,11 +37,12 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
-	method number PerformAttackMotion(Entity target)
+	method number PerformAttackMotion(string cells, number minX, number maxX)
+		-- 주황버섯은 점프 한 번으로 영역 중앙에 착지한다(2칸은 두 칸의 중간, 1칸은 그 칸). 이 규칙은 이 몬스터 모션 한정이다.
+		if minX ~= minX or maxX ~= maxX or minX > maxX then return -1 end
 		-- Convert the target world X to this entity's parent-local X.
-		if not isvalid(target) then return -1 end
 		local transform = self.Entity.TransformComponent
-		local targetLocalX = transform.Position.x + target.TransformComponent.WorldPosition.x - transform.WorldPosition.x
+		local targetLocalX = transform.Position.x + (minX + maxX) * 0.5 - transform.WorldPosition.x
 		return self:JumpToLocalX(targetLocalX)
 	end
 
