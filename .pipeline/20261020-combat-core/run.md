@@ -5,7 +5,7 @@
 - 상태: WAITING_USER
 - 갱신: 2026-11-03 / 메인 조율 채팅(Claude Code)
 - 현재 담당: 사용자 (V11 직접 확인)
-- 다음 행동·대기 사유: 리뷰 WAITING(결함 없음, 대상 b89de46). 사용자 V11 재확인 대기. 문서 상태 동기화는 msw-planner(문서만). 3단계 자동 시작 없음.
+- 다음 행동·대기 사유: 리뷰 WAITING(결함 없음, 대상 b89de46). 사용자 V11 재확인 대기(확인 항목은 Plan §15 끝 절). 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -169,3 +169,4 @@
 - reviewer 실제 종료(msw-reviewer): WAITING, 결함 없음. 커밋 아래 [review]. 재확인 공백(비차단): 2칸 패턴의 F02 복귀 중 팝업·Stop 조합.
 - 사용자 V11 확인 요청: ANY 구별·끝 칸 문구·난이도, 2칸 중간 착지 모션, F01~F04 육안, 복귀 중 hit 클립, UI 좌·우 버튼 전체 면적(실기기), 0.20초 손 타이밍·Weight 체감, 사망 직후 HP 문자.
 - planner 전달: 문서 상태 동기화(WR 재개 지점, Plan 머리·§15 다음 흐름).
+- planner 실제 종료(msw-planner): 문서 상태 동기화 완료, 규칙·범위 무변경. 커밋 아래 [plan]. 남은 문서 문구(Plan §6 P06 설명, §14 표 상태 칸)는 다음 문서 회차에 맞춤.
