@@ -1,7 +1,7 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-03 / 최신: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로, 독립 tester QA5·reviewer 대기). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-03 / 최신: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
@@ -27,6 +27,56 @@
 제품 구현 완료 기록 없음. coder는 제품 편집 전 사전 문맥·소유자 점검 단계에서 중단됐다. 구현 ledger도 아직 생성되지 않았다. MapBuilder 읽기는 map01 id=0a0972ef-ad23-4e24-af63-afbd53120c1d, TileMapMode=0을 확인했다. 실제 Maker 연결/모드·런타임 검증은 조회 거절로 미확인이다. 사용자 재개 명령 후 실제 변경 범위와 환경을 확인해 이어간다.
 
 ## QA 기록
+
+### 2026-11-03 독립 QA 5회차 — V11-F01~F06
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA 1~4회차의 PASS는 이번 실행으로 세지 않았다. **maker_clear_logs는 한 번도 호출하지 않았다**(Maker 로그는 시각·[VRF-QA5] 표지로 구분해 읽음, QA4 계약 위반 재발 없음).
+- 대상: coder 커밋 b89de46 / 54경로 Bundle SHA-256 b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf. coder 절 "최종 제품 버전 묶음"의 경로 목록·계산법(경로 ASCII 정렬, 경로+TAB+sha256+LF 연결의 SHA-256)을 node 스크립트로 시험 전·후 재계산해 둘 다 54/54 개별 해시 일치·Bundle 동일, 시험 후 git status 변경 없음.
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId 970621b29ba945369d3dc8e90c301186 시작·중간 반복 확인. TileMapMode는 기존 기록(0 MapleTile)을 따르며 이번에 MapBuilder를 다시 읽지 않았다. build 로그 80건 모두 Info(오류·경고 0, coder와 같은 건수). Play 5회(시험 중 Stop 4회 포함), Maker 로그 시각 10:22~10:37. 최종 Stop 뒤 map01 / edit.
+- 실행 방식 구분: (B) 실제 입력 = maker_keyboard_input의 Left/Right/Down/UpArrow 실제 키 이벤트, maker_mouse_input의 UI 뒤 버튼 홀드·공격 버튼 클릭. (A) 서버 프로브 = maker_execute_script(server_main)로 `_CombatRuleCatalog.patterns["castleenemy"]`를 시험 행 1개로 교체하고 몬스터를 `ChangeState("ATTACK")`로 시작시킨 뒤 회피 방향·시작 시각 필드(`EvadeDirection`·`evadeStartTime`)나 서버 GUARD 상태를 정해진 시점에 부여. 방어 판정(EvaluateDefense)·영역·피해(CalcDamage→ResolveIncomingDamage)·네이티브 AttackFast/HitEvent·HP는 제품 경로이며 프로브는 시작 트리거와 관찰만 맡았다(논리 경로 검사). (C) 순수 함수 호출 = SelectPattern·FindNearestCell·ValidateRows(시험 행). 시험 한정 값(모두 Play 내부, Stop으로 폐기): AttackInterval 9999, 패턴 목록 1행 교체, 예고 선행 1~8초, 일부 실제 키 시험의 JustWindowSec·ParryWindowSec 8.0(손 타이밍으로 0.20초 창을 맞출 수 없어 창만 확대), 가드형 시험 행(Play 내부 메모리 행). CSV는 시험용으로도 바꾸지 않았다.
+
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| V01·V09 로드 | 로그 | `catalog ready rules=1 patterns=9`(매 Play), 9행 id·유형·속성·앵커 0-0/2-3/1-2·Weight 문자열 "1", 가드형 0행 | PASS |
+| V01 주황버섯 9행 판정 대응(LEFT·RIGHT·ANY × 일반·특수·패링) | A | 모든 행이 예고 문구·칸·영역·판정과 일치(아래 행들). 일반 가드 12×0.4=4.8→4(=HitEvent 4), 특수 가드 12, 패링 창 안 가드 PARRY 0, 창 밖 가드 4 | PASS |
+| V01 ANY Pos2(x=0) 조준 | A | tgt=2 cells=010 영역 -0.5~0.5 dirs=LR 착지 x=0.0. 무대응 HIT 12=HitEvent 12. 일반·특수·패링 모두 LEFT·RIGHT 저스트 JUST·피해 0·슬로우 1.72(≈2.0 시작)·반격 true | PASS |
+| V01·V03 ANY Pos1 조준(실제 LeftArrow 홀드, x=-1.5) | B+A | tgt=1 cells=100 영역 -2.0~-1.0 dirs=R 착지 x=-1.5. 무대응 HIT 12, RIGHT 저스트 JUST(특수 포함), 조준 칸 쪽 LEFT는 HIT 12(저스트 아님), 창 밖 RIGHT HIT 12 | PASS |
+| V01·V03 ANY Pos3 조준(실제 RightArrow 홀드, x=+1.5) | B+A | tgt=3 cells=001 영역 1.0~2.0 dirs=L 착지 x=+1.5. LEFT 저스트 JUST 0(특수), 조준 칸 쪽 RIGHT HIT 12, 창 밖 LEFT HIT 12, 무대응 HIT 12 | PASS |
+| V03 최근접·동률 경계 | C | anchors -1.5/0/1.5: -9→1, -1.5→1, -1.0→1, -0.76→1, -0.75→2(동률 중앙), -0.74→2, 0→2, 0.74→2, 0.75→2(동률 중앙), 0.76→3, 1.0→3, 1.5→3, 9→3. 같은 입력은 같은 칸 | PASS(PrepareAttack에 플레이어를 -0.75 등에 세운 통합 시험은 안 함, 함수 단위) |
+| V03 저스트 시각 경계(ANY, 서버 부여) | A | 판정시각-시작시각 0.013 JUST, 0.115·0.158 JUST, 0.198 JUST, 0.222 HIT, 0.241 HIT, 판정 뒤 시작(-0.032·-0.122) HIT, 빈 방향 HIT. 정확히 0.200 등호값은 타이머 간격(0.02) 때문에 재현하지 못함 | PASS(근사 경계, 등호 경계 NOT_RUN) |
+| V03 예고 뒤 이동해도 조준 불변 | B | 실제 RightArrow(K2: Pos2 조준, 판정 때 x=+1.5)·키 이동 중 telegraph 칸·영역·방향 집합이 판정까지 tgt=2 cells=010 영역 -0.5~0.5 불변 | PASS |
+| V03 조준 칸 쪽·중앙 복귀는 저스트 아님, 탈출 | B | K1b: Pos1 LeftArrow 홀드 뒤 예고 중 키 해제 → 판정 x=0.0(영역 -2~-1 밖) → 피해 0·HitEvent 없음·kind HIT/native nil(HUD EVADE)·JUST 아님. K3: Pos3 홀드→Right 해제→(복귀 중 Left 눌림은 무시됨, 입력 예약 없음)→ x=0.0 EVADE·JUST 아님. 자연 공격 id=45(Pos2 조준, 예고 중 실제 RightArrow로 영역 이탈): HUD EVADE, 피해 0 | PASS |
+| V03 끝 칸 조준에서 중앙 복귀 뒤 중앙 쪽 방향 회피 저스트 | B(시험 한정 창 8.0) | K3b: Pos3 조준(dirs=L) → Right 해제 → 중앙 복귀 후 실제 LeftArrow → JUST, 판정 x=-1.5, evDir=LEFT 실제 입력으로 기록, 피해 0, HUD JUST | PASS(창은 시험 값) |
+| V03·V10 Pos2 조준에서 실제 RightArrow | B(창 8.0) | K2: JUST, evDir=RIGHT 실제 기록, 판정 x=1.5, 슬로우·반격 true, HUD JUST | PASS(창은 시험 값) |
+| 가드형 시험 데이터(V01 "시험 데이터 근거") | A(Play 내부 메모리 행 2개, 제품 CSV 아님) | 영역 -2~2 cells=111 dirs 빈 집합 착지 x=0.0. 일반+GUARD: 무대응 HIT 12, 가드 GUARD 4, 회피 방향 부여해도 HIT 12. 패링+GUARD: 창 안 가드 PARRY 0·반격 true, 창 밖 가드 GUARD 4 | PASS(시험 데이터 근거) |
+| V01·V09 잘못된 ANY 영역·유형 조합 거부 | C(ValidateRows 시험 행) | ANY 1/1·ANY 0/2는 `ANY area must be 0/0`, LEFT 0/0·RIGHT 1/4는 `invalid anchor`, 역전 3/2 `invalid pattern area`, SPECIAL+GUARD `SPECIAL cannot request GUARD`, 잘못된 유형 `invalid response`, 선행 0.1 `invalid pattern area or lead`, AreaHeight 0, 중복 id `invalid or duplicate pattern`, 빈 목록 `patterns missing` — 모두 REJECT, 경고 정확히 1회씩. 허용 케이스(GUARD 일반 1/3, Weight 0.5, 전체 2.5)는 ACCEPT. 거부 뒤 live 카탈로그 ready=true rows=9 | PASS |
+| V09 Weight 거부 | C | 누락(nil)·빈 값·abc·nan·inf·1e999는 `invalid pattern number`, 0·-1은 `invalid weight`. 모두 REJECT·경고 1회(카탈로그 전체 거부). 열 자체 누락(`NoSuchColumn`)은 ReadRows nil | PASS |
+| V09 Weight 가중치 선택 | C | 9행 균등 중간값 (i-0.5)/9 → 1~9행 순서대로. 경계 u=0·1/9-1e-9→normal.left, 1/9+1e-9→special.left, 2/9+1e-9→parry.left, 8/9-1e-9→special.any, 8/9+1e-9·1-1e-12·1.0·1.5→마지막 parry.any. 가중치 1,2,3 행: u=0·0.1666→a, 0.17·0.49→b, 0.5·0.9999·1.0→c(마지막 행). math.random 900회: 9행 각 82~118회(전부 선택), 가중 600회 a87/b204/c309(≈1:2:3) | PASS |
+| V09 CSV 파일 변경→Refresh→Play 반영 | - | 지시상 CSV·제품 파일을 바꾸지 않아 실행하지 않았다(ValidateRows 시험 행으로 대체) | NOT_RUN |
+| V01 2칸 중앙 착지·판정 일치 | A | normal.left 착지 x=+0.750, normal.right -0.750(두 칸 중간), ANY 고정 칸 x(0.0/-1.5/+1.5), 가드형 시험 0.0. 판정 시각 hitDt≈0.47(예고 후 점프 0.5초 고정), 영역 min/max·피해 12=HitEvent 12 이전과 동일 | PASS(서버 위치 근거) |
+| V01·F01 빨간 칸(클라이언트 마크) | A+로그 | 클라이언트 TelegraphCells·marks: ANY Pos2 010→marks 010, ANY Pos1 100→100, ANY Pos3 001→001, normal.left 011→011, parry.right 110→110, 가드형 시험 111. 판정 뒤·종료 뒤 000(≈0.03초 지연). ANY에서 고정 1칸만 켜짐 | PASS |
+| V01 예고 문구 | 로그 | ANY: "일반 · 방향 무관 회피 [좌·우] / 가드", "특수 · 방향 무관 회피 [좌·우] · 가드 불가", "패링 · 방향 무관 회피 [좌·우] / 정확히 가드"(Pos1·Pos2·Pos3 동일). LEFT "일반 · 뒤 회피 [왼쪽] / 가드", RIGHT "패링 · 앞 회피 [오른쪽] / 정확히 가드" | PASS |
+| 육안(스크린샷 800×450) | B | 예고 중 상단 문구와 빨간 칸이 플레이어 위치에 보임(2회 캡처). 몬스터 착지 모양·색·가독성·1칸 공격 난이도·2칸 중간 착지 모션 모양은 판단하지 않음 | 일부 NOT_RUN(V11 사용자) |
+| 실제 입력 창 0.20초 안 손 타이밍의 저스트·패링 성공 | - | 재현하지 않음(실제 키 성공은 시험 한정 창 8.0, 창 0.2 안 성공은 서버 프로브 A) | NOT_RUN |
+| V02 회귀 | A+B | 모든 케이스에서 HP 감소=HitEvent 합계: 무가드 12/12, 가드 4/4, 저스트·패링·범위 밖 0/0 | PASS |
+| V04 회귀 | B | ANY JUST 직후 실제 UpArrow: `manual cast id=32 count=10 factor=2.2`, 반격 즉시 소비(counter false). 성공 전 UpArrow는 factor=1 | PASS(대표) |
+| V05 회귀 | A | ANY 저스트 슬로우 시작 값 ≈2.0(1.71~1.73 측정), 예고·복귀 진행 정상 | PASS(대표, 전 구간 재시험 아님) |
+| V06·F02·F04 회귀 | B | ANY 패링(K4b, 실제 DownArrow, 시험 한정 창 8.0): PARRY 0, 판정 후 몬스터 ATTACK(복귀 중) → x=3.0에서 STUN → 그로기 약 1.5초 → IDLE, 반격 true 유지 후 만료. `parry effect serial=5 x=0.0`(F03 접촉 파티클 로그 1회). F04 hit 클립 RUID는 이번에 재계측하지 않음 | PASS(대표) / F04 클립 NOT_RUN |
+| V07 회귀 | A | ANY 예고(선행 8초) 중 실제 `_UIPopup:Open`: 전투 시계 501.670 고정 5초, rem 7.176·cells 010 불변. Close 뒤 같은 실행이 이어져 판정 시계 508.852(=501.670+7.176+0.006), HIT 12=HitEvent 12 | PASS |
+| V08 회귀 | A+B | 몬스터 사망(예고 2.35초 남음): 즉시 DEAD, cells·resp 비움, snapshot nil, 판정(res) 변화 없음, 클라이언트 마크 000, 이후 3초 유지. 플레이어 사망(HitComponent:OnHit 5000): 몬스터 IDLE로 복귀, cells 비움, 판정 없음, plState DEAD 유지. 예고 도중 실제 Stop → 다음 Play: interval 3.0·dmg 12·rows 9·cells ''·seq 새로 시작·규칙 .2/.2/.4/2.0×2.2/2.0×0.5/1.5·evDir ''·반격 false·몬스터 HP 100·마크 000 | PASS |
+| V10 회귀 | B | 실제 Left/Right/Down/UpArrow 키, UI 뒤 버튼 마우스 홀드(예고 선행 5초 동안 홀드 → 판정 x=-1.5, EVADE, 피해 0), UI 공격 버튼 클릭 2회(`manual cast factor=1` 2건) | PASS(대표) |
+| F05 회귀 | B+A | 실제 LeftArrow 홀드 Pos1: 뒤 회피형 3패턴 EVADE 피해 0/HitEvent 0, 앞 회피형 3패턴 HIT 12/12, ANY(tgt=1) HIT 12/12. 실제 RightArrow 홀드 Pos3(대칭): 앞 회피형 2패턴 EVADE 0/0, 뒤 회피형 2패턴 HIT 12/12, ANY(tgt=3) HIT 12/12 | PASS |
+| F01·F02·F03 나머지, F04 클립·별 크기·접촉 파티클 육안 | - | QA4 범위 중 이번에 새로 재실행하지 않은 항목(복귀 중 팝업·피격·슬로우 조합, 그로기 중 피격 클립 재생, 별·파티클 가시성)은 F06 변경 경로(영역 전달·착지·선택)와 겹치지 않아 재실행하지 않았다 | NOT_RUN(V11 사용자) |
+| V11(사용자 직접)·V12 외부 환경·CF-F07 연출 | - | 실행하지 않음. V12 단일 참조 없음/폐기 경로는 위 사망·Stop 시험이 일부 겹치나 V12 전체로 세지 않음 | NOT_RUN |
+
+#### 관찰·시험 오류 분리
+- 시험 오류(제품 오류 아님): (1) 첫 harness는 몬스터가 자연 공격 중(ATTACK)일 때 `ChangeState("ATTACK")`가 무시돼 아무 케이스도 기록되지 않았다. Stop→재Play 후 "IDLE이 된 뒤 시작"하도록 고쳐 다시 실행했고 그 이후 결과만 사용했다. (2) K4 첫 시도는 직전 시험의 RightArrow를 해제하지 않아 플레이어가 MOVE 중이라 DownArrow가 수락되지 않았다(kind HIT, 무효). 키를 해제하고 K4b로 다시 실행한 결과만 썼다. (3) K1b는 직전 harness가 `EvadeDirection`을 초기화해 실제 LeftArrow 홀드의 방향 기록은 남지 않았다(탈출 결과·조준은 확인, 방향 불일치 판정은 Pos1 서버 부여 시험이 근거). (4) 한 harness 시작 직후 키 이동과 겹쳐 id=45 공격이 harness 케이스 로그 없이 지나갔다(위 EVADE 근거로만 사용).
+- 시험 스크립트 한계: maker_execute_script는 한 번에 약 900회 반복 이상은 완료되지 않았다(900회 선택 시험을 나눠 실행). LEA-3051 MemoryLeak 3건(10:25:09, 10:34:48 두 건)은 모두 `MakerScript`의 시험 타이머이며 제품 오류가 아니다. 제품 runtime 오류는 관측되지 않았고 Warning은 V09 시험 행의 의도한 경고(1회씩)뿐이다.
+- 관찰: (1) ANY 끝 칸(Pos1·Pos3) 조준에서도 예고 문구는 "[좌·우]" 일반형이라 실제 유효 방향(한쪽)과 다르게 읽힐 수 있다. Plan §15가 허용한 표현이며 칸 표시가 조준 칸을 알린다. 체감은 V11에서 판단. (2) 끝 칸에 홀드 중인 플레이어는 새 회피를 시작할 수 없고(홀드 해제 → 중앙 복귀), 복귀 중 들어온 반대 방향 입력은 무시된다(입력 예약 없음). Plan 설계대로이며 난이도는 사용자 V11. (3) `TelegraphAttribute`는 공격 종료 뒤에도 마지막 값이 남는다(Response가 비어 HUD에는 안 보임, 이전 버전부터의 동작). (4) 접촉 파티클 serial·판정 로그 근거만 있고 화면 가시성은 미확인.
+
+#### 판정 요약
+- 기준: F06(ANY 3칸 조준·최근접·동률, 유효 방향 저스트, 조준 칸 쪽·복귀 비저스트, 탈출, 2칸 중앙 착지·판정 일치, Weight 선택·거부, 가드형 시험 데이터, F01 1칸 표시, 예고 문구) **PASS**. 회귀 F01·F02·F05·V02·V04~V08·V10 대표 **PASS**. 실제 입력의 창 안 성공은 시험 한정 창 확대(K2·K3b·K4b)이며 창 0.20 안 손 타이밍, CSV 파일 변경→Refresh→Play, F04 클립 재계측, 육안·V11·V12는 NOT_RUN. FAIL·NEEDS_DECISION 없음.
+- 사용 종료: 모든 키·마우스 up. 마지막 maker_stop 성공 뒤 maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, Maker 사용 종료. 시험 전·후 54/54 동일 Bundle b985aa4b…74dbf, git status 변경 없음.
+- 다음은 독립 reviewer(F01~F06 일괄): 위 실행 방식 구분과 한계를 같은 Bundle에서 대조한다. 사용자 V11에서 1칸 공격 구별·난이도, 2칸 중간 착지 모션, F01~F04 체감, 별·접촉 파티클 가시성, 좌·우 UI 버튼 전체 면적을 확인한다.
 
 ### 2026-11-02 독립 QA 4회차 — V11-F01~F05
 - 담당: Claude Code msw-tester(coder와 별도 실행). 제품·모델·맵·UI·DataSet·CSV·.codeblock 수정 없음. commit·push 없음. 이전 QA/QA2/QA3의 PASS는 이번 실행으로 세지 않았다.

@@ -358,7 +358,7 @@ modelId(castleenemy)·AreaPaddingX 0.5·AreaHeight 1·AreaOffsetY 0.4·Telegraph
 
 | ID | 결정 | 완료 기준 | 영향 R/V | 상태 |
 | --- | --- | --- | --- | --- |
-| V11-F06 | 위 사용자 결정 1~4와 역할 분리 | 주황버섯 패턴 9행·Weight 로드, 가드형 행 없음. ANY는 예고 시작 칸 고정·추적 없음·유효 방향 저스트·속성 규칙 그대로, F01은 고정 칸만 표시. 2칸 공격은 주황버섯 모션이 두 칸 중간에 착지하고 판정 시각·영역·피해는 이전과 같다. 착지점 규칙은 공통 로더·MonsterAttackComponent에 없다. 잘못된 Weight·ANY 표현은 전체 거부·1회 경고 | R01·R02·R06·R07 / V01·V03·V09·V11(회귀 V02·V04~V08·V10) | 🟡 coder 구현·기본 검증 완료(2026-11-03, Bundle b985aa4b…74dbf, [WorkRecord 최신 절](../WorkRecords/CombatCoreWorkRecord.md)), 독립 QA5·reviewer·사용자 V11 대기 |
+| V11-F06 | 위 사용자 결정 1~4와 역할 분리 | 주황버섯 패턴 9행·Weight 로드, 가드형 행 없음. ANY는 예고 시작 칸 고정·추적 없음·유효 방향 저스트·속성 규칙 그대로, F01은 고정 칸만 표시. 2칸 공격은 주황버섯 모션이 두 칸 중간에 착지하고 판정 시각·영역·피해는 이전과 같다. 착지점 규칙은 공통 로더·MonsterAttackComponent에 없다. 잘못된 Weight·ANY 표현은 전체 거부·1회 경고 | R01·R02·R06·R07 / V01·V03·V09·V11(회귀 V02·V04~V08·V10) | 🟡 coder 구현·기본 검증 완료(2026-11-03, Bundle b985aa4b…74dbf, [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)), 독립 QA5(2026-11-03, 같은 Bundle 전후 54/54 일치) F06 수치·로그 PASS(육안 일부·창 0.20 손 타이밍·CSV 변경 반영·F04 클립 재계측 NOT_RUN, [QA 기록](../WorkRecords/CombatCoreWorkRecord.md#qa-기록)), reviewer·사용자 V11 대기 |
 | V11-F07 | 몬스터 수치 DataSet화(후속) | 범위 밖. HP·공격력·공격 간격·점프 시간/높이를 DataSet에서 조절하고 공통/개별 값을 구분하는 방식은 V11 종료 뒤 별도 승인 회차에서 정한다. 점프 시간/속도 정책은 [MonsterCombat](MonsterCombat.md)의 미결정과 함께 결정한다 | — | ⬜ 후속, 미승인 |
 
 ### coder 인계 범위 (F06 한 회차)
