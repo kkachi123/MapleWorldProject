@@ -63,6 +63,12 @@ script MonsterAttackComponent extends AttackComponent
 	end
 
 	@ExecSpace("ServerOnly")
+	method integer SelectRandomCell(number unit)
+		-- 난수 단위(0 이상 1 미만)를 BattlePos 칸 1~3에 균등하게 나눈다. 같은 단위는 항상 같은 칸이다.
+		return math.max(1, math.min(3, math.floor(unit * 3) + 1))
+	end
+
+	@ExecSpace("ServerOnly")
 	method any PrepareAttack()
 		-- 예고와 실제 영역·현재 대결·규칙을 하나의 실행에 고정한다.
 		local player = self:GetDuelPlayer()
@@ -95,8 +101,12 @@ script MonsterAttackComponent extends AttackComponent
 		local targetCell = 0
 		local validDirs = {}
 		if pattern.ResponseType == "ANY" then
-			-- 예고 시작 순간 플레이어와 가장 가까운 한 칸을 고정하며 이후 추적하지 않는다.
-			targetCell = self:FindNearestCell(player.TransformComponent.WorldPosition.x, anchorXs)
+			-- 예고 시작 순간 한 칸을 고정하며 이후 추적하지 않는다. NEAREST는 플레이어와 가장 가까운 칸, RANDOM은 플레이어 위치와 무관한 균등 무작위 칸이다.
+			if pattern.AreaTarget == "RANDOM" then
+				targetCell = self:SelectRandomCell(math.random())
+			else
+				targetCell = self:FindNearestCell(player.TransformComponent.WorldPosition.x, anchorXs)
+			end
 			fromIndex = targetCell
 			toIndex = targetCell
 			-- 고정 칸에서 멀어지는 방향만 유효하다(끝 칸은 중앙 쪽 한 방향).

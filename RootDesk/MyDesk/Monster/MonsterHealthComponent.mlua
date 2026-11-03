@@ -31,6 +31,10 @@ script MonsterHealthComponent extends Component
 			local stun = self.Entity:GetComponent("script.MonsterStunComponent")
 			if isvalid(control) then control:ClearCombatEffects() end
 			if isvalid(stun) then stun:ClearStunTimer(); stun:SetStunned(false) end
+			-- 사망 경로와 무관하게 서버 표시 클립을 die로 고정한다. die도 비반복 클립이라 상태 이벤트만으로는 끝난 뒤 기본 표시(stand)로 돌아간다.
+			---@type MonsterAttackMotion
+			local motion = self.Entity:GetComponent(MonsterAttackMotion)
+			if isvalid(motion) then motion:SetVisualClip("die") end
 			local state = self.Entity.StateComponent
 			if isvalid(state) then
 				-- 정지 중 비활성 FSM도 사망 전환만 반영한 뒤 기존 활성값을 보존한다.

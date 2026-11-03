@@ -1,10 +1,5 @@
-﻿id,modelId,ResponseType,AttackAttribute,AreaFromAnchor,AreaToAnchor,AreaPaddingX,AreaHeight,AreaOffsetY,TelegraphLeadSec,Weight
-normal.left,castleenemy,LEFT,NORMAL,2,3,0.5,1,0.4,0.5,1
-special.left,castleenemy,LEFT,SPECIAL,2,3,0.5,1,0.4,0.5,1
-parry.left,castleenemy,LEFT,PARRY,2,3,0.5,1,0.4,0.5,1
-normal.right,castleenemy,RIGHT,NORMAL,1,2,0.5,1,0.4,0.5,1
-special.right,castleenemy,RIGHT,SPECIAL,1,2,0.5,1,0.4,0.5,1
-parry.right,castleenemy,RIGHT,PARRY,1,2,0.5,1,0.4,0.5,1
-normal.any,castleenemy,ANY,NORMAL,0,0,0.5,1,0.4,0.5,1
-special.any,castleenemy,ANY,SPECIAL,0,0,0.5,1,0.4,0.5,1
-parry.any,castleenemy,ANY,PARRY,0,0,0.5,1,0.4,0.5,1
+﻿id,modelId,ResponseType,AttackAttribute,AreaFromAnchor,AreaToAnchor,AreaPaddingX,AreaHeight,AreaOffsetY,TelegraphLeadSec,Weight,AreaTarget
+parry.left,castleenemy,LEFT,PARRY,2,3,0.5,1,0.4,0.5,2,FIXED
+parry.right,castleenemy,RIGHT,PARRY,1,2,0.5,1,0.4,0.5,2,FIXED
+parry.any,castleenemy,ANY,PARRY,0,0,0.5,1,0.4,0.5,2,NEAREST
+special.random,castleenemy,ANY,SPECIAL,0,0,0.5,1,0.4,0.5,1,RANDOM

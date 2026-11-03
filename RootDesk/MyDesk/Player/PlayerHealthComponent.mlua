@@ -25,6 +25,9 @@ script PlayerHealthComponent extends Component
 				result = { kind = "PARRY", rate = 0, success = true }
 			elseif attribute ~= "SPECIAL" then
 				result = { kind = "GUARD", rate = rules.GuardDamageRate, success = false }
+			else
+				-- 특수 공격은 가드로 막을 수 없다. 피해는 원래대로(rate 1)이고 결과 종류만 구분해 표시한다.
+				result = { kind = "UNGUARDABLE", rate = 1, success = false }
 			end
 		elseif isvalid(evade) and validDirs[evade.EvadeDirection] == true
 			and self:IsInWindow(evade.evadeStartTime, hitTime, rules.JustWindowSec) then

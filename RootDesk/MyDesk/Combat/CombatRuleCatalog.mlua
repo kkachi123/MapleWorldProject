@@ -61,6 +61,10 @@ script CombatRuleCatalog extends Logic
 			end
 			-- 출현 가중치는 유한한 양수만 허용한다. 끄려면 행을 지운다.
 			if data.Weight <= 0 then self:WarnOnce("invalid weight"); return nil end
+			-- 대상 칸 방식은 세 값만 허용한다. ANY는 NEAREST/RANDOM, 그 밖의 유형은 FIXED만 짝이 맞는다.
+			data.AreaTarget = row.AreaTarget
+			if row.AreaTarget ~= "FIXED" and row.AreaTarget ~= "NEAREST" and row.AreaTarget ~= "RANDOM" then self:WarnOnce("invalid area target"); return nil end
+			if (row.ResponseType == "ANY") == (row.AreaTarget == "FIXED") then self:WarnOnce("area target does not match response type"); return nil end
 			if row.ResponseType == "ANY" then
 				-- ANY는 영역 칸을 예고 시작 때 정하므로 앵커 0/0만 허용한다.
 				if data.AreaFromAnchor ~= 0 or data.AreaToAnchor ~= 0 then self:WarnOnce("ANY area must be 0/0"); return nil end
@@ -100,7 +104,7 @@ script CombatRuleCatalog extends Logic
 		if self._T.attempted then return self.Ready end
 		self._T.attempted = true
 		local ruleRows = self:ReadRows(_DataService:GetTable("CombatRuleData"), {"id", "JustWindowSec", "ParryWindowSec", "GuardDamageRate", "CounterWindowSec", "CounterDamageMultiplier", "SlowDurationSec", "SlowRate", "GroggyDurationSec"})
-		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight"})
+		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget"})
 		if ruleRows == nil or patternRows == nil then self:WarnOnce("DataSet or required columns missing"); return false end
 		local result = self:ValidateRows(ruleRows, patternRows)
 		if result == nil then return false end
