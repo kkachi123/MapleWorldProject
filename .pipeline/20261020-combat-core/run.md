@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: WAITING_USER
-- 갱신: 2026-11-03 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (V11 직접 확인)
-- 다음 행동·대기 사유: 리뷰 WAITING(결함 없음, 대상 b89de46). 사용자 V11 재확인 대기(확인 항목은 Plan §15 끝 절). 3단계 자동 시작 없음.
+- 상태: PAUSED
+- 갱신: 2026-11-04 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 없음 (사용자 일시정지, 회차 A tester QA8 중단)
+- 다음 행동·대기 사유: 사용자 일시정지(2026-11-04). 재개 시 tester QA8 NOT_RUN 항목부터(대상 7f2d0b4) → reviewer → 회차 커밋. 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -240,3 +240,27 @@
 - reviewer 실제 종료(msw-reviewer): WAITING, 결함 없음. 대상 5c4eda3 / 커밋 트리 Bundle 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79 / 작업 트리 fdca556d…ee80(+Maker 재저장 3경로, 의미 차이 없음, 커밋 제외). 비차단 메모 3건은 planner 문서 동기화로 처리.
 - planner 문서 동기화: Plan 머리·§17 상태·V11 확인 항목 절, WR·로드맵 재개 지점, GameDesign §4.2 비중 출처 구분(1/7 사용자, 2:2:2 planner 기본안).
 - 회차 종료 커밋(새 git 기준) → push. 다음: 사용자 V11(die 유지, 4패턴 난이도·비중, 가드 불가 문구, 범위 밖 저스트 체감, H1 체감). §18은 재개 지시와 질문 답 뒤.
+
+## 2026-11-03 사용자 V11 결과 (§17 회차, "바로 시작하지는 말고")
+- die: "die animation이 반복됨. 1번만 하고 die end 모션에서 정지상태가 되게 해줘. (게임 구성상 모션 정지상태에서 fade 후 스테이지 완료 popup 표시 순서임)" → REV-F02 후속(1회 재생 후 마지막 프레임 정지). fade·완료 팝업은 4단계.
+- 범위 밖 저스트: "그건 너무 쉬움. 위치한 곳에 공격 받기 직전 회피만 인정." → 규칙 변경(D02): 저스트는 회피 시작 시 공격 영역 안에 있을 때만. 메인 메모: 현재 가드 패링도 범위 안팎 무관(PlayerHealthComponent.EvaluateDefense) → 같은 원칙 적용 여부 사용자 확인 필요. 적용 패턴 범위(전 패턴 vs 무작위만) 확인 필요.
+- H1 이동 속도: "이동 속도가 느리긴 함. 조절 필요하긴 할듯. dataset으로 조절가능하면 말해줘." → 현재 PlayerMoveComponent 속성 MoveSpeed=6·ReturnSpeed=6(모델·Inspector 값, DataSet 아님, 1단계 V08 수락값). DataSet 이전은 코드 변경 필요(CombatRuleData 열 추가 안).
+- 그 밖의 V11 항목(4패턴 난이도·비중, 가드 불가 문구)은 이번 답에 언급 없음.
+- 사용자 후속: 4패턴 난이도·비중, 가드 불가 문구 "ㄱㅊ았어."
+- 사용자 결정(규칙 변경, 미착수): "저스트 회피랑 패링 둘다 pos2에서만 동작하게. 추가로 저스트회피랑 패링 모두 피격 범위에서 성공시에만 판정되도록" → 입력 시작 때 플레이어가 Pos2 칸 안 + 그 공격 영역이 Pos2를 포함할 때만 JUST·PARRY. 메인 메모: 끝 칸 대기·복귀 중 판정 기준(칸 범위) planner 확정 필요, special.random이 끝 칸이면 보상 없음, 기존 "끝 칸은 중앙 쪽 한 방향 저스트" 규칙 무효화.
+- 사용자 요청(미착수): "이동 속도 뿐 아니라 Player 프로필 데이터를 DataSet에서 수정 가능하도록 설정 필요. 처음 속도 값은 6으로". 현재 DataSet: AttackSkillData(플레이어 기본 공격 Damage 등) 있음, 플레이어 HP·이동/복귀 속도는 모델 속성. 메인 메모: 정적 기본값(DataSet)과 성장·저장(5단계 DataStorage) 구분, 항목 목록 사용자 확인, V11-F07(몬스터 DataSet)과 같은 회차 묶음 제안.
+- 사용자 질문: "저스트 회피 판정 성공해도 위치가 피격 범위면 피격-> 이게 맞으면 그계획대로 다음 단계 진행 할수 있을것 같음.(아직 진행하란 소리는 아니고)" → 메인 답: 현재는 JUST 성공 시 rate 0이라 판정 순간 범위 안이어도 피해 0(PlayerHealthComponent.EvaluateDefense·ResolveIncomingDamage). 사용자 안대로 바꾸면 속도 6·창 0.20초에서 실제 탈출까지 약 0.17초가 걸려 유효 창이 약 0.03초로 줄어듦 → 사용자 결정 대기.
+- 사용자 예시 확인: "2,3 범위 공격인데 3으로 저스트 회피-> 성공 판정이됨? 이러면 안되서" → 메인 답: 현재도 실패(validDirs: LEFT 패턴은 LEFT만, MonsterAttackComponent.mlua:113~118), 범위 안이라 원래 피해. 사용자 "그럼 ㄱㅊ을듯".
+- 확정 규칙(다음 회차, 미착수): JUST·PARRY는 입력 시작 때 Pos2 칸 안 + 공격 영역이 Pos2 포함일 때만. JUST는 기존 유효 방향 규칙 유지. JUST 성공은 피해 0 유지. Pos2 판정 기준은 칸 범위(±0.75) 추천안(사용자 이견 없음).
+- 다음 회차 계획: (회차 A) die 1회 재생 후 마지막 프레임 정지 + JUST·PARRY 조건 변경, (회차 B) 플레이어 기본 능력치 DataSet(속도 초기값 6)·V11-F07 몬스터 DataSet, (회차 C) §18 머쉬맘 전환. 사용자 재개 지시 대기.
+- 회차 밖 로드맵 갱신(사용자 확정 2026-11-03): 1~7 기초 확립, 8 콘텐츠 데이터 제작(마을별 에셋 탐색·모델 제작 포함), 9 출시 검증. 커밋 9dc9a2f push. CombatCore 다음 회차 순서(A→B→C) 변화 없음.
+
+## 2026-11-04 회차 A 시작
+- 사용자 지시: "A 회차 시작". 범위: die 1회 재생 후 마지막 프레임 정지(REV-F02 후속) + JUST·PARRY 조건(입력 시작 때 Pos2 칸 ±0.75 안 + 공격 영역이 Pos2 포함). 기존 JUST 유효 방향·피해 0 유지.
+- 흐름: planner → coder(로컬 커밋) → tester → reviewer → 회차 커밋·push.
+- planner 실제 종료(msw-planner): 구현 진행 가능, 질문 없음. Plan §19 신설(V11-F12 die 1회 재생 후 정지, V11-F13 JUST·PARRY Pos2 시작+Pos2 포함 영역). GameDesign §4.2·로드맵·WR 재개 지점 동기화. 차단 아님 기본안: Pos2 경계 앵커 중점(±0.75 포함), 위치 WorldPosition.x, 시작 위치는 서버 시작 시각 기록 지점에서.
+- coder 호출(msw-coder).
+- coder 실제 종료(msw-coder): .mlua 7개 변경, 빌드 오류 0, F12 사망 8경로 die 1회·정지, F13 회피 17·가드 15 사례 기대 일치, 실제 키 위치 차 0.000(5건). Maker map01 edit 인계, 메인 재조회 edit 확인.
+- coder 로컬 커밋 7f2d0b4(push 안 함). 작업 트리 Bundle b321d71c506c993747785757c04677c5aef39058e06f17f61334cf48e3a4040f(54경로, Maker 재저장 3경로 커밋 제외).
+- tester 호출(msw-tester).
+- tester 중단(msw-tester, 사용자 "작업 일시 정지"): 대상 7f2d0b4, 작업 트리 Bundle b321d71c…040f 일치, 커밋 트리 Bundle 7f32ae45d37aa6613db2c8de1c56ede5e0915fb5d0e0c34abb12a63340ce21e3. 실행 기준 전부 PASS, 결함 0. NOT_RUN: F12 Stop 뒤 다음 Play stand·정지 잔존, IDLE 외 경로 팝업 조합, 실제 UpArrow 그로기 처치, DeadEvent·HP 합계 비교, F08·F06 회귀 / F13 플레이어 사망 뒤·Stop 뒤 위치 기록 삭제, parry.any 끝 칸 실제 키, 사람 손 0.20초. Maker map01 edit 인계, 메인 재조회 확인.
