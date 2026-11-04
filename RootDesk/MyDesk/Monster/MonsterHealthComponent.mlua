@@ -31,7 +31,7 @@ script MonsterHealthComponent extends Component
 			local stun = self.Entity:GetComponent("script.MonsterStunComponent")
 			if isvalid(control) then control:ClearCombatEffects() end
 			if isvalid(stun) then stun:ClearStunTimer(); stun:SetStunned(false) end
-			-- 사망 경로와 무관하게 서버 표시 클립을 die로 고정한다. die도 비반복 클립이라 상태 이벤트만으로는 끝난 뒤 기본 표시(stand)로 돌아간다.
+			-- 사망 경로와 무관하게 서버 표시 클립을 die로 쓴다. 공통 표시 층이 첫 프레임부터 한 번 재생하고 마지막 프레임에서 고정한다(V11-F12).
 			---@type MonsterAttackMotion
 			local motion = self.Entity:GetComponent(MonsterAttackMotion)
 			if isvalid(motion) then motion:SetVisualClip("die") end
@@ -45,6 +45,15 @@ script MonsterHealthComponent extends Component
 				if Environment:IsMakerPlay() then log("[VRF] MonsterHealth lethal state=" .. state.CurrentStateName .. " enabled=" .. tostring(state.Enable)) end
 			end
 		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void OnUpdate(number delta)
+		-- 사망 표시(die 1회 재생 뒤 마지막 프레임 정지)의 정지 시점만 확인한다.
+		if not self.IsDead then return end
+		---@type MonsterAttackMotion
+		local motion = self.Entity:GetComponent(MonsterAttackMotion)
+		if isvalid(motion) then motion:TickDie() end
 	end
 
 	@ExecSpace("ServerOnly")

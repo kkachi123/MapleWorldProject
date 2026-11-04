@@ -13,15 +13,26 @@ script PlayerHealthComponent extends Component
 		return started >= 0 and started >= hitTime - window and started <= hitTime
 	end
 
+	method boolean IsStartInPos2Cell(number startX, table pos2Cell)
+		-- 입력을 시작한 순간의 위치가 Pos2 칸(앵커 중점 경계, 경계 포함) 안인지 확인한다. 기록이 없으면 불성립이다.
+		if startX == nil or pos2Cell == nil then return false end
+		return startX >= pos2Cell.minX - 0.000001 and startX <= pos2Cell.maxX + 0.000001
+	end
+
 	@ExecSpace("ServerOnly")
-	method table EvaluateDefense(string response, string attribute, number hitTime, table rules, table validDirs)
+	method table EvaluateDefense(string response, string attribute, number hitTime, table rules, table validDirs, table pos2Cell)
 		-- 공격 실행마다 범위 안팎과 무관하게 수락 입력을 한 번 판정한다.
+		-- 저스트·패링 성공은 기존 조건에 더해 (a) 입력 시작 위치가 Pos2 칸이고 (b) 공격 영역이 Pos2를 포함할 때만 인정한다(V11-F13).
 		local result = { kind = "HIT", rate = 1, success = false }
 		local guard = self._T.guard
 		local evade = self._T.evade
 		local state = self.Entity.StateComponent
+		local areaOk = pos2Cell ~= nil and pos2Cell.areaIncludes == true
 		if isvalid(guard) and guard.isGuarding and isvalid(state) and state.CurrentStateName == "GUARD" then
-			if attribute == "PARRY" and self:IsInWindow(guard.guardStartTime, hitTime, rules.ParryWindowSec) then
+			local guardX = guard:GetStartX()
+			local cellOk = self:IsStartInPos2Cell(guardX, pos2Cell)
+			if Environment:IsMakerPlay() then log("[VRF] PlayerHealth guard eval x=" .. (guardX ~= nil and string.format("%.3f", guardX) or "nil") .. " cellOk=" .. tostring(cellOk) .. " areaOk=" .. tostring(areaOk) .. " attr=" .. attribute) end
+			if attribute == "PARRY" and self:IsInWindow(guard.guardStartTime, hitTime, rules.ParryWindowSec) and cellOk and areaOk then
 				result = { kind = "PARRY", rate = 0, success = true }
 			elseif attribute ~= "SPECIAL" then
 				result = { kind = "GUARD", rate = rules.GuardDamageRate, success = false }
@@ -29,10 +40,14 @@ script PlayerHealthComponent extends Component
 				-- 특수 공격은 가드로 막을 수 없다. 피해는 원래대로(rate 1)이고 결과 종류만 구분해 표시한다.
 				result = { kind = "UNGUARDABLE", rate = 1, success = false }
 			end
-		elseif isvalid(evade) and validDirs[evade.EvadeDirection] == true
-			and self:IsInWindow(evade.evadeStartTime, hitTime, rules.JustWindowSec) then
-			-- 저스트로 인정하는 방향은 실행 스냅샷이 고정한 집합이다(LEFT·RIGHT는 한 방향, ANY는 고정 칸에서 멀어지는 방향).
-			result = { kind = "JUST", rate = 0, success = true }
+		elseif isvalid(evade) then
+			local evadeX = evade:GetStartX()
+			local cellOk = self:IsStartInPos2Cell(evadeX, pos2Cell)
+			if Environment:IsMakerPlay() and evade.evadeStartTime >= 0 then log("[VRF] PlayerHealth evade eval x=" .. (evadeX ~= nil and string.format("%.3f", evadeX) or "nil") .. " cellOk=" .. tostring(cellOk) .. " areaOk=" .. tostring(areaOk) .. " dir=" .. evade.EvadeDirection) end
+			if validDirs[evade.EvadeDirection] == true and self:IsInWindow(evade.evadeStartTime, hitTime, rules.JustWindowSec) and cellOk and areaOk then
+				-- 저스트로 인정하는 방향은 실행 스냅샷이 고정한 집합이다(LEFT·RIGHT는 한 방향, ANY는 고정 칸에서 멀어지는 방향).
+				result = { kind = "JUST", rate = 0, success = true }
+			end
 		end
 		self._T.defenseEvaluations = (self._T.defenseEvaluations or 0) + 1
 		return result
@@ -66,8 +81,8 @@ script PlayerHealthComponent extends Component
 	handler HandleStateChangeEvent(StateChangeEvent event)
 		-- 사망하면 이전 방어 입력과 반격 기회를 폐기한다.
 		if event.CurrentStateName ~= "DEAD" then return end
-		if isvalid(self._T.guard) then self._T.guard:SetGuarding(false); self._T.guard.guardStartTime = -1 end
-		if isvalid(self._T.evade) then self._T.evade:SetEvading(false); self._T.evade.evadeStartTime = -1; self._T.evade.EvadeDirection = "" end
+		if isvalid(self._T.guard) then self._T.guard:SetGuarding(false); self._T.guard:ClearStart() end
+		if isvalid(self._T.evade) then self._T.evade:SetEvading(false); self._T.evade:ClearStart(); self._T.evade.EvadeDirection = "" end
 		local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
 		if isvalid(combat) then combat:ClearCounter() end
 	end

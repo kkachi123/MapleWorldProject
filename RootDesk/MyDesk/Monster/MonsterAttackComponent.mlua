@@ -142,8 +142,11 @@ script MonsterAttackComponent extends AttackComponent
 		for index = 1, 3 do
 			cells = cells .. ((anchorXs[index] >= minimum and anchorXs[index] <= maximum) and "1" or "0")
 		end
+		-- 저스트·패링 성공 조건(V11-F13): Pos2 칸 경계는 인접 앵커 중점이고, 영역이 Pos2 앵커를 포함하는지는 실행마다 한 번 고정한다.
+		local pos2Cell = { minX = (anchorXs[1] + anchorXs[2]) * 0.5, maxX = (anchorXs[2] + anchorXs[3]) * 0.5,
+			areaIncludes = anchorXs[2] >= minimum and anchorXs[2] <= maximum }
 		local snapshot = { id = self.AttackSequence, map = map, player = player, pattern = pattern, rules = rules,
-			area = { cells = cells, minX = minimum, maxX = maximum }, validDirs = validDirs, targetCell = targetCell,
+			area = { cells = cells, minX = minimum, maxX = maximum }, validDirs = validDirs, targetCell = targetCell, pos2Cell = pos2Cell,
 			shape = BoxShape(Vector2((minimum + maximum) * 0.5, 0), Vector2(maximum - minimum, pattern.AreaHeight), 0), resolved = false }
 		self._T.snapshot = snapshot
 		self.TelegraphResponse = pattern.ResponseType
@@ -177,7 +180,7 @@ script MonsterAttackComponent extends AttackComponent
 		if not isvalid(defender) then return end
 		snapshot.resolved = true
 		snapshot.hitTime = pause:GetCombatTime()
-		snapshot.result = defender:EvaluateDefense(snapshot.pattern.ResponseType, snapshot.pattern.AttackAttribute, snapshot.hitTime, snapshot.rules, snapshot.validDirs)
+		snapshot.result = defender:EvaluateDefense(snapshot.pattern.ResponseType, snapshot.pattern.AttackAttribute, snapshot.hitTime, snapshot.rules, snapshot.validDirs, snapshot.pos2Cell)
 		local position = self.Entity.TransformComponent.WorldPosition
 		snapshot.shape.Position = Vector2(snapshot.shape.Position.x, position.y + snapshot.pattern.AreaOffsetY)
 		self._T.lastAttackCenter = snapshot.shape.Position

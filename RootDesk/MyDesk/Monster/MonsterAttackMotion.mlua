@@ -4,11 +4,59 @@ script MonsterAttackMotion extends Component
 	@ExecSpace("ServerOnly")
 	method void SetVisualClip(string key)
 		-- Reuse this monster's existing animation mappings.
+		-- 사망 표시가 시작된 뒤에는 어떤 늦은 경로도 클립을 바꾸거나 die를 다시 시작하지 못한다.
+		if self._T.dieStarted then return end
+		if key == "die" then self:PlayDieOnce(); return end
 		local animation = self.Entity.StateAnimationComponent
 		local renderer = self.Entity.SpriteRendererComponent
 		if not isvalid(animation) or not isvalid(renderer) then return end
 		local ruid = animation.ActionSheet[key]
 		if ruid ~= nil and ruid ~= "" then renderer.SpriteRUID = ruid end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void PlayDieOnce()
+		-- 사망 표시: die를 첫 프레임부터 한 번 재생하고 마지막 프레임 시작 시점에 그 프레임으로 고정한다(TickDie).
+		if self._T.dieStarted then return end
+		local animation = self.Entity.StateAnimationComponent
+		local renderer = self.Entity.SpriteRendererComponent
+		if not isvalid(animation) or not isvalid(renderer) then return end
+		local ruid = animation.ActionSheet["die"]
+		if ruid == nil or ruid == "" then return end
+		self._T.dieStarted = true
+		local pause = isvalid(self.Entity.CurrentMap) and self.Entity.CurrentMap:GetComponent("script.CombatPauseComponent") or nil
+		local clip = _ResourceService:LoadAnimationClipAndWait(ruid)
+		renderer.StartFrameIndex = 0
+		renderer.EndFrameIndex = 2147483647
+		renderer.SpriteRUID = ruid
+		local count = clip ~= nil and clip.Frames.Count or 0
+		if count <= 0 or not isvalid(pause) then
+			if Environment:IsMakerPlay() then log("[VRF] MonsterDie start without freeze frames=" .. tostring(count)) end
+			return
+		end
+		local total = 0
+		for index = 1, count do total = total + clip.Frames[index].Delay end
+		local lastDelay = clip.Frames[count].Delay
+		local rate = renderer.PlayRate * clip.PlayRate
+		if rate <= 0 or rate ~= rate then rate = 1 end
+		self._T.diePause = pause
+		self._T.dieLastFrame = count - 1
+		self._T.dieFreezeAt = pause:GetCombatTime() + (total - lastDelay) / rate
+		if Environment:IsMakerPlay() then log("[VRF] MonsterDie start frames=" .. tostring(count) .. " total=" .. string.format("%.3f", total) .. " freezeAfter=" .. string.format("%.3f", (total - lastDelay) / rate) .. " clock=" .. string.format("%.3f", pause:GetCombatTime())) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void TickDie()
+		-- 맵 전투 시계로 마지막 프레임 시작 시점을 기다린다. 팝업 정지 중에는 시계가 멈춰 남은 재생이 이어진다.
+		if not self._T.dieStarted or self._T.dieFrozen or self._T.dieFreezeAt == nil or not isvalid(self._T.diePause) then return end
+		local now = self._T.diePause:GetCombatTime()
+		if now < self._T.dieFreezeAt then return end
+		local renderer = self.Entity.SpriteRendererComponent
+		if not isvalid(renderer) then return end
+		self._T.dieFrozen = true
+		renderer.StartFrameIndex = self._T.dieLastFrame
+		renderer.EndFrameIndex = self._T.dieLastFrame
+		if Environment:IsMakerPlay() then log("[VRF] MonsterDie freeze frame=" .. tostring(self._T.dieLastFrame) .. " clock=" .. string.format("%.3f", now)) end
 	end
 
 	@ExecSpace("ServerOnly")

@@ -14,6 +14,9 @@ script PlayerEvadeComponent extends Component
 			local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
 			self._T.combat = combat
 			self.evadeStartTime = isvalid(combat) and combat:GetCombatTime() or -1
+			-- 시작 시각과 같은 순간 서버가 보는 위치를 함께 기록한다(저스트 성공의 Pos2 칸 조건, V11-F13).
+			self._T.evadeStartX = self.Entity.TransformComponent.WorldPosition.x
+			if Environment:IsMakerPlay() then log("[VRF] PlayerEvade start x=" .. string.format("%.3f", self._T.evadeStartX) .. " t=" .. string.format("%.3f", self.evadeStartTime)) end
 			self.EvadeDirection = ""
 			self._T.moveEpoch = (self._T.moveEpoch or 0) + 1
 			local pending = self._T.pendingDirection
@@ -30,6 +33,17 @@ script PlayerEvadeComponent extends Component
 		self.isEvading = isHeld
 	end
 
+
+	method void ClearStart()
+		-- 회피 시작 시각과 시작 위치를 함께 폐기한다.
+		self.evadeStartTime = -1
+		self._T.evadeStartX = nil
+	end
+
+	method number GetStartX()
+		-- 기록된 시작 위치(없으면 nil).
+		return self._T.evadeStartX
+	end
 
 	@ExecSpace("ClientOnly")
 	method void NoteClientMove()
@@ -84,7 +98,7 @@ script PlayerEvadeComponent extends Component
 	method void OnMapLeave(Entity leftMap)
 		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
 		self.isEvading = false
-		self.evadeStartTime = -1
+		self:ClearStart()
 		self._T.combat = nil
 		self.EvadeDirection = ""
 		self._T.directionSequence = nil

@@ -7,7 +7,9 @@
 
 ## 현재 재개 지점
 
-2026-11-03(리뷰 뒤) 기준: Plan §17 회차(REV-F02·V11-F10·V11-F11)는 msw-coder 구현·기본 검증(로컬 커밋 5c4eda3, 맨 아래 2026-11-03 개발절) → 별도 msw-tester 독립 QA 7회차(작업 트리 Bundle fdca556d1e14533c143c6a07e40b3971b5ebfa8d4e885bded1fb24be2940ee80, 54/54 전후 일치, H1 포함 전부 PASS) → 별도 msw-reviewer 독립 리뷰 **WAITING**(결함 없음, 5c4eda3 커밋 트리 Bundle 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79 / 작업 트리 fdca556d…ee80 재계산 일치, QA7 근거가 커밋 트리에도 적용)까지 마쳤다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 확인이다. 확인 항목 5개는 리뷰 기록 첫 절 "사용자 V11 확인 항목"에 있고 [Plan §17 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 그 뒤 Plan §18(머쉬맘 전환, MM-01·MM-02)은 사용자 재개 지시와 §18 질문 답을 받은 다음 시작한다. 남은 필수: V11, CF-F07 실제 연출 평가, V12 외부 환경과 기존 외부 후속 ID. P01b~P06은 🟡 유지, 3단계 미시작.
+2026-11-04(회차 A Plan 뒤) 기준: 2026-11-03 사용자 V11에서 §17의 F10 4패턴과 F11 "가드 불가" 문구는 통과했다. REV-F02는 die가 반복 재생된다는 보고로, 범위 밖 저스트는 "너무 쉬움" 보고와 Pos2 규칙 확정으로 이어진다. planner가 [Plan §19](../Plans/2_CombatCore.md)에 CombatCore-V11-F12(die 1회 재생 후 마지막 프레임 정지)와 V11-F13(JUST·PARRY 성공은 입력 시작 위치 Pos2 칸 ±0.75, 공격 영역 Pos2 포함 조건)을 정리했고, 2026-11-04 사용자 "A 회차 시작"으로 구현 승인 상태다. 다음은 msw-coder 한 회차(기준 5c4eda3, 이 기록 맨 아래에 새 개발절) → 같은 버전 msw-tester(QA 8회차) → msw-reviewer → 사용자 V11이다. 회귀로 다시 볼 기존 근거는 QA 7회차 REV-F02 사망 경로·E1 계열, QA 5회차 K3b·ANY 끝 칸 저스트(기대가 JUST 아님으로 바뀜)다(Plan §19 "다시 확인할 기존 근거"). 회차 B(플레이어 기본 능력치 DataSet·V11-F07)와 Plan §18(회차 C)은 그 뒤다. P01b~P06은 🟡 유지, 3단계 미시작.
+
+이전 재개 지점(2026-11-03, 5c4eda3 리뷰 뒤): Plan §17 회차(REV-F02·V11-F10·V11-F11)는 msw-coder 구현·기본 검증(로컬 커밋 5c4eda3, 맨 아래 2026-11-03 개발절) → 별도 msw-tester 독립 QA 7회차(작업 트리 Bundle fdca556d1e14533c143c6a07e40b3971b5ebfa8d4e885bded1fb24be2940ee80, 54/54 전후 일치, H1 포함 전부 PASS) → 별도 msw-reviewer 독립 리뷰 **WAITING**(결함 없음, 5c4eda3 커밋 트리 Bundle 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79 / 작업 트리 fdca556d…ee80 재계산 일치, QA7 근거가 커밋 트리에도 적용)까지 마쳤다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 확인이다. 확인 항목 5개는 리뷰 기록 첫 절 "사용자 V11 확인 항목"에 있고 [Plan §17 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 그 뒤 Plan §18(머쉬맘 전환, MM-01·MM-02)은 사용자 재개 지시와 §18 질문 답을 받은 다음 시작한다. 남은 필수: V11, CF-F07 실제 연출 평가, V12 외부 환경과 기존 외부 후속 ID. P01b~P06은 🟡 유지, 3단계 미시작.
 
 이전 재개 지점(2026-11-03, b89de46 기준): msw-coder가 V11-F06을 구현·기본 검증했고(커밋 b89de46 / 54경로 Bundle b985aa4b901dfd0602303de3504aa0372acc4d54ed9ccaa6a7d1c4fb56d74dbf, 맨 아래 2026-11-03 개발절), 별도 msw-tester가 같은 Bundle에서 독립 QA 5회차(커밋 a43b1b5, F01~F06 수치·로그 PASS·FAIL 없음, 육안·창 0.20 손 타이밍·CSV 변경 반영·F04 클립 재계측 NOT_RUN), 별도 msw-reviewer가 F01~F06 일괄 리뷰 **WAITING**(커밋 2dbaa07, 새 결함 없음)을 판정했다(각각 QA 기록·리뷰 기록 첫 절). 현재 AI 담당 작업은 없고 다음은 사용자 V11 직접 확인이다. 확인 항목 7개는 리뷰 기록 첫 절 "다음 행동" 4번에, 비차단 재확인 공백(2칸 패턴 패링 → 복귀 중 팝업 정지·재개, 복귀 중 Stop → 재Play 기본값)은 같은 절 "같은 버전 확인"에 있으며, 둘 다 [Plan §15 끝 "사용자 V11 확인 항목"](../Plans/2_CombatCore.md)에 연결했다. 남은 필수: V11, CF-F07 실제 연출 평가(수치 근거만 확보), V12 외부 환경과 기존 외부 후속 ID. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. P01b~P06은 🟡 유지, 3단계 미시작. 범위 밖 관찰인 플레이어 사망 직후 HP 문자 음수 표시 가능성은 V11 확인 항목 7번에 포함됐다(처리 여부는 3단계 계획 후보).
 
@@ -1253,3 +1255,80 @@
 ### 사용 종료·다음 담당
 - 마지막 maker_stop 성공 뒤 maker_get_current_map=map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
 - tester가 확인할 것: (1) REV-F02: 7경로 사망 뒤 서버·클라이언트 SpriteRUID가 die로 유지되는지(실제 표시는 스크린샷 픽셀도 병행, 실제 UIPopup 열고 닫기·Stop 뒤 재Play 포함). (2) F10: 4행 로드, 경계 난수의 누적 구간·칸, RANDOM 저스트(범위 안·밖 출발)·반격·슬로우와 고정 칸 쪽 방향·중앙 복귀·↓ 패링 불성공, 예고 뒤 이동에도 영역 불변, parry.any 회귀(Pos1·Pos2·Pos3), parry.left·right 2칸 중간 착지·F02 복귀 후 그로기·F08 그로기 hit, NORMAL·GUARD 유형은 시험 데이터 근거. (3) F11: 가드 홀드 중 special.random 범위 안 "가드 불가"·원래 피해, 범위 밖 "회피", 무가드 "피격", 일반 가드 "가드 · 피해 경감"·40%. (4) H1: 끝 칸 홀드 유지·해제(예고 중 서로 다른 두 시점 이상) 정밀 확인과 RightArrow·Pos3, parry.any 끝 칸. 주의: maker_clear_logs를 호출하지 말고 큰 로그는 파일로 저장한 뒤 시각·표지로 거를 것. 시험 스크립트가 만든 타이머는 Stop 때 LEA-3051을 낼 수 있으니 ClearTimer로 정리할 것.
+
+## 2026-11-04 coder V11-F12·V11-F13 구현·기본 검증 인계 (회차 A)
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §19 회차 A의 CombatCore-V11-F12(몬스터 die 1회 재생 뒤 마지막 프레임 정지)·V11-F13(JUST·PARRY 성공에 입력 시작 위치 Pos2 칸 ±0.75와 공격 영역의 Pos2 포함 조건 추가)뿐이다. 수치(JustWindowSec 0.20, GuardDamageRate 0.40, 반격 2.0초·×2.2, 슬로우 2.0초·×0.5, 그로기 1.5초, AttackDamage 12, AttackInterval 3.0, JumpDuration 0.5·JumpHeight 0.8, 패턴 4행·Weight·영역·패딩·선행 시간, 이동·복귀 속도 6), CSV·DataSet, D01~D04, 입력 규칙, LEFT/RIGHT/ANY 영역·대상 칸 방식·ANY 탈출 검증, 몬스터 모델·.ui·.map, 새 RUID·자원, 회차 B(플레이어 기본 능력치·V11-F07), §18 머쉬맘 전환, fade·스테이지 전환(4단계), 3단계는 바꾸지 않았다.
+- 기준 버전: 커밋 5c4eda3. 같은 방법(54경로 manifest, 경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256)으로 5c4eda3 커밋 트리를 재계산해 리뷰 기록 9208e0aa…da79와 일치함을 확인했다. 시작 시 작업 트리는 5c4eda3 + Maker 재저장 미커밋 3파일(AssistModel.userdataset·AttackSkillData.userdataset·주황버섯 모델, 이번 변경 아님·되돌리지 않음)뿐이었고 그 밖의 예상 못한 제품 변경은 없었다.
+- 실제 연결: 시작 시 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186. 맵 TileMapMode=0(MapleTile, 앞 회차 기록, 구조 파일을 바꾸지 않아 다시 읽지 않았다). **maker_clear_logs는 호출하지 않았다.** 큰 로그는 파일로 저장돼 시각·`[VRF…]` 표지로 걸러 읽었다.
+
+### V11-F12 — 현재 재생 실측(수정 전, 5c4eda3 그대로)
+- 방법: 서버 프로브(상태·SpriteRUID·PlayRate·Start/EndFrameIndex)와 소유 클라이언트 프로브(몬스터 엔티티의 SpriteAnimPlayerChangeFrameEvent 프레임 번호 + 같은 ServerElapsedSeconds 시계)를 같은 시간축에 기록했다. IDLE 몬스터에 ApplyDamage(999) 뒤 die 클립(ActionSheet die=65a2bf…, 프레임 3장, 지연 0.18·0.18·0.30초, 합 0.66초)이 프레임 0→1→2→0→1→2…로 약 0.66초 주기로 **끝없이 반복**됨을 확인했다(사망 뒤 약 47초 관측, 서버 SpriteRUID=die·상태 DEAD 유지). 사용자 보고와 일치한다. 서버가 쓴 SpriteRUID 값은 클라이언트에 같은 시각(시차 0.00초)에 반영되고 클라이언트 프레임 0이 곧바로 시작됐다.
+
+### V11-F12 — 구현 방식과 이유
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | 공통 사망 표시 층. `SetVisualClip`이 (a) 사망 표시가 시작된 뒤(`_T.dieStarted`)에는 모든 키를 무시해 어떤 늦은 경로도 클립을 바꾸거나 die를 다시 시작하지 못하게 하고, (b) 키가 "die"이면 새 `PlayDieOnce()`로 간다. `PlayDieOnce()`는 die RUID의 AnimationClip을 `_ResourceService:LoadAnimationClipAndWait`로 읽어 프레임 수·지연 합·PlayRate로 "마지막 프레임 시작까지의 시간(=(합-마지막 지연)/재생 배율)"을 맵 전투 시계(CombatPauseComponent.GetCombatTime) 기준 기한으로 기록하고, StartFrameIndex=0·EndFrameIndex=2147483647로 정리한 뒤 SpriteRUID=die를 쓴다. `TickDie()`가 기한이 되면 StartFrameIndex=EndFrameIndex=마지막 프레임 번호로 쓴다(마지막 프레임 고정). 클립을 읽지 못하면(프레임 0) 종전처럼 die RUID만 쓴다(`[VRF] MonsterDie start without freeze`). |
+| RootDesk/MyDesk/Monster/MonsterHealthComponent.mlua | `OnUpdate`를 추가해 사망 후 `MonsterAttackMotion:TickDie()`만 호출(OrangeMushroomAttack.OnUpdate는 `__base`를 부르지 않아 거기에는 둘 수 없었다). 사망 확정 경로의 기존 `SetVisualClip("die")` 호출은 그대로(주석만 수정). |
+- 고른 이유: 렌더러 PlayRate 0 방식은 슬로우 PlayRate 복원(`ClearCombatEffects`)과 순서가 엇갈리고 정지 프레임이 부정확하다. Start/EndFrameIndex 방식은 PlayRate와 무관하다. 기한은 서버 `_TimerService`가 아니라 **맵 전투 시계**로 재서 팝업 정지(클라이언트 SetClientTimeScale 0 + 서버 전투 시계 정지) 동안 남은 재생이 보존된다. "마지막 프레임 시작 시점"에 고정해 서버 쓰기가 클라이언트에 도착하기 전에 한 바퀴가 끝나 프레임 0으로 돌아가는 위험(여유 0.30초)을 없앴다. 새 Sync·RUID·모델·DataSet·자원 변경 없음(die 클립 반복 메타데이터도 그대로).
+- 서버에서 쓴 렌더러 값이 클라이언트에 보이는지: 위 클라이언트 프레임 이벤트가 서버 쓰기 직후 frame 0(0.00초)·1(0.18~0.19초)·2(0.34~0.38초)를 순서대로 냈고 그 뒤 프레임 이벤트가 없었다. 클라이언트 렌더러 값 SpriteRUID=die·StartFrameIndex/EndFrameIndex=2/2를 시계열 끝에서 직접 읽어 확인했다(`SE=2/2`).
+
+### V11-F12 — 수정 뒤 확인 (Play 1회 연속, 서버·클라이언트 동시 기록)
+| 사망 경로(각 시나리오마다 DoSpawn으로 새 상대) | 서버 SpriteRUID/Start/End/상태 | 소유 클라이언트 die 프레임 이벤트(사망 시점 기준 초) |
+| --- | --- | --- |
+| S1 IDLE | 사망 +0.2 die 0/MAX → +0.6 이후 2/2 고정 → +4.0 2/2 | 0@0.00 1@0.19 2@0.38, 이후 이벤트 0건(정지) |
+| S2 ATTACK 시작 직후 | 같음, pre=jump | 0@0.00 1@0.19 2@0.34, 이후 0건 |
+| S3 ATTACK 점프 중 | 같음 | 0@0.00 1@0.18 2@0.36, 이후 0건 |
+| S4 ATTACK 착지 대기(예고 3초) | 같음, pre=stand | 0@0.00 1@0.19 2@0.36, 이후 0건 |
+| S5 ATTACK 복귀 중 | 같음 | 0@0.00 1@0.19 2@0.36, 이후 0건 |
+| S6 HIT | 같음, pre=state HIT | 0@0.00 1@0.19 2@0.37, 이후 0건 |
+| S7 슬로우 중(PlayRate 0.5) | pre rate=0.5 → 사망 때 1.0 복원 후 die 한 번 | 0@0.00 1@0.19 2@0.36, 이후 0건(frame 0 이벤트가 한 번 더 온 기록이 있으나 재생은 한 번) |
+| S8 그로기(STUN) 중 | pre=stun hit RUID → die | 0@0.00 1@0.19 2@0.37, 이후 0건 |
+- 서버 `[VRF] MonsterDie start frames=3 total=0.660 freezeAfter=0.360`, 이어 `MonsterDie freeze frame=2`(시계 차 0.36~0.37초). 모든 경로에서 상태 DEAD·HP 0·IsDead true, die 아닌 클립으로의 변경 0건(`nonDieAfter=0`), 정지 뒤 프레임 이벤트(1초 뒤) 0건.
+- 팝업(실제 UIPopup 코드 경로, `_UIPopup:Open`/`OnClickCancel`): (1) die 재생 도중 열고 닫기 — 사망 후 약 0.07초에 서버 일시정지(전투 시계 127.994에서 정지), 1.8초 열어 둔 뒤 닫자 클라이언트 프레임이 1@2.15 2@2.32로 **이어서** 재생(처음부터 다시 시작 없음)되고 서버는 전투 시계 128.303(남은 0.31초 경과)에 고정. (2) 정지 뒤(고정 후) 열고 닫기 — 서버 paused true→false, 프레임 이벤트·SpriteRUID 변화 없음. 정지 중 서버 Start/End는 0/MAX로 유지돼 일시정지 동안 기한이 흐르지 않음.
+- 화면: 정지 뒤 서로 다른 시점의 maker_screenshot(558×314) 몬스터 영역(320,165,420,225) 픽셀 차이 — 13:58:59·13:59:05 두 장(6초 간격)·13:59:59(팝업 닫은 뒤)·14:00:14(정지 뒤 팝업 열고 닫은 뒤, 다른 몬스터 개체)가 모두 평균 차이 0.000·최대 0(완전 동일). 같은 영역을 새 살아 있는 몬스터(stand) 화면(14:01:09)과 비교하면 평균 32.4·최대 255(다른 화면). 눌린 die 마지막 프레임이 정지해 있음을 화면에서 읽었다. 재생 중 화면은 팝업이 몬스터를 가려 캡처하지 못했고 재생 중은 클라이언트 프레임 이벤트(0→1→2)로 대신했다(육안 평가는 사용자 몫).
+- 늦은 경로: 그로기 종료 `SetVisualClip("die")` 재호출·`SetStunned(false)`(사망 경로 S8)·슬로우 PlayRate 복원(S7)·공격 취소·점프 완료·복귀 완료(S2~S5의 `CancelPendingAttack`·`CancelMotion`)·HIT 복귀(S6)가 정지를 풀거나 재생을 다시 시작하지 않았다(`SetVisualClip` 가드 + 시계열 0건).
+- 회귀: 살아 있는 몬스터의 stand·jump·그로기 hit 클립은 사망 전 값 그대로(pre 열: stand 96e955·jump 94bbe2·hit/stun aec950). Stop 뒤 재Play에서 첫 몬스터는 stand를 0↔1 프레임으로 정상 반복 재생하고 Start/End=0/2147483647(정지 설정 잔존 없음). DeadEvent 1회, HP 70=100−HitEvent 합 30(수동 공격 실제 ↑ 두 번, V02 대표), 사망 뒤 예고 칸 비어 있음, 추가 피해·공격 없음.
+
+### V11-F13 — 구현
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/Player/PlayerEvadeComponent.mlua · PlayerGuardComponent.mlua | 서버 상태 진입(SetEvading(true)/SetGuarding(true))에서 시작 시각을 기록하는 같은 지점에 **그 순간 서버가 보는 플레이어 WorldPosition.x**를 `_T.evadeStartX`/`_T.guardStartX`로 함께 기록(`[VRF] PlayerEvade/PlayerGuard start x=… t=…`). `ClearStart()`(시각 −1·위치 nil)과 `GetStartX()`를 추가하고 OnMapLeave의 시각 삭제를 `ClearStart()`로 바꿨다. 클라이언트가 보낸 위치·성공 값은 쓰지 않는다. |
+| RootDesk/MyDesk/Combat/CombatPauseComponent.mlua · Player/PlayerHealthComponent.mlua | 팝업 닫기(RequestPopupPause 해제)와 플레이어 사망(HandleStateChangeEvent DEAD)의 시각 −1 삭제 두 곳씩을 `ClearStart()` 호출로 교체(위치 기록도 함께 폐기). |
+| RootDesk/MyDesk/Monster/MonsterAttackComponent.mlua | PrepareAttack이 실행 스냅샷에 `pos2Cell = { minX=(앵커1+앵커2)/2, maxX=(앵커2+앵커3)/2, areaIncludes = (앵커2 x ∈ [영역 minX, maxX]) }`를 한 번 고정(Pos2 칸 경계 = 앵커 중점, 지금 간격 1.5에서 ±0.75, 새 DataSet 열 없음). ResolveAttack이 이를 EvaluateDefense 6번째 인자로 넘긴다(호출자는 ResolveAttack 하나, grep 확인). 영역·유효 방향·ANY 탈출 검증은 그대로. |
+| RootDesk/MyDesk/Player/PlayerHealthComponent.mlua | `IsStartInPos2Cell(startX, pos2Cell)`(기록 없음 → 불성립, 경계 포함 ±1e-6 허용)을 추가. EvaluateDefense는 JUST와 PARRY 성공에 기존 조건(창·방향·속성·가드 홀드)과 **그리고** (a) 시작 위치가 Pos2 칸 안, (b) 스냅샷 영역이 Pos2 앵커 포함을 요구한다. 불성립이면 성공만 빠지고 가드 경감(GUARD ×0.40)·가드 불가(UNGUARDABLE)·영역 밖 0(RecordDefense "회피")·영역 안 원래 피해(HIT)는 그대로. 판정 로그 `[VRF] PlayerHealth guard/evade eval x=… cellOk=… areaOk=…`. 새 결과 종류·문구·.ui 변경 없음(CombatInputController 무변경). |
+
+### V11-F13 — 확인 (Play 내부, 서버 프로브 + 실제 키 입력)
+- 방법: 패턴 단일 행 교체(Play 내부 `_CombatRuleCatalog.patterns`, 예고 3초/60초)와 math.random 임시 교체(RANDOM 칸), 시작 시각·위치·방향 강제("프로브 근거")로 제품 ATTACK 경로(PrepareAttack→ResolveAttack→EvaluateDefense→네이티브 AttackFast→CalcDamage)를 돌렸다. 판정 시각 직전 0.05초에 시작을 기록하고(창 0.20 안) 판정을 앞당겨 실행. 가드는 **실제 DownArrow 키 홀드**(서버 GUARD 상태·isGuarding true)에서 시작 위치·시각만 덮어썼다. 결과는 feedback 문자열(RecordDefense), HP 변화, 반격 권한, 슬로우, 패링 뒤 그로기 예약(`groggyAfterReturn`)으로 확인했다.
+- E 단계(회피, 플레이어 Pos2 x=0, 17건, 전부 기대와 일치):
+  - E01 parry.left·E02 parry.right·E03/E04 parry.any(Pos2 조준, 좌·우 양방향)·E05 special.random 칸 2(좌) → JUST·피해 0·반격 권한 true·슬로우 true.
+  - E06 special.random 칸 1(영역 −2.0~−1.0, 유효 방향 R)·E07 칸 3(영역 1.0~2.0, 유효 방향 L)·E17 패링 속성 1칸 칸 1 → JUST 아님, 영역 밖이라 네이티브 피격 없음 → "EVADE" 피해 0·반격 없음·슬로우 없음(QA5 K3b·QA7 E1 계열 기대가 JUST에서 바뀜).
+  - E08 x=+0.75·E09 x=−0.75(경계 포함) → JUST. E10 x=+0.76·E11 −0.76·E12 +0.80·E13 −0.80 → JUST 아님, 영역 안이라 HIT·피해 12. E14 틀린 방향 HIT 12(기존). E15 창보다 일찍 시작(0.6초 전) HIT 12(기존). E16 시작 위치 기록 없음 → HIT 12.
+- G 단계(가드, 실제 DownArrow 홀드, 15건, 전부 일치): G01 parry.left·G02 parry.right·G03 parry.any·G05 패링 속성 1칸 칸 2 → PARRY·피해 0·그로기 예약 true·반격 true. G04 패링 속성 1칸 칸 1(영역이 Pos2 불포함) → PARRY 아님, 영역 밖이라 "EVADE"·그로기 없음. G06 x=+0.80·G07 −0.80·G09 +0.76 → GUARD, 피해 12×0.40=4.8→4(그로기·반격 없음). G08 x=+0.75 PARRY(경계 포함). G10 special.random 칸 2 → UNGUARDABLE·원래 피해 12. 시험 데이터 근거(GUARD 유형 3칸, Pos2 포함): G11 NORMAL → GUARD 4, G12 PARRY 속성 → PARRY, G13 같은 행 x=+0.80 → GUARD 4. G14 가드 시작 0.5초 전(창 밖) → GUARD 4(기존). G15 시작 위치 기록 없음 → GUARD 4.
+- 실제 키 입력(K, 판정 시각 앞당김, 창 0.20은 시험값 30초로 넓힘 — 입력 시각을 못 맞춰서): K1 parry.left + LeftArrow 탭 → JUST·피해 0·반격·슬로우. K2 parry.right + RightArrow 탭 → JUST. K4 parry.left + LeftArrow(2번째) → JUST. K5 parry.right + RightArrow(2번째) → JUST. K3 special.random 칸 1(영역 Pos1) + LeftArrow 홀드(플레이어 Pos1에서 판정, 시작 때 x=0) → `areaOk=false`로 JUST 아님, 영역 안이라 HIT·피해 12("끝 칸 쪽 회피 → HIT"; H1 겹침 =HIT). DownArrow 홀드는 G 단계 전체가 실제 키.
+- **위치 정확도(서버 시작 기록 x 대 클라이언트 segment.startX)**: LeftArrow/RightArrow 실제 키 입력 5건(K1·K2·K3·K4·K5) 모두 클라이언트 `MovementInput phase=OUTBOUND … x=0.0`, 서버 `PlayerEvade start x=0.000`으로 **차이 0.000**이다. 서버 기록 시각은 클라이언트 시작 시계보다 0.085~0.095초 늦었지만 그 시점 서버가 본 위치는 아직 0.000이어서 Pos2 칸(±0.75, 속도 6에서 약 0.125초) 안이었다. 정상 입력이 위치 때문에 거부된 사례 0건(DownArrow 실제 입력도 `PlayerGuard start x=0.000`). 한계: 입력 지연이 0.125초를 넘으면 서버 기록 위치가 칸을 벗어날 수 있으나 이번 시료에는 없었다(5건, 단일 접속 Maker 환경).
+- 위치 기록 삭제: (1) 실제 UIPopup 열기→닫기 직전에 evade/guard 시작 x=0.5·시각을 심자 닫은 뒤 `evadeX=nil evadeT=-1.0 guardX=nil guardT=-1.0`. (2) 예고 중 팝업(예고 6초, 팝업 +1.0초부터 약 1.5초): 시작 기록 후 팝업 중 예고 남은 시간 5.71→4.50(정지 중 보존), 닫은 뒤 `evadeX=nil`, 이후 판정은 JUST가 아닌 HIT 12(이전 회피 시각 폐기 규칙 유지). (3) 플레이어 사망(서버 ChangeState DEAD): `evadeX=nil·guardX=nil`, 시각 −1. (4) Stop → 재Play: evade/guard x=nil·시각 −1.0·창 규칙 0.2/0.2(시험값 30초 복원)·패턴 4행·AttackInterval 기본.
+- 회귀: 일반 가드 ×0.40(G11), 특수 가드 UNGUARDABLE 12(G10), 무가드 범위 안 HIT 12(E10~E16), 반격 소비·슬로우 대표(JUST 직후 실제 ↑ 한 번 → 반격 권한 소비, 10타 ×2.2 내림 2×10=20 vs 일반 10, 슬로우 true), HP=HitEvent 합 대표(위 30), 예고 중 팝업(위), Stop 뒤 다음 Play 기본값(위).
+
+### 빌드·로그
+- Refresh 뒤 build 로그 81건 전부 Info(LIA 1114/1115 동적 참조 노이즈, 앞 회차와 같은 유형), 오류 0·경고 0. 새 .mlua가 없어 .codeblock 변경 없음(git status에도 .codeblock·.directory·.userdataset 추가 변화 없음).
+- Play 2회(통합 1회 약 6분 + Stop 뒤 재Play 1회). 마지막 Stop 정상. 두 Play 모든 로그가 Info 뿐이다(Warning·Error·LEA·LWA 0건). 시험 스크립트가 만든 반복 타이머는 Stop 전에 ClearTimer로 정리해 LEA-3051은 나오지 않았다.
+
+### 프로브 오류와 제품 오류의 구분, 관찰
+- 시험 문제: 팝업 감시 프로브의 첫 시도가 이전 사망 몬스터(IsDead)를 감지해 시나리오보다 먼저 팝업을 열었다(제품 오류 아님, 감시 대상을 새 몬스터로 바꿔 재시험). 그 첫 시도에서 우연히 "팝업 정지 중 사망·SpriteRUID 쓰기" 조합이 만들어졌는데 정지 중 서버 기한이 흐르지 않고 닫은 뒤 0.37초에 고정, 클라이언트 프레임은 1@0.00 2@0.19(첫 프레임 이벤트는 프로브 타이머가 정지돼 놓침) 순서로 한 번만 재생되고 고정됐다.
+- 관찰(바꾸지 않음): (1) 새로 스폰한 직후 몬스터의 렌더러 Start/End가 0/0으로 읽힌 시점이 있었다(S1·S6 pre, 스폰 1초 이내, 다른 시나리오는 0/MAX). 사망 때 PlayDieOnce가 0/MAX로 정리하므로 영향 없고 stand 재생은 0↔1 정상이다. (2) 플레이어 HP가 시험 도중 큰 값(988)으로 읽혔다(기준 모델 값이 아니며 시험 스크립트가 MaxHp로 채움). (3) 슬로우(S7)에서 클라이언트 frame 0 이벤트가 두 번 온 기록이 있으나 재생은 한 번이다.
+
+### 실패/미확인/미실시 (PASS로 세지 않음)
+- 사용자 직접 평가(V11): 사망 뒤 die 1회 재생과 끝 모습 정지의 육안(그로기 중 처치·팝업 뒤 포함, 모바일), Pos2에서 가운데 칸 공격에서만 저스트·패링이 나는 체감과 끝 칸 1칸 공격(특수 무작위) 무보상 난이도. 사람 손의 0.20초 창 타이밍, 실기기·터치·모바일.
+- 재생 중(0.36초) die 화면의 스크린샷 캡처(팝업이 가림, 프레임 이벤트로 대신), 파일 CSV 변경 반영, 실제 UIPopup 도중 플레이어 사망, 실제 다른 맵 전환, V12 외부 환경, 다중 접속 지연에서의 위치 기록 오차(시료 5건은 단일 접속).
+- 시험값(창 30초, 패턴 단일 행 교체, 예고 3~60초, 판정 앞당김, 시작 시각·위치·방향 강제, math.random 임시 교체, 플레이어 HP 보충, 서버 직접 ChangeState)은 Play 내부에만 두었고 Stop·재Play로 기본값 복귀를 확인했다.
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인(Stop 직후 한 번 "play"로 보였다가 다음 조회에서 edit, 전환 중이던 값). Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것: (1) F12: 사망 경로(IDLE·ATTACK 예고·점프·착지 대기·복귀·HIT·슬로우·그로기)별로 서버 SpriteRUID/Start/End와 소유 클라이언트 프레임 이벤트·SpriteRUID 시계열, 정지 뒤 5초 이상 변화 없음, 서로 다른 세 시점 이상의 스크린샷 몬스터 영역 동일(재생 중과 다름), 실제 UIPopup 재생 도중·정지 뒤 열고 닫기, 늦은 경로(그로기 종료 die 재호출·슬로우 복원·공격 취소), Stop 뒤 재Play stand. (2) F13: parry.left/right·parry.any·special.random 강제 칸 1/2/3, 가드형 시험 데이터, 실제 Left/Right/DownArrow, 시작 위치 ±0.75/±0.76/±0.80 프로브, 위치 기록 삭제(팝업 닫기·플레이어 사망·Stop), 서버 기록 x와 클라이언트 segment.startX 차이 기록(이번 5건 0.000). 주의: maker_clear_logs를 호출하지 말고 큰 로그는 파일로 저장된 것을 `[VRF`·`VRF12`·`VRF13` 표지와 시각으로 거른다. 시험 스크립트의 반복 타이머는 ClearTimer로 정리하고, 기존 QA5 K3b·QA7 E1 계열 기대(JUST)는 JUST 아님으로 바뀌었다.
+
+### 2026-11-04 최종 제품 버전 묶음 (V11-F12·F13)
+- 54경로 manifest 그대로(경로 수 변경 없음), 같은 계산법(경로 ASCII 정렬 `LC_ALL=C sort`, 경로 + TAB + sha256 + LF 연결의 SHA-256). 5c4eda3 커밋 트리를 먼저 재계산해 9208e0aa066893298fe425d7c72f0e43d5fcc8c57b1553c1951f95c0a0e3da79 일치를 확인한 뒤 작업 트리를 계산했다.
+- Bundle SHA-256(작업 트리): b321d71c506c993747785757c04677c5aef39058e06f17f61334cf48e3a4040f. 5c4eda3 대비 바뀐 manifest 경로는 10개로, 이번 변경 7개와 Maker 재저장 미커밋 3개(AssistModel.userdataset·AttackSkillData.userdataset·주황버섯 모델, 이번에 수정하지 않음, 직전 회차 작업 트리와 같은 값)다.
+- 변경 경로 SHA-256: Combat/CombatPauseComponent.mlua 92e0b0800b9c71ecc377c720854599dbf406120ab51d8cdba29d3ce9e0c525dd · Monster/MonsterAttackComponent.mlua 5c6a7896bd04a1835de517522da49de187a3fb8e560b975f50a76877fd800fe0 · Monster/MonsterAttackMotion.mlua 349d3e8a699d58b2779c5a61adde812802135cbcbf8807bddab70c9351a24a0a · Monster/MonsterHealthComponent.mlua 38d5379fb523dda28cb60e4887ae30b2b88b6f6b8be99103e4ab52ab52936a00 · Player/PlayerEvadeComponent.mlua 679dc069fa8108d7839d61b8d748fbb037141b3e41a84e16b37cac1231753547 · Player/PlayerGuardComponent.mlua f8d0bd7052f8992630532b96ef30887a5227042978d62c3a5801bdb0102ace73 · Player/PlayerHealthComponent.mlua 9cf53db223aaaa130389c63e58b3a4854a8a1edeeb348e0abe570380e10883a2 · (Maker 재저장, 이번 변경 아님) 주황버섯 모델 d8f79eb5991229e9699edf7206725e767797b3630215c171278c08173e3eb732 · AssistModel.userdataset a933d30aa5042bac273f904dd56058ff506a4db62b8af33490dfa41bdc915665 · AttackSkillData.userdataset c6b692fdd73e8ed144b2b32255dc95fe531e9bfb7d09591f8672841c441aeedd. 나머지 45경로 해시는 이전 묶음(5c4eda3) 값과 같다.

@@ -95,8 +95,8 @@ script CombatPauseComponent extends Component
 			-- 입력의 서버 반영 지연과 무관하게 이전 홀드의 판정 시간을 폐기한다.
 			local guard = user:GetComponent("script.PlayerGuardComponent")
 			local evade = user:GetComponent("script.PlayerEvadeComponent")
-			if isvalid(guard) then guard:SetGuarding(false); guard.guardStartTime = -1 end
-			if isvalid(evade) then evade:SetEvading(false); evade.evadeStartTime = -1 end
+			if isvalid(guard) then guard:SetGuarding(false); guard:ClearStart() end
+			if isvalid(evade) then evade:SetEvading(false); evade:ClearStart() end
 			self:SetServerPaused(false)
 			self._T.owner = nil
 			self._T.ownerId = nil

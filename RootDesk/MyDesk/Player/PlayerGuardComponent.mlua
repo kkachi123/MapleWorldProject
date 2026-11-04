@@ -13,15 +13,29 @@ script PlayerGuardComponent extends Component
 			local combat = self.Entity:GetComponent("script.PlayerCombatComponent")
 			self._T.combat = combat
 			self.guardStartTime = isvalid(combat) and combat:GetCombatTime() or -1
+			-- 시작 시각과 같은 순간 서버가 보는 위치를 함께 기록한다(패링 성공의 Pos2 칸 조건, V11-F13).
+			self._T.guardStartX = self.Entity.TransformComponent.WorldPosition.x
+			if Environment:IsMakerPlay() then log("[VRF] PlayerGuard start x=" .. string.format("%.3f", self._T.guardStartX) .. " t=" .. string.format("%.3f", self.guardStartTime)) end
 		end
 		self.isGuarding = isHeld
+	end
+
+	method void ClearStart()
+		-- 가드 시작 시각과 시작 위치를 함께 폐기한다.
+		self.guardStartTime = -1
+		self._T.guardStartX = nil
+	end
+
+	method number GetStartX()
+		-- 기록된 시작 위치(없으면 nil).
+		return self._T.guardStartX
 	end
 
 	@ExecSpace("ServerOnly")
 	method void OnMapLeave(Entity leftMap)
 		-- 맵을 떠나는 수명의 예약과 참조를 정리한다.
 		self.isGuarding = false
-		self.guardStartTime = -1
+		self:ClearStart()
 		self._T.combat = nil
 	end
 
