@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-04 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (사용자 V11 확인 대기)
-- 다음 행동·대기 사유: 회차 A 리뷰 WAITING(결함 0). 사용자 V11 확인(die 1회 재생·정지, Pos2 전용 JUST/PARRY 체감, 끝 칸 무보상 난이도, 0.20초 손 타이밍) 대기 → 결과에 따라 회차 B. 회차 B·3단계 자동 시작 없음.
+- 현재 담당: 없음 (회차 B 시작 여부 사용자 결정 대기)
+- 다음 행동·대기 사유: 회차 A 완료(사용자 V11 수락 2026-11-04). 회차 B 시작 여부와 시작 전 미결정(플레이어 기본 능력치 항목, V11-F07 몬스터 수치 범위, 점프 시간/높이 포함 여부, Pos2 경계·앵커 DataSet 여부, Maker 재저장 3파일 처리) 사용자 결정 대기. 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -273,3 +273,9 @@
 - 비차단 후속: 예고 없을 때 ↓ 홀드가 PlayerGuard 시작 기록을 남기지 않는 관찰을 회차 B tester가 재현, 실제 HP 0 사망 뒤 기록 삭제 1건.
 - planner(msw-planner) 문서 동기화 호출: Plan §19 상태 표, WorkRecord 머리 상태·재개 지점.
 - planner 문서 동기화 완료: Plan §19 상태 표(🟡 사용자 V11 대기), WorkRecord 머리·재개 지점, 로드맵 재개 지점. 회차 종료 커밋 [CombatCore][review] WAITING (Maker 재저장 3경로 제외).
+
+## 2026-11-04 회차 A 사용자 V11 수락
+- 메인이 물은 4항목(die 1회 재생 후 정지·그로기 중 처치·팝업 뒤 / Pos2 가운데 칸 공격에서만 JUST·PARRY, 정상 입력 실패 여부 / 0.20초 손 타이밍 / 끝 칸 1칸 공격 무보상 난이도)에 사용자가 "전부 ok"로 답함. 모바일은 "해 보셨다면" 조건 질문이라 실시 여부를 확정하지 않음.
+- 기존 V11 미확인 항목(모바일·터치·음향·반격 체감·CF-F07)과 비차단 후속 2건(예고 없는 ↓ 홀드 가드 시작 기록, 실제 HP 0 사망 뒤 기록 삭제)은 그대로 남음.
+- planner(msw-planner) 문서 반영 호출.
+- planner 수락 반영 완료: Plan §19 V11-F12·V11-F13 ✅(사용자 V11 수락), WorkRecord 머리·재개 지점, 로드맵 재개 지점. GameDesign 변경 없음(이미 반영). 커밋 [CombatCore][plan].
