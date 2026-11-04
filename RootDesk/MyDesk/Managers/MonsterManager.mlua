@@ -42,7 +42,8 @@ script MonsterManager extends Component
 			local candidate = users[1]
 			local pc = isvalid(candidate) and candidate.PlayerComponent or nil
 			local health = isvalid(self.CurrentMonster) and self.CurrentMonster:GetComponent("script.MonsterHealthComponent") or nil
-			if isvalid(pc) and pc.Hp > 0 and not pc:IsDead() and isvalid(health) and not health.IsDead and health.Hp > 0 then player = candidate end
+			local stat = isvalid(candidate) and candidate:GetComponent("script.PlayerHealthComponent") or nil
+			if isvalid(pc) and pc.Hp > 0 and not pc:IsDead() and isvalid(health) and not health.IsDead and health.Hp > 0 and isvalid(stat) and stat:IsBaseStatsReady() then player = candidate end
 		end
 		if self.CurrentPlayer == player then return end
 		local previous = self.CurrentPlayer
@@ -101,9 +102,32 @@ script MonsterManager extends Component
 		local map = self.Entity.CurrentMap
 		if not isvalid(map) or not isvalid(self.SpawnPosition) or #self.data == 0 then log_warning("[MonsterManager] Map, spawn marker or monster data missing"); return end
 		local row = self.data[math.random(1, #self.data)]
+		-- 행 키(modelKey)는 한 곳에서 정하고 수치 표 행·패턴 표 행·공격 컴포넌트가 같은 키를 쓴다.
+		local modelKey = row.modelid
+		if string.sub(modelKey, 1, 8) == "model://" then modelKey = string.sub(modelKey, 9) end
+		-- 수치 표를 읽지 못하거나 행이 없으면 모델 값·기본 속성값으로 대신 스폰하지 않는다(경고는 카탈로그가 한 번 남긴다).
+		local stats = _CombatRuleCatalog:GetMonsterStats(modelKey)
+		if stats == nil then
+			if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawn refused key=" .. modelKey .. " reason=stats") end
+			return
+		end
 		local position = self.SpawnPosition.TransformComponent.WorldPosition
 		local monster = _SpawnService:SpawnByModelId(row.modelid, row.name, position, map)
 		if not isvalid(monster) then log_warning("[MonsterManager] Spawn failed: " .. row.modelid); return end
+		local health = monster:GetComponent("script.MonsterHealthComponent")
+		local damage = monster:GetComponent("script.MonsterAttackComponent")
+		local control = monster:GetComponent("script.MonsterStateControl")
+		if not (isvalid(health) and isvalid(damage) and isvalid(control)) then
+			monster:Destroy()
+			log_warning("[MonsterManager] Spawned monster lacks stat components: " .. row.modelid)
+			return
+		end
+		-- 서버가 첫 공격·첫 피해 전에 수치 표 행의 값을 쓴다. HP 바는 기존 @Sync 값을 그대로 읽는다.
+		health.MaxHp = stats.MaxHp
+		health.Hp = stats.MaxHp
+		damage.AttackDamage = stats.AttackDamage
+		control.AttackInterval = stats.AttackInterval
+		if Environment:IsMakerPlay() then log("[VRF] MonsterStat applied key=" .. modelKey .. " MaxHp=" .. tostring(health.MaxHp) .. " Hp=" .. tostring(health.Hp) .. " AttackDamage=" .. tostring(damage.AttackDamage) .. " AttackInterval=" .. tostring(control.AttackInterval) .. " source=DataSet blankFromDefault=" .. tostring(stats.fromDefault.MaxHp == true) .. "/" .. tostring(stats.fromDefault.AttackDamage == true) .. "/" .. tostring(stats.fromDefault.AttackInterval == true)) end
 		local previous = self.CurrentMonster
 		self:ClearOpponentExecution()
 		if isvalid(self.CurrentPlayer) then
@@ -112,10 +136,7 @@ script MonsterManager extends Component
 		end
 		self.CurrentPlayer = nil
 		self.CurrentMonster = monster
-		local attack = monster:GetComponent("script.MonsterAttackComponent")
-		local modelKey = row.modelid
-		if string.sub(modelKey, 1, 8) == "model://" then modelKey = string.sub(modelKey, 9) end
-		if isvalid(attack) then attack._T.modelKey = modelKey end
+		damage._T.modelKey = modelKey
 		if isvalid(previous) and previous ~= monster then previous:Destroy() end
 		if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawned parent=" .. monster.Parent.Name .. " x=" .. tostring(position.x)) end
 	end

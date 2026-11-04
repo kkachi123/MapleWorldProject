@@ -15,7 +15,21 @@ script PlayerMoveComponent extends Component
 	method void OnBeginPlay()
 		-- 수평 이동은 소유 클라이언트의 기존 Rigidbody 발판 물리만 사용한다.
 		self._T.started = _UtilLogic.ElapsedSeconds
-		if Environment:IsMakerPlay() then log("[VRF] MovementInput boot speed=" .. tostring(self.MoveSpeed) .. " return=" .. tostring(self.ReturnSpeed)) end
+		self._T.statsReady = false
+		local ready = self:ApplyBaseStats()
+		if Environment:IsMakerPlay() then log("[VRF] MovementInput boot speed=" .. tostring(self.MoveSpeed) .. " return=" .. tostring(self.ReturnSpeed) .. " source=" .. (ready and "DataSet" or "rejected")) end
+	end
+
+	@ExecSpace("ClientOnly")
+	method boolean ApplyBaseStats()
+		-- 이동·복귀 속도를 기본 능력치 표에서 받는다. 표가 무효면 속성 기본값으로 대신 진행하지 않는다.
+		if self._T.statsReady then return true end
+		local stats = _PlayerBaseStatCatalog:GetStats()
+		if stats == nil then return false end
+		self.MoveSpeed = stats.MoveSpeed
+		self.ReturnSpeed = stats.ReturnSpeed
+		self._T.statsReady = true
+		return true
 	end
 
 	@ExecSpace("ClientOnly")
@@ -48,6 +62,10 @@ script PlayerMoveComponent extends Component
 		-- 입력이나 상태를 변경하기 전에 이동·복귀 수치와 같은 맵의 참조를 검증한다.
 		if self.Entity ~= _UserService.LocalPlayer or self.Phase ~= "NONE" then return false end
 		if action ~= "LEFT" and action ~= "RIGHT" then return false end
+		if not self:ApplyBaseStats() then
+			if Environment:IsMakerPlay() then log("[VRF] MovementInput rejected reason=stats") end
+			return false
+		end
 		if not (self.MoveSpeed > 0 and self.MoveSpeed < math.huge and self.ReturnSpeed > 0 and self.ReturnSpeed < math.huge) then
 			if not self._T.configWarned then log_warning("MovementInput: MoveSpeed/ReturnSpeed must be finite and positive"); self._T.configWarned = true end
 			return false

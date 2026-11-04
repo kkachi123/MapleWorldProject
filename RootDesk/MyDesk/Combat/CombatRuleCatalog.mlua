@@ -3,6 +3,7 @@ script CombatRuleCatalog extends Logic
 
 	property table rules = {}
 	property table patterns = {}
+	property table monsterStats = {}
 	property table warned = {}
 	property boolean Ready = false
 
@@ -83,6 +84,49 @@ script CombatRuleCatalog extends Logic
 		return result
 	end
 
+	method boolean IsValidStat(any value, string kind)
+		-- 열 종류별 허용 범위: posint=유한한 양의 정수, pos=유한한 양수, nonneg=유한한 0 이상.
+		if not self:IsFinite(value) then return false end
+		if kind == "posint" then return value > 0 and value == math.floor(value) end
+		if kind == "pos" then return value > 0 end
+		return value >= 0
+	end
+
+	method any ValidateStatRows(string label, table rows, table columns)
+		-- 기본값(default) 행 구조의 수치 표를 검증한다. 하나라도 무효면 표 전체를 거부하고 부분 결과를 만들지 않는다.
+		local byId = {}
+		for _, row in ipairs(rows) do
+			if not self:HasText(row.id) then self:WarnOnce(label .. " invalid id"); return nil end
+			local id = string.match(row.id, "^%s*(.-)%s*$")
+			if byId[id] ~= nil then self:WarnOnce(label .. " duplicate id"); return nil end
+			local entry = { id = id, fromDefault = {} }
+			for _, column in ipairs(columns) do
+				local raw = row[column.key]
+				if raw == nil or (type(raw) == "string" and not self:HasText(raw)) then
+					-- default 행은 모든 칸이 채워져야 하고 다른 행의 빈 칸만 default 값으로 채운다.
+					if id == "default" then self:WarnOnce(label .. " default blank " .. column.key); return nil end
+					entry[column.key] = false
+				else
+					local value = tonumber(raw)
+					if not self:IsValidStat(value, column.kind) then self:WarnOnce(label .. " invalid " .. column.key); return nil end
+					entry[column.key] = value
+				end
+			end
+			byId[id] = entry
+		end
+		local base = byId["default"]
+		if base == nil then self:WarnOnce(label .. " default row missing"); return nil end
+		for _, entry in pairs(byId) do
+			for _, column in ipairs(columns) do
+				if entry[column.key] == false then
+					entry[column.key] = base[column.key]
+					entry.fromDefault[column.key] = true
+				end
+			end
+		end
+		return byId
+	end
+
 	method any ReadRows(any source, table fields)
 		-- 열 누락을 먼저 거부하고 CSV 문자열 행만 읽는다.
 		if not isvalid(source) then return nil end
@@ -105,14 +149,34 @@ script CombatRuleCatalog extends Logic
 		self._T.attempted = true
 		local ruleRows = self:ReadRows(_DataService:GetTable("CombatRuleData"), {"id", "JustWindowSec", "ParryWindowSec", "GuardDamageRate", "CounterWindowSec", "CounterDamageMultiplier", "SlowDurationSec", "SlowRate", "GroggyDurationSec"})
 		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget"})
+		local statRows = self:ReadRows(_DataService:GetTable("MonsterStatData"), {"id", "MaxHp", "AttackDamage", "AttackInterval"})
 		if ruleRows == nil or patternRows == nil then self:WarnOnce("DataSet or required columns missing"); return false end
+		if statRows == nil then self:WarnOnce("MonsterStatData missing or required columns missing"); return false end
 		local result = self:ValidateRows(ruleRows, patternRows)
 		if result == nil then return false end
+		local stats = self:ValidateStatRows("MonsterStatData", statRows, {{ key = "MaxHp", kind = "posint" }, { key = "AttackDamage", kind = "nonneg" }, { key = "AttackInterval", kind = "pos" }})
+		if stats == nil then return false end
 		self.rules = result.rules
 		self.patterns = result.patterns
+		self.monsterStats = stats
 		self.Ready = true
-		if Environment:IsMakerPlay() then log("[VRF] CombatCore catalog ready rules=" .. tostring(#ruleRows) .. " patterns=" .. tostring(#patternRows)) end
+		if Environment:IsMakerPlay() then
+			log("[VRF] CombatCore catalog ready rules=" .. tostring(#ruleRows) .. " patterns=" .. tostring(#patternRows) .. " monsterStats=" .. tostring(#statRows))
+			for _, row in ipairs(statRows) do
+				local entry = stats[string.match(row.id, "^%s*(.-)%s*$")]
+				log("[VRF] MonsterStatData id=" .. entry.id .. " MaxHp=" .. tostring(entry.MaxHp) .. " AttackDamage=" .. tostring(entry.AttackDamage) .. " AttackInterval=" .. tostring(entry.AttackInterval) .. " source=DataSet")
+			end
+		end
 		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetMonsterStats(string modelKey)
+		-- 스폰할 몬스터의 행을 돌려준다. 행이 없거나 예약 행(default)이면 default 값으로 대신하지 않는다.
+		if not self:EnsureInitialized() then return nil end
+		local row = self.monsterStats[modelKey]
+		if row == nil or modelKey == "default" then self:WarnOnce("monster stat row missing: " .. modelKey); return nil end
+		return row
 	end
 
 	@ExecSpace("ServerOnly")
@@ -153,6 +217,7 @@ script CombatRuleCatalog extends Logic
 		-- 세션 캐시와 경고를 다음 Play에 넘기지 않는다.
 		self.rules = {}
 		self.patterns = {}
+		self.monsterStats = {}
 		self.warned = {}
 		self.Ready = false
 		self._T.attempted = nil

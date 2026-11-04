@@ -6,6 +6,24 @@ script PlayerHealthComponent extends Component
 		-- HP/사망 적용은 기존 네이티브 PlayerComponent가 소유한다.
 		self._T.guard = self.Entity:GetComponent("script.PlayerGuardComponent")
 		self._T.evade = self.Entity:GetComponent("script.PlayerEvadeComponent")
+		-- 전투 시작 전에 기본 능력치 표의 최대 HP를 쓰고 시작 HP를 맞춘다. 표가 무효면 모델·엔진 값으로 대신 진행하지 않고 대결에서 제외한다.
+		self._T.statsReady = false
+		local stats = _PlayerBaseStatCatalog:GetStats()
+		local player = self.Entity.PlayerComponent
+		if stats ~= nil and isvalid(player) then
+			player.MaxHp = math.floor(stats.MaxHp)
+			player.Hp = player.MaxHp
+			self._T.statsReady = true
+			if Environment:IsMakerPlay() then log("[VRF] PlayerStat applied MaxHp=" .. tostring(player.MaxHp) .. " Hp=" .. tostring(player.Hp) .. " source=DataSet") end
+		elseif Environment:IsMakerPlay() then
+			log("[VRF] PlayerStat rejected reason=table")
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean IsBaseStatsReady()
+		-- 기본 능력치 표를 적용하지 못한 플레이어는 대결에 받지 않는다.
+		return self._T.statsReady == true
 	end
 
 	method boolean IsInWindow(number started, number hitTime, number window)

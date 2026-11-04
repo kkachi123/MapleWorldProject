@@ -1,6 +1,7 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-11-04(회차 A 사용자 V11 수락). 사용자가 회차 A V11 4항목에 "전부 ok"로 답해 §19의 CombatCore-V11-F12·V11-F13을 완료로 표시했다(사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인으로 유지). 다음은 회차 B 시작 여부 사용자 결정이며 회차 B Plan은 미작성이다. 규칙·수치·범위 변경 없음. P01b~P06 🟡 유지, 2단계 완료·회차 B 시작·3단계 시작 아님.
+> 갱신: 2026-11-04(회차 B Plan). 사용자 "기본안으로 시작"으로 §20을 추가했다. CombatCore-V11-F14(신규, 플레이어 최대 HP·이동·복귀 속도 DataSet)와 V11-F07(몬스터 HP·공격력·공격 간격 DataSet)이 구현 승인 범위다. 현재 값(1000·6·6·100·12·3.0)을 그대로 새 표 PlayerBaseStatData·MonsterStatData(설계안)로 옮기며 결과가 이전과 같아야 한다. 몬스터 점프 시간·높이와 Pos2 경계·앵커 간격은 제외. coder 시작 전 조건(Maker 재저장 3파일)은 [ops] 9eed765로 해소. 다음은 coder 한 회차(기준 9eed765) → 같은 버전 tester(비차단 후속 2건 포함) → reviewer → 사용자 V11이다. 규칙·수치 불변. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 이전 갱신: 2026-11-04(회차 A 사용자 V11 수락). 사용자가 회차 A V11 4항목에 "전부 ok"로 답해 §19의 CombatCore-V11-F12·V11-F13을 완료로 표시했다(사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인으로 유지). 다음은 회차 B 시작 여부 사용자 결정이며 회차 B Plan은 미작성이다. 규칙·수치·범위 변경 없음. P01b~P06 🟡 유지, 2단계 완료·회차 B 시작·3단계 시작 아님.
 > 이전 갱신: 2026-11-04(회차 A Plan). 2026-11-03 사용자 V11 결과(§17 4패턴·"가드 불가" 문구 통과, die 반복 재생, 범위 밖 저스트 "너무 쉬움")와 2026-11-04 "A 회차 시작" 지시로 §19를 추가했다. CombatCore-V11-F12(die 1회 재생 후 마지막 프레임 정지, REV-F02 후속)와 V11-F13(JUST·PARRY 성공은 입력 시작 위치가 Pos2 칸이고 공격 영역이 Pos2를 포함할 때만)이 구현 승인 범위다. D01 대응 유형·D02·V03의 현재 규칙 문장을 맞췄고 §15·§17의 옛 끝 칸 저스트 서술은 §19가 대체한다. 다음은 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11이다. 수치 불변. 회차 B(플레이어 기본 능력치 DataSet·V11-F07)와 §18(회차 C)·fade·스테이지 전환(4단계)·3단계는 시작하지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-03(리뷰 뒤). §17 회차(REV-F02·V11-F10·V11-F11)는 coder(로컬 커밋 5c4eda3)·같은 버전 독립 QA7 PASS·독립 리뷰 **WAITING**(결함 없음, 대상 5c4eda3 / 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 사용자 V11 확인이다(§17 끝 "사용자 V11 확인 항목"). 그 뒤 §18(머쉬맘 전환)은 사용자 재개 지시와 §18 질문 답을 받은 다음 시작한다. 규칙·수치·범위 변경 없음. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-03(V11 결과 뒤). 사용자 V11 결과와 결정을 §17에 정리했다. CombatCore-REV-F02(몬스터 일반 사망 때 die 모습 고정), V11-F10(주황버섯 패턴 4행 재구성: 보라 2칸 좌·우와 보라 1칸 최근접은 유지하고, 특수 1칸 무작위 칸을 추가해 비중 약 1/7로 둔다. 일반 행 전부와 2칸 특수는 제거), V11-F11(특수 공격 가드 결과 문구를 "가드 불가"로 표시)이 2단계 V11 회차의 승인 범위다. 다음은 coder 한 회차 → 같은 버전 tester(끝 칸 홀드 1칸 특수 가설 확인 포함) → reviewer → 사용자 V11 재확인이다. 규칙·수치는 바꾸지 않는다. fade·스테이지 전환(4단계), V11-F07, 3단계는 시작하지 않는다. 같은 날 사용자 설명으로 현재 상대는 1번 마을(헤네시스) 최종보스 머쉬맘으로 정리했다(이 Plan의 "주황버섯"은 현재 상대, 곧 주황버섯 리소스를 쓰는 머쉬맘을 뜻한다). 머쉬맘 리소스 교체·이름 변경은 §17과 분리한 다음 회차 후보로 §18에 등록만 했다.
@@ -108,8 +109,10 @@
 | 기존 AttackSkillData | 기존 player.basic 피해·타수·범위·시전 유지. 반격 보너스는 원래 피해 계산에 곱하는 별도 실행 스냅샷 |
 | 신규 CombatRuleData (이름은 구현 설계안) | 규칙 ID, JustWindowSec, ParryWindowSec, GuardDamageRate, CounterWindowSec, CounterDamageMultiplier, SlowDurationSec, SlowRate, GroggyDurationSec |
 | 신규 MonsterAttackPatternData (설계안) | 패턴 ID·몬스터/스킬 연결 키, ResponseType, AttackAttribute, TelegraphLeadSec와 유효 공격 영역을 연결하는 기존 범위/위치 키. 예고 선행 시간은 D02 창을 포함하도록 해당 모션/공격 실행에서 일관되게 도출하며 임의 새 점프 속도를 만들지 않음. 2026-11-03(F06, §15): ResponseType에 ANY 추가, 출현 가중치 Weight 열(유한한 양수, 기본 1) 추가. 패턴 데이터는 맞히는 칸(영역)·대응 유형·속성·예고·가중치만 정하고, 그 영역을 어떤 모션·이펙트로 실현할지(주황버섯 착지점 등)는 몬스터별 공격 구현이 정한다. 2026-11-03(F10, §17): 대상 칸 방식 열 AreaTarget(설계안 이름) 추가. 값은 FIXED(앵커 영역), NEAREST(ANY 최근접 1칸), RANDOM(ANY 균등 무작위 1칸) |
+| 신규 PlayerBaseStatData (설계안, 2026-11-04 §20) | id, MaxHp, MoveSpeed, ReturnSpeed. `default` 행 1000·6·6. serveronly false(속도는 소유 클라이언트, HP는 서버가 읽음). 5단계 강화 보정의 기본값 짝 |
+| 신규 MonsterStatData (설계안, 2026-11-04 §20) | id(=modelKey, 현재 castleenemy), MaxHp, AttackDamage, AttackInterval. `default` 행이 빈 칸 기본값의 원본. serveronly true, 서버 카탈로그 전체 검증 |
 
-UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결한다. 문자열을 수치로 검증하고 누락·중복 ID·빈 문자열·NaN/무한대·음수 시간·0 이하/1 초과 슬로우·잘못된 유형 조합은 시작을 거부해 한 번 경고한다. 성공/피해 정책을 임의 기본값으로 바꿔 진행하지 않는다. 서버가 유효 행의 스냅샷을 소유하고 클라이언트는 승인된 표시 값만 받는다. 캐시는 세션 종료에 정리하며 Refresh/다음 Play에서 변경값이 적용돼야 한다.
+UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결한다. 문자열을 수치로 검증하고 누락·중복 ID·빈 문자열·NaN/무한대·음수 시간·0 이하/1 초과 슬로우·잘못된 유형 조합은 시작을 거부해 한 번 경고한다. 성공/피해 정책을 임의 기본값으로 바꿔 진행하지 않는다(§20 새 표의 빈 칸은 같은 표 `default` 행 값을 쓰는 데이터 규칙이며 코드 기본값이 아니다. `default` 행 자체의 빈 칸·무효 값은 거부한다). 서버가 유효 행의 스냅샷을 소유하고 클라이언트는 승인된 표시 값만 받는다. 캐시는 세션 종료에 정리하며 Refresh/다음 Play에서 변경값이 적용돼야 한다.
 
 반격 대상/소비 정책과 상태 대상은 D03/D04 고정 규칙으로 검증한다. 대상 범위를 다중 몬스터로 바꾸는 설정은 추가하지 않는다.
 
@@ -131,7 +134,7 @@ UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결
 
 ## 6. 실행 단계·요구 ID
 
-상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 coder 기본 검증과 독립 QA·리뷰 근거가 있으나 P06의 사용자 확인이 남아 🟡를 유지한다. P06은 통합 기본 검증·독립 QA(3회차까지)·독립 리뷰(2026-11-02 WAITING)를 마쳤으며 사용자 V11·CF-F07 실제 연출·V12 외부 환경이 남아 🟡다. 2026-11-02 V11 결정(§14)은 Q5·Q6 답변으로 구현 승인됐다. F02·F04는 P04(R05) 그로기 순서·모션의 재구현·재검증, F01·F03은 P05(R07) 표시의 추가 구현·재검증, F05는 P03(R01/R02)의 원인 확인(결함이면 최소 수정)으로 처리한다. 2026-11-03 F06(§15)은 P02(R06 로더·Weight 검증)와 P03(R01/R02 ANY 대상 칸·판정, 주황버섯 착지)의 추가 구현, P05(R07 예고 문구·칸 표시)의 회귀로 처리한다. 2026-11-03 §17의 F10은 P02(AreaTarget 검증)와 P03(RANDOM 대상)으로, F11은 P05(R07 결과 문구)로, REV-F02는 P04·P05(R05 사망 표시·R08)의 결함 수정으로 처리한다. 2026-11-04 §19의 V11-F12는 P04·P05(R05 사망 표시·R08 팝업·늦은 경로)의 표시 수정으로, V11-F13은 P03(R02 성공 판정 조건)으로 처리한다(R01 예고 표시는 바꾸지 않는다). P 상태는 🟡를 유지한다. 상세 근거와 미실시는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)를 따른다.
+상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 coder 기본 검증과 독립 QA·리뷰 근거가 있으나 P06의 사용자 확인이 남아 🟡를 유지한다. P06은 통합 기본 검증·독립 QA(3회차까지)·독립 리뷰(2026-11-02 WAITING)를 마쳤으며 사용자 V11·CF-F07 실제 연출·V12 외부 환경이 남아 🟡다. 2026-11-02 V11 결정(§14)은 Q5·Q6 답변으로 구현 승인됐다. F02·F04는 P04(R05) 그로기 순서·모션의 재구현·재검증, F01·F03은 P05(R07) 표시의 추가 구현·재검증, F05는 P03(R01/R02)의 원인 확인(결함이면 최소 수정)으로 처리한다. 2026-11-03 F06(§15)은 P02(R06 로더·Weight 검증)와 P03(R01/R02 ANY 대상 칸·판정, 주황버섯 착지)의 추가 구현, P05(R07 예고 문구·칸 표시)의 회귀로 처리한다. 2026-11-03 §17의 F10은 P02(AreaTarget 검증)와 P03(RANDOM 대상)으로, F11은 P05(R07 결과 문구)로, REV-F02는 P04·P05(R05 사망 표시·R08)의 결함 수정으로 처리한다. 2026-11-04 §19의 V11-F12는 P04·P05(R05 사망 표시·R08 팝업·늦은 경로)의 표시 수정으로, V11-F13은 P03(R02 성공 판정 조건)으로 처리한다(R01 예고 표시는 바꾸지 않는다). 2026-11-04 §20의 V11-F14·V11-F07은 P02(R06 DataSet 로드·검증)의 추가 구현과 P03·P04(R02 피해·HP, AI 간격)·P05(R08 이동 입력)의 값 동일성 회귀로 처리한다. P 상태는 🟡를 유지한다. 상세 근거와 미실시는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)를 따른다.
 
 | 순서·ID | 산출물·의존성 | 상태 |
 | --- | --- | --- |
@@ -177,7 +180,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - msw-general/references/dataset.md·authoring.md: DataSet/CSV 적용·등록·검증. 구조 파일을 바꾸면 builder-protocol과 대상별 model/map/ui 참조도 읽기.
 - msw-ui-system의 component-api.md·runtime-patterns.md: CombatScreen 표시/소유 클라이언트. 새 자원이 실제 필요할 때만 msw-search·msw-sprite-ruid 사용.
 
-2026-11-04(회차 A) 현재 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
+2026-11-04(회차 B) 현재 다음 작업은 §20 coder 한 회차(V11-F14·V11-F07, 기준 9eed765) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §20 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-04(회차 A) 당시 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
 
 ## 9. Plan 변경 이력
 
@@ -191,6 +194,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 | 2026-11-03 | 사용자 V11 결과·결정(run "2026-11-03 사용자 V11 결과" 절, 메인 전달): HP 0이면 die 다음 fade, 그다음 스테이지 전환. 주황버섯은 1단계(최저 난이도) 보스이며 점프 공격만 쓴다. 구성은 "안 2 보라+특수 1칸"이고, 특수 비중 약 1/7, 특수 1칸 대상은 "랜덤으로". 특수 가드 규칙은 유지하고 문구만 "가드 불가"로 구분("너 의견대로") | §17 신설. REV-F02(일반 사망 die 고정, fade·전환은 4단계), V11-F10(패턴 4행, AreaTarget 열·RANDOM 대상), V11-F11(가드 불가 문구). D01 ANY에 무작위 대상 추가, §5 데이터 계약, V01·V03·V06·V09·V11 주석. GameDesign §4.2·§7.4·§8과 로드맵을 같은 날 동기화했다. D02~D04 수치·입력 규칙·F06 2칸 중간 착지는 바꾸지 않는다 |
 | 2026-11-03 | 사용자 설명·결정(run "2026-11-03 일시정지" 절): 게임 구조 기준은 GameDesign §3 Core Loop. "머쉬맘은 최종보스로 지정할 거야." 현재 상대는 "주황버섯(정확히는 머쉬맘 …)". "planner계획은 너 계획돼로 하자"로 메인 계획 수락 | §18 신설(다음 회차 후보 등록만). GameDesign §4.2·§5·§8과 로드맵의 상대 이름을 머쉬맘으로 정리. §17 범위·coder 인계·규칙·수치 불변 |
 | 2026-11-04 | 사용자 V11 결과(run "2026-11-03 사용자 V11 결과(§17 회차)" 절): 4패턴·"가드 불가" 문구 통과, "die animation이 반복됨. 1번만 하고 die end 모션에서 정지상태가 되게 해줘", 범위 밖 저스트 "그건 너무 쉬움", "저스트 회피랑 패링 둘다 pos2에서만 동작하게. 추가로 저스트회피랑 패링 모두 피격 범위에서 성공시에만 판정되도록". 2026-11-04 "A 회차 시작" | §19 신설. V11-F12(die 1회 재생 후 정지), V11-F13(JUST·PARRY 성공에 Pos2 시작·Pos2 포함 영역 조건). D01 ANY·공통 성공 조건, D02, V03·V06·V11 갱신. §15·§17의 끝 칸 저스트 서술은 §19가 대체. GameDesign §4.2와 로드맵 재개 지점 동기화. 수치·입력 규칙·영역 불변. 회차 B·§18은 이후 |
+| 2026-11-04 | 사용자 "이동 속도 뿐 아니라 Player 프로필 데이터를 DataSet에서 수정 가능하도록 설정 필요. 처음 속도 값은 6으로"(2026-11-03)와 2026-11-04 "기본안으로 시작"(메인 제안 1~4: 플레이어 HP·이동·복귀 속도, 몬스터 HP·공격력·공격 간격·고유 id 행·빈 칸 기본값, 점프 제외, Pos2 경계·앵커 간격 미룸) | §20 신설. V11-F14 신규, V11-F07 승인. §5 데이터 계약에 새 표 2개(설계안). 수치·규칙 불변(현재 값 그대로 이동). GameDesign 변경 없음, 로드맵 회차 B 줄·재개 지점 동기화 |
 
 ## 10. 독립 QA 상태 (2026-10-25)
 
@@ -371,7 +375,7 @@ modelId(castleenemy)·AreaPaddingX 0.5·AreaHeight 1·AreaOffsetY 0.4·Telegraph
 | ID | 결정 | 완료 기준 | 영향 R/V | 상태 |
 | --- | --- | --- | --- | --- |
 | V11-F06 | 위 사용자 결정 1~4와 역할 분리 | 주황버섯 패턴 9행·Weight 로드, 가드형 행 없음. ANY는 예고 시작 칸 고정·추적 없음·유효 방향 저스트·속성 규칙 그대로, F01은 고정 칸만 표시. 2칸 공격은 주황버섯 모션이 두 칸 중간에 착지하고 판정 시각·영역·피해는 이전과 같다. 착지점 규칙은 공통 로더·MonsterAttackComponent에 없다. 잘못된 Weight·ANY 표현은 전체 거부·1회 경고 | R01·R02·R06·R07 / V01·V03·V09·V11(회귀 V02·V04~V08·V10) | 🟡 coder 구현·기본 검증 완료(2026-11-03, Bundle b985aa4b…74dbf, [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)), 독립 QA5(2026-11-03, 같은 Bundle 전후 54/54 일치) F06 수치·로그 PASS(육안 일부·창 0.20 손 타이밍·CSV 변경 반영·F04 클립 재계측 NOT_RUN, [QA 기록](../WorkRecords/CombatCoreWorkRecord.md#qa-기록)), 독립 리뷰 F01~F06 일괄 WAITING(2026-11-03, 대상 b89de46, 리뷰 커밋 2dbaa07, 새 결함 없음, [리뷰 기록](../WorkRecords/CombatCoreWorkRecord.md#리뷰-기록)), 사용자 V11 대기 |
-| V11-F07 | 몬스터 수치 DataSet화(후속) | 범위 밖. HP·공격력·공격 간격·점프 시간/높이를 DataSet에서 조절하고 공통/개별 값을 구분하는 방식은 V11 종료 뒤 별도 승인 회차에서 정한다. 점프 시간/속도 정책은 [MonsterCombat](MonsterCombat.md)의 미결정과 함께 결정한다 | — | ⬜ 후속, 미승인 |
+| V11-F07 | 몬스터 수치 DataSet화(후속) | 범위 밖. HP·공격력·공격 간격·점프 시간/높이를 DataSet에서 조절하고 공통/개별 값을 구분하는 방식은 V11 종료 뒤 별도 승인 회차에서 정한다. 점프 시간/속도 정책은 [MonsterCombat](MonsterCombat.md)의 미결정과 함께 결정한다 | — | ⬜ 2026-11-04 §20(회차 B)으로 구현 승인. 범위는 HP·공격력·공격 간격만이고 점프 시간/높이는 6단계로 제외 |
 
 ### coder 인계 범위 (F06 한 회차)
 
@@ -881,4 +885,170 @@ planner 기본안(사용자 질문 불필요, 결과가 지금 값에서 같음)
 
 사용자 V11 결과(2026-11-04): 메인이 물은 4항목(die 1회 재생 후 정지·그로기 중 처치·팝업 뒤, Pos2 가운데 칸 공격에서만 JUST·PARRY와 정상 입력 실패 여부, 0.20초 손 타이밍, 끝 칸 1칸 공격 무보상 난이도)에 "전부 ok". 새 요구·재현 결함 없음. 기존 V11 미확인 항목(모바일·터치·음향·반격 체감·CF-F07)은 그대로 남는다.
 
-다음 흐름: 회차 A 완료(사용자 V11 수락 2026-11-04) → 회차 B(플레이어 기본 능력치 DataSet·V11-F07, Plan 미작성, **사용자 시작 지시 필요**) → §18(회차 C). 실행 순서는 이 절(회차 A) → 회차 B → §18 그대로다. 비차단 후속(리뷰 분류 3번·다음 행동 4번, 회차 B tester가 함께 기록): (1) 예고가 없을 때 DownArrow 홀드가 `[VRF] PlayerGuard start`를 남기지 않은 관찰의 재현 — 예고 없는 IDLE에서 ↓ 홀드 시 클라이언트·서버 CurrentStateName, isGuarding, 시작 기록 유무를 함께 기록하고 이미 GUARD 상태의 재홀드였는지 가른다. 재현되면 새 결함 후보로 planner에 넘긴다. (2) 가능하면 HP 0 실제 플레이어 사망 뒤 위치 기록 삭제 1건. 리뷰가 남긴 후속 확인 항목인 서버 기록 위치와 클라이언트 위치 차이 재기록은 V12 외부 환경 또는 실기기 회차에서 한다. P01b~P06 🟡 유지. 이 상태는 2단계 완료·회차 B 시작·3단계 시작 승인이 아니다.
+다음 흐름: 회차 A 완료(사용자 V11 수락 2026-11-04) → 회차 B(플레이어 기본 능력치 DataSet·V11-F07, Plan 미작성, **사용자 시작 지시 필요**) → §18(회차 C). 실행 순서는 이 절(회차 A) → 회차 B → §18 그대로다. 비차단 후속(리뷰 분류 3번·다음 행동 4번, 회차 B tester가 함께 기록): (1) 예고가 없을 때 DownArrow 홀드가 `[VRF] PlayerGuard start`를 남기지 않은 관찰의 재현 — 예고 없는 IDLE에서 ↓ 홀드 시 클라이언트·서버 CurrentStateName, isGuarding, 시작 기록 유무를 함께 기록하고 이미 GUARD 상태의 재홀드였는지 가른다. 재현되면 새 결함 후보로 planner에 넘긴다. (2) 가능하면 HP 0 실제 플레이어 사망 뒤 위치 기록 삭제 1건. 리뷰가 남긴 후속 확인 항목인 서버 기록 위치와 클라이언트 위치 차이 재기록은 V12 외부 환경 또는 실기기 회차에서 한다. P01b~P06 🟡 유지. 이 상태는 2단계 완료·회차 B 시작·3단계 시작 승인이 아니다. 2026-11-04 갱신: 사용자 "기본안으로 시작"으로 회차 B Plan을 §20에 작성했다.
+
+## 20. 회차 B — 플레이어 기본 능력치·몬스터 수치 DataSet 이동 (2026-11-04)
+
+기준 버전은 커밋 9eed765다(회차 A 완료 40c8fc9 뒤 Maker 26.10 재저장 3파일을 [ops]로 따로 커밋). 근거는 [run](../../../../.pipeline/20261020-combat-core/run.md)의 "2026-11-03 사용자 V11 결과(§17 회차)" 절(사용자 원문 "이동 속도 뿐 아니라 Player 프로필 데이터를 DataSet에서 수정 가능하도록 설정 필요. 처음 속도 값은 6으로")과 "2026-11-04 회차 B 시작" 절이다. 사용자가 2026-11-04 "기본안으로 시작"으로 메인 제안 1~4를 승인했다. 따라서 아래 두 항목은 **구현 승인 상태**다. 목적은 **현재 실제로 쓰이는 값을 그대로 DataSet으로 옮기는 것**이며, 옮긴 뒤 전투·이동 결과가 이전과 같아야 한다(회귀 기준). 표 이름·열 이름·행 id 규칙·기본값 행·실패 처리는 planner 설계안이고 사용자 결정 외의 규칙·수치는 바꾸지 않는다.
+
+### 사용자 확정 (2026-11-04 "기본안으로 시작")
+
+1. 플레이어 기본 능력치 항목은 HP·이동 속도·복귀 속도다. 이동 속도 초기값은 6(사용자 확정). 기본 공격 피해는 AttackSkillData에 그대로 둔다(같은 값의 원본을 두 곳에 두지 않는다).
+2. V11-F07 몬스터 수치는 HP·공격력·공격 간격이다. 몬스터마다 고유 id 한 행, 빈 칸은 기본값(로드맵 §1 확장 원칙: 하드코딩 금지·고유 id·열 추가는 기본값과 함께 허용).
+3. 몬스터 점프 시간·높이(JumpDuration 0.5·JumpHeight 0.8)는 제외한다(로드맵 6단계, [MonsterCombat](MonsterCombat.md)).
+4. Pos2 칸 경계(±0.75)·BattlePos 앵커 간격(1.5)의 DataSet 이동은 미룬다.
+
+### 요구 ID
+
+| ID | 내용 | 영향 R/V |
+| --- | --- | --- |
+| CombatCore-V11-F14(신규) | 플레이어 기본 능력치(최대 HP·이동 속도·복귀 속도)를 DataSet에서 읽는다. 현재 값 1000·6·6 그대로 | R06·R08 / V09·V10·V11, 1단계 이동 회귀 |
+| CombatCore-V11-F07(§15 후속 → 승인) | 몬스터 수치(최대 HP·공격력·공격 간격)를 몬스터별 DataSet 행에서 읽는다. 현재 값 100·12·3.0 그대로 | R02·R06·R08 / V02·V06·V07·V08·V09 |
+
+5단계의 "최종 능력치 = DataSet 기본값 + 강화 보정" 중 **기본값만** 담는다. 강화 보정·성장·저장(DataStorage)·보정 결합 방식은 만들지 않는다.
+
+### 현재 값과 출처 (2026-11-04 planner 읽기 확인, 9eed765 작업 트리, 새 런타임 결과 아님)
+
+모델은 ModelBuilder.read, 맵은 MapBuilder.read로 읽었다. map01은 TileMapMode 0이고, 몬스터는 MonsterManager가 런타임에 SpawnByModelId로 만들고 플레이어는 엔진이 DefaultPlayer로 만든다. 그래서 map01에는 아래 수치의 배치 덮어쓰기가 없다(MonsterManager 배치 값은 Enable·참조뿐).
+
+| 값 | 현재 사용 값 | 원본 후보 | 실제로 이기는 쪽과 근거 |
+| --- | --- | --- | --- |
+| 플레이어 최대 HP | 1000 | (1) Global/DefaultPlayer 모델의 값 `maxHp`=1000(대상 컴포넌트 없는 기반 모델 `player` 속성 값, PlayerComponent.MaxHp로 연결되는 것으로 보임), (2) 엔진 PlayerComponent.MaxHp 기본 1000(PlayerComponent.d.mlua) | 모델 값이 엔진 기본값 위에 적용된다. 두 값이 1000으로 같아 결과는 같다. 시작 HP 1000은 기존 QA 관찰(자연 공격 3회 뒤 964)과 맞다. (1)이 MaxHp로 연결되는지는 coder가 Play에서 확인한다 |
+| 플레이어 현재 HP 시작 | MaxHp | DefaultPlayer 모델 값 PlayerComponent.Hp=0, 엔진 시작 처리 | 엔진이 시작 때 MaxHp로 채운다(관찰). 코드가 쓰지 않는다 |
+| 이동 속도 MoveSpeed | 6 | PlayerMoveComponent.mlua 속성 기본값 6 | DefaultPlayer 모델 Values에 script.PlayerMoveComponent는 Enable만 있어 **.mlua 기본값이 이긴다** |
+| 복귀 속도 ReturnSpeed | 6 | PlayerMoveComponent.mlua 속성 기본값 6 | 위와 같다 |
+| 몬스터 최대 HP | 100 | (1) MonsterHealthComponent.mlua 속성 기본값 100, (2) Models/Monsters/주황버섯 모델 Values `script.MonsterHealthComponent.MaxHp`=100 | **모델 Values가 이긴다**(모델에 저장된 스크립트 속성 값이 .mlua 기본값보다 우선, [WorkRecord 리뷰 기록](../WorkRecords/CombatCoreWorkRecord.md#리뷰-기록) 2026-11-03 재저장 판단). 두 값이 100으로 같아 결과는 같다 |
+| 몬스터 공격력 AttackDamage | 12 | MonsterAttackComponent.mlua 속성 기본값 12 | 주황버섯 모델 Values에 없음 → .mlua 기본값 |
+| 몬스터 공격 간격 AttackInterval | 3.0 | MonsterStateControl.mlua 속성 기본값 3.0 | 주황버섯 모델 Values에 없음(같은 컴포넌트는 Enable·attackTimer 0뿐) → .mlua 기본값 |
+| 플레이어 기본 공격 피해 | AttackSkillData player.basic Damage 1·AttackCount 10 | AttackSkillData.csv | 이번에 옮기지 않는다(사용자 확정 1) |
+
+9eed765의 주황버섯 모델에는 Maker 재저장으로 스크립트 상태 속성 17개가 기본값으로 저장돼 있다(Enable 항목, MonsterStateControl.attackTimer 0, MonsterDefenseComponent.isDefending false, MonsterStunComponent.isStunned false·stunDeadline -1·scheduledId 0·executionId 0, OrangeMushroomAttack.Home (0,0)·HomeCaptured false·JumpActive false·JumpStartX 0·JumpTargetX 0·JumpStartTime 0 등). 이번에 옮기는 수치는 이 17개에 없다. 모델에 이미 있던 이동 관련 값(MovementComponent.InputSpeed 1.5·JumpForce 6)도 이번 범위가 아니다. 다만 이 상태 속성들도 모델 값이 .mlua 기본값보다 우선하므로, 이후 해당 .mlua 기본값을 바꾸는 작업은 모델 값을 함께 확인해야 한다(이번 회차는 바꾸지 않는다).
+
+### DataSet 설계 (planner 제안)
+
+새 표 두 개를 만든다. CombatRuleData에 열을 붙이지 않는다.
+
+| 표 | 열 | 행 | serveronly | 읽는 곳(ExecSpace) |
+| --- | --- | --- | --- | --- |
+| PlayerBaseStatData(설계안 이름) | id, MaxHp, MoveSpeed, ReturnSpeed | `default` 한 행: 1000, 6, 6 | false | MaxHp는 서버(PlayerComponent.MaxHp는 서버가 쓰고 @Sync로 보인다). MoveSpeed·ReturnSpeed는 소유 클라이언트(PlayerMoveComponent가 ClientOnly로 이동을 소유) |
+| MonsterStatData(설계안 이름) | id, MaxHp, AttackDamage, AttackInterval | `default`: 100, 12, 3.0 / `castleenemy`: 100, 12, 3.0 | true | 서버만(_CombatRuleCatalog 로드, 피해·HP·AI 간격은 서버 값) |
+
+제안 이유:
+- CombatRuleData는 전투 규칙(판정 창·배율·지속시간)을 담는 serveronly 표이고 `default` 한 행 구조다. 이동 속도는 클라이언트가 읽어야 하고 몬스터 수치는 몬스터마다 행이 필요해서 같은 표에 넣으면 의미와 공개 범위가 섞인다.
+- 플레이어 표는 5단계 강화 표의 기본값 짝이 되고, 몬스터 표는 6단계 몬스터 표 구조의 시작점이 된다(로드맵 §3의 2). 표를 분리해야 그때 열을 추가해도 전투 규칙 표가 흔들리지 않는다.
+- 기존 MonsterData(id 1·name·modelid)는 스폰 목록으로 그대로 둔다. 여기에 수치 열을 붙이면 숫자 id 행 구조 때문에 기본값 행을 둘 곳이 없고 MonsterManager의 행 해석이 바뀐다. 몬스터 수치는 패턴 데이터(MonsterAttackPatternData의 modelId=castleenemy)와 같은 키로 묶는다. 표 통합 여부는 6단계 몬스터 표 확정 때 다시 본다.
+- 플레이어 표를 serveronly false로 두는 이유: 이동은 소유 클라이언트가 시작·보간하고 서버는 판정에 이동 속도를 쓰지 않는다(F13 시작 위치는 서버가 상태 진입 순간 위치를 따로 기록). 서버가 읽어 동기화하는 방식은 동기화 도착 전 .mlua 기본값을 쓰는 구간이 생긴다. 표 내용은 모든 플레이어 공용 정적 값이라 클라이언트 공개에 문제가 없다(기존 AttackSkillData·MonsterData도 false).
+
+행 id 규칙:
+- 몬스터 행 id = MonsterData의 modelid에서 `model://`를 뺀 값(현재 castleenemy). MonsterManager.DoSpawn이 이미 만드는 modelKey와 같고 패턴 데이터의 modelId와 같은 키다. §18(회차 C)에서 modelId를 바꾸면 이 행 id도 함께 바꾼다.
+- `default`는 예약 행이다. 몬스터 표에서 `default`는 스폰 대상이 아니라 빈 칸 기본값의 원본이다. 플레이어 표에서는 플레이어가 쓰는 행이다(이번에는 이 행만 읽는다. 직업 등 다른 행은 만들지 않는다).
+- id는 앞뒤 공백을 뺀 뒤 비어 있지 않아야 하고 표 안에서 중복되면 안 된다.
+
+기본값 규칙(하드코딩 없이):
+- 각 표의 `default` 행은 모든 수치 열이 채워져 있고 유효해야 한다. `default` 행이 없거나 빈 칸·무효 값이 있으면 그 표 전체를 거부한다.
+- `default`가 아닌 행의 빈 칸(빈 문자열·공백만)은 같은 표 `default` 행의 같은 열 값을 쓴다. 빈 칸이 아닌데 무효인 값은 기본값으로 바꾸지 않고 표 전체를 거부한다.
+- 이번 castleenemy 행은 세 값을 모두 적는다(이 몬스터의 실제 수치가 자기 행에 보이게 한다. 빈 칸 규칙은 시험 행으로 확인한다). `default` 행 값 100·12·3.0은 현재 값을 그대로 쓴 planner 기본안이다.
+- 필수 열 누락은 표 전체 거부다(기존 ReadRows 방식). 표에 없는 추가 열·`#` 메모 열은 무시한다(이후 열 추가 허용).
+- .mlua 속성 기본값(MoveSpeed 6·ReturnSpeed 6·MaxHp 100·AttackDamage 12·AttackInterval 3.0)과 모델 값(DefaultPlayer maxHp 1000, 주황버섯 MaxHp 100)은 그대로 둔다. DataSet 적용 뒤에는 이 값들이 판정·이동에 쓰이지 않아야 하고, DataSet 실패 때 이 값들로 대신 진행하지 않는다.
+
+값 검증(기존 정책: 무효면 시작 거부·한 번 경고, 부분 행·이전 캐시로 진행하지 않음):
+
+| 열 | 허용 |
+| --- | --- |
+| MaxHp(두 표) | 유한한 양의 정수(PlayerComponent.MaxHp가 integer). 0·음수·소수·NaN/무한대·숫자 아님 거부 |
+| MoveSpeed·ReturnSpeed | 유한한 양수(기존 CanStart 검사와 같음) |
+| AttackDamage | 유한한 0 이상(기존 PrepareAttack 검사와 같음, 소수 허용 — REV-F01 합성 뒤 한 번 내림 유지) |
+| AttackInterval | 유한한 양수(0이면 매 틱 공격) |
+
+적용 위치·시점(방식은 coder가 정하고 WorkRecord에 남긴다):
+- 몬스터: 서버가 스폰 직후 첫 공격·첫 피해 전에 MonsterHealthComponent.MaxHp·Hp(=MaxHp), MonsterAttackComponent.AttackDamage, MonsterStateControl.AttackInterval에 행 값을 쓴다. 행 키는 MonsterManager가 쓰는 modelKey 한 곳에서 정한다. MonsterHealthComponent.OnBeginPlay가 Hp=MaxHp를 먼저 하므로 MaxHp를 바꾸면 Hp도 맞춘다. HP 표시(CombatHpBarController)는 기존 @Sync 값을 그대로 읽는다.
+- 플레이어 HP: 서버가 플레이어 전투 시작 전(PlayerHealthComponent 등 서버 시작 경로)에 PlayerComponent.MaxHp를 쓰고, 시작 시점 Hp를 MaxHp로 맞춘다. 사망 뒤 부활의 Hp 복원은 엔진 동작을 따르며 coder가 관찰해 기록한다.
+- 플레이어 속도: 소유 클라이언트가 이동 시작 전에 표를 읽어 PlayerMoveComponent의 MoveSpeed·ReturnSpeed를 쓴다. 서버 HP 경로와 클라이언트 속도 경로는 같은 검증 코드를 써서 같은 표를 같은 기준으로 판단한다(한쪽만 통과하는 일이 없게).
+- 캐시는 OnEndPlay에서 지우고 다음 Play·Refresh 뒤 CSV 변경이 반영돼야 한다(기존 CombatRuleCatalog 방식).
+
+실패 시 동작:
+
+| 경우 | 동작 |
+| --- | --- |
+| MonsterStatData 없음·필수 열 누락·`default` 무효·무효 값·중복 id | 기존 카탈로그와 함께 전체 거부(부분 초기화 없음), 한 번 경고. 공격 시작 거부(지금 패턴 누락과 같음), 몬스터 스폰도 하지 않는다 |
+| 스폰할 몬스터의 modelKey 행 없음 | 그 몬스터 스폰 거부, 한 번 경고. `default` 행으로 대신 스폰하지 않는다 |
+| 몬스터 행의 빈 칸 | `default` 행 값 사용(경고 없음, [VRF]에 출처 기록) |
+| PlayerBaseStatData 없음·필수 열 누락·`default` 행 없음·빈 칸·무효 값 | 한 번 경고. 이동 시작 거부(CanStart false, 기존 경고 경로), 서버는 그 플레이어를 대결에 받지 않는다(MonsterManager 현재 대결 없음 → 몬스터 공격 없음). 모델 maxHp 1000이나 .mlua 6으로 대신 진행하지 않는다 |
+
+### 확인 기준
+
+모든 AI 결과는 실제 Maker MCP·map01(TileMapMode 0)·같은 소스·데이터 버전·[VRF] 근거를 남긴다. coder는 두 항목을 한 통합 런타임 회차에서 확인한다(실패 수정·필수 Stop/재진입·CSV 변경 반영 사례만 추가). tester는 같은 버전을 독립 회차로 검사한다. 무효 데이터는 CSV를 바꾸지 않고 검증 함수에 시험 행을 넣는 Play 내부 프로브로 확인하고 "프로브 근거"로 표기한다. maker_clear_logs는 호출하지 않는다.
+
+자동 검사 — 값 동일성(회귀 기준):
+
+| 사례 | 기대 결과 |
+| --- | --- |
+| 로드 | [VRF]에 PlayerBaseStatData default 1000·6·6, MonsterStatData default 100·12·3.0과 castleenemy 100·12·3.0, 값 출처=DataSet |
+| 플레이어 HP | 서버·클라이언트 PlayerComponent.MaxHp 1000, 시작 Hp 1000, HP 바 1000/1000 |
+| 플레이어 속도 | 클라이언트 MoveSpeed 6·ReturnSpeed 6(boot [VRF]). 실제 LeftArrow·RightArrow 홀드 OUTBOUND 구간 speed 6, Pos2→끝 칸 1.5 거리 약 0.25초, 복귀 speed 6, 1단계 중앙 복귀 잠금·홀드 합산 그대로 |
+| 몬스터 수치 | 스폰 직후 서버 MaxHp 100·Hp 100·AttackDamage 12·AttackInterval 3.0, 클라이언트 HP 바 100 |
+| 공격 간격 | 자연 공격 시작 간격이 전투 시계 3.0초(팝업 정지·슬로우 중 기존 규칙 그대로) |
+| 피해 | 무대응 범위 안 12, 일반 가드 floor(12×0.40)=4, HP 감소=HitEvent 합계=피해 숫자 |
+| 몬스터 처치 | 처치까지 몬스터가 받은 피해 합계 100, DEAD·DeadEvent 1회 |
+| Stop → 다음 Play | 위 값이 다시 DataSet에서 로드되고 이전 Play의 시험 값이 남지 않음 |
+
+자동 검사 — DataSet 동작:
+
+| 사례 | 기대 결과 |
+| --- | --- |
+| CSV 변경 반영(실제 파일, 1회) | PlayerBaseStatData MoveSpeed 6→9, MonsterStatData castleenemy MaxHp 100→150으로 CSV를 바꾸고 Refresh → Play: 클라이언트 이동 구간 speed 9, 몬스터 MaxHp·Hp 150(모델 Values의 100보다 DataSet이 이김). Stop → 원래 내용으로 되돌리고 Refresh → Play로 6·100 복귀. 변경 전후 CSV 바이트 일치 기록. 시험 값이며 커밋하지 않는다 |
+| 빈 칸 → 기본값(프로브) | default가 아닌 시험 행의 빈 칸(MaxHp·AttackDamage·AttackInterval 각각)이 default 값을 쓴다. 공백만 있는 칸도 빈 칸 |
+| default 행 문제(프로브) | default 행 없음·빈 칸·무효 값 → 표 전체 거부·한 번 경고 |
+| 무효 값(프로브) | 각 열에 숫자 아님·0·음수·NaN/무한대, MaxHp 소수, AttackInterval 0 → 표 전체 거부·한 번 경고. AttackDamage 0과 소수는 허용 |
+| 키(프로브) | 중복 id·빈 id 거부. 스폰 modelKey 행 없음 → 스폰 거부·한 번 경고, default로 스폰하지 않음 |
+| 필수 열 누락(프로브) | 표 전체 거부. 추가 열·`#` 열은 무시 |
+| 플레이어 표 실패(프로브) | 이동 시작 거부(CanStart false·경고 1회), 대결 없음·몬스터 공격 없음, 모델·.mlua 값으로 진행하지 않음 |
+
+회귀(이전 근거와 같은 결과여야 함):
+
+| 기존 근거 | 기대 |
+| --- | --- |
+| 회차 A F12 | 사망 순간 die 1회 재생 뒤 마지막 프레임 정지(IDLE 피격 사망 대표 1건 + 그로기 중 사망 1건) |
+| 회차 A F13 | Pos2 시작 JUST·PARRY 대표 각 1건, 끝 칸 1칸 공격 무보상 1건. 실제 키 사례의 서버 기록 x와 클라이언트 segment.startX 차이 기록(속도 6 그대로라 기존 0.000 근처 기대) |
+| F06·F10 | 패턴 4행·Weight 2·2·2·1 로드, 2칸 중간 착지·점프 0.5초 판정 시각 그대로 |
+| F08·F02 | 패링 → 복귀 뒤 그로기 1.5초, 그로기 중 hit 표시 |
+| V07·V08 | 공격 예고 중 팝업 정지·재개(공격 간격 타이머 포함), Stop 뒤 다음 Play 기본 상태 |
+| V10 | 방향키·UI 출처 합산, 반환 잠금, 기본 공격 타수·범위(AttackSkillData 무변경) |
+
+tester 추가 항목(회차 A 리뷰의 비차단 후속, 이번 회차 tester가 함께 기록):
+- (a) 공격 예고가 없을 때 DownArrow 홀드에서 `[VRF] PlayerGuard start`가 남지 않은 관찰의 재현. 예고 없는 IDLE에서 ↓ 홀드 때 클라이언트·서버 CurrentStateName, isGuarding, guardStartTime·시작 위치 기록 유무를 함께 기록하고, 이미 GUARD 상태에서 다시 홀드한 것인지 가른다. 재현되면 결함 후보로 planner에 반환한다(이번 회차에서 고치지 않는다).
+- (b) 실제 HP 0 플레이어 사망 뒤 시작 위치 기록(evadeStartX·guardStartX) 삭제 1건. 이번 회차의 MaxHp 적용과 부활 뒤 Hp 복원도 함께 기록한다.
+
+사용자 V11 직접 확인(AI 결과로 대신하지 않음):
+- PC에서 이동·복귀 체감이 회차 A와 같은지(값 6 그대로).
+- 원하면 PlayerBaseStatData.csv의 MoveSpeed를 직접 바꾸고 Maker Refresh → Play로 속도가 바뀌는지, 표·열 이름이 고치기에 알아보기 쉬운지. 이동 속도 새 값은 사용자가 정하며 이 회차의 값 변경이 아니다.
+- 몬스터 HP·공격력·공격 간격도 같은 방식으로 고칠 수 있는지(MonsterStatData.csv castleenemy 행).
+
+### coder 인계 범위 (V11-F14·V11-F07 한 회차)
+
+coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistModel·AttackSkillData userdataset, 주황버섯 모델)은 사용자 승인("따로 커밋")으로 메인이 [ops] 9eed765로 커밋·push했다. coder는 시작할 때 git status로 9eed765 기준 작업 트리를 확인하고, 예상하지 못한 변경이 있으면 진행하지 말고 반환한다. 개발 근거는 WorkRecord에 새 개발절로 남긴다. 사전 참조는 §8 목록과 dataset.md(UserDataSet 수동 생성·CSV·Refresh·_DataService)·msw-scripting(서버/클라이언트 ExecSpace)·msw-defaultplayer(PlayerComponent HP)다. 모델을 읽을 때는 builder-protocol 핵심·model 파일과 model.md를 갖춘다.
+
+| 순서 | 작업 | 변경 파일 후보 |
+| --- | --- | --- |
+| 1 | 모델 값 확인(무수정): ModelBuilder.read로 Global/DefaultPlayer 모델과 Models/Monsters/주황버섯 모델의 Values를 다시 읽어, 옮길 수치가 고정돼 있는지 기록한다. 9eed765 기준 예상: DefaultPlayer는 maxHp 1000(PlayerComponent.MaxHp 연결로 보이는 속성 값)만 있고 PlayerMoveComponent의 MoveSpeed·ReturnSpeed는 없다. 주황버섯은 MonsterHealthComponent.MaxHp 100이 있고 AttackDamage·AttackInterval은 없으며, 재저장으로 들어온 스크립트 상태 속성 17개는 모두 기본값이고 옮길 수치가 아니다. 예상과 다르면(다른 수치 고정값 발견 등) 그 값이 실제로 이기는지 Play에서 확인하고, DataSet 적용이 그 값을 덮어쓰는지 기록한다 | (무수정) |
+| 2 | 현재 값 실측(무수정): Play에서 위 표의 현재 값(1000·6·6·100·12·3.0)을 서버·클라이언트에서 읽어 기록한다. DefaultPlayer maxHp가 PlayerComponent.MaxHp로 가는지 여기서 확인한다 | (무수정) |
+| 3 | 새 DataSet 2개 작성: .userdataset(EntryKey·id UUID, name, serveronly 위 표대로, CoreVersion은 Environment/config 26.10.0.0) + 같은 이름 UTF-8 CSV. 위 행 값 그대로 | RootDesk/MyDesk/@Assist/DataSet/PlayerBaseStatData.userdataset·.csv, MonsterStatData.userdataset·.csv(새 파일) |
+| 4 | 몬스터 수치 로드·검증·적용(서버). 카탈로그 전체 거부 정책 유지 | RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua, RootDesk/MyDesk/Managers/MonsterManager.mlua(스폰 전 행 확인·스폰 뒤 적용), 필요하면 MonsterHealthComponent·MonsterAttackComponent·MonsterStateControl의 적용 지점 |
+| 5 | 플레이어 기본 능력치 로드·검증(양쪽 공용 검증)·적용: 서버 MaxHp·시작 Hp, 클라이언트 MoveSpeed·ReturnSpeed, 실패 시 이동 시작 거부·대결 제외 | 새 Logic 또는 Player/@Assist 아래 로더(새 .mlua는 RootDesk/MyDesk 아래), RootDesk/MyDesk/Player/PlayerMoveComponent.mlua, PlayerHealthComponent.mlua, 필요하면 MonsterManager.RefreshDuelPlayer |
+| 6 | 위 "확인 기준"을 한 통합 런타임 회차로 확인. CSV 변경 반영 사례는 변경 → 확인 → 원복 → 바이트 일치까지 마친다 | — |
+
+바꾸지 않는 것:
+- 수치: 이동·복귀 속도 6, 플레이어 최대 HP 1000, 몬스터 HP 100·AttackDamage 12·AttackInterval 3.0(커밋되는 값), JustWindowSec 0.20·ParryWindowSec 0.20·GuardDamageRate 0.40·반격 2.0초·×2.2·슬로우 2.0초·×0.5·그로기 1.5초, JumpDuration 0.5·JumpHeight 0.8, 패턴 4행·Weight·영역, Pos2 칸 ±0.75·앵커 간격 1.5, AttackSkillData 전체(기본 공격 피해·타수·범위). CombatRuleData·MonsterAttackPatternData·AttackSkillData·MonsterData·AssistModel의 CSV와 .userdataset 무변경.
+- 규칙: D01~D04, F01~F13 동작, 입력 규칙(한 동작 수락·홀드 합산·중앙 복귀 잠금), 네이티브 HP 단일 적용·피해 합성 뒤 한 번 내림.
+- 그 밖: 모델·맵·.ui 파일(DefaultPlayer maxHp·주황버섯 MaxHp 모델 값도 그대로 둔다), 몬스터 점프 데이터화, 강화·성장·DataStorage, §18 머쉬맘 전환, 3단계.
+
+중단 조건: (1) 서버가 PlayerComponent.MaxHp를 쓸 수 없거나 Hp를 맞출 수 없을 때, (2) 클라이언트에서 serveronly false 표를 읽을 수 없을 때, (3) 적용에 모델·맵·.ui 변경이 필요하다고 판단될 때(모델 값 제거 포함), (4) 옮긴 뒤 위 값 동일성 사례 중 하나라도 이전 값과 다를 때 — 값을 맞추려고 수치를 조정하지 않는다, (5) Maker Refresh가 범위 밖 파일을 다시 저장할 때 — 그 파일은 되돌리거나 커밋에 섞지 말고 기록한다. (1)~(4)는 대체 구현 없이 근거와 선택지를 기록해 반환한다.
+
+### 상태
+
+| ID | 상태 |
+| --- | --- |
+| CombatCore-V11-F14 | ⬜ 구현 승인(2026-11-04 "기본안으로 시작"), coder 대기. 시작 전 조건 해소(9eed765) |
+| CombatCore-V11-F07 | ⬜ 구현 승인(2026-11-04, §15 후속 등록분), coder 대기. 범위는 HP·공격력·공격 간격만(점프 제외) |
+
+다음 흐름: coder 한 회차(기준 9eed765) → 같은 버전 tester(위 (a)·(b) 포함) → reviewer → 사용자 V11 → 회차 C(§18). P01b~P06 🟡 유지. 이 절은 2단계 완료·3단계 시작 승인이 아니다.

@@ -1,0 +1,45 @@
+@Logic
+script PlayerBaseStatCatalog extends Logic
+
+	property table stats = {}
+	property boolean Ready = false
+
+	method any Validate(table rows)
+		-- 서버와 클라이언트가 같은 표를 같은 기준으로 판단한다. 유효하면 default 행(플레이어가 쓰는 행)을 돌려준다.
+		local byId = _CombatRuleCatalog:ValidateStatRows("PlayerBaseStatData", rows, {{ key = "MaxHp", kind = "posint" }, { key = "MoveSpeed", kind = "pos" }, { key = "ReturnSpeed", kind = "pos" }})
+		if byId == nil then return nil end
+		return byId["default"]
+	end
+
+	method any GetStats()
+		-- 호출한 쪽(서버 또는 클라이언트)에서 표를 한 번 읽고 검증한다. 실패를 속성 기본값·모델 값으로 대체하지 않는다.
+		if self._T.attempted then
+			if self.Ready then return self.stats end
+			return nil
+		end
+		self._T.attempted = true
+		local rows = _CombatRuleCatalog:ReadRows(_DataService:GetTable("PlayerBaseStatData"), {"id", "MaxHp", "MoveSpeed", "ReturnSpeed"})
+		if rows == nil then _CombatRuleCatalog:WarnOnce("PlayerBaseStatData missing or required columns missing"); return nil end
+		local entry = self:Validate(rows)
+		if entry == nil then return nil end
+		self.stats = entry
+		self.Ready = true
+		if Environment:IsMakerPlay() then log("[VRF] PlayerBaseStatData side=" .. (self:IsServer() and "server" or "client") .. " default MaxHp=" .. tostring(entry.MaxHp) .. " MoveSpeed=" .. tostring(entry.MoveSpeed) .. " ReturnSpeed=" .. tostring(entry.ReturnSpeed) .. " source=DataSet") end
+		return entry
+	end
+
+	method void OnBeginPlay()
+		-- 이전 Play의 캐시와 시도 기록을 넘기지 않는다.
+		self.stats = {}
+		self.Ready = false
+		self._T.attempted = nil
+	end
+
+	method void OnEndPlay()
+		-- 다음 Play·Refresh 뒤 CSV 변경이 반영되도록 캐시를 지운다.
+		self.stats = {}
+		self.Ready = false
+		self._T.attempted = nil
+	end
+
+end
