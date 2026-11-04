@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: PAUSED
+- 상태: WAITING_USER
 - 갱신: 2026-11-04 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (사용자 일시정지, 회차 A tester QA8 중단)
-- 다음 행동·대기 사유: 사용자 일시정지(2026-11-04). 재개 시 tester QA8 NOT_RUN 항목부터(대상 7f2d0b4) → reviewer → 회차 커밋. 3단계 자동 시작 없음.
+- 현재 담당: 없음 (사용자 V11 확인 대기)
+- 다음 행동·대기 사유: 회차 A 리뷰 WAITING(결함 0). 사용자 V11 확인(die 1회 재생·정지, Pos2 전용 JUST/PARRY 체감, 끝 칸 무보상 난이도, 0.20초 손 타이밍) 대기 → 결과에 따라 회차 B. 회차 B·3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -264,3 +264,12 @@
 - coder 로컬 커밋 7f2d0b4(push 안 함). 작업 트리 Bundle b321d71c506c993747785757c04677c5aef39058e06f17f61334cf48e3a4040f(54경로, Maker 재저장 3경로 커밋 제외).
 - tester 호출(msw-tester).
 - tester 중단(msw-tester, 사용자 "작업 일시 정지"): 대상 7f2d0b4, 작업 트리 Bundle b321d71c…040f 일치, 커밋 트리 Bundle 7f32ae45d37aa6613db2c8de1c56ede5e0915fb5d0e0c34abb12a63340ce21e3. 실행 기준 전부 PASS, 결함 0. NOT_RUN: F12 Stop 뒤 다음 Play stand·정지 잔존, IDLE 외 경로 팝업 조합, 실제 UpArrow 그로기 처치, DeadEvent·HP 합계 비교, F08·F06 회귀 / F13 플레이어 사망 뒤·Stop 뒤 위치 기록 삭제, parry.any 끝 칸 실제 키, 사람 손 0.20초. Maker map01 edit 인계, 메인 재조회 확인.
+
+## 2026-11-04 회차 A 재개
+- 사용자 "재개". 일시정지 커밋 bac801b 뒤 제품 변경 없음(작업 트리는 사용자 범위 Maker 재저장 3개만 수정). tester QA8을 NOT_RUN 항목부터 이어 실행한다.
+- tester QA8 재개 완료(msw-tester 독립 실행): 실행 기준 전부 PASS, FAIL·NEEDS_DECISION·결함 0. 작업 트리 Bundle b321d71c…4040f 시작·끝 일치, Play 2/Stop 2, 로그 Warning·Error 0. 남은 NOT_RUN: 사람 손 기본 0.20초 성공, HP 0 실제 플레이어 사망·맵 전환 기록 삭제, CSV·실기기·V12. Maker map01 edit. 근거: WorkRecord QA8 "QA8 재개" 소절.
+- reviewer(msw-reviewer) 호출.
+- reviewer(msw-reviewer 독립 실행) 판정 **WAITING**(사용자 V11 확인 필요). 결함·CHANGES_REQUIRED 없음. 지문 재계산 일치(커밋 트리 7f32ae45…21e3, 작업 트리 b321d71c…4040f). 근거: WorkRecord "2026-11-04 독립 리뷰 — 회차 A(V11-F12·V11-F13) WAITING".
+- 비차단 후속: 예고 없을 때 ↓ 홀드가 PlayerGuard 시작 기록을 남기지 않는 관찰을 회차 B tester가 재현, 실제 HP 0 사망 뒤 기록 삭제 1건.
+- planner(msw-planner) 문서 동기화 호출: Plan §19 상태 표, WorkRecord 머리 상태·재개 지점.
+- planner 문서 동기화 완료: Plan §19 상태 표(🟡 사용자 V11 대기), WorkRecord 머리·재개 지점, 로드맵 재개 지점. 회차 종료 커밋 [CombatCore][review] WAITING (Maker 재저장 3경로 제외).

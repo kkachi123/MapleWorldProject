@@ -873,7 +873,9 @@ planner 기본안(사용자 질문 불필요, 결과가 지금 값에서 같음)
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-V11-F12 | 🟡 coder 구현·기본 검증 완료(2026-11-04, 기준 5c4eda3 작업 트리, 로컬 커밋 전), 독립 QA·리뷰·사용자 V11 대기. 구현: MonsterAttackMotion 공통 사망 표시 층(die 1회 재생 뒤 마지막 프레임 Start/End 고정, 이후 클립 쓰기 차단) + MonsterHealthComponent.OnUpdate 틱. [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md) 마지막 절 |
-| CombatCore-V11-F13 | 🟡 coder 구현·기본 검증 완료(2026-11-04, 기준 5c4eda3 작업 트리, 로컬 커밋 전), 독립 QA·리뷰·사용자 V11 대기. 구현: 서버 입력 시작 위치 기록(PlayerEvade·PlayerGuardComponent)과 삭제 지점(CombatPause·PlayerHealth), 실행 스냅샷 pos2Cell(MonsterAttackComponent), EvaluateDefense (a)·(b) 조건(PlayerHealthComponent). 실제 키 5건 서버 기록 x와 클라이언트 startX 차이 0.000 |
+| CombatCore-V11-F12 | 🟡 **사용자 V11 대기.** coder 구현·기본 검증(로컬 커밋 7f2d0b4, 기준 5c4eda3) → 독립 QA8(중단분 + 재개분, 같은 버전) 실행 기준 PASS·FAIL 없음 → 독립 리뷰 **WAITING**(고칠 결함 없음, 7f2d0b4 커밋 트리 Bundle 7f32ae45…e21e3 / 작업 트리 b321d71c…040f 재계산 일치). 구현: MonsterAttackMotion 공통 사망 표시 층(die 1회 재생 뒤 마지막 프레임 Start/End 고정, 이후 클립 쓰기 차단) + MonsterHealthComponent.OnUpdate 틱. 남은 NOT_RUN: 재생 중(0.36초) die 화면 캡처와 육안, 실기기·모바일. 근거: [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md) 2026-11-04 개발절·QA8 절("QA8 재개" 소절 포함)·리뷰 기록 첫 절 |
+| CombatCore-V11-F13 | 🟡 **사용자 V11 대기.** coder 구현·기본 검증(로컬 커밋 7f2d0b4, 기준 5c4eda3) → 독립 QA8(중단분 + 재개분) 실행 기준 PASS·FAIL 없음(회피 20·가드 20 프로브 근거, 실제 ↓ 6·←/→ 시험값 사례, 서버 기록 x와 클라이언트 startX 차이 0.000, 단일 접속 Maker 11건) → 독립 리뷰 **WAITING**(고칠 결함 없음). 구현: 서버 입력 시작 위치 기록(PlayerEvade·PlayerGuardComponent)과 삭제 지점(CombatPause·PlayerHealth), 실행 스냅샷 pos2Cell(MonsterAttackComponent), EvaluateDefense (a)·(b) 조건(PlayerHealthComponent). 남은 NOT_RUN: 사람 손 기본 0.20초 타이밍 성공(사용자 V11), HP 0 실제 플레이어 사망과 실제 다른 맵 전환에서의 위치 기록 삭제(사망은 서버 상태 전환 근거로만 PASS), 실기기·터치·모바일, 다중 접속·실제 네트워크 지연의 위치 오차(V12) |
 
-다음 흐름: coder 한 회차(로컬 커밋) → 같은 버전 tester → reviewer → 회차 종료 커밋·push → 사용자 V11. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+공통 NOT_RUN(두 항목): CSV 파일 변경 반영, V12 외부 환경, CF-F07 연출. 이 NOT_RUN은 PASS로 세지 않는다.
+
+다음 흐름: 사용자 V11 직접 확인(위 "사용자 V11 직접 확인" 항목) → 결과에 따라 회차 B(플레이어 기본 능력치 DataSet·V11-F07, Plan 미작성) → §18(회차 C). 실행 순서는 이 절(회차 A) → 회차 B → §18 그대로다. V11에서 새 요구나 재현 결함이 나오면 해당 ID만 다시 돈다. 비차단 후속(리뷰 분류 3번·다음 행동 4번, 회차 B tester가 함께 기록): (1) 예고가 없을 때 DownArrow 홀드가 `[VRF] PlayerGuard start`를 남기지 않은 관찰의 재현 — 예고 없는 IDLE에서 ↓ 홀드 시 클라이언트·서버 CurrentStateName, isGuarding, 시작 기록 유무를 함께 기록하고 이미 GUARD 상태의 재홀드였는지 가른다. 재현되면 새 결함 후보로 planner에 넘긴다. (2) 가능하면 HP 0 실제 플레이어 사망 뒤 위치 기록 삭제 1건. 리뷰가 남긴 후속 확인 항목인 서버 기록 위치와 클라이언트 위치 차이 재기록은 V12 외부 환경 또는 실기기 회차에서 한다. P01b~P06 🟡 유지. 이 상태는 2단계 완료·회차 B 시작·3단계 시작 승인이 아니다.
