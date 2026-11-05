@@ -1,13 +1,15 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-04 / 최신: 회차 B Plan 작성(Plan §20, CombatCore-V11-F14·V11-F07 구현 승인, coder 대기, 기준 9eed765). 그 전: 회차 A(V11-F12·V11-F13) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-04 회차 A 사용자 V11 수락" 절, Plan §19 상태 표 ✅. 사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인 유지). 그 전: 회차 A 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 사용자 V11 대기, 고칠 결함 없음, 7f2d0b4 커밋 트리 Bundle 7f32ae45…e21e3 / 작업 트리 b321d71c…040f 재계산 일치). 그 전: 독립 QA 8회차 회차 A(QA 기록 첫 절, 사용자 일시정지로 중단 뒤 같은 날 "QA8 재개" 소절에서 남은 NOT_RUN 실행, 같은 Bundle 54/54 전후 일치, 실행 기준 PASS·FAIL 없음, 사람 손 0.20초 타이밍·HP 0 실제 플레이어 사망·실제 맵 전환·CSV 변경 반영·실기기 NOT_RUN). 그 전: coder 회차 A 구현·기본 검증(로컬 커밋 7f2d0b4, 맨 아래 2026-11-04 개발절). 그 전(2026-11-03): 독립 리뷰 REV-F02·V11-F10·V11-F11 **WAITING**(리뷰 기록 둘째 절, 5c4eda3 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80 재계산 일치, 제품 변경 6경로, 고칠 결함 없음, H1 규칙상 정상, 사용자 V11 대기). 그 전: 독립 QA 7회차 REV-F02·V11-F10·V11-F11·H1(QA 기록 첫 절, 커밋 5c4eda3 / 작업 트리 Bundle fdca556d…ee80 54/54 전후 일치, 전부 PASS·FAIL 없음·결함 후보 없음, 육안·0.20초 손 타이밍·CSV 파일 변경 반영·실제 키 해제 타이밍 NOT_RUN, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-05 / 최신: 회차 B(Plan §20, CombatCore-V11-F14·V11-F07) 독립 리뷰 **WAITING**(리뷰 기록 첫 절과 그 "보충 확인" 소절, 결함 0, 사용자 V11 대기). 대상 coder 로컬 커밋 1b4f4ee(기준 9eed765) / 59경로 Bundle 9325c33a…cd19. 독립 QA 9회차(QA 기록 첫 절) 실행 기준 PASS·FAIL 없음, "QA9 보충 시험 1"로 플레이어 MaxHp DataSet 적용 PASS. 문서 정정(planner, 2026-11-05): coder 개발절의 "IDLE→ATTACK 전환 간격 2.96~3.01초"와 Plan의 옛 "시작 간격 3.0" 표현은 실제로 공격 종료 뒤 IDLE 대기 3.0초(시작~다음 시작 약 4.0초)를 뜻한다. Plan §5·§20 문구만 고쳤고 값·동작은 그대로이며 개발절 본문은 당시 기록대로 둔다. 그 전: 회차 B Plan 작성(Plan §20, CombatCore-V11-F14·V11-F07 구현 승인, coder 대기, 기준 9eed765). 그 전: 회차 A(V11-F12·V11-F13) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-04 회차 A 사용자 V11 수락" 절, Plan §19 상태 표 ✅. 사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인 유지). 그 전: 회차 A 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 사용자 V11 대기, 고칠 결함 없음, 7f2d0b4 커밋 트리 Bundle 7f32ae45…e21e3 / 작업 트리 b321d71c…040f 재계산 일치). 그 전: 독립 QA 8회차 회차 A(QA 기록 첫 절, 사용자 일시정지로 중단 뒤 같은 날 "QA8 재개" 소절에서 남은 NOT_RUN 실행, 같은 Bundle 54/54 전후 일치, 실행 기준 PASS·FAIL 없음, 사람 손 0.20초 타이밍·HP 0 실제 플레이어 사망·실제 맵 전환·CSV 변경 반영·실기기 NOT_RUN). 그 전: coder 회차 A 구현·기본 검증(로컬 커밋 7f2d0b4, 맨 아래 2026-11-04 개발절). 그 전(2026-11-03): 독립 리뷰 REV-F02·V11-F10·V11-F11 **WAITING**(리뷰 기록 둘째 절, 5c4eda3 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80 재계산 일치, 제품 변경 6경로, 고칠 결함 없음, H1 규칙상 정상, 사용자 V11 대기). 그 전: 독립 QA 7회차 REV-F02·V11-F10·V11-F11·H1(QA 기록 첫 절, 커밋 5c4eda3 / 작업 트리 Bundle fdca556d…ee80 54/54 전후 일치, 전부 PASS·FAIL 없음·결함 후보 없음, 육안·0.20초 손 타이밍·CSV 파일 변경 반영·실제 키 해제 타이밍 NOT_RUN, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
 ## 현재 재개 지점
 
-2026-11-04(회차 B Plan 뒤) 기준: 사용자 "기본안으로 시작"으로 [Plan §20](../Plans/2_CombatCore.md) 회차 B(CombatCore-V11-F14 플레이어 최대 HP·이동·복귀 속도 DataSet, V11-F07 몬스터 HP·공격력·공격 간격 DataSet)가 구현 승인 상태다. 현재 값(1000·6·6, 100·12·3.0)을 그대로 새 표(PlayerBaseStatData·MonsterStatData, 설계안)로 옮기며 결과가 이전과 같아야 한다. coder 시작 전 조건(Maker 재저장 3파일)은 [ops] 9eed765로 해소됐다. 다음은 msw-coder 한 회차(기준 9eed765, 이 기록 맨 아래에 새 개발절, 첫 단계로 모델 Values 고정 수치 확인) → 같은 버전 msw-tester(아래 비차단 후속 2건 포함) → msw-reviewer → 사용자 V11이다. 그 뒤 Plan §18(회차 C). P01b~P06은 🟡 유지, 3단계 미시작.
+2026-11-05(회차 B 리뷰 뒤) 기준: [Plan §20](../Plans/2_CombatCore.md) 회차 B(CombatCore-V11-F14 플레이어 최대 HP·이동·복귀 속도 DataSet, V11-F07 몬스터 HP·공격력·공격 간격 DataSet)는 msw-coder 구현·기본 검증(로컬 커밋 1b4f4ee, 기준 9eed765, 맨 아래 2026-11-04 개발절) → 별도 msw-tester 독립 QA 9회차(QA 기록 첫 절, 59경로 Bundle 9325c33a…cd19 시작·재개·끝 일치, 실행 기준 PASS·FAIL 없음)와 "QA9 보충 시험 1"(플레이어 `default` MaxHp 800에서 서버·클라이언트·부활 모두 800, PASS) → 별도 msw-reviewer 독립 리뷰 **WAITING**(리뷰 기록 첫 절과 "보충 확인" 소절, 결함 0, MaxHp 근거 공백 해소)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 사용자 V11이다(확인 항목은 Plan §20 "사용자 V11 직접 확인": 이동·복귀 체감, CSV 직접 수정과 표·열 이름, 몬스터 행 수정, AttackInterval 의미, HP 바 자릿수 육안). tester 비차단 후속은 정리됐다: (a) 예고 없는 ↓ 홀드 가드 시작 기록은 재현 안 됨·종결(결함 후보 아님), (b) 실제 HP 0 사망 뒤 기록 삭제·부활 Hp는 PASS. AttackInterval 표현 정정: coder 개발절 "IDLE→ATTACK 전환 간격 2.96~3.01초"와 Plan의 옛 "자연 공격 시작 간격 3.0초"는 공격 종료 뒤 IDLE 대기 3.0초(시작~다음 시작 약 4.0초)를 뜻한다. 값·동작은 바뀌지 않았고 Plan §5·§20 문구만 고쳤다(개발절 본문은 그대로). 이 의미가 사용자가 생각한 "공격 간격"과 다르면 새 요구로 planner를 거친다. 남은 NOT_RUN: 맵 이동 뒤 복귀·재접속 때 플레이어 MaxHp, HP 바 자릿수 육안, 사람 손 0.20초 타이밍, 모바일·실기기·터치·다중 접속, V07 예고 중 팝업 전수, F06 `parry.right` 대칭 착지·F10 출현 빈도, 실제 다른 맵 전환에서의 위치 기록 삭제, 표 실패 비대칭, Maker UI DataSet 편집, V12·CF-F07(Plan §20 상태 절). 작업 트리의 Stat.directory 재저장 한 줄은 범위 밖(메인 결정). V11 결과에 따라 Plan §18(회차 C, 시작 전 애니메이션 선택 등 사용자 질문 필요) 순서는 그대로다. 아래 QA·리뷰 절 본문은 당시 근거 그대로 둔다. P01b~P06은 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
+
+이전 재개 지점(2026-11-04, 회차 B Plan 뒤): 사용자 "기본안으로 시작"으로 [Plan §20](../Plans/2_CombatCore.md) 회차 B(CombatCore-V11-F14 플레이어 최대 HP·이동·복귀 속도 DataSet, V11-F07 몬스터 HP·공격력·공격 간격 DataSet)가 구현 승인 상태다. 현재 값(1000·6·6, 100·12·3.0)을 그대로 새 표(PlayerBaseStatData·MonsterStatData, 설계안)로 옮기며 결과가 이전과 같아야 한다. coder 시작 전 조건(Maker 재저장 3파일)은 [ops] 9eed765로 해소됐다. 다음은 msw-coder 한 회차(기준 9eed765, 이 기록 맨 아래에 새 개발절, 첫 단계로 모델 Values 고정 수치 확인) → 같은 버전 msw-tester(아래 비차단 후속 2건 포함) → msw-reviewer → 사용자 V11이다. 그 뒤 Plan §18(회차 C). P01b~P06은 🟡 유지, 3단계 미시작.
 
 이전 재개 지점(2026-11-04, 회차 A 사용자 V11 수락 뒤): [Plan §19](../Plans/2_CombatCore.md) 회차 A(CombatCore-V11-F12·V11-F13)는 아래 "이전 재개 지점(회차 A 리뷰 뒤)"의 coder·QA8·리뷰 WAITING에 이어 사용자 V11 직접 확인까지 마쳐 완료다. 메인이 물은 4항목(die 1회 재생 후 끝 모습 정지·그로기 중 처치·팝업 열고 닫은 뒤 / Pos2에서 가운데 칸이 켜진 공격에서만 JUST·PARRY, 정상 입력 실패 여부 / 0.20초 판정 창 손 타이밍 / 끝 칸 1칸 공격·특수 무작위 무보상 난이도)에 사용자가 "전부 ok"로 답했다(근거: [run](../../../../.pipeline/20261020-combat-core/run.md) "2026-11-04 회차 A 사용자 V11 수락" 절). 새 요구·재현 결함은 없다. 사람 손 기본 0.20초 타이밍 성공 NOT_RUN은 이 확인으로 해소했다. 모바일은 "해 보셨다면" 조건 질문이라 실시 여부가 확정되지 않았으므로 모바일·실기기는 기존 V11 미확인 항목으로 남긴다. 현재 AI 담당 작업은 없고, 다음은 회차 B(플레이어 기본 능력치 DataSet·V11-F07, Plan 미작성) 시작 여부 사용자 결정이다. 그 뒤 Plan §18(회차 C) 순서는 그대로다. 남은 것: 기존 V11 미확인(모바일·터치·음향·반격 체감·CF-F07), 비차단 후속 2건(회차 B tester: 예고 없을 때 ↓ 홀드 `[VRF] PlayerGuard start` 미발생 관찰 재현, 실제 HP 0 플레이어 사망 뒤 위치 기록 삭제 1건), 실제 다른 맵 전환에서의 위치 기록 삭제, 재생 중 die AI 화면 캡처, CSV 파일 변경 반영, 다중 접속 위치 오차·V12. 아래 QA·리뷰 절 본문은 당시 근거 그대로 둔다. P01b~P06은 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
 
@@ -39,6 +41,103 @@
 제품 구현 완료 기록 없음. coder는 제품 편집 전 사전 문맥·소유자 점검 단계에서 중단됐다. 구현 ledger도 아직 생성되지 않았다. MapBuilder 읽기는 map01 id=0a0972ef-ad23-4e24-af63-afbd53120c1d, TileMapMode=0을 확인했다. 실제 Maker 연결/모드·런타임 검증은 조회 거절로 미확인이다. 사용자 재개 명령 후 실제 변경 범위와 환경을 확인해 이어간다.
 
 ## QA 기록
+
+### 2026-11-04 독립 QA 9회차 — 회차 B(V11-F14·V11-F07)
+- 상태: **실행 완료.** 실행 기준 PASS, FAIL·새 결함 없음. 결함 후보 없음(추가 항목 (a)는 재현되지 않음). 독립 reviewer 대기. NOT_RUN과 사용자 직접 확인은 아래 절.
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품 코드·모델·맵·UI·.codeblock 수정 없음. CSV는 Plan 지시대로 2종만 시험 변경 후 백업에서 복원했고 byte 일치를 확인했다(아래). commit·push 없음. coder 개발절의 PASS는 이번 실행으로 세지 않았다. **maker_clear_logs는 호출하지 않았다**(Maker 로그는 저장된 JSON 파일을 `[T9…]` 표지와 시각으로 걸러 읽었다).
+- 실행 경위: 첫 실행(Play 1, 2026-11-04 19:10~19:18)이 사용량 제한으로 중단됐고 사용자 재시도 지시로 2026-11-05에 남은 기준부터 이어 실행했다(Play 2~5). Play 1에서 이미 읽고 판정한 항목은 다시 하지 않고 아래에 "Play 1"로 표시했다. Play 1의 원본 로그는 Play 2 시작 때 Maker가 비워 파일로 남지 않았다(판정에 쓴 값은 당시 읽은 로그 줄에서 옮겼다). Play 2~5의 로그는 시각·표지로 재확인 가능하다.
+- 대상 버전: coder 로컬 커밋 **1b4f4ee**(기준 9eed765). 59경로 manifest Bundle SHA-256 **9325c33ade8a2c32c058cb7e4050a82f8b44d9f22dcfe68c82874cd3e23bcd19**(= 기존 54경로 `a8c96297411224849adc9613f278d76f6f2eb94ab5cb8e1f785548a185fbcc5d` + 새 5경로), 같은 계산법(coder 절의 V11-F06 표 54경로 + 새 5경로를 `LC_ALL=C sort`, 경로 + TAB + sha256 + LF 연결의 SHA-256). **Play 1 시작·재개 시작·시험 끝 세 번 모두 같은 값**이고 경로별 해시 목록도 일치했다. 작업 트리는 시작 때 run.md(메인)만 변경이었고, 재개 때 `RootDesk/MyDesk/Player/@Assist/Stat.directory`가 추가로 변경돼 있었다(아래 범위 밖 재저장). .directory는 manifest 대상 밖이라 Bundle 값은 변하지 않았다.
+- 범위 밖 재저장(기록만, 되돌리지 않음): `RootDesk/MyDesk/Player/@Assist/Stat.directory` — `StudioVersion` ""가 "0.1.0.0"으로 바뀐 한 줄(Maker 재저장). 내가 직접 수정하지 않았고 시험 시작 시점에도 이미 이 상태가 아니었다가(1b4f4ee 커밋 상태 M 없음) 재개 시점에 변경돼 있었으므로 중단된 Play/Stop 중 Maker가 저장한 것으로 본다. CSV·.userdataset·.mlua·모델·맵·UI·기존 CSV 5종은 커밋과 같다.
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186. TileMapMode는 기존 기록(0 MapleTile)을 따랐고 다시 읽지 않았다. build 로그 89건 모두 Info(LIA 1114/1115 동적 참조, 오류 0·경고 0, coder와 같은 건수). Play 5회(중단된 1회 포함), 마지막 Stop 뒤 map01 / edit.
+- 방법 구분: (A) 서버·클라이언트 프로브 = maker_execute_script(server_main·client, 각 컨텍스트에서 한 번에 스크립트 하나만 돈다). (B) 실제 키 입력 = maker_keyboard_input. 도구 왕복이 수 초라 0.20초 판정 창에 손으로 맞출 수 없어 F13 회귀는 **판정 창을 Play 내부에서 30초로 넓힌 "시험값" 근거**이고 모두 원복을 로그로 확인했다. 패턴 단일 행 교체·몬스터 AttackInterval 9999·플레이어 Hp 20 설정은 Play 내부 시험값이며 Stop으로 폐기됐다. 검증 함수 프로브(`ValidateStatRows`·`_PlayerBaseStatCatalog:Validate`)는 시험 행을 함수에 넣는 "프로브 근거"다. 팝업은 `_UIPopup:Open`과 취소 핸들러 호출(마우스 클릭 아님). 근거 한계는 맨 아래.
+
+#### 값 동일성 (Plan §20 회귀 기준)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 로드 [VRF]와 값 출처 | A | Play 1·2·5 부팅 모두 서버 `MonsterStatData id=default/castleenemy MaxHp=100 AttackDamage=12 AttackInterval=3.0 source=DataSet`, `PlayerBaseStatData side=server`·`side=client default MaxHp=1000 MoveSpeed=6 ReturnSpeed=6 source=DataSet`, `MonsterStat applied key=castleenemy MaxHp=100.0 Hp=100.0 AttackDamage=12.0 AttackInterval=3.0 … blankFromDefault=false/false/false`, `PlayerStat applied MaxHp=1000 Hp=1000 source=DataSet`, `MovementInput boot speed=6.0 return=6.0 source=DataSet`. 서버/클라이언트가 각자 같은 표를 읽음(ExecSpace 분리 확인) | PASS |
+| 플레이어 HP 1000, 시작 Hp 1000, 클라이언트 값 | A | 서버 `PlayerComponent.MaxHp` 1000·시작 Hp 1000, 클라이언트 MaxHp 1000(Play 1 프로브). HP 바 육안·스크린샷은 찍지 않음 | PASS(값) / NOT_RUN(화면) |
+| 몬스터 수치 서버·클라이언트 | A | 서버 몬스터 MaxHp 100·Hp 100·AttackDamage 12·AttackInterval 3.0·modelKey castleenemy, 클라이언트 MaxHp/Hp 100(Play 1). `DoSpawn` 재호출로 새 상대도 같은 값 적용 | PASS |
+| 자연 공격 간격 | A | Play 1 서버 감시: IDLE→ATTACK **시작~시작 4.003~4.030초**(9회). 코드상 `attackTimer`는 IDLE에서만 누적(MonsterStateControl.OnUpdate 106~111행)이라 시작~시작 = IDLE 대기 3.0 + ATTACK 약 1.0이다. 직접 쟀을 때 ATTACK→IDLE 뒤 다음 ATTACK 시작까지 **IDLE 구간 2.92~3.03초**(Play 2 T9b 0.1초 표본: 144.50→147.49·148.53→151.56·156.56→159.59·164.53→167.53·168.55→171.55, 전투 시계). 팝업 정지 중 타이머 2.48 고정 → 재개 2.49→2.97 (아래 V07). 값 AttackInterval 3.0은 전과 같음 | PASS(값 3.0, 대기 구간 기준). 판정 메모: coder/Plan의 "시작 간격 3.0"은 시작~시작이 아니라 IDLE 대기 구간 기준이다(소스 변경 없음) |
+| 피해: 무대응 12, 일반 가드 4, HP 감소 = HitEvent 합계 | A+B | Play 1 감시 35초: 무대응 자연 공격 9회 모두 12씩(Hp 736→628), HP 감소 108 = HitEvent 합계 108. 가드: 시험 단일 행 GUARD·NORMAL(예고 3.0초) + **실제 DownArrow 홀드** → `defense kind=GUARD rate=0.4`, 516→512 = 4 = floor(12×0.40), hitEventDelta 4 | PASS |
+| 처치까지 피해 합계 100, DEAD·DeadEvent 1회 | A+B | Play 1: 새 상대(DoSpawn, Hp 100) → 실제 UpArrow 250ms 1회 + 클라이언트 `RequestChangeState("ATTACK")` 논리 호출 9회(총 10회 시전 × 타수 10 × 피해 1). Hp 100→0, **HitEvent 합계 100·이벤트 100건**, 마지막 `Hp 2.0→0.0`, `MonsterHealth lethal state=DEAD`, DeadEvent 1·DEAD 상태 변화 1, `MonsterDie freeze frame=2` | PASS (실제 키 1회 + 논리 경로 9회) |
+| Stop → 다음 Play 재로드, 시험값 비잔존 | A | Play 1은 중단됐고 Play 2 부팅이 위 [VRF] 값을 DataSet에서 다시 로드. Play 2 시험 시작 값 `origJust=0.2 origParry=0.2 origPatterns=4`(앞 Play의 창 30초·단일 패턴이 남지 않음). Play 5(CSV 원복 뒤)도 같은 값으로 로드, Play 3·4의 시험 CSV 값(MoveSpeed 9·MaxHp 150·무효값)이 남지 않음 | PASS |
+
+#### DataSet 동작
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| **CSV 실제 변경 반영**(Plan 값, 1회) | 파일 수정 + Refresh + Play 3 | 변경 전 바이트 해시 `PlayerBaseStatData.csv 3202ac06…d094`(53바이트)·`MonsterStatData.csv f9709bd8…1dc3`(85바이트)를 백업. `default,1000,6,6`→`default,1000,9,6`, `castleenemy,100,12,3.0`→`castleenemy,150,12,3.0`(BOM·CRLF 보존). Refresh → Play 3: 서버·클라이언트 `PlayerBaseStatData … MoveSpeed=9 ReturnSpeed=6`, `MovementInput boot speed=9.0 return=6.0`, 실제 LeftArrow OUTBOUND `elapsed=0.154`(약 1.5/9), RETURNING 0.241(복귀 6 그대로), `MonsterStat applied MaxHp=150.0 Hp=150.0`, 서버·클라이언트 몬스터 MaxHp/Hp 150 → **DataSet이 모델 Values(주황버섯 MaxHp 100)를 덮어씀**. 같은 Play 부팅 직후 첫 DownArrow도 `PlayerGuard start`가 남음(아래 (a)) | PASS |
+| **원복·byte 일치** | Stop + 백업 복원 + Refresh + Play 5 | 복원 뒤 sha256: PlayerBaseStatData.csv `3202ac06b9ebf31c13d73a2eb343ab788f5393e8b7f8255a36ad3efa815ed094`, MonsterStatData.csv `f9709bd83183f0c85f36d0d1037a6e7c85f4cb55111ad8d4bfe5536869471dc3`, .userdataset 2종 `f6d8da25…5d7f`·`b5a226f2…2f0` — 변경 전과 **모두 일치**. Play 5: `MoveSpeed=6`·`MaxHp=100`·`boot speed=6.0`·OUTBOUND 0.239·RETURNING 0.247, 경고·오류 0. git status는 run.md와 Stat.directory(범위 밖 재저장)뿐 | PASS |
+| **파일 단위 무효 데이터 거부**(추가 시험, Plan 표의 프로브를 실제 파일로 확장) | 파일 수정 + Refresh + Play 4 | `PlayerBaseStatData default,1000,0,6`(MoveSpeed 0)·`MonsterStatData castleenemy,150,12,0`(AttackInterval 0)로 바꿔 Play: `[CombatRuleCatalog] MonsterStatData invalid AttackInterval` 경고 1회 → `MonsterManager spawn refused key=castleenemy reason=stats`(**몬스터 스폰 없음**, 서버 currentMonster=nil·catalogReady=false); `PlayerBaseStatData invalid MoveSpeed` 경고 **서버·클라이언트 각 1회**, 서버 `PlayerStat rejected reason=table`·`IsBaseStatsReady()=false`·duel player=nil, 8초 뒤에도 대결 없음·Hp 1000 변화 없음; 클라이언트 `MovementInput boot … source=rejected`, **실제 LeftArrow 두 번 모두 `MovementInput rejected reason=stats`로 이동하지 않음**. 모델 maxHp·.mlua 속성 6으로 대신 진행하지 않음(PlayerComponent.MaxHp 1000은 엔진·모델 값이 그대로 남은 것이고 대결·이동에 쓰이지 않음). 원복은 위 행 | PASS |
+| 빈 칸 → default 값(몬스터, 프로브) | A(`ValidateStatRows`) | 빈 문자열·공백만·빈 문자열 행 → 세 열 모두 default 값(`fromDefault=truetruetrue`), MaxHp만/AttackDamage만/AttackInterval만 빈 칸이면 해당 열만 default 값 | PASS |
+| default 행 문제(몬스터 서버 + 플레이어 클라이언트, 프로브) | A | default 없음, default의 각 열 빈 칸(MaxHp·AttackDamage·AttackInterval / MaxHp·MoveSpeed·ReturnSpeed 각각), default의 무효 값 → 표 전체 거부 + 원인별 경고 1회 | PASS |
+| 무효 값(프로브) | A | 몬스터 MaxHp 0·−5·1.5·abc·1e999·−1e999, AttackDamage −1·−0.1·abc·1e999, AttackInterval 0·−1·abc·1e999 모두 거부(AttackDamage 0·0.5와 MaxHp "100.0"은 수락). 플레이어 MoveSpeed·ReturnSpeed 0·−1·abc·1e999(−1e999), MaxHp 0·−5·1.5·abc·1e999 모두 거부. default 아닌 행의 무효 값도 default로 대체하지 않고 표 거부. 같은 원인은 경고 1회(예: MoveSpeed 5종 입력에 경고 1줄) | PASS |
+| 키(프로브) | A | 중복 id·공백 포함 중복 id·빈 id·공백만 id 거부(경고 원인별 1회). 스폰 modelKey 행 없음(`nosuchmodel9`)·예약 `default` → `GetMonsterStats` nil + 경고 1회(같은 키 두 번째 호출은 경고 없음), `DoSpawn`은 `spawn refused`로 스폰하지 않고 **현재 상대 유지**, default로 스폰하지 않음 | PASS |
+| 필수 열 누락·추가 열(프로브) | A | `ReadRows(MonsterData, {"id","MaxHp"})`→nil(거부), 없는 표 `NoSuchTable9`→nil. `#memo`·추가 열은 무시(수락) | PASS |
+| 플레이어 표 실패 시 이동·대결 거부 | A+B | 위 파일 단위 무효 데이터 행(실제 CSV)이 근거. 코드 경로: 서버 PlayerHealthComponent.OnBeginPlay와 클라이언트 PlayerMoveComponent.CanStart가 같은 `ValidateStatRows` 기준 | PASS |
+
+#### 이동·입력 회귀 (V09·V10, 1단계)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 이동·복귀 속도 6 | B | 실제 Left/RightArrow 홀드 OUTBOUND(1.5 거리) `elapsed` 0.228~0.245, RETURNING 0.240~0.262, 복귀 완료 `state=IDLE`. 서버 `PlayerEvade start x=0.000`과 클라이언트 `OUTBOUND x=0.0` 차이 0.000 | PASS |
+| 방향키·UI 출처 합산, 반환 잠금 | B+A | 실제 LeftArrow `down` + `RequestChangeState("LEFT","ui.left")` 수락(true) → 실제 키 `up` 뒤에도 `MOVE|held=LEFT|src=ui.left|phase=HOLD|x=−1.50` 유지 → `ReleaseHeldState("LEFT","ui.left")` 뒤에만 RETURNING. 복귀 중 `RequestChangeState("RIGHT")` **false**(잠금), 복귀 완료 뒤 수락. UI 출처는 논리 호출(마우스 클릭 아님) | PASS(키 출처 실제, UI 출처 논리) |
+| 기본 공격 타수·범위(AttackSkillData 무변경) | B+A | 시전 1회마다 `manual cast count=10`, 타격 10건 × 피해 1 = 10, 총 10회 시전 = 100(위). 기본 공격 `UpArrow` 100ms 탭 1회도 시전됨(아래 관찰) | PASS |
+| 최초 Play 직후 입력과 DownArrow 시작 | B | 아래 (a) | 아래 |
+
+#### 회귀 (회차 A·F06·F08·V07)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| F12 die 1회 재생 후 정지 — IDLE 피격 사망 대표 | A+B | 위 처치: `MonsterDie start frames=3 total=0.660 freezeAfter=0.360` → `MonsterDie freeze frame=2`, 서버 SpriteRUID die 시작 후 `2/2` 고정 | PASS |
+| F12 — 그로기 중 사망 | A | Play 2: `ApplyGroggy(3)` 0.5초 뒤 `STUN|aec950`(hit) → `ApplyDamage(999)` → `DEAD|aec950`→`65a2bf(die) 0/MAX`(+0.21)→`2/2`(+0.57), DeadEvent 1, 이후 변화 없음 | PASS |
+| F13 Pos2 시작 PARRY | A+B | 시험값 창 30초, `parry.any`(ANY·PARRY·NEAREST, 예고 8초) + **실제 DownArrow 홀드** → `guard eval x=0.000 cellOk=true areaOk=true attr=PARRY`, `defense kind=PARRY rate=0`, Hp 416→416, `groggy applied` | PASS(시험값) |
+| F13 Pos2 시작 JUST | A+B | 시험값 창 30초, `parry.any` + **실제 LeftArrow 탭** → `evade eval x=0.000 cellOk=true areaOk=true dir=LEFT`, `counter granted until=33.536 factor=2.2`, `slow applied duration=2.0 rate=0.5`, `defense kind=JUST rate=0`, Hp 928→928 | PASS(시험값) |
+| F13 끝 칸 1칸 공격 무보상 | A+B | 시험값 창 30초, `RIGHT`·PARRY·앵커 1~1(첫 시도 `LEFT` 응답 행은 "telegraph escape area invalid"로 제품이 거부 — 시험 데이터 오류, 아래) + **실제 LeftArrow 홀드 8초(플레이어 x=−1.5)** → `evade eval x=0.000 cellOk=true areaOk=false dir=LEFT`, `defense kind=HIT rate=1`, Hp 748→736(−12) = JUST·반격·슬로우 없음 | PASS(시험값) |
+| 서버 기록 시작 x 대 클라이언트 segment.startX | B | 실제 키 6건 이상에서 서버 `PlayerEvade start x=0.000` / 클라이언트 `OUTBOUND x=0.0` 차이 0.000 | PASS |
+| F06·F10 패턴 4행·Weight 2·2·2·1, 2칸 중간 착지·판정 시각 | A | 카탈로그 `parry.left:2,parry.right:2,parry.any:2,special.random:1`. `parry.left` 형(앵커 2~3, 예고 2.0) 시험: 몬스터 시작 x=3.0 → 점프 +0.54초에 **x=0.750 중간 착지**, 판정 `defense` 전투 시계 300.954 = 공격 시작 298.961 + 1.993(≈2.0), 이후 복귀 점프로 x=3.0 | PASS |
+| F08·F02 패링 → 복귀 뒤 그로기 1.5초, 그로기 중 hit 표시 | A | PARRY 사례: `groggy applied deadline=490.504`, 몬스터 `STUN|aec950`(hit 클립) 489.021 → `IDLE` 490.529 = **1.508초**, 그로기 중 hit 표시 | PASS |
+| V07 팝업 정지·재개(공격 간격 타이머 포함) | A | 실제 `_UIPopup:Open`: `CombatPause server paused=true clock=449.112`, 몬스터 `attackTimer` **2.48 고정 ≥9초**(전투 시계 449.11 고정), 취소 핸들러 호출 뒤 `paused=false` → 타이머 2.49→2.97, 3.0에서 예고 시작. 예고 중 팝업 정지·재개는 이번에 실행하지 않음 | PASS(간격 타이머) / NOT_RUN(예고 중 팝업) |
+| V08 Stop 뒤 다음 Play 기본 상태 | A | 위 "Stop → 다음 Play" 행. 시험 중 만든 Play 내부 값(창 30초·단일 패턴·AttackInterval 9999)이 다음 Play에 없음 | PASS |
+
+#### 추가 항목 (a)·(b) 와 기타 관찰
+- **(a) 예고 없을 때 ↓ 홀드의 `[VRF] PlayerGuard start`**: **재현되지 않음.** 몬스터 AttackInterval을 9999로 올려 예고가 없는 IDLE에서 실제 DownArrow를 5번 눌렀다: 1500ms·100ms·300ms·1000ms(Play 1, 모두 `PlayerGuard start x=0.000`이 남음)와 Play 3 부팅 직후 첫 입력 800ms(전투 시계 0.406, 첫 예고보다 먼저 → `PlayerGuard start x=0.000 t=0.406`). 기록한 값(Play 1 1500ms): 클라이언트 `GUARD|held=GUARD|src=key.DownArrow`, 서버 `GUARD|g=true|gT=175.281|gX=0.0`, 키를 놓으면 클라이언트 `IDLE`·서버 `g=false`(gT는 이전 시각 유지 = 설계, 사망·팝업·정지 때 `ClearStart`로 삭제). 이미 GUARD 상태에서 재홀드한 사례 아님(매번 IDLE에서 시작). 소스 근거: PlayerStateControl.RequestChangeState(IDLE에서 `ChangeState("GUARD")`, 예고 조건 없음) → Player_Guard.OnEnter(서버) → PlayerGuardComponent.SetGuarding(true) 로그. 코드에 예고 유무로 막는 분기가 없다. 본 관찰의 가능한 원인: Play 2에서 `maker_play` 직후 곧바로 보낸 입력이 기록되지 않았다(같은 순간 `maker_get_context_keys`가 "Not in play mode"로 아직 Play가 준비되지 않았음을 보였고, Play 3에서 컨텍스트 확인 뒤 보낸 첫 입력은 기록됨). 이전 QA8의 같은 관찰도 입력 시점이 Play 준비 전/중이었을 가능성이 있으나 확인하지 못했다. **분류: 결함 후보 아님, 재현 불가. 설계 의도 질문 없음.**
+- **(b) 실제 HP 0 플레이어 사망**: Play 2에서 실제 `DownArrow` 홀드(`PlayerGuard start x=0.000 t=123.712`)와 `LeftArrow` 탭(`PlayerEvade start x=0.000 t=124.541`)으로 시작 위치 기록을 만든 뒤(`gX=0.0 gT=123.71 evX=0.0 evT=124.54`) 서버에서 Hp를 20으로 낮추고 자연 공격만으로 사망시켰다. Hp 20→8→**−4**(두 번째 공격 12), 약 1초 뒤 `DEAD|dead=true`, 이때 `gX=nil gT=-1.00 evX=nil evT=-1.00`(**시작 위치·시각 기록 삭제**), `CombatCore duel player=none`. 5.0초(RespawnDuration) 뒤 `Hp=1000|MaxHp=1000|IDLE|dead=false`(**부활 Hp = MaxHp 1000**), 대결 재개, 이후 자연 공격 12씩(1000→988…). 클라이언트도 `Hp=1000|MaxHp=1000|IDLE`. → **PASS.** 관찰: 사망 직전 Hp가 −4로 내려간다(네이티브 PlayerComponent, 이전부터 알려진 범위 밖 관찰: 사망 직후 HP 문자 음수 표시 가능성).
+- **↑ 100ms 탭 관찰(coder)**: 이번 변경과 무관해 보인다. 재현: 100ms 탭 **한 번**은 시전됨(Play 1, `manual cast id=15`, 클라이언트 `ATTACK`이 0.83초(= FrameCount 14 × 0.06) 유지 뒤 `IDLE`). 같은 블록으로 곧바로 보낸 두 번째 100ms 탭은 시전되지 않았다 — ATTACK 중에는 `PlayerStateControl.RequestChangeState`가 `state.CurrentStateName ~= "IDLE"`이면 거부하는 기존 규칙("먼저 수락한 한 동작만, 입력 예약 없음")이고 PlayerStateControl·Player_Attack·PlayerCombatComponent는 9eed765 대비 변경 파일에 없다(`git diff --stat HEAD~1 HEAD`: 변경 4개 .mlua는 CombatRuleCatalog·MonsterManager·PlayerHealthComponent·PlayerMoveComponent). 3탭 연속(100/100/250ms)에서 시전 2회가 난 것도 같은 잠금으로 설명된다. 판정: 설계 규칙의 정상 동작, 결함 아님.
+- 시험 오류(제품 오류 아님): (1) 첫 server 프로브에서 `MonsterManager`를 맵 엔티티에서 찾아 `mm` nil(LEA-2007 서버·클라이언트 각 1건). (2) `DoSpawn` 직후 `mm.CurrentPlayer`가 nil(스폰이 대결을 초기화)이라 가드 시험 첫 스크립트가 중간에 멈췄고 패턴을 복원하지 못해 Hp 변화가 기록되지 않아 같은 시험을 `_UserService.UserEntities`로 플레이어를 잡아 다시 실행했다(본문은 재실행 값). (3) F13 끝 칸 첫 시도는 `LEFT` 응답 + 앵커 1~1 행이 제품의 "telegraph escape area invalid" 검증에서 거부돼 공격이 시작되지 않았고 `[Monster_Attack] Battle position missing` 경고가 6건 났다(시험 행 오류, 시험 행 복원 확인). (4) 클라이언트 모니터 스크립트가 두 번째 클라이언트 스크립트 실행으로 중단됐다(한 컨텍스트에 스크립트 하나). (5) `maker_logs(kind=build)`를 한 번 그대로 호출해 큰 출력이 문맥에 들어왔다(시험 결과 영향 없음).
+- 로그 요약: 정상 구간의 Warning·Error 0. 경고는 모두 내 무효 데이터 프로브·무효 CSV 시험·잘못된 시험 행이 의도적으로(또는 시험 오류로) 낸 것이며 제품 경로의 예상 밖 Error·Warning 없음(위 시험 오류 (1)의 LEA-2007 2건은 내 프로브 코드).
+
+#### ExecSpace·구현 대조 (소스 읽기, 런타임 PASS와 구분)
+- 몬스터 값(MaxHp·AttackDamage·AttackInterval)은 서버 `MonsterManager.DoSpawn`(ServerOnly)이 쓰고 서버 로그에만 `MonsterStat applied`가 남으며 클라이언트는 `@Sync` 값을 읽는다. 플레이어 HP는 서버 `PlayerHealthComponent.OnBeginPlay`(ServerOnly), 이동·복귀 속도는 클라이언트 `PlayerMoveComponent.ApplyBaseStats`(ClientOnly)가 쓴다. 두 쪽이 같은 표를 각자 읽는 것이 로그의 `side=server`·`side=client`로 확인됨. `.mlua` 속성 기본값 중 이동 속도(MoveSpeed 9로 변경 시 반영)와 몬스터 모델 값(주황버섯 MaxHp 100, MaxHp 150으로 변경 시 150 반영)은 CSV 변경 반영으로 DataSet이 이김을 확인했다. **정정(2026-11-05):** 이 문장의 앞 판본은 DefaultPlayer 모델 maxHp 1000까지 같은 시험으로 확인했다고 읽힐 수 있었으나, 몬스터 MaxHp 150 시험은 플레이어 MaxHp의 근거가 아니다. 플레이어 MaxHp는 모델 maxHp·엔진 기본값·DataSet이 모두 1000이라 그 시험만으로는 DataSet이 이기는지 알 수 없었고, 아래 "보충 시험 1"(default MaxHp 800)이 그 근거다.
+- 변경 4개 .mlua + 새 5경로 외 제품 파일 변경 없음(`git diff --stat HEAD~1 HEAD` 확인: 모델·맵·UI·기존 CSV 5종·기존 .userdataset 변경 없음).
+
+#### NOT_RUN (PASS로 세지 않음)
+1. HP 바 육안·스크린샷(값만 확인). 2. 사람 손 기본 0.20초 타이밍(F13은 판정 창을 30초로 넓힌 시험값, 회차 A V11에서 사용자 수락 이력 있음). 3. 모바일·실기기·터치, 다중 접속. 4. V07 예고 도중 팝업 정지·재개 전수(간격 타이머 정지·재개만 실행), 사망 경로별 팝업 조합. 5. F06 `parry.right` 대칭 착지, F10 4패턴 각각의 실제 출현 빈도 통계. 6. 실제 다른 맵 전환에서의 위치 기록 삭제. 7. 플레이어 표 실패 시 서버만/클라이언트만 실패하는 비대칭 상황. 8. DataSet을 Maker UI에서 직접 수정하는 경로.
+
+#### 사용자 직접 확인 항목 (Plan §20 사용자 V11)
+- 이동·복귀 체감이 회차 A와 같은지(값 6 그대로, 시험 로그의 elapsed 0.24초는 수치 근거일 뿐 체감 평가가 아님).
+- 원하면 `PlayerBaseStatData.csv`의 MoveSpeed를 직접 바꾸고 Maker Refresh → Play로 속도가 바뀌는지, 표·열 이름이 고치기에 알아보기 쉬운지.
+- 몬스터 HP·공격력·공격 간격도 `MonsterStatData.csv` castleenemy 행으로 고칠 수 있는지.
+- 공격 간격 3.0은 "IDLE 대기 3.0초 + 공격 약 1.0초 = 시작~시작 약 4.0초"로 동작한다(전과 동일). 사용자가 말한 "공격 간격"이 어느 쪽인지 체감 확인.
+
+#### reviewer가 알아야 할 근거의 한계
+- 중단된 Play 1의 원본 로그는 남아 있지 않고 값만 이 기록에 옮겨 적었다. Play 2~5는 로그 파일로 재확인 가능하다.
+- F13·V07은 시험값(판정 창 30초 등)과 프로브 근거가 섞여 있다. 사용자 손 타이밍·실기기·다중 접속은 없다. 팝업 닫기는 취소 핸들러 호출이다. 클라이언트가 실제로 그리는 화면은 보지 않았다(스크린샷 없음).
+- 범위 밖 재저장: Stat.directory(StudioVersion 한 줄). 되돌리거나 커밋에 넣을지는 메인 결정.
+- 사용 종료: 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. 시험 시작·끝 59/59·54/54 동일 Bundle(9325c33a…cd19 / a8c96297…c5d), 제품 파일 무수정, CSV 2종 byte 원복. Maker 사용 종료. commit·push 하지 않음.
+
+#### QA9 보충 시험 1 — 플레이어 MaxHp를 DataSet이 실제로 정하는가 (2026-11-05, 같은 버전 1b4f4ee, reviewer WAITING 사유 대응)
+- 사유: 리뷰가 지적한 대로 플레이어 MaxHp는 DefaultPlayer 모델 maxHp·엔진 PlayerComponent.MaxHp 기본값·DataSet이 모두 1000이라 앞 QA9에서는 DataSet 값이 이기는지 근거가 없었다(위 정정 문장).
+- 대상·지문: 1b4f4ee, 59경로 Bundle 9325c33ade8a2c32c058cb7e4050a82f8b44d9f22dcfe68c82874cd3e23bcd19가 **시험 전·시험 변경 중이 아닌 시점(CSV 원복 뒤)·끝** 모두 같다(CSV 시험 값이 들어가 있는 동안은 계산하지 않음, 원복 뒤 계산). 제품 파일 수정 없음, commit·push 없음, maker_clear_logs 호출 없음, Stat.directory 그대로(범위 밖 재저장 상태 유지). Play 2회(시험 Play 1, 원복 확인 Play 1).
+- 시험 변경: `PlayerBaseStatData.csv`의 `default` 행만 `default,1000,6,6` → **`default,800,6,6`**(BOM·CRLF 보존, MonsterStatData는 건드리지 않음). Refresh → Play.
+- 결과(서버·클라이언트 각자 읽음, 모델 maxHp는 그대로 1000):
+  | 기준 | 실제 결과 | 판정 |
+  | --- | --- | --- |
+  | 로드·적용 | 서버 `PlayerBaseStatData side=server default MaxHp=800 … source=DataSet`, `PlayerStat applied MaxHp=800 Hp=800 source=DataSet`, 클라이언트 `side=client default MaxHp=800 …` | PASS |
+  | 서버·클라이언트 MaxHp와 시작 Hp | 서버 `PlayerComponent.MaxHp=800`(시작 Hp 800, 첫 자연 공격 뒤 776·764), 클라이언트 `MaxHp=800 Hp=776`. 모델 maxHp 1000·엔진 기본 1000이 아니라 **DataSet 값 800**이 쓰임 → DataSet이 실제로 이김 | PASS |
+  | HP 바 | 스크린샷 2장(`maker_screenshot`, 558×314): 사망 직전 Hp 8일 때 좌측 HP 바가 "…/ 800" 형식으로 표시되고 최댓값 칸이 800으로 읽힘, 부활 뒤(Hp 약 776) 바가 다시 거의 가득 찬 상태에서 "…/ 800". 우측 상대 바는 100/100. 해상도가 낮아 자릿수 자체는 확정하지 못함(최댓값 800과 채움 비율은 읽힘). 값 판정은 위 로그가 근거 | PASS(값) / 화면 자릿수는 제한적 |
+  | 실제 HP 0 사망 | 서버에서 Hp를 20으로 낮춘 뒤 자연 공격만으로 사망: `Hp=20→8→-4`, 클라이언트 `DEAD|dead=true`, `CombatCore duel player=none`(Play 내부 시험값 Hp 20, 사망은 실제 피해 경로) | PASS |
+  | 부활 뒤 Hp·MaxHp | 5초 뒤 서버·클라이언트 모두 **`Hp=800|MaxHp=800|IDLE`**(14:13:20), 대결 재개, 이후 자연 공격 12씩(788…). **1000으로 돌아간 값은 사망·부활 과정 어디에도 없음** | PASS |
+- **1000으로 돌아가는 경로**: 하나도 관찰하지 못함(시작·사망·부활·부활 뒤 피해 모두 MaxHp 800 유지). 결함 후보 없음. 소스 읽기상으로도 MaxHp를 쓰는 곳은 PlayerHealthComponent.OnBeginPlay(서버) 한 곳이다. 다만 이 시험은 사망→같은 Play 안 자동 부활까지이고, 다른 맵으로 옮겼다 돌아오는 경우(OnBeginPlay 재실행 여부)나 접속 재입장은 하지 않았다(NOT_RUN).
+- 원복: Stop → 백업 복사로 CSV 복원 → sha256 `PlayerBaseStatData.csv 3202ac06b9ebf31c13d73a2eb343ab788f5393e8b7f8255a36ad3efa815ed094`(변경 전·리뷰 기재와 **일치**), MonsterStatData.csv `f9709bd8…1dc3`, PlayerBaseStatData.userdataset `f6d8da25…5d7f` 불변. Refresh → Play: 서버 `PlayerStat applied MaxHp=1000 Hp=1000`, 클라이언트 `MaxHp=1000`(Hp 988은 자연 공격 뒤 값) → **1000으로 복귀 확인**. 경고·오류 0. 끝 git status는 run.md·WorkRecord(이 기록)·Stat.directory(범위 밖 재저장)뿐.
+- 사용 종료: 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료.
 
 ### 2026-11-04 독립 QA 8회차 — 회차 A(V11-F12·V11-F13) — 중단(사용자 일시정지)
 - 상태: **중단(사용자 일시정지) 뒤 같은 날 재개·남은 NOT_RUN 실행 완료(아래 "QA8 재개" 소절이 최신)**. 사용자 요청("작업 일시 정지")으로 진행 중이던 위치 기록 삭제 단계(D1)만 마무리하고 새 시험은 시작하지 않았다. 아래에 실제 실행한 기준만 결과를 적고 나머지는 NOT_RUN이다. FAIL·결함 없음. 독립 reviewer 대기가 아니라 **재개 뒤 남은 NOT_RUN 실행이 먼저**다.
@@ -442,6 +541,101 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-05 독립 리뷰 — 회차 B(V11-F14·V11-F07) WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 런타임 사실은 coder 개발절(2026-11-04 회차 B)과 QA9 기록을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git show/diff/status·소스 대조(Grep 포함)·`.d.mlua` 확인·변경 9경로 sha256 재계산뿐이다.
+- 검토 버전: coder 로컬 커밋 **1b4f4ee**(부모 9eed765, push 전). `git diff --name-status 9eed765 1b4f4ee`의 제품 경로는 .mlua 4개 수정(CombatRuleCatalog·MonsterManager·PlayerHealthComponent·PlayerMoveComponent)과 새 경로(PlayerBaseStatCatalog.mlua, DataSet 4파일, Maker 생성 PlayerBaseStatCatalog.codeblock·Stat.directory)뿐이다. 변경·추가 9경로의 작업 트리 sha256(CombatRuleCatalog 0eec3975…, MonsterManager 7cc5ff3a…, PlayerHealth 276e1c50…, PlayerMove 7d9a9f41…, PlayerBaseStatCatalog f20a1121…, PlayerBaseStatData.csv 3202ac06…·.userdataset f6d8da25…, MonsterStatData.csv f9709bd8…·.userdataset b5a226f2…)는 coder 기재와 모두 같고, `git diff 1b4f4ee`의 작업 트리 차이는 run.md·이 WR·Stat.directory뿐이라 커밋 트리와 작업 트리의 manifest 대상이 같다. 나머지 50경로는 9eed765와 git 객체가 같다(9eed765 작업 트리 b321d71c…040f는 coder 재계산·회차 A 리뷰 값과 같음). 모델·UI 파일은 셸 해시가 가드로 막혀 59경로 Bundle 문자열 자체(9325c33a…cd19 / 54경로 a8c96297…c5d)는 재계산하지 않았고 위 git 동일성으로 대신했다. QA9는 Play 1 시작·재개 시작·시험 끝 세 번 같은 59경로 Bundle을 기록했으므로 coder·tester·이 리뷰는 같은 제품 버전이다.
+- 범위 밖: 작업 트리 `RootDesk/MyDesk/Player/@Assist/Stat.directory` StudioVersion ""→"0.1.0.0" 한 줄(Maker 재저장, manifest 밖). 판정에 넣지 않는다. 커밋 포함 여부는 메인 결정.
+- 판정: **WAITING**. 고칠 제품 결함 없음(CHANGES_REQUIRED 없음, 새 결함 ID 없음). 남은 것: (1) V11-F14의 플레이어 최대 HP가 DataSet 값으로 실제로 바뀌는지의 런타임 근거(아래 "근거 공백", tester 추가 실행), (2) Plan §20 사용자 V11 직접 확인. 이 판정은 2단계 완료·회차 C·3단계 진행·push 승인이 아니다.
+
+#### 요청 → Plan §20 → 실제 diff 대조
+| 사용자 승인 기본안(run 2026-11-04 회차 B 시작) | 실제 변경(1b4f4ee) | 판단 |
+| --- | --- | --- |
+| 1. 플레이어 HP·이동 속도(6)·복귀 속도, 기본 공격 피해는 AttackSkillData 유지 | PlayerBaseStatData `default,1000,6,6`(serveronly false). 서버 PlayerHealthComponent.OnBeginPlay가 PlayerComponent.MaxHp·Hp를 쓰고, 클라이언트 PlayerMoveComponent.ApplyBaseStats가 MoveSpeed·ReturnSpeed를 쓴다. AttackSkillData.csv·.userdataset 무변경 | 일치 |
+| 2. 몬스터 HP·공격력·공격 간격, 몬스터마다 고유 id 행, 빈 칸 default | MonsterStatData `default,100,12,3.0`·`castleenemy,100,12,3.0`(serveronly true). 행 id = MonsterData modelid에서 `model://`를 뺀 modelKey(MonsterManager 한 곳에서 정하고 패턴 키와 공유). 빈 칸만 default 값 | 일치 |
+| 3. 몬스터 점프 제외, 4. Pos2 경계·앵커 간격 미룸 | 점프·Pos2·앵커 관련 파일·값 diff에 없음 | 일치 |
+| 값 불변·범위 밖 변경 없음 | 수치 1000·6·6·100·12·3.0 그대로. 모델·맵·.ui·기존 CSV 5종·기존 .userdataset 5종 diff 없음. `.mlua` 속성 기본값(6·6·100·12·3.0)·모델 값(DefaultPlayer maxHp, 주황버섯 MaxHp 100)도 그대로 둠(Plan 지시) | 범위 밖 변경 없음 |
+
+#### 값 출처(겹칠 때 이기는 쪽)
+- 몬스터 MaxHp: 모델 Values(주황버섯 MaxHp 100)가 .mlua 기본값 위에 오지만, 이제 서버 DoSpawn이 스폰 뒤 DataSet 값을 직접 쓴다. MonsterHealthComponent.OnBeginPlay는 `Hp = MaxHp`만 하고 MaxHp를 다시 쓰지 않으므로 OnBeginPlay가 스폰 직후든 다음 프레임이든 결과는 DataSet 값이다. **런타임 근거 있음**: QA9 Play 3과 coder Play 3에서 CSV castleenemy MaxHp 150 → 서버·클라이언트 MaxHp·Hp 150. map01에는 몬스터 배치 엔티티가 없다(Grep `castleenemy`·`MonsterHealthComponent` 0건) → 모델 값으로 도는 개체 없음.
+- 몬스터 AttackDamage·AttackInterval: 모델에 값 없음, DoSpawn이 씀. MonsterAttackComponent·MonsterStateControl의 OnBeginPlay는 두 값을 다시 쓰지 않는다(소스 확인). 첫 공격은 IDLE 누적 `attackTimer ≥ AttackInterval`과 대결 상대가 있어야 시작하므로 같은 서버 프레임에서 쓴 값이 첫 공격 전에 적용된다.
+- 이동·복귀 속도: DefaultPlayer 모델에 값 없음, 클라이언트가 이동 시작 전(`CanStart`에서 지연 적용 포함) DataSet 값을 쓴다. **런타임 근거 있음**: CSV MoveSpeed 9 → `boot speed=9.0`, OUTBOUND 0.154~0.158초.
+- 플레이어 MaxHp: 모델 `maxHp` 1000·엔진 PlayerComponent.MaxHp 기본 1000(`.d.mlua` `@Sync property integer MaxHp = 1000`)·DataSet 1000이 모두 같아 **어느 쪽이 이기는지 런타임으로 구분되지 않았다**. coder의 중도 쓰기 프로브(777)는 Play 중 쓰기 가능성만 보이고, Play 시작 시 OnBeginPlay 쓰기 뒤 엔진/모델 초기화가 다시 덮는지·부활(ProcessRevive/Respawn)이 모델 `maxHp`로 되돌리는지는 보이지 않는다. → 아래 근거 공백.
+
+#### 코드 대조 (소스 읽기)
+- 검증 규칙(ValidateStatRows·IsValidStat, 서버·클라이언트 공용): id 앞뒤 공백 제거 뒤 빈 id·중복 거부, `default` 행 없음·빈 칸·무효 값이면 표 전체 거부, default 아닌 행의 빈 칸(빈 문자열·공백)만 default 값, 비어 있지 않은 무효 값은 표 전체 거부(대체 없음), 필수 열 누락은 ReadRows가 nil, 추가 열·`#` 열은 읽지 않아 무시. MaxHp posint(`value == math.floor(value)`, "100.0" 수락), MoveSpeed·ReturnSpeed·AttackInterval 양수, AttackDamage 0 이상, NaN·±무한대는 IsFinite로 거부. Plan §20 값 검증 표와 같다.
+- 실패 시 대체 진행 없음: 몬스터 표 실패는 EnsureInitialized가 규칙·패턴과 함께 전체 거부(부분 캐시 없음) → GetMonsterStats nil → DoSpawn이 스폰하지 않음, 패턴·규칙도 nil이라 공격 시작 거부. modelKey 행 없음·`default` 키 요청은 nil + WarnOnce(default로 스폰하지 않음). 플레이어 표 실패는 서버 `_T.statsReady=false` → RefreshDuelPlayer가 대결에서 제외(몬스터 공격 없음), 클라이언트 CanStart false. 경고는 CombatRuleCatalog.WarnOnce라 원인별 한 번, OnEndPlay에서 지워 다음 Play에 넘지 않는다.
+- ExecSpace: 몬스터 값 쓰기(MonsterManager.DoSpawn)·플레이어 HP(PlayerHealthComponent.OnBeginPlay, IsBaseStatsReady)는 ServerOnly, 속도(ApplyBaseStats·CanStart)는 ClientOnly, 로더 PlayerBaseStatCatalog.GetStats는 선언 없음(호출한 쪽에서 실행)이고 `self:IsServer()`는 콜론 호출. MonsterStatData serveronly true는 서버만 읽고, PlayerBaseStatData serveronly false는 클라이언트도 읽는다(QA9 `side=server`·`side=client`). 새 `@Sync`·RPC 없음, 선언 없는 `self` 필드 없이 `_T`만 사용.
+- 적용 시점·레이스: 몬스터는 SpawnByModelId 반환 직후 같은 서버 흐름에서 MaxHp·Hp·AttackDamage·AttackInterval을 쓰고 그 뒤 CurrentMonster로 등록하므로 등록 전 공격 경로가 없다. 클라이언트 표 로드 전 입력은 CanStart가 먼저 ApplyBaseStats를 불러 막는다(표 실패면 `rejected reason=stats`). 로더 Logic의 OnBeginPlay 캐시 초기화가 컴포넌트 OnBeginPlay보다 늦게 돌아도 재읽기만 일어나고 결과는 같다(같은 파일·같은 검증, WarnOnce 중복 없음).
+- MaxHp 변경 시 Hp: 몬스터 `health.Hp = stats.MaxHp`, 플레이어 `player.Hp = player.MaxHp`로 맞춘다. 부활 Hp는 엔진 동작(QA9 (b) 1000 → 1000 관찰).
+- 대결 수락 조건: RefreshDuelPlayer에 `isvalid(stat) and stat:IsBaseStatsReady()`가 추가됐고 다른 조건·순서는 그대로다. 매 OnUpdate GetComponent 한 번이 늘었을 뿐 기존 패턴과 같다.
+- MonsterManager의 `attack._T.modelKey` 지정이 같은 컴포넌트 변수 `damage`로 옮겨졌고 modelKey 계산은 스폰 전 한 곳으로 이동했다. 동작 차이 없음.
+- 문제로 보지 않은 점: tonumber가 `0x10`·`1e2` 같은 표기도 숫자로 받는다(유효한 유한 양수면 수락). 대소문자 다른 id(`Default`)는 default 없음으로 거부된다. 둘 다 Plan 규칙 안이며 결함 아님.
+
+#### 개발·QA 근거 대조 (같은 버전, NOT_RUN을 PASS로 세지 않음)
+| Plan §20 기준 | coder | QA9 | 판단 |
+| --- | --- | --- | --- |
+| 로드 [VRF] 두 표·출처 DataSet | Play 1 | Play 1·2·5 | 충족 |
+| 플레이어 HP 1000·시작 1000·클라이언트 | Play 1 | 서버 값(Play 2·5 로그 포함), 클라이언트 1000은 Play 1 | 값 충족, HP 바 화면 NOT_RUN. **DataSet ≠ 1000일 때의 적용은 근거 없음**(아래) |
+| 플레이어 속도 6·복귀 6, 1단계 규칙 | 실제 키 | 실제 키 0.228~0.262초, 합산·잠금 | 충족 |
+| 몬스터 수치·새 상대 | Play 1 | Play 1, DoSpawn 재호출 | 충족 |
+| 공격 간격 | "IDLE→ATTACK 간격 2.96~3.01" | 시작~시작 4.003~4.030, IDLE 구간 2.92~3.03 | 값 3.0·동작 불변으로 충족. Plan 문구 "시작 간격 3.0"과 coder 기재 "전환 간격"은 실제로 IDLE 대기 구간이다(아래 분류 3) |
+| 피해 12·가드 4·HP=HitEvent | 있음 | Play 1 + Play 2 (b) 자연 공격 12 | 충족 |
+| 처치 합계 100·DEAD·DeadEvent 1 | 실제 20 + 프로브 80 | Play 1(실제 키 1 + 논리 9), 그로기 중 사망 Play 2 | 충족(아래 신뢰도) |
+| Stop → 다음 Play 재로드·시험값 비잔존 | Play 2 | Play 2·5 | 충족 |
+| CSV 실제 변경 반영·원복 byte 일치 | 있음 | 있음, 해시 일치 | 충족(MoveSpeed·몬스터 MaxHp 두 값만, Plan 지정 그대로) |
+| 빈 칸·default 문제·무효 값·키·필수 열 | 프로브 | 프로브 + 실제 무효 CSV(Play 4) | 충족(프로브 근거 표기 있음) |
+| 플레이어 표 실패 → 이동·대결 거부 | 상태 프로브 | 실제 무효 CSV + 실제 LeftArrow | 충족 |
+| 회귀 F12·F13·F06·F10·F08·V07·V08·V10 | 대표 | 대부분 + 시험값 창 30초 | 충족(F13은 시험값, V07 예고 중 팝업 NOT_RUN) |
+| tester 추가 (a)·(b) | — | (a) 재현 안 됨, (b) PASS | 아래 분류 |
+
+- **근거 신뢰도(QA9 중단·재개)**: Play 1 원본 로그는 Maker가 Play 2 시작 때 비워 남지 않았고 그 행은 tester가 당시 읽은 값을 옮긴 기록이다. Play 1에만 기대는 독립 근거는 클라이언트 PlayerComponent.MaxHp 1000, 시작~시작 4.0초, 피해 9회 합계, 처치 합계 100, (a)의 4회분이다. 이 중 클라이언트 몬스터 HP는 Play 3(150), 피해 12는 Play 2 (b), IDLE 3.0은 Play 2, (a)는 Play 3 1회로 재확인 가능한 로그가 있다. 처치 합계 100과 클라이언트 플레이어 MaxHp 1000은 독립 QA 쪽 재확인 로그가 없고 coder 결과와 값이 같을 뿐이다. 둘 다 이번 변경이 값을 바꾸지 않는 회귀 항목이고 MaxHp 100 적용 자체는 Play 2·5 로그가 있으므로 판정을 바꾸지 않는다(비차단, 신뢰도 낮음으로 기록). 버전은 중단 전후 같은 Bundle이라 Play 1 근거도 같은 버전이다.
+- **QA9 문장 과장 1곳(문서)**: QA9 "ExecSpace·구현 대조"의 "모델 값(DefaultPlayer maxHp 1000·주황버섯 MaxHp 100)은 DataSet 적용 뒤 쓰이지 않음을 CSV 변경 반영(MoveSpeed 9, MaxHp 150)으로 확인"에서 MaxHp 150은 몬스터 값이라 DefaultPlayer maxHp에는 근거가 되지 않는다. QA 원장은 reviewer가 고치지 않는다 → tester가 아래 추가 실행 기록에서 바로잡는다.
+
+#### 근거 공백 (WAITING 사유, tester 추가 실행 조건)
+- 대상: CombatCore-V11-F14 중 플레이어 최대 HP. 위 출처 분석대로 현재 근거는 값 1000끼리라 "DataSet에서 읽는다"를 보이지 못한다. Plan §20 현재 값 표가 "(1)이 MaxHp로 연결되는지는 coder가 Play에서 확인한다"로 남긴 항목도 미해소다. 사용자가 V11에서 HP를 직접 바꿔 볼 수 있으므로 그 전에 확인한다.
+- 조건(같은 버전 1b4f4ee, 한 Play 회차): PlayerBaseStatData.csv `default`의 MaxHp만 1000이 아닌 값(예 800)으로 바꾸고 Refresh → Play → 서버·클라이언트 PlayerComponent.MaxHp, 시작 Hp, HP 바 값(가능하면 표시 문자), 실제 HP 0 사망 → 부활 뒤 Hp·MaxHp를 기록. Stop → 백업 바이트로 복원 → Refresh, 해시 일치 기록(3202ac06…d094). maker_clear_logs 미호출. 시험 값은 커밋하지 않는다.
+- 결과 처리: 서버·클라이언트·부활 모두 그 값이면 V11-F14 MaxHp 근거 충족. 엔진·모델 값(1000)으로 돌아가는 경로가 하나라도 있으면 결함 후보로 planner에 반환한다(수치·모델을 맞춰 통과시키지 않는다. 모델 값 제거는 Plan 중단 조건 (3)이라 사용자 판단).
+
+#### tester 관찰 분류
+1. **(a) 예고 없는 ↓ 홀드의 PlayerGuard start 미기록** — 재현 불가로 종결, 결함 후보 아님 분류에 동의. 근거: IDLE·예고 없음 상태 5회(부팅 직후 첫 입력 포함) 모두 서버 `g=true`·시작 기록, 클라이언트 입력 수락·Player_Guard 진입에 예고 조건 분기가 없음(QA9 소스 근거, 이번 diff에 해당 파일 없음). 원인 가설(Play 준비 전 입력)은 확인되지 않은 추정이므로 사실로 옮기지 않는다. 재발하면 같은 기록 항목(클라이언트·서버 CurrentStateName, isGuarding, 시작 기록, 입력 시점과 Play 준비 상태)으로 다시 연다.
+2. **↑ 100ms 연속 탭** — 이번 회차 결함 아님, 기존 설계. 단일 100ms 탭은 시전되고, 두 번째 탭은 ATTACK 약 0.83초 동안 IDLE이 아니라 거부되는 기존 "한 동작 수락·입력 예약 없음" 규칙이다. PlayerStateControl·Player_Attack·PlayerCombatComponent는 diff 밖. coder가 남긴 "100ms 짧은 입력 문턱" 가설은 QA9 단일 탭 시전으로 부정됐다. 사용자 확인 불필요(이미 확정된 입력 규칙).
+3. **자연 공격 간격 3.0 = IDLE 대기, 시작~시작 약 4.0초** — 이번 회차 결함 아님, 기존 설계. MonsterStateControl.OnUpdate는 IDLE일 때만 `attackTimer`를 누적하고 그 파일은 diff 밖이며 값 3.0도 같다. 따라서 값 동일성 회귀는 충족한다. 다만 (i) Plan §20 확인 기준 "자연 공격 시작 간격이 전투 시계 3.0초"와 coder 기재 "IDLE→ATTACK 전환 간격 2.96~3.01"은 실제 의미(공격이 끝나 IDLE로 돌아온 뒤 다음 공격까지의 대기, 적 진행 시계 기준)와 표현이 다르다 → planner 문서 정정(비차단). (ii) 이제 사용자가 CSV `AttackInterval`을 직접 고치므로 열 의미가 사용자 기대("시작~시작")와 같은지는 **사용자 확인 항목**이다. 의미를 바꾸려면 새 요구로 planner를 거친다(이번 회차에서 고치지 않음).
+4. (b) 실제 HP 0 사망: 시작 위치·시각 기록 삭제, 부활 Hp = MaxHp 1000 PASS. 사망 직전 Hp −4는 이전부터 알려진 범위 밖 관찰(HP 음수 표시 가능성)이다.
+
+#### 문서 대조 (비차단, 회차 종료 정리)
+- Plan §20 상태 표가 "coder 대기"로 남아 있다 → 1b4f4ee, QA9 PASS(NOT_RUN 목록), 리뷰 WAITING(플레이어 MaxHp 근거 공백·사용자 V11). §20 확인 기준 "공격 간격" 행과 §5 MonsterStatData 설명에 AttackInterval = 공격 종료 뒤 IDLE 대기(적 진행 시계, 팝업·슬로우 규칙 그대로)임을 적는다. 수치·규칙은 바꾸지 않는다.
+- 이 WR 머리 "상태·갱신일"·"현재 재개 지점"이 회차 B Plan 직후 상태다.
+- run "다음 행동"에 이 판정, 1b4f4ee, 59경로 9325c33a…cd19를 적는다.
+
+#### 검사하지 않은 범위
+- reviewer는 Maker·로그·화면을 직접 보지 않았다. 59경로 Bundle 문자열은 모델·UI 파일 해시가 셸 가드로 막혀 재계산하지 않았다(git 객체 동일성과 변경 9경로 해시로 대신). .codeblock·.directory 내용은 Maker 생성물이라 대조하지 않았다.
+
+#### NOT_RUN (PASS로 세지 않음)
+- 플레이어 MaxHp ≠ 1000 DataSet 적용·부활(위 근거 공백), HP 바 화면, 사람 손 0.20초 타이밍(회차 A 사용자 수락 이력 있음), 모바일·실기기·터치·다중 접속, V07 예고 중 팝업 정지·재개 전수, F06 `parry.right` 대칭 착지·F10 출현 빈도, 실제 다른 맵 전환, 서버만/클라이언트만 표 실패 비대칭, Maker UI에서 DataSet 직접 편집, V12·CF-F07.
+
+#### 다음 행동
+1. 메인: run에 이 판정(WAITING), 검토 버전 1b4f4ee / 59경로 9325c33a…cd19를 적는다. Stat.directory 재저장 줄은 범위 밖으로 사용자에게 알리고 커밋 포함 여부를 정한다. 회차 종료 커밋 시점은 아래 2번 결과 뒤가 자연스럽다(메인 판단).
+2. tester(필수, 같은 버전): 위 "근거 공백" 조건 1회 실행과 QA9 과장 문장 정정.
+3. 사용자 V11(아래), 2번 결과 뒤.
+4. planner(문서만, 비차단): 위 "문서 대조" 정정.
+5. coder: 지금 할 일 없음. 2번에서 결함 후보가 나오면 planner·사용자 판단 뒤.
+
+#### 사용자 V11 확인 항목
+- PC에서 이동·복귀 체감이 회차 A와 같은지(값 6 그대로).
+- 원하면 `PlayerBaseStatData.csv`의 MoveSpeed(또는 MaxHp)를 직접 바꾸고 Maker Refresh → Play로 바뀌는지, 표·열 이름이 고치기에 알아보기 쉬운지.
+- 몬스터 HP·공격력·공격 간격도 `MonsterStatData.csv` castleenemy 행으로 고칠 수 있는지.
+- `AttackInterval` 3.0은 "공격이 끝난 뒤 다음 공격까지 대기 3.0초(공격 시작~다음 시작은 약 4.0초)"로 동작한다. 생각한 "공격 간격"과 같은지. 다르면 새 요구로 정한다.
+- 이동 속도 등 새 값은 사용자가 정하며 이번 회차의 값 변경이 아니다. 기존 V11 미확인(모바일·터치·음향·반격 체감·CF-F07)은 그대로 남는다.
+
+#### 보충 확인 (2026-11-05, QA9 보충 시험 1 대조)
+- 대조 대상: QA9 절 "QA9 보충 시험 1 — 플레이어 MaxHp를 DataSet이 실제로 정하는가". reviewer는 이번에도 Maker를 다루지 않았다. 직접 확인한 것은 `git status`(HEAD 1b4f4ee, 작업 트리 차이는 run.md·이 WR·Stat.directory뿐, `git diff 1b4f4ee -- RootDesk map ui Global`은 Stat.directory 한 경로)와 CSV 해시 재계산이다. PlayerBaseStatData.csv `3202ac06…d094`, MonsterStatData.csv `f9709bd8…1dc3`로 변경 전과 같다. 따라서 보충 시험은 같은 버전에서 이루어졌고 시험 값은 남지 않았다.
+- 근거 판단: `default` MaxHp 800에서 서버·클라이언트 PlayerComponent.MaxHp 800, 시작 Hp 800, `PlayerStat applied MaxHp=800 Hp=800 source=DataSet`가 나왔다. 실제 피해로 HP 0 사망한 뒤 자동 부활에서도 서버·클라이언트 `Hp=800|MaxHp=800`이었고, 1000으로 돌아간 값은 없었다. 원복 뒤 다음 Play에서는 1000으로 돌아왔다. 모델 `maxHp` 1000과 엔진 기본 1000이 DataSet 값을 덮지 않는다는 런타임 근거로 충분하다. 사망 직전 Hp는 시험값(20)으로 낮췄지만 사망은 실제 피해 경로였다. HP 바는 저해상도 스크린샷이라 자릿수 확정이 제한적이지만 값 판정은 로그가 근거다(HP 바 육안은 기존대로 사용자 V11).
+- QA9 과장 문장: "ExecSpace·구현 대조" 첫 항목에 정정 문장이 붙었다. 몬스터 MaxHp 150은 플레이어 근거가 아니라는 점과 플레이어 근거는 보충 시험 1이라는 점이 함께 적혀 해소됐다.
+- 남은 NOT_RUN(비차단): 맵을 옮겼다 돌아오는 경우와 재접속 때의 MaxHp. 소스상 MaxHp를 쓰는 곳은 서버 PlayerHealthComponent.OnBeginPlay 한 곳이고, 엔티티 속성이라 같은 엔티티의 맵 이동에서 지워질 이유는 보이지 않는다. 현재 맵은 map01 하나라 이번 범위의 위험은 낮다. 맵이 늘어나는 단계에서 한 번 기록하면 된다.
+- 결론: 앞 절의 WAITING 사유 (1) 플레이어 MaxHp 근거 공백은 **해소**됐다. 두 요구(V11-F14·V11-F07)의 AI 측 근거는 Plan §20 확인 기준을 충족한다. 고칠 제품 결함은 여전히 없다. 남은 것은 사용자 V11 직접 확인(앞 절 "사용자 V11 확인 항목", AttackInterval 의미 확인 포함)과 planner 문서 정정(앞 절 "문서 대조", 비차단)뿐이다.
+- **최종 판정: WAITING**(사용자 V11). 이 판정은 2단계 완료·회차 C·3단계 진행·push 승인이 아니다.
+- 다음 행동 갱신: 앞 절 "다음 행동" 2번(tester 추가 실행)은 끝났다. 메인은 run에 보충 시험 결과와 이 최종 판정을 적고, 회차 종료 커밋에 QA9 보충 시험·이 리뷰 절을 넣는다. Stat.directory는 범위 밖이니 사용자에게 알린다. 그다음은 사용자 V11이고, planner 문서 정정은 비차단이다. coder는 할 일이 없다.
 
 ### 2026-11-04 독립 리뷰 — 회차 A(V11-F12·V11-F13) WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 아래 런타임 근거는 coder 개발절(2026-11-04 회차 A)과 QA8(중단분 + "QA8 재개" 소절)의 실행을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git show/diff·소스 대조(Grep 포함)·`.d.mlua` 확인과 작업 디렉터리 밖 임시 node 스크립트의 지문 재계산뿐이다.

@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-04 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (회차 B 시작 여부 사용자 결정 대기)
-- 다음 행동·대기 사유: 회차 A 완료(사용자 V11 수락 2026-11-04). 회차 B 시작 여부와 시작 전 미결정(플레이어 기본 능력치 항목, V11-F07 몬스터 수치 범위, 점프 시간/높이 포함 여부, Pos2 경계·앵커 DataSet 여부, Maker 재저장 3파일 처리) 사용자 결정 대기. 3단계 자동 시작 없음.
+- 현재 담당: 없음 (회차 B 사용자 V11 확인 대기)
+- 다음 행동·대기 사유: 회차 B 리뷰 WAITING(결함 0). 사용자 V11(이동 체감, CSV 직접 수정 반영, 표·열 이름, AttackInterval 의미, HP 바 자릿수) 대기 → 결과에 따라 회차 C(§18, 시작 전 애니메이션 등 질문). 2단계 완료·3단계는 사용자 결정, 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -279,3 +279,28 @@
 - 기존 V11 미확인 항목(모바일·터치·음향·반격 체감·CF-F07)과 비차단 후속 2건(예고 없는 ↓ 홀드 가드 시작 기록, 실제 HP 0 사망 뒤 기록 삭제)은 그대로 남음.
 - planner(msw-planner) 문서 반영 호출.
 - planner 수락 반영 완료: Plan §19 V11-F12·V11-F13 ✅(사용자 V11 수락), WorkRecord 머리·재개 지점, 로드맵 재개 지점. GameDesign 변경 없음(이미 반영). 커밋 [CombatCore][plan].
+
+## 2026-11-04 회차 B 시작 (플레이어 기본 능력치 DataSet + V11-F07 몬스터 수치 DataSet)
+- 사용자 "기본안으로 시작": 메인 제안 1~4 기본안 승인.
+  1. 플레이어 기본 능력치 항목 = HP, 이동 속도(초기 6, 확정), 복귀 속도. 기본 공격 피해는 AttackSkillData에 그대로 둔다(이중 원본 방지).
+  2. 몬스터 수치 = HP·공격력·공격 간격, 몬스터마다 고유 id 한 행, 빈 칸은 기본값.
+  3. 몬스터 점프 시간·높이는 회차 B에서 제외(로드맵 6단계).
+  4. Pos2 경계·BattlePos 앵커 간격 DataSet 이동은 미룸.
+- 5번(Maker 재저장 3파일)은 사용자 결정 대기. 메인 확인 결과: 두 userdataset은 CoreVersion 26.7.0.0→26.10.0.0 한 줄씩. 주황버섯 모델은 CoreVersion·타입 버전 문자열 26.10, 실수 표기 차(0.045→0.0449999869) 1건, 스크립트 상태 속성 17개 값(Enable·attackTimer·isStunned·stunDeadline·Jump* 등, 모두 0/false/-1/(0,0) 기본값) 추가. 몬스터 수치(HP·공격력) 고정값 추가는 없음. coder 시작 전 처리 결정 필요.
+- planner(msw-planner) 회차 B Plan 작성 호출.
+- 5번 처리: 사용자 "따로 커밋"(2026-11-04). 메인이 Maker 재저장 3파일만 [ops] 9eed765로 커밋·push. coder 시작 전 조건 해소.
+- planner 회차 B Plan §20 완료: CombatCore-V11-F14(플레이어 MaxHp 1000·MoveSpeed 6·ReturnSpeed 6) + V11-F07(몬스터 MaxHp 100·AttackDamage 12·AttackInterval 3.0). 새 표 PlayerBaseStatData(serveronly false)·MonsterStatData(serveronly true, default·castleenemy 행). 값 변경 없음, 실패 시 대체 진행 없이 거부. 남은 비차단 결정: 표·열 이름, default 행 값 방식(planner 기본안).
+- coder(msw-coder) 호출.
+- coder(msw-coder 독립 실행) 회차 B 완료: 중단 조건 해당 없음, 기본 검증 실패 없음, 범위 밖 재저장 없음. Maker map01 edit 확인(메인). 로컬 커밋 **1b4f4ee**(push 안 함). 버전 지문: 기존 54경로 작업 트리 Bundle a8c96297…fcc5d, 새 59경로 Bundle 9325c33a…bcd19(이후 기준). 근거: WorkRecord "2026-11-04 coder V11-F14·V11-F07 구현·기본 검증 인계 (회차 B)".
+- tester(msw-tester) 호출.
+- tester QA9: 2026-11-04 사용량 제한(429)으로 중단 → 2026-11-05 사용자 "다시 시도해 주세요"로 같은 tester 재개. 실행 기준 전부 PASS, FAIL·결함 후보 0. 59경로 Bundle 9325c33a…bcd19 세 번 일치. (a) 예고 없는 ↓ 홀드 가드 시작 기록 미발생 재현 안 됨(5회 모두 기록, 예고 분기 없음 — 결함 후보 아님). (b) 실제 HP 0 사망 뒤 기록 삭제·부활 Hp 1000 PASS. ↑ 100ms 연속 탭은 기존 ATTACK 잠금 규칙(변경 무관). 범위 밖 재저장: Stat.directory StudioVersion ""→"0.1.0.0"(기록만). Maker edit. 근거: WorkRecord QA9 절.
+- reviewer(msw-reviewer) 호출.
+- reviewer(msw-reviewer 독립 실행) 판정 **WAITING**: 제품 결함·CHANGES_REQUIRED 없음, 대상 1b4f4ee / 59경로 Bundle 9325c33a…bcd19(리뷰는 git 동일성으로 확인). 사유: 플레이어 MaxHp는 모델 maxHp·엔진 기본값·DataSet이 모두 1000이라 DataSet 적용 근거가 없음 → tester 보충 필수. 문서 정정: AttackInterval 의미 = 공격 종료 뒤 IDLE 대기(시작~시작 약 4.0초), QA9 과장 문장 1건. 근거: WorkRecord "2026-11-05 독립 리뷰 — 회차 B(V11-F14·V11-F07) WAITING".
+- 메인 결정: Stat.directory StudioVersion 재저장은 이번 회차에 새로 생긴 폴더의 Maker 메타데이터라 회차 커밋에 포함(사용자에게 알림).
+- tester(msw-tester) 보충 호출.
+- tester QA9 보충 시험 1 PASS: default MaxHp 800 임시 변경 시 서버·클라이언트 MaxHp 800, 시작 Hp 800, 실제 HP 0 사망→부활 Hp 800, 1000 복귀 경로 없음. 원복 sha256 3202ac06…d094 일치, 다음 Play 1000 복귀. Bundle 9325c33a…cd19 원복 뒤 일치. QA9 과장 문장 정정. Maker edit.
+- reviewer(msw-reviewer) 보충 근거 확인 호출.
+- reviewer 보충 확인: 플레이어 MaxHp 근거 해소, 최종 판정 **WAITING**(사용자 V11). 결함 없음. 남은 NOT_RUN(비차단): 맵 이동 뒤 복귀·재접속 시 MaxHp.
+- planner(msw-planner) 문서 정정 호출.
+- planner 문서 정정 완료: Plan §5·§20(AttackInterval = 공격 종료 뒤 IDLE 대기 3.0초, 상태 표 🟡 사용자 V11 대기, (a) 종결·(b) PASS), §8·§9, WorkRecord 머리·재개 지점, 로드맵 재개 지점, GameDesign §8 전투 구성 행(2026-11-04 확정 수치 DataSet 기본안 동기화). 메인이 §9 이력 행의 GameDesign 문구 1곳 보정.
+- 회차 종료 커밋 [CombatCore][review] WAITING (Stat.directory Maker 메타데이터 재저장 포함).
