@@ -2,7 +2,7 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: IN_PROGRESS
+- 상태: PAUSED
 - 갱신: 2026-11-05 / 메인 조율 채팅(Claude Code)
 - 현재 담당: 메인 (회차 C Plan §21·FileStructure.md 작성 완료, 사용자 확인 대기)
 - 다음 행동·대기 사유: WAITING_USER — 머쉬맘 애니메이션 연결 기본안 확인(Plan §21 "coder 시작 전 사용자 확인") + 사용자 재개 지시. 재개 전 coder 시작 없음. 3단계 자동 시작 없음.
@@ -356,4 +356,14 @@
 - 사용자 "작업재개". 기준 커밋 e94b981(제품 파일은 8f16a81과 같음), 작업 트리 변경 PlayerBaseStatData.csv(사용자 100·12·12)·run.md. msw-coder 호출.
 - coder 반환 STOPPED(중단 조건 3): 구현·통합 런타임 1회 완료(빌드 오류 0, 규칙 6개·구간 선언·삭제·키 전환·표시 시계열·die1 1.100초 고정 확인). 파일 EntryKey는 mushmom·orangemushroom 정상이나 Refresh 2회 뒤에도 Maker가 옛 키 castleenemy(옛 내용 Scale 2·stun)를 스폰함. 제품 동작 영향 없음, 대체 구현 없음. 최종 55경로 Bundle 47bdb6a834a5b8a7daec27a3bea8fabbe22b8c74454912048d9f3c202bc0aa7d. Maker edit·사용 종료.
 - 메인: 옛 항목이 같은 파일 경로를 가리켜 Maker 저장 때 주황버섯 모델을 옛 내용으로 되돌릴 위험 → 버전 고정을 위해 [code] 로컬 커밋 먼저(PlayerBaseStatData.csv 사용자 값 포함, V11-F15).
+- 사용자 선택: 중단 조건 3 선택지 1(Maker 월드 다시 열기). 사용자 완료 알림 대기. 완료 뒤 메인 git 확인(주황버섯 모델 되돌림 여부, 5a605ba 기준) → tester 첫 단계로 castleenemy 스폰 nil 확인.
+- 사용자 "다시 열었어". 메인 git 확인: (1) 주황버섯 모델 파일이 Models/Monsters/에서 RootDesk/MyDesk/ 바로 아래로 옮겨짐(의미상 내용은 5a605ba와 같음, 숫자 표기만 6→6.0 등). (2) Mushmom 모델 숫자 표기만 재저장(의미 차이 0). (3) .directory 3개 CoreVersion 26.7→26.10. 메인·담당 편집 아님. 사용자가 직접 옮겼는지 확인 대기, tester 보류.
+- 사용자 "안 옮겼어" → Maker가 월드 재로드 때 주황버섯 모델을 MyDesk 루트로 옮긴 것으로 판단(옛 castleenemy 항목 정리 부작용 추정, 원인 미확인). 사용자에게 Maker 작업 공간에서 Models/Monsters로 되돌려 달라고 요청(디스크 직접 이동은 옛 항목 재발 위험). 완료 뒤 메인 git 확인 → tester.
+- 사용자가 Maker에서 주황버섯 모델을 Models/Monsters로 되돌림. 메인 확인: 원래 경로, 5a605ba와 의미 차이 0(숫자 표기만), 루트 사본 없음. 남은 변경은 Maker 재저장(.directory 6개 CoreVersion 26.7→26.10, 모델 2개 숫자 표기) → 별도 로컬 커밋 [ops](2026-11-04 사용자 "따로 커밋" 선례), push는 회차 종료 때 함께. tester 대상 버전은 이 커밋(제품 의미는 5a605ba와 같음).
+- tester 독립 QA10(대상 b4adbdd, 55경로 Bundle 222e7a041b619cc26bb3bd51492a352cd95a41c42259fc8f6f06e9c5e03b476d, 5a605ba 재계산 47bdb6a8… 일치, 차이 모델 2경로만): 실행 기준 전부 PASS, FAIL·NEEDS_DECISION 없음. 첫 단계 castleenemy·CastleEnemy 스폰 nil(중단 조건 3 해소). NOT_RUN: 머쉬맘 실제 화면, move·hit1 길이, 사람 손 타이밍, 모바일·실기기·다중 접속. 관찰: 재스폰 몬스터 서버 SpriteRenderer 프레임 범위 0-0(첫 스폰 0-2147483647) — 1프레임 클립이라 영향 없음, 회차 D 다프레임 공격 클립(attack1·skill1)에 영향 가능성 → 회차 D planner·coder 확인 항목. Maker edit·사용 종료.
+- msw-reviewer 호출.
+
+## 2026-11-05 reviewer 일시정지
+- 사용자 요청으로 msw-reviewer 중지. 중지 시점은 Foundation 참조 읽기 단계로 WorkRecord·제품 파일 변경 없음(git status 확인). 판정 없음.
+- [ops] 로컬 커밋(run.md + WorkRecord QA10 절). push는 보류: 아직 리뷰 안 된 [code] 5a605ba가 같이 올라가므로 회차 종료 커밋 때 함께 push.
 

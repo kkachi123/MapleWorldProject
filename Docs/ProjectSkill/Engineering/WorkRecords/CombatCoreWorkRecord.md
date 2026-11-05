@@ -1843,3 +1843,97 @@
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
 - 중단 조건 3의 처리는 사용자 선택이 필요하다(Maker 작업 공간 재로드 또는 Maker에서 castleenemy 항목 삭제). 처리 뒤 Play에서 `SpawnByModelId("castleenemy")`가 nil인지 확인하면 된다. 주의: 옛 항목이 같은 파일 경로를 가리킬 수 있어 재로드·저장 뒤 `주황버섯.model`이 옛 내용(Scale 2·stun 키·키 castleenemy)으로 되돌아가지 않았는지 git diff로 확인해야 한다.
 - tester가 확인할 것: 위 표 전부를 같은 방법으로 독립 재현(특히 규칙 6 접근·복귀·걸친 공격, 패링/저스트 복귀 중 공격, 박스 축소, 주황버섯 스폰 거부, 스킬 표 검증), 회차 A F12·F13, 회차 B DataSet 로드·실패 동작, V07·V08 팝업 정지(구간 선언 유지)와 Stop 뒤 다음 Play 구간 none, 몬스터→플레이어 판정 회귀. 주의: maker_clear_logs를 호출하지 말고 로그는 저장된 JSON 파일을 시각·`[VRF…]` 표지로 거를 것. `pause.IsPaused`를 직접 쓰는 시험은 쓰지 말고 소유자를 지정한 SetServerPaused를 쓸 것.
+
+### 2026-11-05 독립 QA 10회차 — 회차 C(CombatCore-MM-01~06·V11-F15)
+- 상태: **실행 완료.** 실행 기준 PASS, FAIL·NEEDS_DECISION·새 결함 없음. coder 중단 조건 3(옛 키 castleenemy 항목 잔존)은 사용자의 월드 재열기 뒤 **해소 확인**. 독립 reviewer 대기. NOT_RUN과 사용자 직접 확인은 아래 절.
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품 코드·모델·맵·UI·DataSet·CSV 수정 없음, commit·push 없음, **maker_clear_logs 호출 없음**(Maker 로그는 저장 파일을 `[T10`·`[VRF` 표지와 시각으로 걸러 읽음). coder 개발절의 PASS는 이번 실행으로 세지 않았고 아래 표는 모두 이번 Play의 서버·클라이언트 프로브와 실제 키 입력 근거다.
+- 대상 버전: HEAD **b4adbdd**(= coder `[code]` 커밋 5a605ba + 그 위 `[ops]` Maker 재저장). 55경로 manifest(경로 `LC_ALL=C sort`, 경로 + TAB + sha256 + LF 연결의 SHA-256, 확장자 .mlua·.model·.stateset·.userdataset·.csv·.map·.ui·.config·.collisiongroupset, Global·RootDesk·map·ui 아래) **Bundle SHA-256 `222e7a041b619cc26bb3bd51492a352cd95a41c42259fc8f6f06e9c5e03b476d`**. 같은 계산법으로 5a605ba 커밋 트리는 `47bdb6a834a5b8a7daec27a3bea8fabbe22b8c74454912048d9f3c202bc0aa7d`(coder 기록과 일치)였다. **5a605ba→b4adbdd의 manifest 차이 경로는 2개뿐**이다: `RootDesk/MyDesk/Models/Monsters/Mushmom.model` dfb42223…→c1570deb6067…, `RootDesk/MyDesk/Models/Monsters/주황버섯.model` f8737cba…→87686d37a01e…. 다른 53경로 해시는 같고, manifest 밖 변경은 `.directory` 6개(CoreVersion)다(`git diff --stat 5a605ba b4adbdd`: 8파일). 모델 두 파일의 변경이 숫자 표기뿐이라는 의미 비교는 메인의 JSON 비교를 따랐고(모델 파일은 셸 읽기가 금지돼 내가 diff를 보지 않았다), 대신 Play에서 스폰한 모델의 Scale·ActionSheet·HitComponent·DamageSkinOffset 값을 직접 읽어 확인했다(아래 첫 단계). 작업 트리는 시작 때 run.md만 변경이었고 시험 뒤에도 run.md만 변경, 작업 트리 55경로 해시 목록이 b4adbdd와 **완전히 일치**(Play 전후 제품 파일 무변경).
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186(앞 회차 기록과 같음). TileMapMode는 앞 기록(0 MapleTile)을 따랐고 다시 읽지 않았다. build 로그 83건 모두 Info(LIA 1114/1115 동적 참조), 오류 0·경고 0, 시험 전·후 동일(같은 시각 20:39:19 항목). Play 2회(Play 1 20:43~20:55 본 시험, Play 2 20:56 Stop 뒤 기본 상태 확인), 마지막 Stop 뒤 map01 / edit 확인. 런타임 로그 요약: Error 2건(내가 의도한 `SpawnByModelId("castleenemy"/"CastleEnemy")` LEA-3028), Warning 21건(모두 내 무효 데이터 프로브가 의도적으로 낸 것), 정상 구간 LEA/LWA 없음.
+- 방법 구분: (A) 서버·클라이언트 프로브 = maker_execute_script(server_main·client). (B) 실제 키 입력 = maker_keyboard_input. 서버 `player.StateComponent:ChangeState("ATTACK"/"GUARD")`는 **논리 경로**(UpArrow/DownArrow 실제 키와 구분해 아래에 표기). 시험값(Play 내부): 몬스터 AttackInterval 9999(자연 공격 억제), 판정 창 JustWindowSec·ParryWindowSec 30초, 패턴 표 단일 행 교체, 몬스터 Hp·플레이어 Hp 설정, 몬스터 HitComponent BoxSize 0.4×0.4, 모션 Segment 직접 값, 소유자를 지정한 `SetServerPaused`. 모두 시험 끝에서 복원을 로그로 확인했고(`windows restored just=0.2 parry=0.2`, `restored patterns=4`, `box restored=(1.200, 1.100)`) Stop으로 폐기됐으며, 새 Play 2 시작에서 기본값을 다시 확인했다(아래 V08).
+
+#### 첫 단계 — 옛 키·모델 등록 확인 (coder 중단 조건 3)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| `SpawnByModelId("castleenemy")`·`"CastleEnemy"` | A | 둘 다 nil, `[LEA-3028] MissingModel : Model 'castleenemy'/'CastleEnemy'가 없습니다.` 각 1건(의도한 프로브 오류). 옛 내용(Scale 2·stun 키)으로 스폰되지 않음 | PASS (조건 3 해소) |
+| `model://mushmom` 등록·내용 | A(스폰해 읽고 즉시 Destroy) | Scale (1,1,1), SpriteRUID = stand 86015373…, ActionSheet **정확히 5키**: die ec90f0b6…·hit 90fee941…·jump 5ecbcc40…·move c745828d…·stand 86015373…(Plan 표와 일치), stun 키 없음, HitComponent BoxSize (1.2,1.1)·ColliderOffset (0,0.55), DamageSkinOffset (0,1.1) | PASS |
+| `model://orangemushroom` 등록·내용 | A | Scale (1,1,1), ActionSheet 5키(die 65a2bfb0…·hit aec9504d…·jump 94bbe2a7…·move 6ad988b3…·stand 96e955c1…), **stun 키 없음**, BoxSize (0.63,0.58)·Offset (0.045,0.29)·DamageSkinOffset (0,0.3) | PASS |
+| MonsterManager 스폰 | A | 부팅 스폰 엔티티 이름 `머쉬맘`, Scale 1.0, 시작 SpriteRUID 86015373…(stand), MonsterData `머쉬맘 / model://mushmom` | PASS |
+
+#### 자동 검사 — 전환·삭제 (Plan §21 확인 기준)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 로드 [VRF] | A | `catalog ready rules=1 patterns=4 monsterStats=2`, `MonsterStatData id=default/mushmom 100·12·3.0`, `PlayerBaseStatData side=server`·`side=client default MaxHp=100 MoveSpeed=12 ReturnSpeed=12`, `PlayerStat applied MaxHp=100 Hp=100`, `MovementInput boot speed=12.0 return=12.0`. 패턴 `GetPatterns("mushmom")` 4행 parry.left·parry.right·parry.any·special.random = Weight 2·2·2·1(modelId mushmom). `GetPatterns("castleenemy")` nil(경고 1회), orangemushroom 패턴·수치 행 없음. AttackSkillData player.basic Damage 1·AttackCount 10·FrameCount 14·ruid 5308ef85…, **열 7개 id·name·ruid·FrameCount·Direction·Damage·AttackCount**(범위 4열 없음) | PASS |
+| 표시 시계열 — 서버·클라이언트 SpriteRUID | A(30ms 폴링 변경 기록) | 접근 jump(5ecbcc) → **착지 stand(860153, x=0.75, 시작 +0.504초)** → 복귀 jump → IDLE stand(x=3.0). 서버·클라이언트 같은 순서(예고 1.0초 사례: 서버 612.745 jump·approach → 613.249 stand x=0.75 → 613.772 jump·return → 614.261 stand·IDLE). 그로기 전체 hit(90fee9)(서버 STUN·hit, 클라이언트 STUN·hit), 그로기 종료 stand(860153)·IDLE. 피격 반응은 SpriteRUID가 stand 유지(엔진 HIT 상태, 앞 회차와 같은 구조). **STUN 진입 뒤 hit를 다른 값으로 바꾸는 갱신 없음**(서버·클라이언트 모두 그로기 내내 90fee9, 그로기 중 피격 10타에도 유지). 사망 die는 아래 F12 | PASS |
+| 빌드·등록 | A+B | 빌드 로그 오류 0(위). `_DataService:GetTable("AssistModel")` nil. 플레이어 엔티티의 `script.AttackRangeGizmo`·`script.AttackRangeTuner` GetComponent nil. `model://orangemushroom`·`model://mushmom` 등록, `model://castleenemy` 없음 | PASS |
+| grep | git grep / Grep 도구 | 제품 파일(Global·RootDesk·map·ui)에서 castleenemy·AttackRangeGizmo·AttackRangeTuner·AssistModel·ShowAttackRangeGizmo·AttackOffset·AttackRangeWidth·AttackRangeHeight·27e5fe09·attackOffset(대소문자 무시) **일치 0**. 남은 것: 빈 폴더 메타데이터 `@Assist/RangeGizmo.directory`·`Player/@Assist/AttackRange.directory`(coder 기록과 같음, 이동 회차 확인 대상) | PASS |
+| 주황버섯 스폰 거부 | A(프로브 근거: MonsterManager.data를 orangemushroom 한 행으로 바꿔 DoSpawn 2회, 끝나고 원래 표 복원) | `[VRF] MonsterManager spawn refused key=orangemushroom reason=stats` 2회, **경고 `monster stat row missing: orangemushroom` 1회만**, 현재 상대 그대로(`sameMonster=true`), default로 스폰하지 않음 | PASS |
+| 스킬 표 검증 | A(프로브 근거: 가짜 표 연결, 끝나고 원래 표·캐시·경고 복원) | 3열 정상(옛 범위 열에 쓰레기 값을 넣어도 무시) → 수락 D=1 A=10 F=14. Damage 누락·−1·nan, AttackCount 0·1.5, FrameCount 0, ruid 빈 칸 → **모두 거부**(각 경고). 복원 뒤 실제 player.basic 1/10/14 | PASS |
+
+#### 자동 검사 — 피격 규칙 (MM-03)
+| 기준 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 모두 통과 | 논리(서버 ChangeState ATTACK) + **실제 UpArrow 100ms 탭 1회** | IDLE 몬스터에 10타: `PlayerHitRule pass hit=1~10`, HitEvent 10회·합계 10, 몬스터 Hp 100→90(= HitEvent 합계 = 피해 숫자 1×10). 논리 사례와 실제 키 사례가 같은 결과. 규칙 확인 횟수 타격당 2회(예약 시각 1 + IsAttackTarget 1)로 10타에 +20, 규칙 목록 생성 **Play 전체 builds=1**(`list built rules=6 builds=1` 1줄, 누적 checks 223 후에도 1) | PASS |
+| 접근 점프 중 | A(몬스터 ATTACK 시작 0.05초 뒤 시전, parry.left 강제) | hit 1~10 모두 `fail rule=targetHittableSegment`, HitEvent 0, 몬스터 Hp 변화 없음, 규칙 확인 +10(타격당 1회) | PASS |
+| 복귀 점프 중 — 무대응 | A(몬스터 시작 +0.55초 시전) | hit 1~10 모두 fail, 피해 0 | PASS |
+| 복귀 점프 중 — 패링 | A(서버 GUARD 논리 + 복귀 중 시전) | PARRY 판정 217.773, 시전 factor 2.2(보너스 시전 시작에 소비): hit 1~9 fail, **복귀 끝·그로기 진입 순간 hit 10 pass**(HitEvent 1·합계 2 = floor(2.2)) | PASS |
+| 복귀 점프 중 — 저스트(슬로우 ×0.5) | **실제 LeftArrow 탭** + 복귀 중 시전 | JUST 판정 445.179, 슬로우 2.0초 ×0.5, 복귀가 전투 시계 약 1.0초(445.18→446.2), 복귀 중 시전(factor 2.2): HitEvent 0·피해 0(전부 fail). 보너스 소비됨 | PASS |
+| 착지 뒤 | A | 무대응 복귀 뒤 IDLE 시전 10타 모두 pass(Hp 100→90) | PASS |
+| 걸친 공격 | A(몬스터 시작 +0.85초 시전) | **hit 1~4 fail, hit 5~10 pass**(복귀 완료 IDLE 직후), HitEvent 6·Hp 100→94 | PASS |
+| 그로기 중 | A(패링 → STUN 진입 직후 시전) | 반격 남은 1.491초, 10타 모두 pass, factor 2.2: HitEvent 10·합계 **20**(2/타), 몬스터 Hp 100→80. 그로기 중 보너스 없이 시전(factor 1): 10타 pass·합계 10 | PASS |
+| 반격 창 기록 | A + **실제 DownArrow 홀드(PARRY)·실제 LeftArrow 탭(JUST)** | **패링**: 판정 500.819, 반격 until 502.819(+2.0), STUN 진입 501.335, 그로기 종료 502.839(그로기 1.5초) → 피격 가능 구간 약 1.48~1.5초. **저스트**: 판정 473.973, until 475.973, 복귀 완료 IDLE 474.981(복귀 1.008초), 그때 `counterRemaining=0.992` → 피격 가능 약 1.0초. 복귀 완료 IDLE 직후 시전: factor 2.2, HitEvent 10·합계 20 | PASS |
+| 크기 무관 | A(HitComponent BoxSize (0.4,0.4)로 줄인 뒤 시전, 끝나고 (1.2,1.1) 복원) | pass 10, HitEvent 10·합계 10, Hp 100→90. 모양은 몬스터 WorldPosition + ColliderOffset×Scale = **(3.000, 1.131)**에 놓은 0.1×0.1 상자(콜라이더 크기와 무관) | PASS |
+| 확인 시점·재사용 | 위 로그 집계 | 규칙 확인은 타격 예정 시각에만(타격당 [VRF] 1줄: pass 또는 fail), 규칙 목록 생성은 Play당 1회(builds=1). 시전 0.12초 뒤 취소 시 이후 예약 타격 해제(HitEvent 4·규칙 확인 +8 뒤 더 늘지 않음) | PASS |
+| 규칙별 실패 이름 | A(프로브 근거: 합성 시전 스냅샷 `CheckHitRules`/`RuleTargetAlive` 직접 호출) | 플레이어 IDLE → `sameCast`; 방어자=플레이어 → `currentOpponent`; 시전 맵=/maps → `sameMap`; **소유자를 지정한 `SetServerPaused(true)` 뒤 0.15초에 `notPaused`**, 재개 뒤 다시 `sameCast`; 대상 생존 true / IsDead true→false / Hp 0→false(추가 스폰한 머쉬맘, 끝나고 Destroy); 상대 아닌 몬스터 → `currentOpponent`. 구간 선언: Segment none→hittable true, approach·return→false, ApproachHittable=ReturnHittable=false | PASS (규칙 1·2·4·5는 프로브 근거, 규칙 3 일부와 규칙 6·취소는 실제 흐름) |
+
+#### 회귀 표 (플레이어 100·12·12 기준)
+| 기존 근거 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 회차 A F12 — IDLE 피격 사망 | A(Hp 5, 실제 10타 피격 경로) | HIT→DEAD, `MonsterDie start frames=6 total=1.100 freezeAfter=0.800`, 서버·클라이언트 SpriteRUID die(ec90f0), 0.8초 뒤 `freeze frame=5`(fr 5-5), +3.3초에도 5-5 유지(머쉬맘 die1: 프레임 6개, 총 1.100초) | PASS |
+| 회차 A F12 — 그로기 중 사망 | A(ApplyGroggy 1.5 뒤 0.5초 ApplyDamage 999) | STUN·hit → DEAD·die, 같은 start/freeze 로그, 클라이언트 STUN\|die(1틱)→DEAD, +4.3초에도 5-5 | PASS |
+| 회차 A F13 — Pos2 시작 PARRY | **실제 DownArrow 홀드**(판정 창 30초 시험값) | `PlayerGuard start x=0.000`, `guard eval x=0.000 cellOk=true areaOk=true attr=PARRY`, `defense kind=PARRY rate=0`, 플레이어 Hp 100 유지, 반격·그로기 | PASS(시험값) |
+| 회차 A F13 — Pos2 시작 JUST | **실제 LeftArrow 탭 2건**(판정 창 30초 시험값) | `PlayerEvade start x=0.000`, `evade eval x=0.000 cellOk=true areaOk=true dir=LEFT`, `defense kind=JUST rate=0`, 슬로우 2.0×0.5, 반격 | PASS(시험값) |
+| 회차 A F13 — 끝 칸 1칸 공격 무보상 | **실제 LeftArrow 홀드**(RIGHT·PARRY·앵커 1~1, 판정 창 30초) | 플레이어 x=−1.5 홀드, `evade eval x=0.000 cellOk=true areaOk=false dir=LEFT`, `defense kind=HIT rate=1 nativeHit=true`, Hp 100→88(−12), 반격·슬로우 없음 | PASS(시험값) |
+| 서버 기록 x 대 클라이언트 segment.startX (속도 12) | 실제 키 4건(JUST 2·끝 칸 홀드 1·UI 합산 1 포함) | 서버 `PlayerEvade start x=0.000` / 클라이언트 `MovementInput phase=OUTBOUND x=0.0` 차이 **0.000**(로컬 Maker에서는 지연이 없어 허용 여유 절반 문제는 재현되지 않음). 서버 `PlayerGuard start x=0.000`(실제 DownArrow). 실기기 지연은 NOT_RUN | PASS(로컬) / NOT_RUN(실기기) |
+| F06·F10 — 패턴 4행·선택, 2칸 중간 착지·점프 0.5초·판정 시각 | A | 4행 Weight 2·2·2·1(위). 자연 공격에서 parry.right(min −2.0 max 0.5)·parry.left(−0.5~2.0)·parry.any(−0.5~0.5, target 2)·special.random(1.0~2.0, target 3) 모두 선택·판정(Play 1 부팅 직후 10회, Play 2 8회). parry.left 강제 사례: 몬스터 x 3.0→**0.75 중간 착지**, 점프 +0.504초, 판정 시각 = 시작 + 예고(0.5·1.0 사례 모두 일치) | PASS |
+| F08·F02 — 패링 → 복귀 뒤 그로기 1.5초, 그로기 중 hit | A + 실제 DownArrow | 복귀 0.5초 뒤 STUN(hit 90fee9), 그로기 1.5초 뒤 IDLE(stand): `groggy applied deadline=502.835`, 종료 관측 502.839 | PASS |
+| V07 — 예고(접근) 중 정지·재개 | A(소유자 지정 `SetServerPaused`, 서버 경로) | 접근 +0.2초에 정지: 전투 시계 612.936 고정(1.5초), x 2.064 고정, Segment=approach 유지, 피격 가능 false, JumpActive true, 정지 중 시전 시도는 `active=false`·HitEvent 0·규칙 확인 0. 재개 뒤 판정 613.737(시작 612.728 + 예고 1.0, 정지 구간 제외), 복귀 | PASS(서버 정지 경로) |
+| V07/V08 — 복귀 점프 중 정지, 구간 선언 유지 | A | 복귀 +0.15초에 정지 1.2초: 시계 613.896 고정, x 1.465 고정, **Segment=return 유지**, 피격 가능 false, 시전 거부(HitEvent 0·checks 0). 재개 뒤 IDLE·Segment none·x=3.0·IsPaused false | PASS |
+| V08 — Stop 뒤 다음 Play 기본 상태 | A | 복귀 점프 중 정지한 채(`Segment=return` 유지, 패턴 1행, AttackInterval 9999) **Stop → 새 Play 2**: `IsPaused=false owner=nil seg=none jumpActive=false mstate=IDLE patterns=4 windows=0.2/0.2 AttackInterval=3.0 monHp=100.0 monName=머쉬맘 scale=1.0 hitBox=(1.200, 1.100)`, `ruleBuilds/ruleChecks=nil`(새 Play에서 새로 시작). 시험값 비잔존(플레이어 Hp 52/100은 그 사이 자연 공격 4회 12씩) | PASS |
+| V10 — 이동·방향키·UI 출처·반환 잠금·타수 | B + A(클라이언트 `RequestChangeState` 논리 호출) | 이동 OUTBOUND 1.5 거리 `elapsed` 0.121~0.139초(1.5/12 = 0.125), 복귀 RETURNING 0.122~0.158초(중간에서 복귀 시작한 부분 거리는 0.087초). UI 출처 `RequestChangeState("LEFT","ui.left")` 수락·`MOVE\|HOLD`, 홀드 중 `RIGHT` 거부, 해제 직후 반환 중 `RIGHT` **거부(잠금)**, 복귀 완료 뒤 수락. **실제 LeftArrow 홀드 + UI 출처 합산**: 합산 수락(`sources=true/true`), 실제 키를 놓아도 UI 출처가 남아 `MOVE\|HOLD x=−1.5` 유지(+0.5초 뒤에도), UI 해제 뒤에만 RETURNING→IDLE. 기본 공격 타수 10(위) | PASS (키 출처 실제, UI 출처 논리 호출) |
+| 회차 B — DataSet 로드·검증·실패 동작 | A(프로브 근거: 검증 함수 직접 호출) | 몬스터 수치 표: default만·빈 칸 default 대체 → 수락; default 행 없음·default 빈 칸·MaxHp 0/1.5/abc·AttackInterval 0·중복 id·빈 id → 거부(원인별 경고). 플레이어 표: 100/12/12 수락; MoveSpeed 0·ReturnSpeed −1·MaxHp 1e999·default 빈 칸 → 거부. (CSV 파일 실제 변경은 이번 범위가 아니라 하지 않음) | PASS |
+| 회차 B — 플레이어 MaxHp 100·시작 Hp 100, 몬스터 피해 | A | `PlayerStat applied MaxHp=100 Hp=100`, 서버 PlayerComponent MaxHp 100. 무대응 자연 공격 12씩(100→88→…→52, 4회). 일반 가드(GUARD·NORMAL, 서버 GUARD 논리 상태): `defense kind=GUARD rate=0.4`, Hp 100→**96(−4)**; 같은 패턴 무방어: kind HIT, 100→88(−12). HP 바 육안은 NOT_RUN | PASS(값) |
+| 몬스터→플레이어 칸 규칙·콜라이더·EvaluateDefense | A + 실제 키 | 위 JUST·PARRY·끝 칸 HIT·GUARD·무대응 결과가 회차 B 값과 같음(MonsterAttackComponent 무변경) | PASS |
+
+#### coder 관찰 1건 확인 — 그로기 중 피격 때 클라이언트 StateComponent HIT / 서버 STUN
+- 이번 Play 재현: 그로기 중 플레이어 10타(논리·factor 1 및 2.2) 동안 서버 상태 `STUN`·SpriteRUID hit(90fee9) 유지, 클라이언트는 첫 타격 직후 `STUN→HIT`(SpriteRUID 90fee9 유지)로 보이다가 그로기 종료 때 `IDLE`·stand로 정리됨. 서버는 `GroggyRemaining`이 줄어 조기 해제 없음.
+- 이전부터 같은 구조였는지: **같았다고 판단**한다. 이 WorkRecord의 이전 QA·개발 기록에 같은 현상이 있다 — QA4(2026-11-02) F04와 "클라이언트 HIT 신호" 항목("복귀 중·그로기 중 피격에서 서버 상태는 ATTACK/STUN을 유지하지만 클라이언트 로컬 상태가 HIT가 되고 clip=hit가 발생한다"), coder V11-F08·F09 절 관측 3("그로기 중 플레이어 ↑ 공격에서 서버 상태는 STUN을 유지하지만 클라이언트 로컬 상태가 STUN→HIT로 바뀌고 … 서버 그로기 종료까지 HIT로 남았다"), 리뷰 기록("이번 변경 이전부터 있는 클라이언트 표시 구조"). 회차 B(1b4f4ee) 기준 동작을 따로 다시 측정하지는 않았다. 다만 서버 상태 판정(그로기 중 HIT 미진입)은 Monster_Stun·MonsterHealthComponent에 있고 이번 회차가 그 경로를 바꾸지 않았으며(변경 파일 목록), 결과가 앞 기록과 같다. 달라진 점은 이전에는 `stun` 키 클립 이벤트였고 이번에는 코드가 hit 클립을 직접 지정한다는 것뿐이다. **관찰로 남김, 결함 아님.**
+
+#### 기타 관찰 (결함 아님)
+1. `DoSpawn`으로 다시 스폰한 몬스터는 서버 SpriteRendererComponent 프레임 범위가 `0-0`으로 보이고(클라이언트 `0-2147483647`), 부팅 첫 스폰은 서버도 `0-2147483647`이었다. stand·jump·hit는 모두 1프레임 클립이라 화면 영향은 없고 die는 명시 설정으로 정상 재생·고정했다. 6프레임 move 클립은 이번 범위에서 쓰지 않아 영향은 확인하지 못함.
+2. 몬스터 HIT(피격 반응) 중 서버 SpriteRUID 속성은 stand 그대로이고 상태 이름만 HIT다(엔진 클립 이벤트 구조, 앞 회차와 같음).
+3. 첫 Play의 부팅 직후 자연 공격 3회가 내 프로브 실행 전에 플레이어 Hp를 깎았다(프로브가 Hp를 100으로 되돌리고 몬스터 AttackInterval을 9999로 올림). 시험 방식 영향.
+
+#### 시험 오류 (제품 오류 아님)
+- 첫 `notPaused` 프로브는 소유자 지정 없이 `SetServerPaused(true)`를 불러 같은 틱에 CombatPauseComponent가 소유자 없는 정지를 `AbortCombat`으로 풀어(`[VRF] CombatPause abort notify=false`) 결과가 `sameCast`였다. 제품 규칙 오류가 아니다. 소유자를 지정하고 0.15초 정지를 유지한 재시험에서 `notPaused`가 나왔다. 앞 coder 인계 주의와 같은 원인.
+- `maker_logs(kind=build)`를 시작과 끝에 그대로 읽어 큰 출력이 들어왔다(결과 영향 없음). 런타임 로그는 첫 몇 번만 직접 읽고 이후는 저장 파일을 필터했다.
+
+#### NOT_RUN (PASS로 세지 않음)
+1. 머쉬맘 실제 화면(크기, 피벗, BattlePos1~3 겹침, HP 게이지·그로기 별·피해 숫자 위치, die1 마지막 모습) — 스크린샷을 찍지 않았다(사용자 V11).
+2. move·hit1 클립의 실제 재생 시간(die1 6프레임 1.100초만 측정됨), HP 바 숫자 육안.
+3. 사람 손 기본 0.20초 타이밍(실제 키 사례는 판정 창 30초 시험값), 실기기·모바일·터치, 다중 접속, PC·실기기 지연 때문에 속도 12에서 Pos2 저스트·패링이 빠지는지.
+4. 실제 UIPopup 열기·마우스 클릭(V07은 소유자 지정 서버 정지 경로, 클라이언트 시간 배율 0 경로는 실행하지 않음).
+5. 규칙 6 "모션 컴포넌트가 없는 몬스터는 통과" 분기(코드 읽기만), 규칙 4를 실제 흐름에서 로그로 낸 것(사망 몬스터는 규칙 1에서 먼저 걸림, 직접 호출만).
+6. F06 `parry.right` 대칭 착지 강제 측정(자연 공격 선택·판정만 확인), 4패턴 출현 빈도 통계, 실제 다른 맵 전환.
+
+#### 사용자 V11 직접 확인 항목 (Plan §21, AI 결과로 대신하지 않음)
+- 머쉬맘 모습: 대기·점프 공격·그로기(hit1)·피격·사망(die1 끝 모습) 연결이 자연스러운지, 크기와 BattlePos1~3 겹침, HP 게이지·그로기 별·피해 숫자 위치.
+- 점프 중 안 맞음: 예고 중·복귀 중 공격이 막히는 체감, 반격 창이 패링 약 1.5초·저스트 약 1.0초로 줄어든 난이도(측정값: 패링 약 1.48~1.5초, 저스트 약 0.99~1.0초), 복귀 중 공격 때 보너스가 사라지는 점.
+- 이동 속도 12·복귀 12와 플레이어 HP 100의 체감(무대응 12 피해로 9번 맞으면 사망), PC·실기기에서 Pos2 저스트·패링이 지연 때문에 빠지지 않는지.
+- 주황버섯 모델 키 이름(orangemushroom)이 괜찮은지(이번에는 화면에 나오지 않음).
+- 기존 V11 미확인(모바일·터치·음향·CF-F07)은 그대로 남는다.
+
+#### reviewer가 알아야 할 근거의 한계
+- 플레이어 공격 시작은 서버 `ChangeState("ATTACK")` 논리 경로가 대부분이고 실제 키 입력은 UpArrow 1건·PARRY(DownArrow 홀드) 1건·JUST(LeftArrow 탭) 2건·끝 칸(LeftArrow 홀드) 1건·V10 홀드 몇 건이다. 판정 창을 30초로 넓힌 시험값 근거가 F13 계열 전부다.
+- 규칙 실패 이름 중 일부는 합성 시전 스냅샷 직접 호출(프로브 근거)이다.
+- 모델 두 파일의 b4adbdd 재저장 의미 차이 0은 메인의 JSON 비교를 따랐고 나는 Play에서 값만 확인했다(모델 파일 셸 읽기 금지).
+- 사용 종료: 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. 시작·끝 55/55 동일 Bundle(`222e7a04…476d`), 제품 파일 무수정, commit·push 하지 않음. Maker 사용 종료.
