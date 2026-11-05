@@ -1,6 +1,22 @@
 @Component
 script MonsterAttackMotion extends Component
 
+	-- 현재 공격 동작 구간: none(공격 동작 밖) / approach(접근) / return(복귀). 서버만 정하고 읽는다.
+	@HideFromInspector
+	property string Segment = "none"
+
+	@ExecSpace("ServerOnly")
+	method boolean IsSegmentHittable(string segment)
+		-- 선언이 없는 몬스터는 모든 구간에서 맞는다. 몬스터별 모션이 구간별 선언을 덮어쓴다.
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean IsHittableNow()
+		-- 플레이어 타격 규칙이 지금 구간의 피격 가능 선언을 묻는 진입점이다.
+		return self:IsSegmentHittable(self.Segment)
+	end
+
 	@ExecSpace("ServerOnly")
 	method void SetVisualClip(string key)
 		-- Reuse this monster's existing animation mappings.

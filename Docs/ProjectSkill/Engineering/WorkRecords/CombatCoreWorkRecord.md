@@ -1759,3 +1759,87 @@
 ### 사용 종료·다음 담당
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
 - tester가 확인할 것: (1) 값 동일성(로드 [VRF] 두 표, 서버·클라이언트 MaxHp·속도·몬스터 값, 자연 공격 간격 3.0 전투 시계, 무대응 12·가드 4, 처치 합계 100)과 이동 구간 speed 6·복귀 6·1단계 홀드 합산·중앙 복귀 잠금, (2) Stop → 다음 Play 재로드와 시험 값 비잔존, (3) 무효 데이터·키·필수 열 프로브(몬스터 표는 서버 `_CombatRuleCatalog:ValidateStatRows`, 플레이어 표는 서버·클라이언트 `_PlayerBaseStatCatalog:Validate`)와 플레이어 표 실패 상태(`_PlayerBaseStatCatalog._T.attempted=true`·Ready false → CanStart false, `IsBaseStatsReady()` false, 대결 없음·몬스터 ATTACK 없음), (4) 파일 CSV 변경 반영(MoveSpeed 6→9, castleenemy MaxHp 100→150)과 원복·바이트 일치, (5) Plan §20 tester 추가 (a) 예고 없는 ↓ 홀드의 PlayerGuard start 로그 재현(클라이언트·서버 CurrentStateName, isGuarding, guardStartTime·시작 위치 기록 유무), (b) 실제 HP 0 플레이어 사망 뒤 시작 위치 기록 삭제와 MaxHp 적용·부활 뒤 Hp 복원, (6) 회차 A F12·F13·F06·F10·F08·V07·V08·V10 회귀 전수. 주의: maker_clear_logs를 호출하지 말고 큰 로그는 저장된 JSON 파일을 시각·표지로 거를 것. Logic 메서드를 임의 함수로 덮어쓰는 시험 방식은 막힌다. 반복 타이머는 ClearTimer로 정리하고 Stop할 것.
+
+## 2026-11-05 coder 회차 C 구현·기본 검증 인계 (CombatCore-MM-01~06·V11-F15)
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §21 전체(CombatCore-MM-01~06, V11-F15)뿐이다. §22(회차 D)는 건드리지 않았다. 수치·규칙(D01~D04, 판정 수치, 패턴 4행의 영역·비중·속성, JumpDuration 0.5·JumpHeight 0.8, Pos2 ±0.75·앵커 1.5, 몬스터→플레이어 판정, 머쉬맘 수치 100·12·3.0)과 map01·.ui·CombatRuleData·MonsterAttackComponent·MonsterManager·CombatRuleCatalog·스크립트 이름 OrangeMushroomAttack·`.codeblock`은 바꾸지 않았다. 기존 파일 이동·이름 변경은 하지 않았다(주황버섯 모델 파일 이름 `주황버섯.model` 유지).
+- 시작 확인: HEAD e94b981. 작업 트리 변경은 PlayerBaseStatData.csv(사용자 값 `default,100,12,12`)와 run.md뿐이었다. 59경로 manifest(경로 ASCII 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256, 확장자 .mlua·.model·.stateset·.userdataset·.csv·.map·.ui·.config·.collisiongroupset, Global·RootDesk·map·ui 아래)를 e94b981 커밋 트리와 8f16a81 커밋 트리에서 계산해 둘 다 **9325c33ade8a2c32c058cb7e4050a82f8b44d9f22dcfe68c82874cd3e23bcd19**(회차 B 기록과 일치)임을 확인했다. 시작 작업 트리는 PlayerBaseStatData.csv 때문에 5702296c7c11ce70b911d5cede52999f33c13e4bbbc35ee473a304114fc28f6f였다. PlayerBaseStatData.csv는 수정하지 않았다(커밋은 메인이 포함).
+- 실제 연결: 시작 시 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, maker_get_world_info worldId=970621b29ba945369d3dc8e90c301186(앞 회차 기록과 같음). 맵 TileMapMode=0(앞 회차 기록, 맵을 바꾸지 않았다). **maker_clear_logs는 호출하지 않았다.** 큰 로그는 저장된 JSON 파일에서 시각·`[VRF…]` 표지로 걸러 읽었다.
+- 1단계 모델 읽기 확인(무수정, ModelBuilder.read): 주황버섯 모델은 컴포넌트 14개·Values 45개이고 Plan 기록과 같다(ActionSheet stand 96e955c1…·move 6ad988b3…·jump 94bbe2a7…·hit aec9504d…·die 65a2bfb0…·stun aec9504d…, Scale (2,2,1), HitComponent BoxSize (0.63,0.58)·ColliderOffset (0.045,0.29), DamageSkinOffset (0,0.3), 스크립트 상태 값 17개). DefaultPlayer는 컴포넌트 9개·Values 66개이고 script.AttackRangeGizmo·script.AttackRangeTuner가 붙어 있으며 Values는 AttackRangeGizmo Enable 하나뿐이다(Tuner 값 없음). 표시용 모델은 컴포넌트 2개(Transform·LineRenderer)·Values 10개.
+
+### 변경 파일 (제품)
+| 파일 | 변경 | ID |
+| --- | --- | --- |
+| RootDesk/MyDesk/Models/Monsters/Mushmom.model (새) | ModelBuilder: 주황버섯 모델을 읽어 `renameModel("Mushmom","mushmom")`, ActionSheet 정확히 5키(stand 86015373…·move c745828d…·jump 5ecbcc40…·hit 90fee941…(hit1)·die ec90f0b6…(die1)), SpriteRUID=stand, Scale (1,1,1), HitComponent BoxSize (1.2,1.1)·ColliderOffset (0,0.55), DamageSkinOffset (0,1.1). 그 밖의 컴포넌트 14개·Values는 그대로 | MM-01 |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model | `renameModel("주황버섯","orangemushroom")`, Scale (1,1,1), ActionSheet에서 stun 키 제거(5키). 클립·HitComponent 그대로. 파일 이름 변경은 이동 회차 | MM-05·MM-06 |
+| Global/DefaultPlayer.model | script.AttackRangeGizmo·script.AttackRangeTuner 컴포넌트와 AttackRangeGizmo Enable 값 제거(컴포넌트 9→7, Values 66→65) | MM-04 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv | `1,머쉬맘,model://mushmom` | MM-02 |
+| MonsterAttackPatternData.csv | 4행 modelId castleenemy→mushmom(다른 열 무변경) | MM-02 |
+| MonsterStatData.csv | 행 id castleenemy→mushmom(값 100·12·3.0 그대로) | MM-02 |
+| AttackSkillData.csv | 열 AttackOffsetX·AttackOffsetY·AttackRangeWidth·AttackRangeHeight 삭제(남는 열 id·name·ruid·FrameCount·Direction·Damage·AttackCount, 값 무변경). .userdataset에 열 정보 없음 | MM-04 |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | 동작 구간 `Segment`(none·approach·return, @HideFromInspector), `IsSegmentHittable(segment)`(기본 모두 true), `IsHittableNow()` | MM-03 |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 속성 ApproachHittable=false·ReturnHittable=false, `IsSegmentHittable` 재정의. PerformAttackMotion·PerformReturnMotion이 성공하면 구간을 approach·return으로, CompleteMotion·CancelMotion이 none으로 되돌림(JumpActive와 일치) | MM-03 |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | SetStunned의 `SetVisualClip("stun")` → `SetVisualClip("hit")` | MM-06 |
+| RootDesk/MyDesk/Player/PlayerCombatComponent.mlua | 속성 attackOffset·AttackRangeWidth·AttackRangeHeight·ShowAttackRangeGizmo와 LoadSkillData의 해당 읽기 제거. 규칙 목록 6개(currentOpponent·sameMap·notPaused·targetAlive·sameCast·targetHittableSegment, `GetHitRules`가 Play당 한 번 생성·재사용, 규칙 함수는 `RuleXxx` 메서드, `CheckHitRules`가 처음 실패한 규칙 이름 반환). ResolveScheduledHit은 예약 시각에 한 번 확인하고 실패하면 `[VRF] PlayerHitRule fail rule=<이름> hit=<번호>`, 통과하면 `[VRF] PlayerHitRule pass hit=<번호> checks=<누적>` 후 상대 몬스터 `WorldPosition + ColliderOffset×Scale`에 놓은 BoxShape(0.1×0.1)로 AttackFast. IsAttackTarget은 `resolvingHit` 안에서만 같은 CheckHitRules를 한 번 더 확인 | MM-03·MM-04 |
+| RootDesk/MyDesk/Player/@Assist/Skill/PlayerSkillEffectTable.mlua | 필수 열 Damage·AttackCount·FrameCount 3열, 폭·높이 검사 제거(CRLF 유지) | MM-04 |
+| 삭제 | AssistModel.csv·.userdataset, @Assist/RangeGizmo/AttackRangeGizmo.model, Player/@Assist/AttackRange/AttackRangeGizmo.mlua·AttackRangeTuner.mlua(.mlua만 지움) | MM-04 |
+- Maker가 자동으로 지운 파일: AttackRangeGizmo.codeblock·AttackRangeTuner.codeblock(Refresh가 .mlua 삭제를 반영해 정리, 손대지 않았다). 남은 빈 폴더 메타데이터: `RootDesk/MyDesk/@Assist/RangeGizmo.directory`와 `RootDesk/MyDesk/Player/@Assist/AttackRange.directory`가 그대로 남았다(이동 회차 확인 대상, 손으로 고치지 않았다).
+- 파일 바이트: CSV 4종은 UTF-8 BOM + CRLF 유지, 모델 두 개와 DefaultPlayer는 빌더가 LF·`1.0`→`1` 정수 표기로 쓴 뒤 원본과 같게 CRLF로 맞췄다(의미 차이는 숫자 표기뿐). .codeblock·.directory·.userdataset(AssistModel 제외)·map·.ui는 바꾸지 않았다. 범위 밖 파일을 Maker가 다시 저장한 흔적은 없다(git status에 의도하지 않은 변경 없음).
+
+### 구현 이유 요약
+- 규칙 충족형 피격은 사용자 결정 그대로 "공격 위치 조건은 규칙에 넣지 않고 입력 조건(IDLE = Pos2)에 맡김". 규칙 1~5는 기존 ResolveScheduledHit·IsAttackTarget의 검사를 옮겼다. 규칙 4는 `RefreshDuelPlayer`가 죽은 몬스터를 대결에서 먼저 빼므로 실제 흐름에서는 규칙 1(currentOpponent)에서 먼저 걸리고 예약 자체가 CancelAttack으로 취소된다(옛 코드와 같은 결과). 규칙 4는 직접 호출 프로브로 확인했다.
+- 피해 전달은 엔진 흐름(AttackFast → IsAttackTarget → CalcDamage → HitEvent → 몬스터 HP)을 그대로 쓴다. 규칙 통과 모양만 상대 위치로 바뀌었고 몬스터 크기·HitComponent는 판정에 들어가지 않는다.
+- 구간 선언은 하드코딩이 아니라 모션 컴포넌트 속성이다. 규칙 6은 상대의 모션 컴포넌트가 없으면 통과한다.
+
+### 실제 기본 검증 (Maker MCP, Play 1회 + 서버/클라이언트 프로브, 시험 설정은 Play 내부에만 두고 Stop으로 정리)
+빌드·등록 사이클: 삭제·수정 뒤 Refresh 1회, 모델·CSV 변경 뒤 Refresh 1회. build 로그 83건 전부 Info(LIA 1114/1115 동적 참조 노이즈), 오류 0·경고 0.
+
+| 항목 | 결과 |
+| --- | --- |
+| 로드 | `[VRF] catalog ready rules=1 patterns=4 monsterStats=2`, MonsterStatData default 100·12·3.0과 mushmom 100·12·3.0, `PlayerBaseStatData side=server/client default MaxHp=100 MoveSpeed=12 ReturnSpeed=12`, 플레이어 `PlayerStat applied MaxHp=100 Hp=100`, `MovementInput boot speed=12.0 return=12.0`. 패턴 mushmom 4행 `parry.left:2,parry.right:2,parry.any:2,special.random:1`(Weight 2·2·2·1). AttackSkillData player.basic Damage 1·AttackCount 10·FrameCount 14·ruid 5308ef85… |
+| 스폰 | 엔티티 이름 머쉬맘, Scale (1,1,1), ActionSheet 키 5개와 RUID 5개가 기대와 일치(stand 86015373…·move c745828d…·jump 5ecbcc40…·hit 90fee941…·die ec90f0b6…), 시작 SpriteRUID = stand, HitComponent BoxSize (1.2,1.1)·ColliderOffset (0,0.55), DamageSkinOffset (0,1.1). 몬스터 위치 (3.0,0.581). 엔티티의 모델 id 속성은 nil로 읽혀 `model://mushmom`은 스폰 성공(SpawnByModelId "mushmom")과 MonsterManager 스폰 로그로 확인 |
+| 표시 시계열(서버 SpriteRUID/클라이언트 SpriteRUID, 전투 시계) | IDLE stand → ATTACK 접근 jump → 착지 순간 stand(판정 시각) → 복귀 jump → IDLE stand를 서버·클라이언트가 같이 기록(예: 서버 t=23.079 jump·approach, 23.562 판정, 23.596 jump·return, 24.081 stand·IDLE). 그로기 전체 hit(서버 hit·STUN t=305.941, 클라이언트 hit·STUN t=305.879, 그로기 중 피격에도 SpriteRUID는 hit 유지, 종료 t=307.425 stand·IDLE). STUN 진입 때 엔진이 낸 클립 요청은 `AnimationClipEvent name=stun`(ActionSheet에 stun 키 없음)이었고 SpriteRUID는 바뀌지 않음. 피격 반응은 `AnimationClipEvent name=hit`(엔진 HIT 상태가 hit 키를 요청, SpriteRUID 속성은 stand 그대로). 사망은 아래 |
+| 사망 die 1회 뒤 정지(F12 회귀) | IDLE 사망: `MonsterDie start frames=6 total=1.100 freezeAfter=0.800`, 0.8초 뒤 `freeze frame=5`, 서버·클라이언트 SpriteRUID die, 5/5 고정이 6초 뒤에도 유지(state DEAD). 그로기 중 사망: ApplyGroggy(1.5) 뒤 0.5초에 ApplyDamage(999) → 같은 start/freeze 로그, 서버·클라이언트 die 5/5 고정, 6초 뒤에도 유지. **머쉬맘 die1 클립 실제 재생: 프레임 6개, 총 1.100초, 마지막 프레임(인덱스 5)은 0.800초 시점에 시작해 고정** |
+| 피격 규칙 모두 통과 | IDLE 몬스터에 실제 입력 경로(PlayerStateControl.RequestChangeState("ATTACK"))로 기본 공격 → `PlayerHitRule pass` 10줄(hit 1~10), HitEvent 10회·합계 10·몬스터 HP 100→90(=HitEvent 합계 = 피해 숫자 1×10). 규칙 확인 횟수는 타격당 2회(예약 시각 1 + IsAttackTarget 1)로 10타 후 checks=20. 규칙 목록 생성은 Play 전체에서 builds=1(로그 `list built rules=6 builds=1`), Play 종료 시점 누적 checks=149 |
+| 접근 점프 중 | 예고 시작(telegraph 0.5 남음)에 공격 → hit 1~10 모두 `fail rule=targetHittableSegment`, 피해 0 |
+| 복귀 점프 중 | (무대응) 복귀 시작 직후 공격 → hit 1~10 모두 fail, 피해 0. (패링) 패링 성공 직후 공격(반격 보너스 ×2.2는 시전 시작에 소비, D03) → hit 1~6 fail, 복귀 끝(그로기 시작) 뒤 hit 7~10 pass. (저스트, 슬로우 ×0.5) 복귀가 전투 시계 1.0초(310.958→311.959)로 늘어남 → hit 1~10 모두 fail |
+| 걸친 공격 | 복귀 시작 0.28초 뒤 공격 → hit 1~3 fail, hit 4~10 pass(HitEvent 7회, 몬스터 HP 90→83). 패링 사례도 hit 1~6 fail·7~10 pass |
+| 착지·그로기 뒤 | 저스트 뒤 복귀 완료 IDLE에서 공격 → 10타 모두 pass(보너스는 앞 공격에서 소비돼 factor 1). 패링 그로기 중 두 번째 공격(몬스터 클라이언트 상태 HIT, 서버 STUN) → 10타 모두 pass, 그로기·hit 표시 유지 |
+| 반격 창 기록 | 패링: counter granted until=307.401(성공 305.401 + 2.0), 복귀 0.5초(305.417→305.917), 그로기 1.5초(305.907→307.407) → 피격 가능 구간 약 1.5초. 저스트: 슬로우로 복귀 1.0초 → 반격 창 2.0초 중 피격 가능 약 1.0초 |
+| 크기 무관 | HitComponent BoxSize를 (0.4,0.4)로 줄이고 공격 → pass 10, HitEvent 10·합계 10, HP 55→45. 모양은 항상 몬스터 `WorldPosition + (0,0.55)`(=(3.0,1.131))에 놓은 0.1×0.1 상자. 시험 뒤 BoxSize를 (1.2,1.1)로 되돌림 |
+| 규칙별 실패(프로브 근거: 합성 시전 스냅샷으로 CheckHitRules/RuleXxx 직접 호출) | sameCast: 플레이어 IDLE에서 `'sameCast'`. currentOpponent: 대상=플레이어 `'currentOpponent'`. sameMap: 시전 맵=/maps `'sameMap'`. notPaused: 플레이어를 소유자로 하는 실제 `SetServerPaused(true)` 상태에서 `'notPaused'`. targetAlive: `RuleTargetAlive` 직접 호출 정상 true, IsDead true일 때 false, Hp 0일 때 false. 사망 몬스터로 CheckHitRules를 부르면 `'currentOpponent'`(위 구현 이유) |
+| 스킬 표 검증(프로브 근거: 가짜 행을 표로 연결, 끝나고 원래 표 복원) | 3열(Damage·AttackCount·FrameCount)+ruid 정상 → 통과, 옛 범위 열이 쓰레기 값이어도 무시하고 통과. Damage 누락·−1·nan, AttackCount 0·1.5, FrameCount 0, ruid 빈 칸 → 거부. 복원 뒤 실제 player.basic 1/10/14 |
+| 주황버섯 모델 | `SpawnByModelId("orangemushroom")` 성공: Scale (1,1,1), ActionSheet 5키, stun 키 없음. 주황버섯 스폰 거부(프로브): MonsterManager.data를 orangemushroom 행으로 바꿔 DoSpawn → `[VRF] MonsterManager spawn refused key=orangemushroom reason=stats`, 현재 상대 유지, GetMonsterStats nil, 경고 `monster stat row missing: orangemushroom` 1회 |
+| 삭제 | `_DataService:GetTable("AssistModel")` 호출 성공·결과 nil. 삭제한 표시용 모델 id 27e5fe09… 스폰 → `[LEA-3028] MissingModel`(등록 없음). 플레이어 엔티티에 script.AttackRangeGizmo·script.AttackRangeTuner 컴포넌트 없음(서버·클라이언트) |
+| grep | 제품 파일(RootDesk·Global·map·ui)에서 castleenemy·AttackRangeGizmo·AttackRangeTuner·AssistModel·ShowAttackRangeGizmo·AttackOffset·AttackRangeWidth·AttackRangeHeight·27e5fe09·attackOffset 일치 0 |
+| 구간 선언 | OrangeMushroomAttack ApproachHittable=false·ReturnHittable=false, Segment 시험 끝 none |
+| 로그 요약 | Info 1105·Warning 3·Error 2. Warning 3건은 의도한 프로브(주황버섯 수치 행 없음 1, 스킬 표 가짜 행 2). Error 2건도 의도한 프로브(`model://castleenemy` 문자열을 엔티티 이름으로 쓴 LEA-3021, 삭제한 표시용 모델 id 스폰의 LEA-3028). 정상 구간 Warning·Error·LEA/LWA 없음 |
+
+- 프로브 한계: 첫 notPaused 프로브는 `pause.IsPaused = true`를 직접 써서 CombatPauseComponent.OnUpdate의 AbortCombat이 즉시 정지를 풀어 시험이 성립하지 않았다(제품 오류 아님). 실제 SetServerPaused 경로(소유자 지정)로 다시 했다. 패링/저스트 시험은 판정 창 JustWindowSec·ParryWindowSec를 Play 내부에서 30초로, mushmom 패턴을 parry.any 단일 행으로 바꿨고(프로브 근거) 시험 뒤 0.2·0.2와 4행으로 복원했다(`D restored just=0.2 parry=0.2 rows=4`). 이 때문에 이후 몇 번의 접근 JUST가 자동으로 났고 이는 시험 값 영향이다. 시험 중 플레이어는 무대응 12 피해로 사망·부활(대결 없음 5초)이 여러 번 있었다(시험 방식 영향).
+- 반복 타이머(서버 기록 타이머, 클라이언트 기록 타이머)는 ClearTimer로 정리하고 Stop했다.
+
+### 중단 조건 해당 여부
+1. STUN 뒤 엔진의 hit 덮어쓰기: **해당 없음**(서버·클라이언트 SpriteRUID가 그로기 내내 hit, stun 키는 되살리지 않음).
+2. 몬스터 위치 AttackFast가 HitEvent·피해 숫자·HP 감소를 못 맞춤: **해당 없음**(10타 HitEvent 10·합계 10·HP 감소 10, 박스 축소 시험도 동일).
+3. renameModel 뒤 EntryKey 불일치 또는 Maker에 castleenemy 항목이 남음: **해당**. 파일의 EntryKey는 `model://mushmom`·`model://orangemushroom`으로 올바르고 제품 파일에 castleenemy 문자열은 없다. 그러나 Refresh 두 번 뒤 Play에서 `SpawnByModelId("castleenemy")`(대문자 `CastleEnemy` 포함)가 **여전히 성공**하고 **옛 내용**(Scale 2, SpriteRUID 96e955c1…, stun 키 포함 모델)의 엔티티를 만든다. `model://castleenemy` 항목이 Maker 작업 공간에 남은 것이다(같은 파일의 새 키 `orangemushroom`은 Scale 1로 정상 등록, 삭제한 표시용 모델·스크립트·AssistModel은 정상 제거). 대체 구현 없이 여기서 멈춘다. 제품 동작에는 영향이 없다(MonsterData는 mushmom만 쓰고 castleenemy를 참조하는 제품 파일이 없음). 선택지는 반환 보고에 적었다.
+4. 스크립트 삭제 뒤 .codeblock·Maker 항목 잔존: **해당 없음**(.mlua 삭제만으로 Refresh가 .codeblock 2개를 지웠고 컴포넌트·모델 등록도 없음).
+5. 크기·피벗 때문에 BattlePos 간격 등을 바꿔야 함: **해당 없음**(바꾸지 않음. 크기와 겹침은 사용자 V11 확인).
+6. 범위 열 삭제가 다른 읽는 곳을 깨뜨림: **해당 없음**(grep 0, 로드·스킬 표 검증 정상).
+7. Refresh가 범위 밖 파일을 다시 저장: **해당 없음**(없음).
+
+### 최종 제품 버전 묶음 (회차 C)
+- 같은 계산법·같은 확장자 집합의 manifest. 회차 B 마지막 값 9325c33a…(59경로)와 일치하는 e94b981 커밋 트리를 먼저 계산한 뒤 작업 트리를 계산했다. 삭제 5경로(AssistModel 2·표시용 모델 1·스크립트 2)와 새 1경로(Mushmom.model)로 **55경로**다.
+- Bundle SHA-256(작업 트리, 55경로): **47bdb6a834a5b8a7daec27a3bea8fabbe22b8c74454912048d9f3c202bc0aa7d**. 시험 후 Stop 뒤에 계산했고 Play 전후 파일 변경은 없다.
+- 변경·추가 11경로 SHA-256: Global/DefaultPlayer.model deedf553e96fd7144a56416e72619820dfca5862a68ae82effb52b3bab1dde52 · RootDesk/MyDesk/@Assist/DataSet/AttackSkillData.csv 8218eb71930d38d97f58f7dda4d045bca5f14252559a249a5172c60ee0f83b5e · MonsterAttackPatternData.csv fb15494c6a3cbd8026507a4d43764385d9a10202150550348fecf891d736cee9 · MonsterData.csv ca5dc4d9fc4f7b9cdb4f3c461b1395af2a8b010d4a180549251457e0af4a4ba6 · MonsterStatData.csv a87dcb2f9865ca9dae634a740540fb86811c24c8f31201aec25d64e96a83344f · (새) RootDesk/MyDesk/Models/Monsters/Mushmom.model dfb422234ee66cf4228b86b27e577f49c997bde40cc78296eeb5aa9321bf9ecf · RootDesk/MyDesk/Models/Monsters/주황버섯.model f8737cba9b8be39be876f3a1ac9c721ee2b9b9032e093219d4f4467b23f9e6bf · Monster/MonsterAttackMotion.mlua a597f73ec51173e2286a2a3ba6cf41236b5548cbf9247ba3bfb01c1277c9ab81 · Monster/MonsterStunComponent.mlua b7fdc6721d6e91d32decf3a25840c2ae630601ceb45340c9eb168bd68e38def9 · Monster/OrangeMushroom/OrangeMushroomAttack.mlua b8ebb301c1dad809e9a48b1853ab7a7a01ea268431cbebfd17198d1d448f44b3 · Player/@Assist/Skill/PlayerSkillEffectTable.mlua 8558c89c715c235fee5d6974c68cf2158b76501f36f2ed062144afa4778a1822 · Player/PlayerCombatComponent.mlua b3b51e659c70073b2188105942d9aa3d63a969bed6562d1da72cf8edd35a1eea. PlayerBaseStatData.csv는 시작 작업 트리 값(사용자 변경)이고 이번에 수정하지 않았다. 나머지 43경로는 e94b981과 같다.
+- 커밋 대상(제품): 위 변경·추가 파일 + 삭제 5경로 + Maker가 지운 .codeblock 2개 + PlayerBaseStatData.csv(사용자 값). 남은 AttackRange·RangeGizmo 폴더 .directory는 이동 회차에서 확인한다.
+
+### 실패/미확인/미실시 (PASS로 세지 않음)
+- 중단 조건 3(castleenemy 항목 잔존)이 열려 있다. 다른 실패는 없다.
+- 미실시: 머쉬맘의 실제 화면 모습(크기, BattlePos 겹침, HP 게이지·별·피해 숫자 위치, 피벗)은 스크린샷을 찍지 않아 사용자 V11이다. HitComponent (1.2×1.1, 오프셋 0.55)와 DamageSkinOffset (0,1.1)은 계획 예시값을 따랐으며 스프라이트 피벗과 실제로 맞는지 확인하지 않았다. 사람 손 타이밍, 실기기·모바일, 다중 접속. hit1·move 클립의 실제 재생 시간(die1만 측정). 모든 규칙 실패를 실제 흐름에서 로그로 낸 것은 아니다(규칙 1·2·4·5는 프로브, 규칙 3은 팝업식 서버 정지 프로브, 규칙 6과 시전 취소는 실제 흐름). 규칙 4 실제 흐름 로그는 위 구현 이유 때문에 나오지 않는다.
+- 관찰(바꾸지 않음): 그로기 중 피격 때 클라이언트의 몬스터 StateComponent 이름이 HIT로 보이고(서버는 STUN 유지, SpriteRUID는 hit 유지) 그로기 종료 시 stand·IDLE로 정리됐다. 이전 회차 동작과 비교는 하지 않았다. 엔진 HIT 상태의 hit 표시는 SpriteRUID 속성이 아니라 `AnimationClipEvent name=hit`로만 나타난다(앞 회차와 같은 구조).
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
+- 중단 조건 3의 처리는 사용자 선택이 필요하다(Maker 작업 공간 재로드 또는 Maker에서 castleenemy 항목 삭제). 처리 뒤 Play에서 `SpawnByModelId("castleenemy")`가 nil인지 확인하면 된다. 주의: 옛 항목이 같은 파일 경로를 가리킬 수 있어 재로드·저장 뒤 `주황버섯.model`이 옛 내용(Scale 2·stun 키·키 castleenemy)으로 되돌아가지 않았는지 git diff로 확인해야 한다.
+- tester가 확인할 것: 위 표 전부를 같은 방법으로 독립 재현(특히 규칙 6 접근·복귀·걸친 공격, 패링/저스트 복귀 중 공격, 박스 축소, 주황버섯 스폰 거부, 스킬 표 검증), 회차 A F12·F13, 회차 B DataSet 로드·실패 동작, V07·V08 팝업 정지(구간 선언 유지)와 Stop 뒤 다음 Play 구간 none, 몬스터→플레이어 판정 회귀. 주의: maker_clear_logs를 호출하지 말고 로그는 저장된 JSON 파일을 시각·`[VRF…]` 표지로 거를 것. `pause.IsPaused`를 직접 쓰는 시험은 쓰지 말고 소유자를 지정한 SetServerPaused를 쓸 것.

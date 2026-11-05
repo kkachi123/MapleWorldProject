@@ -7,17 +7,10 @@ script PlayerCombatComponent extends AttackComponent
 	@TargetUserSync
 	property number SkillAttackCount = 1
 	@TargetUserSync
-	property Vector2 attackOffset = Vector2(0, 0)
-	@TargetUserSync
-	property number AttackRangeWidth = 1
-	@TargetUserSync
-	property number AttackRangeHeight = 0.5
-	@TargetUserSync
 	property number SkillEffectDuration = 0.78
 	@TargetUserSync
 	property boolean SkillDataReady = false
 	property number HitInterval = 0.045
-	property boolean ShowAttackRangeGizmo = true
 	property number WeaponAttack = 1
 	property number frameDelaySeconds = 0.06
 	@TargetUserSync property boolean CounterReady = false
@@ -120,9 +113,6 @@ script PlayerCombatComponent extends AttackComponent
 		if data == nil then return false end
 		self.SkillDamage = data.Damage
 		self.SkillAttackCount = data.AttackCount
-		self.attackOffset = Vector2(data.AttackOffsetX, data.AttackOffsetY)
-		self.AttackRangeWidth = data.AttackRangeWidth
-		self.AttackRangeHeight = data.AttackRangeHeight
 		self.SkillEffectDuration = data.FrameCount * self.frameDelaySeconds
 		self._T.loadedName = self.SkillName
 		self._T.effectRuid = data.ruid
@@ -161,9 +151,8 @@ script PlayerCombatComponent extends AttackComponent
 		local direction = self.Entity.PlayerControllerComponent.LookDirectionX
 		if direction == 0 then direction = 1 end
 		local position = self.Entity.TransformComponent.WorldPosition
-		local shape = BoxShape(Vector2(position.x + self.attackOffset.x * direction, position.y + self.attackOffset.y), Vector2(self.AttackRangeWidth, self.AttackRangeHeight), 0)
 		-- 타격 전체가 동일한 시전 스냅샷을 사용한다. 표시 간격과 실제 타격 간격은 독립이다.
-		self._T.cast = { map = self.Entity.CurrentMap, shape = shape, name = self.SkillName, damage = self.WeaponAttack * self.SkillDamage * multiplier, target = opponent, multiplier = multiplier }
+		self._T.cast = { map = self.Entity.CurrentMap, name = self.SkillName, damage = self.WeaponAttack * self.SkillDamage * multiplier, target = opponent, multiplier = multiplier }
 		self._T.hitsFired = 0
 		local count = math.floor(self.SkillAttackCount)
 		self._T.cast.count = count
@@ -198,17 +187,101 @@ script PlayerCombatComponent extends AttackComponent
 	end
 
 	@ExecSpace("ServerOnly")
-	method void ResolveScheduledHit(integer id, integer index)
-		-- 아직 유효한 동일 공격의 예약 타격만 실행한다.
-		if id ~= self._T.attackId or not self._T.activeAttack or not self:IsAlive() then return end
+	method any GetHitRules()
+		-- 규칙 목록은 Play당 한 번만 만들고 모든 타격이 재사용한다(타격마다 새 표나 클로저를 만들지 않는다).
+		if self._T.hitRules ~= nil then return self._T.hitRules end
+		self._T.hitRuleBuilds = (self._T.hitRuleBuilds or 0) + 1
+		self._T.hitRules = {
+			{ name = "currentOpponent", check = function(cast, defender) return self:RuleCurrentOpponent(cast, defender) end },
+			{ name = "sameMap", check = function(cast, defender) return self:RuleSameMap(cast, defender) end },
+			{ name = "notPaused", check = function(cast, defender) return self:RuleNotPaused(cast, defender) end },
+			{ name = "targetAlive", check = function(cast, defender) return self:RuleTargetAlive(cast, defender) end },
+			{ name = "sameCast", check = function(cast, defender) return self:RuleSameCast(cast, defender) end },
+			{ name = "targetHittableSegment", check = function(cast, defender) return self:RuleTargetHittableSegment(cast, defender) end }
+		}
+		if Environment:IsMakerPlay() then log("[VRF] PlayerHitRule list built rules=" .. tostring(#self._T.hitRules) .. " builds=" .. tostring(self._T.hitRuleBuilds)) end
+		return self._T.hitRules
+	end
+
+	@ExecSpace("ServerOnly")
+	method string CheckHitRules(any cast, Entity defender)
+		-- 규칙을 순서대로 확인해 처음 실패한 규칙 이름을 돌려준다(모두 통과하면 빈 문자열). 타격 예정 시각에만 부른다.
+		self._T.ruleChecks = (self._T.ruleChecks or 0) + 1
+		for _, rule in ipairs(self:GetHitRules()) do
+			if not rule.check(cast, defender) then return rule.name end
+		end
+		return ""
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleCurrentOpponent(any cast, Entity defender)
+		-- 시전 스냅샷의 대상이 지금 대결 상대이자 피격 후보다.
+		return isvalid(defender) and defender == cast.target and self:GetOpponent() == defender
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleSameMap(any cast, Entity defender)
+		-- 공격자·시전 스냅샷·대상이 같은 맵에 있다.
+		local map = self.Entity.CurrentMap
+		return isvalid(map) and map == cast.map and isvalid(defender) and defender.CurrentMap == map
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleNotPaused(any cast, Entity defender)
+		-- 전투 정지 컨트롤러가 유효하고 정지 중이 아니다.
 		local pause = self:GetPauseController()
-		if not isvalid(pause) or pause.IsPaused or self._T.hitDeadlines[index] == nil then return end
-		local cast = self._T.cast
+		return isvalid(pause) and not pause.IsPaused
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleTargetAlive(any cast, Entity defender)
+		-- 대상 몬스터가 살아 있다.
+		local health = isvalid(defender) and defender:GetComponent("script.MonsterHealthComponent") or nil
+		return isvalid(health) and not health.IsDead and health.Hp > 0
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleSameCast(any cast, Entity defender)
+		-- 같은 시전이 아직 진행 중이고 공격자가 ATTACK 상태로 살아 있다.
 		local state = self.Entity.StateComponent
-		if cast == nil or self.Entity.CurrentMap ~= cast.map or not isvalid(state) or state.CurrentStateName ~= "ATTACK" then return end
+		return cast == self._T.cast and self._T.resolveId == self._T.attackId and self._T.activeAttack == true and self:IsAlive() and isvalid(state) and state.CurrentStateName == "ATTACK"
+	end
+
+	@ExecSpace("ServerOnly")
+	method boolean RuleTargetHittableSegment(any cast, Entity defender)
+		-- 상대 몬스터가 지금 동작 구간을 피격 가능으로 선언했을 때만 통과한다(모션 컴포넌트가 없으면 통과).
+		---@type MonsterAttackMotion
+		local motion = isvalid(defender) and defender:GetComponent(MonsterAttackMotion) or nil
+		if not isvalid(motion) then return true end
+		return motion:IsHittableNow()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResolveScheduledHit(integer id, integer index)
+		-- 예약 시각에 규칙 목록을 한 번 확인하고, 모두 통과한 타격만 상대 몬스터 위치의 모양으로 전달한다.
+		if id ~= self._T.attackId or not self._T.activeAttack or self._T.hitDeadlines[index] == nil then return end
+		local cast = self._T.cast
+		if cast == nil then return end
 		self._T.hitDeadlines[index] = nil
 		self._T.hitsFired = self._T.hitsFired + 1
-		self:AttackFast(cast.shape, cast.name, nil)
+		self._T.resolveId = id
+		self._T.resolveIndex = index
+		local failed = self:CheckHitRules(cast, cast.target)
+		if failed ~= "" then
+			if Environment:IsMakerPlay() then log("[VRF] PlayerHitRule fail rule=" .. failed .. " hit=" .. tostring(index)) end
+			return
+		end
+		if Environment:IsMakerPlay() then log("[VRF] PlayerHitRule pass hit=" .. tostring(index) .. " checks=" .. tostring(self._T.ruleChecks)) end
+		local target = cast.target
+		local center = target.TransformComponent.WorldPosition
+		local scale = target.TransformComponent.Scale
+		local hit = target.HitComponent
+		local offset = isvalid(hit) and hit.ColliderOffset or Vector2(0, 0)
+		-- 판정 위치는 규칙이 정한다. 모양은 상대 콜라이더 중심에 놓는 작은 고정 상자라 몬스터 크기와 무관하다.
+		local shape = BoxShape(Vector2(center.x + offset.x * scale.x, center.y + offset.y * scale.y), Vector2(0.1, 0.1), 0)
+		self._T.resolvingHit = true
+		self:AttackFast(shape, cast.name, nil)
+		self._T.resolvingHit = false
 	end
 
 	@ExecSpace("ServerOnly")
@@ -216,6 +289,7 @@ script PlayerCombatComponent extends AttackComponent
 		-- 이전 공격을 먼저 무효화한 뒤 모든 예약을 취소한다.
 		self._T.attackId = (self._T.attackId or 0) + 1
 		self._T.activeAttack = false
+		self._T.resolvingHit = false
 		self._T.hitDeadlines = {}
 		self._T.cast = nil
 	end
@@ -241,13 +315,10 @@ script PlayerCombatComponent extends AttackComponent
 	end
 
 	method boolean IsAttackTarget(Entity defender, string attackInfo)
-		-- 시전 스냅샷의 상대가 여전히 현재 대결 상대일 때만 네이티브 후보를 허용한다.
+		-- 예약 타격의 AttackFast 안에서만, 같은 규칙 목록을 한 번 더 확인한 뒤 네이티브 후보를 허용한다.
 		local cast = self._T.cast
-		if cast == nil or defender ~= cast.target or not isvalid(defender) or defender.CurrentMap ~= self.Entity.CurrentMap then return false end
-		local pause = self:GetPauseController()
-		if not isvalid(pause) or pause.IsPaused or self:GetOpponent() ~= defender then return false end
-		local health = defender:GetComponent("script.MonsterHealthComponent")
-		if not isvalid(health) or health.IsDead or health.Hp <= 0 then return false end
+		if not self._T.resolvingHit or cast == nil or defender ~= cast.target then return false end
+		if self:CheckHitRules(cast, defender) ~= "" then return false end
 		return __base:IsAttackTarget(defender, attackInfo)
 	end
 

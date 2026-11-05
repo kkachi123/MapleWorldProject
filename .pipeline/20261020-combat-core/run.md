@@ -352,3 +352,8 @@
 - 문서 커밋 [CombatCore][plan]. PlayerBaseStatData.csv는 회차 C coder 커밋 몫으로 제외.
 - 사용자 결정: 3칸 이펙트는 공격 모션(접근 점프) 시작과 함께 재생(메인 추천 채택). 메인이 Plan §22(22.2 표·22.6)와 GameDesign §8 연출·사운드 행을 직접 한 줄씩 고침. 커밋 [CombatCore][plan].
 
+## 2026-11-05 회차 C 시작
+- 사용자 "작업재개". 기준 커밋 e94b981(제품 파일은 8f16a81과 같음), 작업 트리 변경 PlayerBaseStatData.csv(사용자 100·12·12)·run.md. msw-coder 호출.
+- coder 반환 STOPPED(중단 조건 3): 구현·통합 런타임 1회 완료(빌드 오류 0, 규칙 6개·구간 선언·삭제·키 전환·표시 시계열·die1 1.100초 고정 확인). 파일 EntryKey는 mushmom·orangemushroom 정상이나 Refresh 2회 뒤에도 Maker가 옛 키 castleenemy(옛 내용 Scale 2·stun)를 스폰함. 제품 동작 영향 없음, 대체 구현 없음. 최종 55경로 Bundle 47bdb6a834a5b8a7daec27a3bea8fabbe22b8c74454912048d9f3c202bc0aa7d. Maker edit·사용 종료.
+- 메인: 옛 항목이 같은 파일 경로를 가리켜 Maker 저장 때 주황버섯 모델을 옛 내용으로 되돌릴 위험 → 버전 고정을 위해 [code] 로컬 커밋 먼저(PlayerBaseStatData.csv 사용자 값 포함, V11-F15).
+

@@ -12,7 +12,7 @@ script MonsterStunComponent extends Component
 
 	@ExecSpace("ServerOnly")
 	method void SetStunned(boolean isHeld)
-		-- 상태 소유자만 그로기 활성값을 바꾼다. hit 클립은 짧은 비반복 클립이라 상태 이벤트만으로는 한 번 재생된 뒤 stand로 돌아가므로, 그로기 동안 서버 표시 클립을 hit로 고정하고 끝나면 되돌린다.
+		-- 상태 소유자만 그로기 활성값을 바꾼다. hit 클립은 짧은 비반복 클립이라 상태 이벤트만으로는 한 번 재생된 뒤 stand로 돌아가므로, 그로기 동안 서버 표시 클립을 hit로 고정하고 끝나면 되돌린다(전용 stun 키는 없고 hit 키를 직접 지정한다).
 		local wasHeld = self.isStunned
 		self.isStunned = isHeld
 		if not isHeld and not wasHeld then return end
@@ -20,7 +20,7 @@ script MonsterStunComponent extends Component
 		local motion = self.Entity:GetComponent(MonsterAttackMotion)
 		if not isvalid(motion) then return end
 		if isHeld then
-			motion:SetVisualClip("stun")
+			motion:SetVisualClip("hit")
 		else
 			-- 사망으로 끝나는 그로기는 die를, 그 밖에는 stand를 남긴다.
 			local health = self.Entity:GetComponent("script.MonsterHealthComponent")

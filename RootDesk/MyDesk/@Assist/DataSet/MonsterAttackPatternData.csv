@@ -1,5 +1,5 @@
 ﻿id,modelId,ResponseType,AttackAttribute,AreaFromAnchor,AreaToAnchor,AreaPaddingX,AreaHeight,AreaOffsetY,TelegraphLeadSec,Weight,AreaTarget
-parry.left,castleenemy,LEFT,PARRY,2,3,0.5,1,0.4,0.5,2,FIXED
-parry.right,castleenemy,RIGHT,PARRY,1,2,0.5,1,0.4,0.5,2,FIXED
-parry.any,castleenemy,ANY,PARRY,0,0,0.5,1,0.4,0.5,2,NEAREST
-special.random,castleenemy,ANY,SPECIAL,0,0,0.5,1,0.4,0.5,1,RANDOM
+parry.left,mushmom,LEFT,PARRY,2,3,0.5,1,0.4,0.5,2,FIXED
+parry.right,mushmom,RIGHT,PARRY,1,2,0.5,1,0.4,0.5,2,FIXED
+parry.any,mushmom,ANY,PARRY,0,0,0.5,1,0.4,0.5,2,NEAREST
+special.random,mushmom,ANY,SPECIAL,0,0,0.5,1,0.4,0.5,1,RANDOM

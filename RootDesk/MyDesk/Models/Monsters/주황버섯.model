@@ -1,7 +1,7 @@
 {
   "Id": "",
   "GameId": "",
-  "EntryKey": "model://castleenemy",
+  "EntryKey": "model://orangemushroom",
   "ContentType": "x-mod/model",
   "Content": "",
   "Usage": 0,
@@ -16,7 +16,7 @@
       "Version": 1,
       "Name": "주황버섯",
       "BaseModelId": null,
-      "Id": "castleenemy",
+      "Id": "orangemushroom",
       "Components": [
         "MOD.Core.TransformComponent",
         "MOD.Core.StateAnimationComponent",
@@ -44,12 +44,11 @@
           },
           "Value": {
             "$type": "MOD.Core.MODSyncDictionary`2[[System.String, mscorlib],[System.String, mscorlib]], MOD.Core",
-            "move": "6ad988b3ef6d4ceab3a504d300755a5b",
             "stand": "96e955c1bf27415e84f96deea200a8f1",
+            "move": "6ad988b3ef6d4ceab3a504d300755a5b",
             "jump": "94bbe2a7eb9c4f9caa10dd9de44ee860",
             "hit": "aec9504d5dc24aceb5646b79d30abad4",
-            "die": "65a2bfb039614f2e9e4ccc354340153d",
-            "stun": "aec9504d5dc24aceb5646b79d30abad4"
+            "die": "65a2bfb039614f2e9e4ccc354340153d"
           }
         },
         {
@@ -86,7 +85,7 @@
             "$type": "MODNativeType",
             "type": "System.Single, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 6.0
+          "Value": 6
         },
         {
           "TargetType": "MOD.Core.StateComponent",
@@ -139,7 +138,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 100.0
+          "Value": 100
         },
         {
           "TargetType": "MOD.Core.TransformComponent",
@@ -150,9 +149,9 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector3, MOD.Core",
-            "x": 2.0,
-            "y": 2.0,
-            "z": 1.0
+            "x": 1,
+            "y": 1,
+            "z": 1
           }
         },
         {
@@ -164,10 +163,10 @@
           },
           "Value": {
             "$type": "MOD.Core.MODQuaternion, MOD.Core",
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0,
-            "w": 1.0
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
           }
         },
         {
@@ -217,8 +216,8 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 0.0,
-            "y": 0.0
+            "x": 0,
+            "y": 0
           }
         },
         {
@@ -230,8 +229,8 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 0.0,
-            "y": 0.0
+            "x": 0,
+            "y": 0
           }
         },
         {
@@ -324,7 +323,7 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 0.0,
+            "x": 0,
             "y": 0.3
           }
         },
@@ -344,7 +343,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 0.0
+          "Value": 0
         },
         {
           "TargetType": "script.MonsterAttackComponent",
@@ -398,7 +397,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": -1.0
+          "Value": -1
         },
         {
           "TargetType": "script.MonsterStunComponent",
@@ -436,8 +435,8 @@
           },
           "Value": {
             "$type": "MOD.Core.MODVector2, MOD.Core",
-            "x": 0.0,
-            "y": 0.0
+            "x": 0,
+            "y": 0
           }
         },
         {
@@ -465,7 +464,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 0.0
+          "Value": 0
         },
         {
           "TargetType": "script.OrangeMushroomAttack",
@@ -474,7 +473,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 0.0
+          "Value": 0
         },
         {
           "TargetType": "script.OrangeMushroomAttack",
@@ -483,7 +482,7 @@
             "$type": "MODNativeType",
             "type": "System.Double, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
           },
-          "Value": 0.0
+          "Value": 0
         }
       ],
       "EventLinks": [],

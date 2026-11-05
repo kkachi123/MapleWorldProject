@@ -1333,13 +1333,13 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-MM-01 | ⬜ 구현 승인(2026-11-05). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1). 사용자 재개 지시 대기 |
-| CombatCore-MM-02 | ⬜ 구현 승인. 스크립트 이름 변경은 부채로 분리 |
-| CombatCore-MM-03 | ⬜ 구현 승인. 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
-| CombatCore-MM-04 | ⬜ 구현 승인 |
-| CombatCore-MM-05 | ⬜ 구현 승인. 패턴·스폰 없음(사용자 결정) |
-| CombatCore-MM-06 | ⬜ 구현 승인 |
-| CombatCore-V11-F15 | ⬜ 사용자 결정 값(작업 트리 CSV), coder 커밋에 포함 |
+| CombatCore-MM-01 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1) |
+| CombatCore-MM-02 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 스크립트 이름 변경은 부채로 분리 |
+| CombatCore-MM-03 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
+| CombatCore-MM-04 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기) |
+| CombatCore-MM-05 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 패턴·스폰 없음(사용자 결정) |
+| CombatCore-MM-06 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기) |
+| CombatCore-V11-F15 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 사용자 결정 값(작업 트리 CSV) 그대로, coder 커밋에 포함 |
 
 다음 흐름: 사용자 재개 지시 전까지는 정리 단계만 한다. 애니메이션 연결 확인은 끝났다. 재개 지시가 오면 → coder 한 회차(기준 eca1903, 제품 파일은 8f16a81과 같음, 새 파일은 파일 구조 기준 위치) → 같은 버전 tester → reviewer → 사용자 V11. 회차 C 사용자 V11 수락 뒤 §22 회차 D다. P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
 
