@@ -8,9 +8,24 @@
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
-| 1번 마을 최종보스 머쉬맘 모델(model://mushmom, 회차 C) | 리소스 팩 mob/6130101.img(머쉬맘, Mushmom) | stand → 86015373d23b4b05bb8fcc6086354652, move → c745828d831b42739b9a58c07f334864, jump → 5ecbcc4002a5491aafd7e1d3191c6ddc, hit(팩 hit1) → 90fee9416184420a9796a679751d1ec5, die(팩 die1) → ec90f0b64a814c4980de89f496d360ec | **임시**(2026-11-05 사용자 지시) | 회차 C 사용자 V11 수락과 6단계 헤네시스 견본 아트 확정 때 사용자가 확정 |
+| 1번 마을 최종보스 머쉬맘 모델(model://mushmom, 회차 C) | 리소스 팩 mob/6130101.img(머쉬맘, Mushmom) | stand → 86015373d23b4b05bb8fcc6086354652, move → c745828d831b42739b9a58c07f334864, jump → 5ecbcc4002a5491aafd7e1d3191c6ddc, hit(팩 hit1) → 90fee9416184420a9796a679751d1ec5, die(팩 die1) → ec90f0b64a814c4980de89f496d360ec | **임시**(2026-11-05 사용자 지시, 연결은 2026-11-05 사용자 확인) | 회차 C 사용자 V11 수락과 6단계 헤네시스 견본 아트 확정 때 사용자가 확정 |
 
-연결 기본안(stand·move·jump·hit1·die1)은 coder 시작 전 사용자 확인 대상이다(Plan §21). 확인 결과가 다르면 이 표를 고친다.
+연결(stand·move·jump·hit1·die1, move는 기본값 유지)은 2026-11-05 사용자가 확인했다(Plan §21).
+
+## 사용 예정 (회차 D, Plan §22, 회차 C 사용자 V11 수락 뒤)
+
+| 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
+| --- | --- | --- | --- | --- |
+| 머쉬맘 2칸 공격 모션 | mob/6130101.img | attack1 → 90c5456e2a8a45478df02500797a9afd(ActionSheet 키 `attack1`) | 임시 | 회차 D 사용자 V11 수락과 6단계 견본 아트 확정 |
+| 머쉬맘 3칸 공격 모션 | mob/6130101.img | skill1 → b9345875a8134c7c9a1b6aed8551d808(ActionSheet 키 `skill1`) | 임시 | 위와 같음 |
+| 머쉬맘 3칸 공격 이펙트 | mob/6130101.img attack1/info/effect | 05113e9dc86448cb8581731824106d75(패턴 표 EffectClip) | 임시. 위치·크기는 기본안(사용자 V11 확인) | 위와 같음 |
+| 2칸 공격 효과음 | mob/6130101.img _audio/Attack1 | f135fc39ffe94be18ef9c0f82d3669c5(패턴 표 AttackSound) | 임시 | 위와 같음 |
+| 3칸 공격 효과음 | mob/6130101.img _audio/Skill1 | 5da7bb48092947f395e9f76f601323ca(패턴 표 AttackSound) | 임시 | 위와 같음 |
+| 머쉬맘 피격음 | mob/6130101.img _audio/Damage | c611ae50c5d84814a6d2ccfad8a472c5(MonsterSoundData DamagedSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
+| 플레이어 피격음(머쉬맘 공격) | mob/6130101.img _audio/CharDam1 | 7c8e5f1ef0b549c59aec820909458d4f(MonsterSoundData HitPlayerSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
+| 머쉬맘 사망음 | mob/6130101.img _audio/Die | d48ec1cc57a247028f390041fc89c97f(MonsterSoundData DieSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
+
+회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.
 
 ## 보관 (지금 스폰하지 않음)
 
@@ -22,6 +37,6 @@
 
 | 출처 | 내용 |
 | --- | --- |
-| mob/6130101.img(머쉬맘) 나머지 | attack1 → 90c5456e2a8a45478df02500797a9afd, skill1 → b9345875a8134c7c9a1b6aed8551d808, attack1 이펙트 클립 05113e9dc86448cb8581731824106d75, 효과음 Attack1 f135fc39ffe94be18ef9c0f82d3669c5·CharDam1 7c8e5f1ef0b549c59aec820909458d4f·Damage c611ae50c5d84814a6d2ccfad8a472c5·Die d48ec1cc57a247028f390041fc89c97f·Skill1 5da7bb48092947f395e9f76f601323ca |
+| mob/6130101.img(머쉬맘) 나머지 | attack1·skill1·attack1 이펙트·효과음 5종은 2026-11-05 사용자 지시로 "사용 예정"(회차 D)으로 옮겼다 |
 | 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
 | 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |
