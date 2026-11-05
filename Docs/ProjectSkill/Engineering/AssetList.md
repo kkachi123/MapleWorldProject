@@ -1,0 +1,27 @@
+# 에셋 목록 (AssetList, 잠정)
+
+> 작성: 2026-11-05(planner, 회차 C [Plan §21](Plans/2_CombatCore.md)). [로드맵 §1 에셋 목록](DevelopmentRoadmap.md#1-개발-기준)의 제안 위치에 잠정으로 만들었다. 최종 위치는 [8단계 시작 전 결정 사항](DevelopmentRoadmap.md#8-콘텐츠-데이터-제작)에서 정한다.
+> 목적: 임시·대체 에셋을 추적한다. 9단계(출시 검증) 전에 출시 범위의 임시 에셋은 0이어야 한다. RUID는 msw-search 래퍼 응답에서 옮겼고 추측한 값이 없다.
+> 아직 목록에 올리지 않은 기존 에셋(플레이어 기본 공격 이펙트, UI 이미지, 그로기 별 파티클 등)은 해당 시스템을 다룰 때 추가한다.
+
+## 사용 중
+
+| 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
+| --- | --- | --- | --- | --- |
+| 1번 마을 최종보스 머쉬맘 모델(model://mushmom, 회차 C) | 리소스 팩 mob/6130101.img(머쉬맘, Mushmom) | stand → 86015373d23b4b05bb8fcc6086354652, move → c745828d831b42739b9a58c07f334864, jump → 5ecbcc4002a5491aafd7e1d3191c6ddc, hit(팩 hit1) → 90fee9416184420a9796a679751d1ec5, die(팩 die1) → ec90f0b64a814c4980de89f496d360ec | **임시**(2026-11-05 사용자 지시) | 회차 C 사용자 V11 수락과 6단계 헤네시스 견본 아트 확정 때 사용자가 확정 |
+
+연결 기본안(stand·move·jump·hit1·die1)은 coder 시작 전 사용자 확인 대상이다(Plan §21). 확인 결과가 다르면 이 표를 고친다.
+
+## 보관 (지금 스폰하지 않음)
+
+| 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
+| --- | --- | --- | --- | --- |
+| 일반 몬스터 주황버섯 모델(model://orangemushroom, 회차 C 전에는 model://castleenemy로 머쉬맘 대신 쓰임) | 주황버섯 클립(팩은 미확인. "주황버섯" 팩 검색 결과 mob/9010026.img·mob/1210102.img·mob/2300102.img의 RUID와 다름) | stand → 96e955c1bf27415e84f96deea200a8f1(64×58), move → 6ad988b3ef6d4ceab3a504d300755a5b, jump → 94bbe2a7eb9c4f9caa10dd9de44ee860, hit → aec9504d5dc24aceb5646b79d30abad4, die → 65a2bfb039614f2e9e4ccc354340153d | 임시(일반 몬스터용 보관) | 6단계에서 주황버섯 공격 구성을 사용자가 정할 때 자원도 확정 |
+
+## 후보 (쓰지 않음, 기록만)
+
+| 출처 | 내용 |
+| --- | --- |
+| mob/6130101.img(머쉬맘) 나머지 | attack1 → 90c5456e2a8a45478df02500797a9afd, skill1 → b9345875a8134c7c9a1b6aed8551d808, attack1 이펙트 클립 05113e9dc86448cb8581731824106d75, 효과음 Attack1 f135fc39ffe94be18ef9c0f82d3669c5·CharDam1 7c8e5f1ef0b549c59aec820909458d4f·Damage c611ae50c5d84814a6d2ccfad8a472c5·Die d48ec1cc57a247028f390041fc89c97f·Skill1 5da7bb48092947f395e9f76f601323ca |
+| 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
+| 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |

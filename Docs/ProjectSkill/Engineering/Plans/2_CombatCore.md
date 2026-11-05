@@ -1,6 +1,7 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-11-05(회차 B 사용자 V11 수락). 메인이 물은 회차 B V11 4항목(이동·복귀 체감이 회차 A와 같은지, 해 보셨다면 CSV 직접 수정 반영과 표·열 이름, AttackInterval 3.0의 의미, 플레이어 HP 바 현재/최대 숫자)에 사용자가 "전부 ok"로 답해 §20의 CombatCore-V11-F14·V11-F07을 완료로 표시했다. HP 바 자릿수 육안 NOT_RUN은 사용자 확인으로 해소했고, AttackInterval 의미(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)는 사용자가 생각한 공격 간격과 같다고 확정했다. CSV 직접 수정은 조건 질문이라 사용자 실시 여부가 확정되지 않았다(AI 근거는 QA9 CSV 변경 반영 사례와 보충 시험 1). 규칙·수치·범위 변경 없음. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이며, 시작하면 §18 "시작 전 사용자 질문"의 답을 먼저 받는다. P01b~P06 🟡 유지, 2단계 완료·회차 C 시작·3단계 시작 아님.
+> 갱신: 2026-11-05(회차 C Plan). 사용자 회차 C 답변·결정으로 §21을 추가했다. 머쉬맘 리소스(mob/6130101.img)로 1배 새 모델 model://mushmom을 만들어 패턴 4행을 적용하고(MM-01·MM-02, §18 대체), 플레이어→몬스터 피격을 규칙 충족형으로 바꾸며 공격 점프(접근·복귀) 중에는 맞지 않게 몬스터 동작이 구간별 피격 가능을 선언한다(MM-03). 공격 범위 표시·조정 도구와 AttackSkillData 범위 열 4개를 지우고(MM-04), 기존 모델은 1배 주황버섯 모델(orangemushroom, 패턴·스폰 없음)로 정리하며(MM-05), ActionSheet의 stun 키를 지워 그로기는 hit를 직접 쓴다(MM-06). 사용자가 직접 바꾼 플레이어 기본 수치 100·12·12를 반영한다(V11-F15). 몬스터→플레이어 판정과 D01~D04 수치는 바꾸지 않는다. 공격 위치 조건은 규칙에 넣지 않고 입력 조건(IDLE=Pos2)에 맡긴다(사용자 결정). 새 파일은 새 [파일 구조 기준](../FileStructure.md) 위치에 두며 기존 파일 이동은 회차 C 뒤 별도 회차다. 사용자 재개 지시 전까지 정리 단계만 하며, coder 전 사용자 확인 1건(애니메이션 연결 기본안)이 남았다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 이전 갱신: 2026-11-05(회차 B 사용자 V11 수락). 메인이 물은 회차 B V11 4항목(이동·복귀 체감이 회차 A와 같은지, 해 보셨다면 CSV 직접 수정 반영과 표·열 이름, AttackInterval 3.0의 의미, 플레이어 HP 바 현재/최대 숫자)에 사용자가 "전부 ok"로 답해 §20의 CombatCore-V11-F14·V11-F07을 완료로 표시했다. HP 바 자릿수 육안 NOT_RUN은 사용자 확인으로 해소했고, AttackInterval 의미(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)는 사용자가 생각한 공격 간격과 같다고 확정했다. CSV 직접 수정은 조건 질문이라 사용자 실시 여부가 확정되지 않았다(AI 근거는 QA9 CSV 변경 반영 사례와 보충 시험 1). 규칙·수치·범위 변경 없음. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이며, 시작하면 §18 "시작 전 사용자 질문"의 답을 먼저 받는다. P01b~P06 🟡 유지, 2단계 완료·회차 C 시작·3단계 시작 아님.
 > 이전 갱신: 2026-11-05(회차 B 리뷰 뒤). §20 회차 B(CombatCore-V11-F14·V11-F07)는 coder(로컬 커밋 1b4f4ee, 기준 9eed765, 59경로 Bundle 9325c33a…cd19)·같은 버전 독립 QA9(실행 기준 PASS, 보충 시험 1로 플레이어 MaxHp DataSet 적용 PASS)·독립 리뷰 **WAITING**(결함 0)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 사용자 V11이다(§20 "사용자 V11 직접 확인"). 리뷰 문서 대조에 따라 AttackInterval 서술을 실제 동작(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)으로 바로잡았다(§5·§20). 값·동작·규칙은 바뀌지 않았고 표현만 고쳤다. 이 의미가 사용자가 생각한 "공격 간격"과 같은지는 V11 확인 항목이다. tester 비차단 후속 (a)는 재현 안 됨·종결, (b)는 PASS. 그 뒤 회차 C(§18) 순서는 그대로다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-04(회차 B Plan). 사용자 "기본안으로 시작"으로 §20을 추가했다. CombatCore-V11-F14(신규, 플레이어 최대 HP·이동·복귀 속도 DataSet)와 V11-F07(몬스터 HP·공격력·공격 간격 DataSet)이 구현 승인 범위다. 현재 값(1000·6·6·100·12·3.0)을 그대로 새 표 PlayerBaseStatData·MonsterStatData(설계안)로 옮기며 결과가 이전과 같아야 한다. 몬스터 점프 시간·높이와 Pos2 경계·앵커 간격은 제외. coder 시작 전 조건(Maker 재저장 3파일)은 [ops] 9eed765로 해소. 다음은 coder 한 회차(기준 9eed765) → 같은 버전 tester(비차단 후속 2건 포함) → reviewer → 사용자 V11이다. 규칙·수치 불변. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-04(회차 A 사용자 V11 수락). 사용자가 회차 A V11 4항목에 "전부 ok"로 답해 §19의 CombatCore-V11-F12·V11-F13을 완료로 표시했다(사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인으로 유지). 다음은 회차 B 시작 여부 사용자 결정이며 회차 B Plan은 미작성이다. 규칙·수치·범위 변경 없음. P01b~P06 🟡 유지, 2단계 완료·회차 B 시작·3단계 시작 아님.
@@ -77,7 +78,7 @@
 
 모든 유효한 저스트 회피·패링 성공에 부여한다. 성공 후 전투 시간 **2.0초**, **다음 수락된 직접 공격 1회 전체 타격 ×2.2**다. ATTACK 진입과 유효한 시전 시작이 모두 성공한 시점에 소비하고 빗나가도 소비한다. 거부된 입력·시전 실패는 소비하지 않는다. 이미 실행 중인 공격에는 소급 적용하지 않는다.
 
-공격 대상은 유일한 현재 대결 상대 1개체다. 기본 공격의 원래 사거리·타수를 유지하고 다른 몬스터를 추가 공격하지 않는다. 재성공은 중첩 없이 배율을 유지하고 2.0초를 갱신하며 만료 경계는 시작 ≤ 현재 < 종료다. 팝업 중 시간·소비는 멈추고 사망·맵 이탈·Stop에는 소멸한다.
+공격 대상은 유일한 현재 대결 상대 1개체다. 기본 공격의 원래 사거리·타수를 유지하고(2026-11-05 §21부터 사거리 대신 규칙 목록 충족으로 맞고, 상대가 공격 점프 중이면 맞지 않는다. 타수·배율은 그대로) 다른 몬스터를 추가 공격하지 않는다. 재성공은 중첩 없이 배율을 유지하고 2.0초를 갱신하며 만료 경계는 시작 ≤ 현재 < 종료다. 팝업 중 시간·소비는 멈추고 사망·맵 이탈·Stop에는 소멸한다.
 
 ### D04 — 1:1 상대·슬로우·그로기
 
@@ -108,11 +109,11 @@
 
 | 데이터 | 소유·필수 값 |
 | --- | --- |
-| 기존 AttackSkillData | 기존 player.basic 피해·타수·범위·시전 유지. 반격 보너스는 원래 피해 계산에 곱하는 별도 실행 스냅샷 |
+| 기존 AttackSkillData | 기존 player.basic 피해·타수·범위·시전 유지. 반격 보너스는 원래 피해 계산에 곱하는 별도 실행 스냅샷. 2026-11-05(§21): 범위 열 AttackOffsetX·AttackOffsetY·AttackRangeWidth·AttackRangeHeight 삭제(사용자 승인), 피격은 규칙 목록으로 판정 |
 | 신규 CombatRuleData (이름은 구현 설계안) | 규칙 ID, JustWindowSec, ParryWindowSec, GuardDamageRate, CounterWindowSec, CounterDamageMultiplier, SlowDurationSec, SlowRate, GroggyDurationSec |
 | 신규 MonsterAttackPatternData (설계안) | 패턴 ID·몬스터/스킬 연결 키, ResponseType, AttackAttribute, TelegraphLeadSec와 유효 공격 영역을 연결하는 기존 범위/위치 키. 예고 선행 시간은 D02 창을 포함하도록 해당 모션/공격 실행에서 일관되게 도출하며 임의 새 점프 속도를 만들지 않음. 2026-11-03(F06, §15): ResponseType에 ANY 추가, 출현 가중치 Weight 열(유한한 양수, 기본 1) 추가. 패턴 데이터는 맞히는 칸(영역)·대응 유형·속성·예고·가중치만 정하고, 그 영역을 어떤 모션·이펙트로 실현할지(주황버섯 착지점 등)는 몬스터별 공격 구현이 정한다. 2026-11-03(F10, §17): 대상 칸 방식 열 AreaTarget(설계안 이름) 추가. 값은 FIXED(앵커 영역), NEAREST(ANY 최근접 1칸), RANDOM(ANY 균등 무작위 1칸) |
-| 신규 PlayerBaseStatData (설계안, 2026-11-04 §20) | id, MaxHp, MoveSpeed, ReturnSpeed. `default` 행 1000·6·6. serveronly false(속도는 소유 클라이언트, HP는 서버가 읽음). 5단계 강화 보정의 기본값 짝 |
-| 신규 MonsterStatData (설계안, 2026-11-04 §20) | id(=modelKey, 현재 castleenemy), MaxHp, AttackDamage, AttackInterval. `default` 행이 빈 칸 기본값의 원본. serveronly true, 서버 카탈로그 전체 검증. AttackInterval의 뜻(2026-11-05 표현 정정, 값·동작 불변): 공격이 끝나 IDLE로 돌아온 뒤 IDLE에서 기다리는 시간이다(적 진행 시계 기준이라 팝업 중에는 멈추고 슬로우 중에는 느려진다). 3.0이면 공격 시작~다음 시작은 공격 동작 약 1.0초를 더해 약 4.0초다 |
+| 신규 PlayerBaseStatData (설계안, 2026-11-04 §20) | id, MaxHp, MoveSpeed, ReturnSpeed. `default` 행 1000·6·6(2026-11-05 사용자 직접 변경으로 100·12·12, §21 V11-F15). serveronly false(속도는 소유 클라이언트, HP는 서버가 읽음). 5단계 강화 보정의 기본값 짝 |
+| 신규 MonsterStatData (설계안, 2026-11-04 §20) | id(=modelKey, 현재 castleenemy, §21에서 mushmom), MaxHp, AttackDamage, AttackInterval. `default` 행이 빈 칸 기본값의 원본. serveronly true, 서버 카탈로그 전체 검증. AttackInterval의 뜻(2026-11-05 표현 정정, 값·동작 불변): 공격이 끝나 IDLE로 돌아온 뒤 IDLE에서 기다리는 시간이다(적 진행 시계 기준이라 팝업 중에는 멈추고 슬로우 중에는 느려진다). 3.0이면 공격 시작~다음 시작은 공격 동작 약 1.0초를 더해 약 4.0초다 |
 
 UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결한다. 문자열을 수치로 검증하고 누락·중복 ID·빈 문자열·NaN/무한대·음수 시간·0 이하/1 초과 슬로우·잘못된 유형 조합은 시작을 거부해 한 번 경고한다. 성공/피해 정책을 임의 기본값으로 바꿔 진행하지 않는다(§20 새 표의 빈 칸은 같은 표 `default` 행 값을 쓰는 데이터 규칙이며 코드 기본값이 아니다. `default` 행 자체의 빈 칸·무효 값은 거부한다). 서버가 유효 행의 스냅샷을 소유하고 클라이언트는 승인된 표시 값만 받는다. 캐시는 세션 종료에 정리하며 Refresh/다음 Play에서 변경값이 적용돼야 한다.
 
@@ -136,7 +137,7 @@ UserDataSet 메타데이터와 동명 UTF-8 CSV가 실제 적용되도록 연결
 
 ## 6. 실행 단계·요구 ID
 
-상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 coder 기본 검증과 독립 QA·리뷰 근거가 있으나 P06의 사용자 확인이 남아 🟡를 유지한다. P06은 통합 기본 검증·독립 QA(3회차까지)·독립 리뷰(2026-11-02 WAITING)를 마쳤으며 사용자 V11·CF-F07 실제 연출·V12 외부 환경이 남아 🟡다. 2026-11-02 V11 결정(§14)은 Q5·Q6 답변으로 구현 승인됐다. F02·F04는 P04(R05) 그로기 순서·모션의 재구현·재검증, F01·F03은 P05(R07) 표시의 추가 구현·재검증, F05는 P03(R01/R02)의 원인 확인(결함이면 최소 수정)으로 처리한다. 2026-11-03 F06(§15)은 P02(R06 로더·Weight 검증)와 P03(R01/R02 ANY 대상 칸·판정, 주황버섯 착지)의 추가 구현, P05(R07 예고 문구·칸 표시)의 회귀로 처리한다. 2026-11-03 §17의 F10은 P02(AreaTarget 검증)와 P03(RANDOM 대상)으로, F11은 P05(R07 결과 문구)로, REV-F02는 P04·P05(R05 사망 표시·R08)의 결함 수정으로 처리한다. 2026-11-04 §19의 V11-F12는 P04·P05(R05 사망 표시·R08 팝업·늦은 경로)의 표시 수정으로, V11-F13은 P03(R02 성공 판정 조건)으로 처리한다(R01 예고 표시는 바꾸지 않는다). 2026-11-04 §20의 V11-F14·V11-F07은 P02(R06 DataSet 로드·검증)의 추가 구현과 P03·P04(R02 피해·HP, AI 간격)·P05(R08 이동 입력)의 값 동일성 회귀로 처리한다. P 상태는 🟡를 유지한다. 상세 근거와 미실시는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)를 따른다.
+상태는 ⬜ 미착수 / 🟡 구현 후 확인 대기 / ✅ 확인 완료다. P01a의 규칙 확정·문서 동기화는 ✅다. P01b~P05는 coder 기본 검증과 독립 QA·리뷰 근거가 있으나 P06의 사용자 확인이 남아 🟡를 유지한다. P06은 통합 기본 검증·독립 QA(3회차까지)·독립 리뷰(2026-11-02 WAITING)를 마쳤으며 사용자 V11·CF-F07 실제 연출·V12 외부 환경이 남아 🟡다. 2026-11-02 V11 결정(§14)은 Q5·Q6 답변으로 구현 승인됐다. F02·F04는 P04(R05) 그로기 순서·모션의 재구현·재검증, F01·F03은 P05(R07) 표시의 추가 구현·재검증, F05는 P03(R01/R02)의 원인 확인(결함이면 최소 수정)으로 처리한다. 2026-11-03 F06(§15)은 P02(R06 로더·Weight 검증)와 P03(R01/R02 ANY 대상 칸·판정, 주황버섯 착지)의 추가 구현, P05(R07 예고 문구·칸 표시)의 회귀로 처리한다. 2026-11-03 §17의 F10은 P02(AreaTarget 검증)와 P03(RANDOM 대상)으로, F11은 P05(R07 결과 문구)로, REV-F02는 P04·P05(R05 사망 표시·R08)의 결함 수정으로 처리한다. 2026-11-04 §19의 V11-F12는 P04·P05(R05 사망 표시·R08 팝업·늦은 경로)의 표시 수정으로, V11-F13은 P03(R02 성공 판정 조건)으로 처리한다(R01 예고 표시는 바꾸지 않는다). 2026-11-04 §20의 V11-F14·V11-F07은 P02(R06 DataSet 로드·검증)의 추가 구현과 P03·P04(R02 피해·HP, AI 간격)·P05(R08 이동 입력)의 값 동일성 회귀로 처리한다. 2026-11-05 §21의 MM-03은 P03·P04(R02 피해 단일 적용, R03 반격 대상), MM-01·MM-06은 P04·P05(R05 그로기·사망 표시, R07), MM-02·MM-04·MM-05·V11-F15는 P02(R06)와 P05(R08)의 추가 구현·회귀로 처리한다. P 상태는 🟡를 유지한다. 상세 근거와 미실시는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)를 따른다.
 
 | 순서·ID | 산출물·의존성 | 상태 |
 | --- | --- | --- |
@@ -182,7 +183,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - msw-general/references/dataset.md·authoring.md: DataSet/CSV 적용·등록·검증. 구조 파일을 바꾸면 builder-protocol과 대상별 model/map/ui 참조도 읽기.
 - msw-ui-system의 component-api.md·runtime-patterns.md: CombatScreen 표시/소유 클라이언트. 새 자원이 실제 필요할 때만 msw-search·msw-sprite-ruid 사용.
 
-2026-11-05(회차 B 사용자 V11 수락) 현재 §20 회차 B(V11-F14·V11-F07)는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING에 이어 사용자 V11 "전부 ok"로 완료했고 AI 담당 작업은 없다. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이다. 시작 지시가 오면 planner가 §18 "시작 전 사용자 질문"(애니메이션 선택·크기·modelId·공격 구성·수치 행 등)의 답을 받은 뒤 회차 C Plan을 확정한다. 아래는 그 이전 기록이다. 2026-11-05(회차 B 리뷰 뒤) 현재 §20 회차 B는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING까지 마쳤고 AI 담당 작업은 없다. 다음은 사용자 V11(§20 "사용자 V11 직접 확인")이고, 그 결과에 따라 회차 C(§18)다. 아래는 그 이전 기록이다. 2026-11-04(회차 B) 당시 다음 작업은 §20 coder 한 회차(V11-F14·V11-F07, 기준 9eed765) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §20 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-04(회차 A) 당시 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
+2026-11-05(회차 C Plan) 현재 §21 회차 C(MM-01~06·V11-F15)가 구현 승인 범위다. 사용자 재개 지시 전까지는 정리 단계(Plan·[파일 구조 기준](../FileStructure.md)·coder 인계 준비)만 한다. coder 전에 메인이 사용자 확인 1건(머쉬맘 애니메이션 연결 기본안 stand·move·jump·hit1·die1)을 받는다. 그다음 coder 한 회차(기준 8f16a81) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §21 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-05(회차 B 사용자 V11 수락) 현재 §20 회차 B(V11-F14·V11-F07)는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING에 이어 사용자 V11 "전부 ok"로 완료했고 AI 담당 작업은 없다. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이다. 시작 지시가 오면 planner가 §18 "시작 전 사용자 질문"(애니메이션 선택·크기·modelId·공격 구성·수치 행 등)의 답을 받은 뒤 회차 C Plan을 확정한다. 아래는 그 이전 기록이다. 2026-11-05(회차 B 리뷰 뒤) 현재 §20 회차 B는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING까지 마쳤고 AI 담당 작업은 없다. 다음은 사용자 V11(§20 "사용자 V11 직접 확인")이고, 그 결과에 따라 회차 C(§18)다. 아래는 그 이전 기록이다. 2026-11-04(회차 B) 당시 다음 작업은 §20 coder 한 회차(V11-F14·V11-F07, 기준 9eed765) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §20 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-04(회차 A) 당시 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
 
 ## 9. Plan 변경 이력
 
@@ -198,6 +199,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 | 2026-11-04 | 사용자 V11 결과(run "2026-11-03 사용자 V11 결과(§17 회차)" 절): 4패턴·"가드 불가" 문구 통과, "die animation이 반복됨. 1번만 하고 die end 모션에서 정지상태가 되게 해줘", 범위 밖 저스트 "그건 너무 쉬움", "저스트 회피랑 패링 둘다 pos2에서만 동작하게. 추가로 저스트회피랑 패링 모두 피격 범위에서 성공시에만 판정되도록". 2026-11-04 "A 회차 시작" | §19 신설. V11-F12(die 1회 재생 후 정지), V11-F13(JUST·PARRY 성공에 Pos2 시작·Pos2 포함 영역 조건). D01 ANY·공통 성공 조건, D02, V03·V06·V11 갱신. §15·§17의 끝 칸 저스트 서술은 §19가 대체. GameDesign §4.2와 로드맵 재개 지점 동기화. 수치·입력 규칙·영역 불변. 회차 B·§18은 이후 |
 | 2026-11-04 | 사용자 "이동 속도 뿐 아니라 Player 프로필 데이터를 DataSet에서 수정 가능하도록 설정 필요. 처음 속도 값은 6으로"(2026-11-03)와 2026-11-04 "기본안으로 시작"(메인 제안 1~4: 플레이어 HP·이동·복귀 속도, 몬스터 HP·공격력·공격 간격·고유 id 행·빈 칸 기본값, 점프 제외, Pos2 경계·앵커 간격 미룸) | §20 신설. V11-F14 신규, V11-F07 승인. §5 데이터 계약에 새 표 2개(설계안). 수치·규칙 불변(현재 값 그대로 이동). GameDesign 변경 없음, 로드맵 회차 B 줄·재개 지점 동기화 |
 | 2026-11-05 | 사용자 결정 아님. 회차 B 리뷰 WAITING의 "문서 대조"(비차단)와 QA9 판정 메모: AttackInterval 문구 "시작 간격 3.0"이 실제 동작(IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)과 다름 | §5 MonsterStatData 설명과 §20 확인 기준 "공격 간격" 행의 표현만 정정. 값·동작·규칙 불변. 의미가 사용자 기대와 같은지는 §20 사용자 V11 항목으로 추가(다르면 새 요구). §20 상태 표·NOT_RUN·다음 흐름, §8 재개 문단 갱신. GameDesign은 AttackInterval 문구 변경 없음(§8 전투 구성 236행은 2026-11-04 사용자 확정 수치 DataSet 기본안으로 동기화) |
+| 2026-11-05 | 사용자 회차 C 답변·결정(run "2026-11-05 회차 C 질문 사용자 답변" 절): 플레이어 기본 수치 사용자 직접 변경 100·12·12 "변경된 값을 사용", ActionSheet 기본 키만·stun 키 제거, 플레이어→몬스터 규칙 충족형·몬스터→플레이어 유지, 피격 가능 시점 "B: 공격 점프 중에는 안 맞음"(확장성), 범위 열·범위 도구·AssistModel·표시용 모델 삭제, 키 mushmom, 머쉬맘 리소스 모델 1배+패턴 4행, 기존 모델은 1배 주황버섯 모델. 추가 결정: 주황버섯 일반 몬스터 패턴 미등록(6단계 사용자 작성), 메인의 "Pos2에서 시전" 명시 규칙 제안은 넣지 않음(공격 위치는 입력 조건에 맡김), 파일 구조 추천안 승인(기준 문서만, 이동은 회차 C 뒤) | §21 신설(MM-01~06·V11-F15). §18 MM-01·MM-02를 §21이 대체. D03 사거리 문구 주석, §5 데이터 계약(AttackSkillData 열, PlayerBaseStatData 값, MonsterStatData 키), §6 매핑, §8 재개 문단. GameDesign §4.2·§5·§8, 로드맵 재개 지점, 에셋 목록(AssetList.md) 잠정 생성, 파일 구조 기준(FileStructure.md) 신설. D01·D02·D04 수치·몬스터→플레이어 판정 불변 |
 
 ## 10. 독립 QA 상태 (2026-10-25)
 
@@ -671,6 +673,8 @@ V12 외부 환경, 창 0.20 손 타이밍의 AI 계측, 실기기·터치 전체
 
 ## 18. 다음 회차 후보 — 현재 상대를 머쉬맘으로 전환 (2026-11-03 등록)
 
+2026-11-05: 이 절의 질문은 답이 끝났고 회차 C Plan은 §21이다. MM-01·MM-02의 범위·완료 기준은 §21이 대체한다(스크립트 이름 변경은 부채로 분리). 아래는 등록 당시 기록이다.
+
 2026-11-04: 실행 순서는 §19(회차 A) → 회차 B → 이 절(회차 C)이다. 아래 "현재 회차는 §17"은 등록 당시 표현이다.
 
 **등록만 했다.** 현재 회차는 §17이며 §17의 범위·coder 인계·완료 기준은 바뀌지 않는다. 이 절은 §17 회차가 끝난 뒤 사용자가 재개를 지시하고 아래 질문에 답한 다음 시작한다. 근거는 [run](../../../../.pipeline/20261020-combat-core/run.md)의 "2026-11-03 일시정지" 절이다.
@@ -1065,3 +1069,271 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 남은 NOT_RUN(PASS로 세지 않음, QA9·리뷰 기재분. 그중 HP 바 자릿수 육안은 2026-11-05 사용자 V11로 해소해 뺐다): 맵을 옮겼다 돌아오는 경우와 재접속 때의 플레이어 MaxHp(현재 맵은 map01 하나라 위험 낮음, 맵이 늘어나는 단계에서 1회 기록), 사람 손 기본 0.20초 타이밍(F13 회귀는 창 30초 시험값, 회차 A V11 수락 이력 있음), 모바일·실기기·터치·다중 접속, V07 예고 도중 팝업 정지·재개 전수와 사망 경로별 팝업 조합, F06 `parry.right` 대칭 착지·F10 4패턴 실제 출현 빈도, 실제 다른 맵 전환에서의 위치 기록 삭제, 플레이어 표 실패 시 서버만/클라이언트만 실패하는 비대칭, Maker UI에서 DataSet 직접 편집, V12·CF-F07. 근거 신뢰도 메모: QA9 Play 1 원본 로그는 남지 않았고(값만 옮겨 적음), 처치 합계 100과 클라이언트 플레이어 MaxHp 1000은 독립 재확인 로그가 없다(회귀 항목이라 판정 영향 없음, 리뷰 기재).
 
 다음 흐름(2026-11-05 사용자 V11 수락 뒤): 회차 B 완료. 현재 AI 담당 작업은 없다. 다음은 회차 C(§18 머쉬맘 전환, CombatCore-MM-01·MM-02) 시작 여부 사용자 결정이며 **사용자 시작 지시가 필요하다**. 시작하면 §18 "시작 전 사용자 질문"의 답을 받은 뒤 planner가 회차 C Plan을 확정하고, 그다음 coder → tester → reviewer → 사용자 V11 순서다. 머쉬맘 수치는 이 회차의 MonsterStatData에 행을 두는 방식으로 넣을 수 있으나 값은 사용자 결정이다. 남는 것: 맵 이동 뒤 복귀·재접속 때 플레이어 MaxHp(맵이 늘어나는 단계에서 1회 기록), 실기기·다중 접속, V12, 기존 V11 미확인(모바일·터치·음향·반격 체감·CF-F07). P01b~P06 🟡 유지. 이 상태는 2단계 완료·회차 C 시작·3단계 시작 승인이 아니다. 아래는 그 이전 기록이다. coder → 같은 버전 tester(QA9·보충 시험 1, (a)·(b) 포함) → reviewer WAITING까지 끝났다. 다음은 사용자 V11(위 "사용자 V11 직접 확인")이다. V11에서 새 요구(AttackInterval 의미 변경 포함)나 재현 결함이 나오면 해당 ID만 다시 돈다. 그 결과에 따라 회차 C(§18 머쉬맘 전환)로 가며, §18은 시작 전에 애니메이션 선택 등 §18 "시작 전 사용자 질문"의 답을 받아야 한다. P01b~P06 🟡 유지. 2단계 완료와 3단계 시작은 사용자가 결정하며 이 절은 그 승인이 아니다.
+
+## 21. 회차 C — 머쉬맘 전환·규칙 충족형 피격·공격 범위 도구 삭제 (2026-11-05)
+
+기준 버전은 커밋 8f16a81이다(작업 트리에 사용자가 직접 바꾼 PlayerBaseStatData.csv와 run.md 변경이 있다). 근거는 [run](../../../../.pipeline/20261020-combat-core/run.md)의 "2026-11-05 회차 C 질문 사용자 답변" 절이다. 사용자가 답과 결정을 모두 주었으므로 이 절은 **구현 승인 범위**다. 다만 사용자가 재개를 지시하기 전까지는 정리 단계(Plan·기준 문서·coder 인계 준비)만 한다. 아래 "coder 시작 전 사용자 확인" 1건(애니메이션 연결 확인)도 답을 받은 뒤 coder에게 넘긴다. §18의 MM-01·MM-02는 이 절이 대체하며 §18 "시작 전 사용자 질문"은 이 절로 답이 끝났다.
+
+경로 메모: 새 파일 경로는 [파일 구조 기준](../FileStructure.md)(2026-11-05 사용자 승인 추천안)을 따른다. 기존 파일 이동은 회차 C가 끝난 뒤 별도 회차이므로 이 절에서는 기존 파일을 옮기거나 파일 이름을 바꾸지 않는다. 기준이 바뀌면 경로도 나중에 바뀔 수 있다.
+
+### 사용자 확정 (2026-11-05)
+
+1. 플레이어 기본 수치: 사용자가 PlayerBaseStatData.csv `default`를 직접 100·12·12(MaxHp·MoveSpeed·ReturnSpeed)로 바꿨고 "변경된 값을 사용"으로 확정했다. 사용자 결정 수치 변경이며 회차 B의 1000·6·6을 대체한다.
+2. 애니메이션: ActionSheet는 기본 키(stand·move·jump·hit·die)만 둔다. hit와 같은 값을 넣은 추가 키 `stun`은 지운다. 행동→키는 대기→stand, 공격→jump, 스턴(그로기)→hit, 사망→die다.
+3. 피격 방식: 플레이어→몬스터는 **규칙 충족형**(규칙 목록을 모두 만족하면 피해). 몬스터→플레이어는 지금 방식(칸 규칙 + 플레이어 콜라이더 위치)을 유지한다. 몬스터 피격 가능 시점은 **B: 공격 점프 중(출발·복귀)에는 안 맞음**이다. 이유는 이후 몬스터별 여러 패턴에 대비한 확장성이다.
+4. 삭제: AttackSkillData의 공격 위치·폭·높이 열(AttackOffsetX·AttackOffsetY·AttackRangeWidth·AttackRangeHeight), AttackRangeGizmo·AttackRangeTuner 스크립트, AssistModel DataSet, 표시용 모델, PlayerCombatComponent.ShowAttackRangeGizmo, 플레이어 모델에 붙은 두 컴포넌트.
+5. 몬스터 키는 영어 `mushmom`. 머쉬맘 수치는 100·12·3.0 그대로(이후 사용자 조절).
+6. 순서·모델: MSW 리소스에서 머쉬맘을 찾고(한글·영어), 찾으면 그 리소스로 만든 모델을 1배로 쓰고 기존 몬스터 패턴 4행을 적용한다. 기존 모델은 1배로 줄여 주황버섯 모델로 정리한다.
+7. 주황버섯 일반 몬스터 패턴은 **이번 회차에 등록하지 않는다.** 패턴 행을 추가하지 않고 스폰 대상도 아니다. 일반 몬스터 패턴은 6단계에서 사용자가 planner 질문 절차로 직접 만든다(로드맵 "기존 패턴 표를 복사하지 않는다"). 패턴·수치 행이 없는 몬스터를 스폰하면 거부되는 것(§20 실패 동작)은 의도된 동작이다.
+8. 스크립트 이름 `OrangeMushroomAttack`은 이번에 바꾸지 않는다(6단계 몬스터 일반화 때 정리할 부채). 머쉬맘 리소스는 에셋 목록에 임시로 올린다.
+
+### 머쉬맘 리소스 탐색 결과 (2026-11-05 planner, msw-search 래퍼, 제품 무수정)
+
+"머쉬맘"·"Mushmom"·"mushmom"(resource_pack, mob) 세 검색 모두 첫 결과가 같은 팩이다. Global/NativeModel에는 머쉬맘이 없다(폴더 자체가 이 작업 공간에 없음). 머쉬맘 .model 템플릿은 없으므로 모델은 기존 몬스터 모델 구성을 옮겨 만든다.
+
+| 팩 | 이름 | 클립 키(rel_path) → RUID | 크기(px) |
+| --- | --- | --- | --- |
+| mob/6130101.img | 머쉬맘(Mushmom) | stand → 86015373d23b4b05bb8fcc6086354652 | 120×112, 1프레임 |
+| | | move → c745828d831b42739b9a58c07f334864 | 120×115, 6프레임 |
+| | | jump → 5ecbcc4002a5491aafd7e1d3191c6ddc | 120×128, 1프레임 |
+| | | hit1 → 90fee9416184420a9796a679751d1ec5 | 120×140, 1프레임 |
+| | | die1 → ec90f0b64a814c4980de89f496d360ec | 170×77, 6프레임 |
+| | | attack1 → 90c5456e2a8a45478df02500797a9afd, skill1 → b9345875a8134c7c9a1b6aed8551d808 | 각 120×119, 5프레임(이번에 쓰지 않음) |
+
+같은 팩에 효과음(_audio/Attack1·CharDam1·Damage·Die·Skill1)과 attack1 이펙트 클립·스프라이트가 있다(이번에 쓰지 않음, [에셋 목록](../AssetList.md)에 기록). 다른 후보는 좀비 머쉬맘(mob/6300005.img·mob/2400572.img)과 블루 머쉬맘(mob/8645261.img·mob/8220007.img)이며 쓰지 않는다.
+
+크기: 머쉬맘 stand는 1배에서 1.20×1.12 유닛이다. 현재 모델(주황버섯 클립 64×58px, Scale 2)은 1.28×1.16 유닛이라 화면 크기가 거의 같다(사용자 "크기 유지"와 맞음). BattlePos 간격 1.5와의 겹침은 지금과 같은 수준으로 예상하며 V11에서 본다.
+
+### 요구 ID
+
+| ID | 내용 | 영향 R/V |
+| --- | --- | --- |
+| CombatCore-MM-01(§18 승계) | 머쉬맘 모델: 머쉬맘 리소스·1배·기존 컴포넌트 구성의 새 모델을 만들고 현재 상대로 스폰한다 | R05·R07 / V01·V06·V11 |
+| CombatCore-MM-02(§18 승계, 범위 변경) | 키 전환: 몬스터 키를 castleenemy에서 mushmom으로 바꾼다(데이터 3표). 스크립트 이름 변경은 빼고 부채로 남긴다 | R06 / V09 |
+| CombatCore-MM-03(신규) | 규칙 충족형 플레이어→몬스터 피격과 몬스터 동작 구간의 피격 가능 선언 | R02·R03 / V02·V04 |
+| CombatCore-MM-04(신규) | 공격 범위 표시·조정 도구와 공격 범위 열 삭제 | R06·R08 / V09·V10 |
+| CombatCore-MM-05(신규) | 주황버섯 모델 정리: 1배·키 orangemushroom·stun 키 제거. 패턴·수치 행 없음, 스폰 안 함 | R06 |
+| CombatCore-MM-06(신규) | ActionSheet 기본 키 정리: stun 키 제거, 그로기는 코드가 hit 클립을 직접 지정 | R05 / V06 |
+| CombatCore-V11-F15(신규) | 사용자 직접 변경 플레이어 기본 수치 100·12·12 반영(데이터만, 코드 무변경) | R06·R08 / V09·V10·V11 |
+
+### 대상 파일·편집 범위
+
+| 파일 | 변경 | ID |
+| --- | --- | --- |
+| RootDesk/MyDesk/Models/Monsters/Mushmom.model(새 파일, 파일 구조 기준의 영어 이름) | ModelBuilder: 주황버섯 모델을 읽어 `renameModel("Mushmom", "mushmom")` 뒤 새 경로에 쓴다(화면의 엔티티 이름은 MonsterData name 열 "머쉬맘"). 바꾸는 값: ActionSheet(아래 표), SpriteRUID=stand, Scale (1,1,1), HitComponent BoxSize·ColliderOffset(stand 크기에 맞춤, 예 1.2×1.1·(0,0.55), 판정과 무관), DamageSkinOffset(머리 위). 그 밖의 값·컴포넌트는 그대로 | MM-01 |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model | ModelBuilder: `renameModel("주황버섯", "orangemushroom")`(planner 기본안 키, 파일 이름 OrangeMushroom.model 변경은 이동 회차), Scale (1,1,1), ActionSheet에서 stun 키 제거. 클립·HitComponent(1배에서 0.63×0.58·오프셋 0.29로 이미 스프라이트에 맞음)는 그대로 | MM-05·MM-06 |
+| Global/DefaultPlayer.model | ModelBuilder: script.AttackRangeGizmo·script.AttackRangeTuner 컴포넌트와 그 값(AttackRangeGizmo Enable) 제거 | MM-04 |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv | `1,머쉬맘,model://mushmom`(이름도 머쉬맘으로) | MM-02 |
+| MonsterAttackPatternData.csv | 4행의 modelId castleenemy → mushmom. 다른 열 무변경 | MM-02 |
+| MonsterStatData.csv | 행 id castleenemy → mushmom, 값 100·12·3.0 그대로. orangemushroom 행은 만들지 않는다 | MM-02 |
+| AttackSkillData.csv | 열 4개 삭제. 남는 열 id·name·ruid·FrameCount·Direction·Damage·AttackCount, 값 무변경. .userdataset에 열 정보가 있으면 dataset.md 절차로 맞춘다 | MM-04 |
+| AssistModel.csv·AssistModel.userdataset | 파일 삭제 | MM-04 |
+| RootDesk/MyDesk/@Assist/RangeGizmo/AttackRangeGizmo.model | 파일 삭제(EntryKey model://27e5fe09-dc8c-458c-af42-3ad0c00a8765로 확인함). 빈 RangeGizmo 폴더 메타데이터는 Maker Refresh 결과를 기록한다 | MM-04 |
+| RootDesk/MyDesk/Player/@Assist/AttackRange/AttackRangeGizmo.mlua·AttackRangeTuner.mlua | 스크립트 삭제(아래 삭제 절차) | MM-04 |
+| RootDesk/MyDesk/Player/PlayerCombatComponent.mlua | 규칙 목록·전달 모양으로 교체. attackOffset·AttackRangeWidth·AttackRangeHeight·ShowAttackRangeGizmo 속성과 LoadSkillData의 해당 읽기 제거 | MM-03·MM-04 |
+| RootDesk/MyDesk/Player/@Assist/Skill/PlayerSkillEffectTable.mlua | 필수 열 목록에서 4열 제거, 폭·높이 0 이하 검사 제거. Damage·AttackCount·FrameCount 검사는 유지 | MM-04 |
+| RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua | 동작 구간과 구간별 피격 가능 선언(아래 설계) | MM-03 |
+| RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 접근·복귀 점프 구간을 피격 불가로 선언 | MM-03 |
+| 필요하면 RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua | 구간 시작·끝 알림이 모션 쪽에서 안 되는 경우만 | MM-03 |
+| RootDesk/MyDesk/Monster/MonsterStunComponent.mlua | SetStunned의 `SetVisualClip("stun")` → `SetVisualClip("hit")` | MM-06 |
+| PlayerBaseStatData.csv | 사용자 변경 `default,100,12,12`를 그대로 커밋에 넣는다(값 무변경) | V11-F15 |
+
+맵(map01)·.ui·CombatRuleData·MonsterAttackComponent(몬스터→플레이어)·MonsterManager·CombatRuleCatalog는 바꾸지 않는다. map01에는 몬스터 배치가 없고 MonsterManager가 MonsterData로 스폰한다(옛 이름 grep에서 map01 일치 없음). 기존 몬스터 모델의 스크립트 컴포넌트 14개 구성(아래)을 머쉬맘 모델이 그대로 갖는다.
+
+머쉬맘 모델 컴포넌트(주황버섯 모델 ModelBuilder.read 2026-11-05): TransformComponent, StateAnimationComponent, SpriteRendererComponent(SortingLayer MapLayer0), RigidbodyComponent, MovementComponent(InputSpeed 1.5·JumpForce 6), StateComponent(IsLegacy false), HitComponent(IsLegacy false), DamageSkinSpawnerComponent, script.MonsterHealthComponent(MaxHp 100), script.MonsterStateControl, script.MonsterAttackComponent, script.MonsterDefenseComponent, script.MonsterStunComponent, script.OrangeMushroomAttack. 모델에 저장된 스크립트 상태 값(§20의 17개)은 기본값 그대로 옮긴다.
+
+### 애니메이션 키 (기존 → 새)
+
+| 키 | 기존 주황버섯 모델(castleenemy) | 머쉬맘 모델(mushmom, 기본안) | 주황버섯 모델(orangemushroom) |
+| --- | --- | --- | --- |
+| stand | 96e955c1bf27415e84f96deea200a8f1 | 86015373d23b4b05bb8fcc6086354652 (stand) | 그대로 |
+| move | 6ad988b3ef6d4ceab3a504d300755a5b | c745828d831b42739b9a58c07f334864 (move) | 그대로 |
+| jump | 94bbe2a7eb9c4f9caa10dd9de44ee860 | 5ecbcc4002a5491aafd7e1d3191c6ddc (jump) | 그대로 |
+| hit | aec9504d5dc24aceb5646b79d30abad4 | 90fee9416184420a9796a679751d1ec5 (hit1) | 그대로 |
+| die | 65a2bfb039614f2e9e4ccc354340153d | ec90f0b64a814c4980de89f496d360ec (die1) | 그대로 |
+| stun | aec9504d5dc24aceb5646b79d30abad4(hit와 같은 값) | 없음 | 제거 |
+
+| 행동 | 상태 | 코드가 쓰는 키(전 → 후) |
+| --- | --- | --- |
+| 대기 | IDLE | stand → stand |
+| 공격 점프 접근·복귀, 착지 | ATTACK | jump, 착지 stand → 그대로 |
+| 그로기 | STUN | stun → **hit** (MonsterStunComponent.SetStunned) |
+| 피격 반응 | HIT | hit → 그대로(엔진 상태 이름 조회) |
+| 사망 | DEAD | die → 그대로(1회 재생 뒤 정지, F12) |
+
+엔진 StateAnimationComponent는 상태 이름의 소문자 키를 찾는다. STUN은 `stun`, ATTACK은 `attack`, DEFENSE는 `defense` 키가 없으므로 아무것도 바꾸지 않는 것으로 보인다(ATTACK·DEFENSE는 지금도 키가 없다). coder는 STUN 진입 때 코드가 쓴 hit RUID를 엔진이 덮어쓰지 않는지 서버·클라이언트 SpriteRUID 시계열로 확인한다.
+
+### 피격 규칙 목록 설계 (MM-03)
+
+플레이어의 예약 타격 하나마다 아래 규칙을 순서대로 검사한다. 각 규칙은 이름과 검사 함수 한 쌍이다. 하나라도 실패하면 그 타격은 피해 없이 끝나고 `[VRF] PlayerHitRule fail rule=<이름> hit=<번호>`를 남긴다. 모두 통과해야 네이티브 경로로 피해를 전달한다. 10타는 각각 따로 판정한다.
+
+| 순서 | 규칙 이름(설계안) | 검사 | 출처 |
+| --- | --- | --- | --- |
+| 1 | currentOpponent | 시전 스냅샷의 대상 = 지금 대결 상대 = 피격 후보, 참조 유효 | 기존 IsAttackTarget |
+| 2 | sameMap | 공격자 맵 = 스냅샷 맵 = 대상 맵 | 기존 ResolveScheduledHit·IsAttackTarget |
+| 3 | notPaused | 전투 정지 컨트롤러 유효, 정지 아님 | 기존 |
+| 4 | targetAlive | MonsterHealthComponent 유효, IsDead 아님, Hp > 0 | 기존 |
+| 5 | sameCast | 같은 시전 id·activeAttack이고 공격자 상태가 ATTACK, 공격자 생존 | 기존 ResolveScheduledHit |
+| 6 | targetHittableSegment | 상대 몬스터의 현재 동작 구간이 피격 가능으로 선언됨(아래) | 신규(사용자 결정 B) |
+
+공격 위치 조건은 규칙 목록에 넣지 않고 입력 조건(공격은 IDLE에서만 수락, IDLE = Pos2)에 맡긴다(2026-11-05 사용자 결정, 메인의 "Pos2에서 시전" 명시 규칙 제안은 넣지 않음). 시험해 보고 여러 방향 공격으로 바꾸면 그때 규칙·스킬 데이터로 다시 정한다.
+
+구현 요구(coder):
+- 규칙 목록은 한 곳(예: PlayerCombatComponent)에 **한 번만 만들고 재사용**한다. 타격마다 새 테이블·클로저를 만들지 않는다.
+- 규칙 확인은 **타격 예정 시각에만** 실행한다(ResolveScheduledHit에서 한 번, 그 타격의 AttackFast가 부르는 IsAttackTarget에서 같은 함수로 한 번). 매 프레임 확인하지 않는다.
+- 지금 규칙의 결과는 바뀌지 않아야 한다(1~5는 옮기기만 한다).
+
+피해 전달(엔진 흐름 유지): 규칙을 통과하면 현재 상대 몬스터 위치에 놓은 BoxShape로 `AttackFast(shape, cast.name, nil)`을 부른다. 기본안은 중심 = 몬스터 월드 위치 + HitComponent 콜라이더 중심 오프셋, 크기는 작은 고정값이다. IsAttackTarget이 규칙을 다시 확인하고 `__base:IsAttackTarget`을 부른다. CalcDamage(반격 배율·DEFENSE 경감·한 번 내림·Hp 상한)와 HitEvent·피해 숫자는 그대로다. 그래서 몬스터 크기·HitComponent는 겉모습만 정하고 판정에는 들어가지 않는다(HitComponent는 있어야 하고 모양과 겹쳐야 한다). coder는 HitEvent 1회·피해 숫자·HP 감소가 일치하는지 확인한다. 거리·방향과 무관하게 맞는다는 점은 사용자 결정의 결과다(지금은 IDLE의 Pos2에서만 공격을 시전하므로 실제 차이는 범위 열이 없어지는 것뿐이다).
+
+몬스터→플레이어(MonsterAttackComponent의 칸 영역·플레이어 콜라이더 확인·EvaluateDefense·CalcDamage)는 바꾸지 않는다.
+
+### 피격 불가 구간 선언 (MM-03)
+
+하드코딩 대신 몬스터 동작이 구간별 피격 가능 여부를 선언한다.
+
+- MonsterAttackMotion(기반)이 현재 동작 구간 이름을 가진다. 값은 `none`(공격 동작 밖)·`approach`(접근 동작)·`return`(복귀 동작)이다(설계안). PerformAttackMotion·PerformReturnMotion 시작 때 정해지고 CompleteMotion·CancelMotion·사망·Stop 때 `none`으로 돌아간다.
+- 기반은 `IsSegmentHittable(segment)` 같은 선언 함수를 두고 기본값은 모두 피격 가능이다. 선언이 없는 몬스터는 지금처럼 늘 맞는다.
+- OrangeMushroomAttack(지금의 머쉬맘 점프 동작)은 approach·return을 피격 불가로 선언한다. 선언 값은 그 스크립트의 속성(예: ApproachHittable false·ReturnHittable false)으로 둬 모델 값으로도 볼 수 있게 한다. 점프가 실제로 진행 중인 구간(JumpActive)과 일치해야 한다.
+- 규칙 6은 "상대의 모션 컴포넌트가 있으면 현재 구간의 선언을 묻고, 없으면 피격 가능"이다. 판정은 서버에서 한다.
+- 이후 몬스터는 자기 구간 이름과 선언을 더 둘 수 있다(예: 돌진 중 피격 가능). 선언을 패턴 DataSet 열로 옮길지는 6단계 몬스터 일반화에서 정한다(이번 범위 밖).
+
+영향(사용자 안내용, 수치 불변): 출발 점프 0.5초는 예고 0.5초와 겹치므로 예고 중에는 맞지 않는다. 복귀 점프 0.5초도 맞지 않는다. 패링 성공 뒤 반격 창 2.0초 중 복귀 0.5초는 맞지 않고, 이어지는 그로기 1.5초에 맞는다. 저스트 성공 뒤에는 슬로우 ×0.5로 복귀가 전투 시간 약 1.0초가 되어 반격 창 안에서 맞는 시간이 약 1.0초다. 반격 보너스는 시전 시작에 소비되므로(D03), 복귀 점프 중에 공격하면 모든 타격이 막혀도 보너스가 사라진다. 10타 공격(약 0.45초)이 점프 시작·끝에 걸치면 구간 안의 타격만 막힌다.
+
+### 삭제 목록과 참조 확인 (MM-04)
+
+2026-11-05 Grep(Docs 제외) 결과, 삭제 대상 이름(AttackRangeGizmo·AttackRangeTuner·AssistModel·ShowAttackRangeGizmo·AttackOffsetX/Y·AttackRangeWidth/Height·27e5fe09…)은 아래 파일에만 있다. 그 밖의 제품 참조는 없다.
+
+| 파일 | 참조 | 처리 |
+| --- | --- | --- |
+| AssistModel.csv·.userdataset | 표 자체 | 삭제 |
+| AttackSkillData.csv | 범위 열 4개 | 열 삭제 |
+| AttackRangeGizmo.mlua·.codeblock, AttackRangeTuner.mlua·.codeblock | 스크립트 자체 | 삭제 |
+| @Assist/RangeGizmo/AttackRangeGizmo.model | 표시용 모델 | 삭제 |
+| Global/DefaultPlayer.model | 두 컴포넌트 부착 | 컴포넌트 제거 |
+| PlayerCombatComponent.mlua | attackOffset·범위 속성·ShowAttackRangeGizmo·LoadSkillData·DoAttack 모양 | 제거·교체 |
+| PlayerSkillEffectTable.mlua | 필수 열·폭·높이 검사 | 제거 |
+| .pipeline run.md | 기록 | 그대로 |
+
+삭제 절차(workspace.md "파일을 만들거나 고치거나 지운 뒤에는 항상 refresh", Play 중 편집 금지):
+1. Stop 상태에서 DefaultPlayer 모델의 두 컴포넌트를 먼저 뺀다(지운 스크립트를 모델이 가리키지 않게).
+2. 스크립트·모델·DataSet 파일을 지운다. .model은 셸이 아닌 `node -e "require('fs').unlinkSync(...)"`로 지운다. 스크립트는 .mlua를 지운 뒤 Refresh하고 짝 .codeblock이 Maker에서 정리되는지 본다. .codeblock을 손으로 고치지 않는다. Refresh 뒤에도 옛 .codeblock·Maker 항목이 남으면 멈추고 사용자 Maker 작업(Workspace에서 스크립트 삭제)으로 돌린다.
+3. PlayerCombatComponent·PlayerSkillEffectTable 수정과 함께 한 번 Refresh하고 빌드 로그를 본다.
+
+### 키 전환 (MM-02·MM-05)
+
+- 머쉬맘: MonsterData `model://mushmom`·이름 머쉬맘, 패턴 4행 modelId mushmom, MonsterStatData 행 id mushmom(§20 행 id 규칙 그대로).
+- 주황버섯 모델: 키 orangemushroom(planner 기본안, 다른 이름을 원하면 V11에서 바꾼다). 패턴 행·MonsterStatData 행·MonsterData 행을 만들지 않는다. 스폰하면 §20 실패 동작대로 거부되고 한 번 경고한다. 이는 의도된 동작이다.
+- 옛 키 castleenemy는 제품 파일(RootDesk·Global·map·ui)에 남지 않아야 한다. 기록 문서(Docs·Portfolio·.maplestory-skill-maker-ledger.md·run)는 고쳐 쓰지 않는다.
+
+### coder 시작 전 사용자 확인 (메인이 묻는다)
+
+1. 머쉬맘 애니메이션 연결: 기존 세팅은 위 "애니메이션 키" 표 왼쪽 열이다. 머쉬맘 팩의 키 이름이 hit1·die1로 다르고 attack1·skill1이 더 있어, 기본안(stand→stand, move→move, jump→jump, hit→hit1, die→die1, attack1·skill1 미사용, 공격은 jump 유지)이 맞는지 확인받는다.
+
+### 스킬 확장성 메모 (기록만, 이번 범위 아님)
+
+- 타격 수·피해·효과 길이(FrameCount)는 이미 AttackSkillData 행(SkillName으로 선택)에서 읽는다.
+- 타격 간격 HitInterval(0.045)과 frameDelaySeconds(0.06)는 컴포넌트 속성이라 모든 스킬이 함께 쓴다. 스킬 교체 시스템 단계에서 스킬별 열로 옮길 후보다.
+- 공격 범위 열을 지운 뒤 여러 방향·범위 개념이 필요해지면, 옛 좌표·폭·높이 열을 되살리지 않고 "대상 칸·방향" 같은 칸 기반 열로 새로 설계한다(몬스터 패턴 데이터의 칸 방식과 맞춘다).
+
+### 확인 기준
+
+모든 AI 결과는 실제 Maker MCP·map01(TileMapMode 0)·같은 소스·데이터 버전·[VRF] 근거를 남긴다. coder는 전체를 한 통합 런타임 회차로 확인하고 tester는 같은 버전을 독립 회차로 본다. 무효 데이터·스폰 거부는 CSV를 바꾸지 않는 Play 내부 프로브로 확인하고 "프로브 근거"로 표기한다. maker_clear_logs는 호출하지 않는다.
+
+자동 검사 — 전환·삭제:
+
+| 사례 | 기대 결과 |
+| --- | --- |
+| 로드 | [VRF]에 PlayerBaseStatData default 100·12·12, MonsterStatData default 100·12·3.0과 mushmom 100·12·3.0, 패턴 4행(modelId mushmom, Weight 2·2·2·1), AttackSkillData player.basic(Damage 1·AttackCount 10·FrameCount 14) |
+| 스폰 | 엔티티 이름 머쉬맘, modelId model://mushmom, Scale 1, ActionSheet 키가 정확히 5개이고 RUID가 위 기본안(확인 뒤 값), 시작 SpriteRUID = stand |
+| 표시 시계열(서버·클라이언트 SpriteRUID) | IDLE stand, 접근 jump → 착지 stand → 복귀 jump → stand, 그로기 전체 hit(그로기 중 피격 포함), 피격 반응 hit, 사망 die 1회 뒤 정지. STUN 진입 뒤 엔진이 hit를 다른 값으로 바꾸지 않음 |
+| 빌드·등록 | 빌드 로그 오류 0. 삭제한 스크립트·모델·AssistModel 표가 Maker에 남지 않음(_DataService:GetTable("AssistModel") 없음 포함). model://orangemushroom 등록, model://castleenemy 없음 |
+| grep | 제품 파일에서 castleenemy·AttackRangeGizmo·AttackRangeTuner·AssistModel·ShowAttackRangeGizmo·AttackOffset·AttackRangeWidth·AttackRangeHeight·27e5fe09 일치 0 |
+| 주황버섯 스폰 거부(프로브) | orangemushroom 스폰 시도 → 수치 행 없음으로 거부·한 번 경고, default로 스폰하지 않음 |
+| 스킬 표 검증(프로브) | 3열(Damage·AttackCount·FrameCount) 기준으로 통과, Damage 누락·0 이하는 기존처럼 거부 |
+
+자동 검사 — 피격 규칙(MM-03):
+
+| 사례 | 기대 결과 |
+| --- | --- |
+| 모두 통과 | IDLE 몬스터에 기본 공격 → 10타 각각 HitEvent 1회, HP 감소 = HitEvent 합계 = 피해 숫자(기존 값과 같음) |
+| 규칙별 실패 | 1~5 각각 실패 조건(상대 아님·다른 맵·정지·사망·시전 취소)에서 그 규칙 이름의 [VRF]와 피해 없음. 프로브 가능한 것은 프로브 근거 |
+| 접근 점프 중 | 예고 중(접근 점프) 공격 → 점프 구간 안 타격 전부 targetHittableSegment 실패, 피해 0 |
+| 복귀 점프 중 | 패링·저스트·무대응 각각 복귀 점프 중 타격 실패, 착지 뒤 타격은 통과 |
+| 그로기 중 | 복귀 완료 뒤 그로기 1.5초 동안 통과(반격 ×2.2 결과 기존과 같음) |
+| 반격 창 | 패링 성공 시각 기준 피격 가능 구간 약 1.5초, 저스트 약 1.0초를 기록. 보너스는 복귀 점프 중 시전해도 소비(D03) |
+| 걸친 공격 | 점프 시작·끝에 걸친 10타에서 구간 안 타격만 실패 |
+| 크기 무관 | 머쉬맘 HitComponent 크기와 관계없이 규칙 통과 타격이 HitEvent로 이어짐(모양 위치·크기 기록) |
+| 확인 시점·재사용(정적·로그) | 규칙 확인이 타격 예정 시각에만 일어나고(타격당 [VRF] 1줄 이하), 규칙 목록 생성은 Play당 1회 |
+
+회귀(이전 근거와 같은 결과여야 함, 플레이어 수치는 100·12·12 기준):
+
+| 기존 근거 | 기대 |
+| --- | --- |
+| 회차 A F12 | die 1회 재생 뒤 정지(IDLE 피격 사망 1건 + 그로기 중 사망 1건), 머쉬맘 die1 클립 기준 |
+| 회차 A F13 | Pos2 시작 JUST·PARRY 각 1건, 끝 칸 1칸 공격 무보상 1건. 실제 키 사례의 서버 기록 x와 클라이언트 segment.startX 차이를 기록(속도 12라 허용 여유가 절반, 아래 위험) |
+| F06·F10 | 패턴 4행 로드·선택, 2칸 중간 착지·점프 0.5초·판정 시각 그대로 |
+| F08·F02 | 패링 → 복귀 뒤 그로기 1.5초, 그로기 중 hit 표시 |
+| V07·V08 | 예고 중 팝업 정지·재개, 복귀 점프 중 팝업(구간 선언 유지), Stop 뒤 다음 Play 기본 상태(구간 none) |
+| V10 | 방향키·UI 출처 합산, 반환 잠금, 기본 공격 타수 10. 이동 OUTBOUND speed 12·Pos2→끝 칸 약 0.125초, 복귀 speed 12 |
+| 회차 B | DataSet 로드·검증·실패 동작 그대로. 플레이어 MaxHp 100·시작 Hp 100·HP 바 100/100. 몬스터 피해: 무대응 12, 일반 가드 4 |
+| 몬스터→플레이어 | 칸 규칙·콜라이더 확인·EvaluateDefense 결과가 회차 B와 같음 |
+
+### 사용자 V11 직접 확인 (AI 결과로 대신하지 않음)
+
+- 머쉬맘 모습: 대기·점프 공격·그로기(hit1)·피격·사망(die1 끝 모습) 연결이 자연스러운지, 크기와 BattlePos1~3 겹침, HP 게이지·그로기 별·피해 숫자 위치.
+- 점프 중 안 맞음: 예고 중·복귀 중 공격이 막히는 체감, 반격 창이 패링 약 1.5초·저스트 약 1.0초로 줄어든 난이도, 복귀 중 공격 때 보너스가 사라지는 점.
+- 이동 속도 12·복귀 12와 플레이어 HP 100의 체감(무대응 12 피해로 9번 맞으면 사망), PC·실기기에서 Pos2 저스트·패링이 지연 때문에 빠지지 않는지.
+- 주황버섯 모델 키 이름(orangemushroom)이 괜찮은지. 주황버섯은 이번에 화면에 나오지 않는다.
+- 기존 V11 미확인(모바일·터치·음향·CF-F07)은 그대로 남는다.
+
+### coder 인계 범위 (MM-01~06·V11-F15 한 회차, 위 사용자 확인 뒤)
+
+시작 조건: git status로 8f16a81 기준을 확인한다. 예상 변경은 run.md와 PlayerBaseStatData.csv뿐이며 다른 변경이 있으면 진행하지 않고 반환한다. 개발 근거는 WorkRecord 맨 아래 새 개발절에 남긴다. 사전 참조: §8 목록, builder-protocol 핵심·model 파일과 model.md·monster.md·animation-state.md(모델·ActionSheet), dataset.md(CSV 열 삭제·DataSet 삭제·Refresh), msw-combat-system(AttackFast·IsAttackTarget·CalcDamage 재정의에 @ExecSpace 금지), maplestory-skill-maker의 execution-core와 몬스터 표현 계약(원장 기록 규칙이 있으면 따름).
+
+| 순서 | 작업 |
+| --- | --- |
+| 1 | 모델 읽기 확인(무수정): 주황버섯·DefaultPlayer·표시용 모델 ModelBuilder.read가 위 기록과 같은지 |
+| 2 | 스크립트: 구간 선언(MonsterAttackMotion·OrangeMushroomAttack), 규칙 목록·전달 모양(PlayerCombatComponent), 그로기 hit(MonsterStunComponent), 스킬 표 검증(PlayerSkillEffectTable) |
+| 3 | DefaultPlayer 컴포넌트 제거 → 도구 스크립트·표시용 모델·AssistModel 삭제 → Refresh·빌드 로그(삭제 절차) |
+| 4 | 머쉬맘 모델 생성(주황버섯 모델 읽기 → renameModel → 값 변경 → Models/Monsters/Mushmom.model에 쓰기) → 주황버섯 모델 정리(renameModel·Scale·stun 제거) → Refresh. snapshot으로 EntryKey model://mushmom·model://orangemushroom 확인 |
+| 5 | CSV: MonsterData·패턴 4행·MonsterStatData 키, AttackSkillData 열 삭제 → Refresh |
+| 6 | 위 확인 기준을 한 통합 런타임 회차로 확인 |
+
+바꾸지 않는 것: 머쉬맘 수치 100·12·3.0, D01~D04와 모든 판정 수치(0.20·0.40·2.0·×2.2·슬로우·그로기), 패턴 4행의 영역·비중·속성, JumpDuration 0.5·JumpHeight 0.8, Pos2 ±0.75·앵커 1.5, 몬스터→플레이어 판정, 기본 공격 피해·타수, map01·.ui, 스크립트 이름 OrangeMushroomAttack과 폴더.
+
+중단 조건(대체 구현 없이 근거와 선택지를 기록해 반환):
+1. STUN 진입 뒤 엔진이 hit 표시를 덮어쓴다(stun 키를 되살리지 않는다).
+2. 몬스터 위치 모양의 AttackFast가 HitEvent·피해 숫자·HP 감소를 맞게 만들지 못한다.
+3. renameModel 뒤 EntryKey가 기대와 다르거나 Maker에 castleenemy 항목이 남는다.
+4. 스크립트 삭제 뒤 .codeblock·Maker 항목이 남는다(사용자 Maker 작업).
+5. 머쉬맘 크기·피벗 때문에 BattlePos 간격·패딩·플레이어 위치를 바꿔야 한다(규칙·수치 변경).
+6. 범위 열 삭제가 다른 읽는 곳을 깨뜨린다.
+7. Maker Refresh가 범위 밖 파일을 다시 저장한다(기록하고 커밋에 섞지 않는다).
+
+### 위험
+
+- 속도 12: Pos2 칸 경계 0.75를 약 0.0625초에 지난다. 서버 기록 x와 클라이언트 위치 사이의 지연 허용 여유가 속도 6 때의 절반이다. 값은 바꾸지 않고 F13 회귀와 실기기 V11 항목으로 본다.
+- 플레이어 HP 100: 몬스터 무대응 피해 12에서 9번 피격이면 사망한다. 사용자 결정 값이며 시험 중 사망이 잦아질 수 있다(테스트 절차만 영향).
+- 점프 중 피격 불가로 반격 기회가 줄어든다(위 영향). 난이도 판단은 V11이다.
+
+### 부채 (이번에 하지 않음)
+
+- 스크립트 이름 OrangeMushroomAttack과 Monster/OrangeMushroom 폴더 이름 정리(6단계 몬스터 일반화).
+- 피격 가능 구간 선언을 패턴 데이터로 옮길지(6단계).
+- 주황버섯 일반 몬스터 공격 패턴과 스폰(6단계, 사용자가 planner 질문 절차로 작성).
+- 머쉬맘 수치 조절(사용자), 에셋 목록 최종 위치(8단계 전 결정), 기존 파일 이동(파일 구조 기준의 대응표, 회차 C 뒤 별도 회차).
+- 스킬별 타격 간격·프레임 지연 열(스킬 교체 시스템 단계, 위 스킬 확장성 메모).
+
+### 상태
+
+| ID | 상태 |
+| --- | --- |
+| CombatCore-MM-01 | ⬜ 구현 승인(2026-11-05). coder 시작 전 사용자 확인 1(애니메이션 연결) 대기 |
+| CombatCore-MM-02 | ⬜ 구현 승인. 스크립트 이름 변경은 부채로 분리 |
+| CombatCore-MM-03 | ⬜ 구현 승인. 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
+| CombatCore-MM-04 | ⬜ 구현 승인 |
+| CombatCore-MM-05 | ⬜ 구현 승인. 패턴·스폰 없음(사용자 결정) |
+| CombatCore-MM-06 | ⬜ 구현 승인 |
+| CombatCore-V11-F15 | ⬜ 사용자 결정 값(작업 트리 CSV), coder 커밋에 포함 |
+
+다음 흐름: 사용자 재개 지시 전까지는 정리 단계만 한다. 메인이 사용자 확인 1건(애니메이션 연결)을 받고 재개 지시가 오면 → coder 한 회차(기준 8f16a81, 새 파일은 파일 구조 기준 위치) → 같은 버전 tester → reviewer → 사용자 V11. P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
