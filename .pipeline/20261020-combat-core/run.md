@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-04 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (회차 B 사용자 V11 확인 대기)
-- 다음 행동·대기 사유: 회차 B 리뷰 WAITING(결함 0). 사용자 V11(이동 체감, CSV 직접 수정 반영, 표·열 이름, AttackInterval 의미, HP 바 자릿수) 대기 → 결과에 따라 회차 C(§18, 시작 전 애니메이션 등 질문). 2단계 완료·3단계는 사용자 결정, 자동 시작 없음.
+- 현재 담당: 없음 (사용자 결정 대기: PlayerBaseStatData.csv 작업 트리 변경, 회차 C 시작 여부)
+- 다음 행동·대기 사유: 회차 B 완료(사용자 V11 수락). 작업 트리 PlayerBaseStatData.csv가 default,1000,6,6 → default,100,12,12로 바뀌어 있음(AI 담당 수정 아님, 커밋 제외) — 사용자 확인 필요. 회차 C(§18) 시작 여부와 시작 전 질문 1~8 대기. 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -304,3 +304,10 @@
 - planner(msw-planner) 문서 정정 호출.
 - planner 문서 정정 완료: Plan §5·§20(AttackInterval = 공격 종료 뒤 IDLE 대기 3.0초, 상태 표 🟡 사용자 V11 대기, (a) 종결·(b) PASS), §8·§9, WorkRecord 머리·재개 지점, 로드맵 재개 지점, GameDesign §8 전투 구성 행(2026-11-04 확정 수치 DataSet 기본안 동기화). 메인이 §9 이력 행의 GameDesign 문구 1곳 보정.
 - 회차 종료 커밋 [CombatCore][review] WAITING (Stat.directory Maker 메타데이터 재저장 포함).
+
+## 2026-11-05 회차 B 사용자 V11 수락
+- 메인이 물은 4항목(이동·복귀 체감 / CSV 직접 수정 반영·표·열 이름 / AttackInterval = 공격 종료 뒤 IDLE 대기 3.0초·시작~시작 약 4.0초 의미 / HP 바 현재·최대 숫자)에 사용자가 "전부 ok"로 답함. CSV 직접 수정은 "해 보셨다면" 조건 질문이라 실시 여부를 확정하지 않음(AI 측 CSV 변경 반영 근거는 QA9·보충 시험 1).
+- 남은 것: 기존 V11 미확인(모바일·터치·음향·반격 체감·CF-F07), 맵 이동 뒤 복귀·재접속 MaxHp(맵 추가 단계), 실기기·다중 접속, V12.
+- planner(msw-planner) 문서 반영·회차 C 질문 정리 호출.
+- planner 수락 반영 완료: Plan §20 V11-F14·V11-F07 ✅, 머리·§8·WorkRecord·로드맵 재개 지점. 회차 C 시작 전 질문 1~8(애니메이션 선택·크기·피격 상자·modelId·주황버섯 모델 처리·공격 구성·머쉬맘 수치·AssetList) 정리, 기존 애니메이션 세팅 표 포함. 커밋 [CombatCore][plan].
+- 발견: PlayerBaseStatData.csv 작업 트리 변경(default,100,12,12). planner·메인 수정 아님(planner 시작 시 이미 M). 사용자 직접 수정 여부 확인 전까지 커밋에 섞지 않음.
