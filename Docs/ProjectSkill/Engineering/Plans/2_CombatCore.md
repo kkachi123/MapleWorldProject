@@ -1376,7 +1376,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 | 플레이어 피격음 `_audio/CharDam1` | 머쉬맘 공격이 플레이어에 맞아 결과가 HIT·GUARD·UNGUARDABLE일 때 1회. JUST·PARRY·회피 성공은 무음 |
 | 사망음 `_audio/Die` | 사망 확정 때 1회 |
 | 음량 | 모든 효과음 1.0 |
-| 이펙트 위치·크기 | 판정 시점, Pos2 x·몬스터 지면 y, 배율 1 |
+| 이펙트 시점·위치·크기 | 시점은 **사용자 확정(2026-11-05): 공격 모션(접근 점프) 시작과 함께** 재생. 위치 Pos2 x·몬스터 지면 y, 배율 1은 기본안(V11) |
 | 3칸 공격 id | `parry.guard` |
 | 몬스터 사운드 표 | 새 DataSet `MonsterSoundData`(22.5), 행이 없으면 스폰 거부 |
 
@@ -1458,7 +1458,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 **이펙트 (MM-10)**
 
-- 판정 시점(ResolveAttack)에 EffectClip이 비어 있지 않으면 서버에서 `_EffectService:PlayEffect`를 1회 호출한다. 위치는 착지 x(3칸은 Pos2)·몬스터 지면 y, 회전 0, 배율 1, 반복 없음, 옵션 PlayRate = 현재 ActionRate.
+- 공격 모션(접근 점프, PerformAttackMotion) 시작 시점에 EffectClip이 비어 있지 않으면 서버에서 `_EffectService:PlayEffect`를 1회 호출한다(2026-11-05 사용자 확정 "모션 시작과 함께". 이펙트 15프레임이 기 모으기 0~6 → 충격파 8~13 구조라 판정 시점 시작이면 충격파가 판정보다 늦기 때문, 메이플 info/effect 관례). coder는 이펙트·skill1 클립 길이와 충격파 프레임이 착지(판정) 시각과 몇 초 어긋나는지 기록하고, 정렬 조정(지연 등)은 하지 않고 V11에 넘긴다. 위치는 착지 x(3칸은 Pos2)·몬스터 지면 y, 회전 0, 배율 1, 반복 없음, 옵션 PlayRate = 현재 ActionRate.
 - 서버 호출이 클라이언트에 보이는지는 프로젝트 선례(PlayerCombatComponent.DoAttack 서버 경로 PlayEffect)에서 추정한 것이다. coder가 Maker에서 화면 표시를 먼저 확인하고, 보이지 않으면 MonsterStunComponent의 `@Sync` + OnSyncProperty 클라이언트 재생 방식으로 바꾼다(같은 계약 안의 경로 선택이라 승인 범위 안).
 - 크기(배율 1이면 폭 약 2.56 단위, 3칸 범위는 약 4.5 단위)·시작 지연·길이는 coder가 Maker에서 재고 기록한다. 크기·위치 조정은 사용자 V11 항목이다.
 

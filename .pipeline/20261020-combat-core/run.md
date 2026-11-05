@@ -350,4 +350,5 @@
 - planner 완료(2026-11-05): §21 애니메이션 확인 완료·기준 eca1903, §22 회차 D(MM-07 패턴별 MotionClip, MM-08 parry.guard 3칸·Pos2 착지 명시, MM-09 비중 4·4·5·3·4 + Weight 열을 사용자 비율 표로·로드 [VRF] 비율 %, MM-10 EffectClip, MM-11 AttackSound 열 + 새 MonsterSoundData). GameDesign·로드맵·WorkRecord·AssetList 동기화. 제품 무수정.
 - 메인 점검 이견(사용자 확인 대기): §22 이펙트 시작을 판정 시점으로 잡았으나, 이펙트 15프레임이 기 모으기(0~6)→충격파(8~13) 구조라 판정 시점에 시작하면 충격파가 판정보다 늦게 나온다. 메인 추천: skill1 접근 모션 시작과 함께 재생(메이플 info/effect 관례), 정확한 정렬은 coder가 클립 길이를 재서 기록.
 - 문서 커밋 [CombatCore][plan]. PlayerBaseStatData.csv는 회차 C coder 커밋 몫으로 제외.
+- 사용자 결정: 3칸 이펙트는 공격 모션(접근 점프) 시작과 함께 재생(메인 추천 채택). 메인이 Plan §22(22.2 표·22.6)와 GameDesign §8 연출·사운드 행을 직접 한 줄씩 고침. 커밋 [CombatCore][plan].
 
