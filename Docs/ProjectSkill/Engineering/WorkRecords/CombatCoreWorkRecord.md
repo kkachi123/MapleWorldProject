@@ -1,13 +1,15 @@
 # CombatCore — 임시 작업 기록
 
 - 연결 Plan: [2_CombatCore](../Plans/2_CombatCore.md).
-- 상태·갱신일: 2026-11-05 / 최신: 머쉬맘 모션·사운드 사용자 지시 반영(Plan §21 애니메이션 연결 확인 완료·기준 eca1903, coder 시작 조건은 사용자 재개 지시뿐 / Plan §22 회차 D CombatCore-MM-07~11 구현 승인, 회차 C 사용자 V11 수락 뒤 시작). 그 전: 회차 C Plan 작성(Plan §21, CombatCore-MM-01~06·V11-F15 구현 승인, 사용자 재개 지시 전 정리 단계, coder 전 애니메이션 연결 확인 1건 대기, 기준 8f16a81). 그 전: 회차 B(Plan §20, CombatCore-V11-F14·V11-F07) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-05 회차 B 사용자 V11 수락" 절, Plan §20 상태 표 ✅). 이동·복귀 체감 동일, AttackInterval 의미(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초) 사용자 기대와 같음, HP 바 현재/최대 숫자 정상(HP 바 자릿수 육안 NOT_RUN 해소). CSV 직접 수정은 조건 질문이라 사용자 실시 여부 미확정(AI 근거 QA9·보충 시험 1). 그 전: 회차 B 독립 리뷰 **WAITING**(리뷰 기록 첫 절과 그 "보충 확인" 소절, 결함 0, 사용자 V11 대기). 대상 coder 로컬 커밋 1b4f4ee(기준 9eed765) / 59경로 Bundle 9325c33a…cd19. 독립 QA 9회차(QA 기록 첫 절) 실행 기준 PASS·FAIL 없음, "QA9 보충 시험 1"로 플레이어 MaxHp DataSet 적용 PASS. 문서 정정(planner, 2026-11-05): coder 개발절의 "IDLE→ATTACK 전환 간격 2.96~3.01초"와 Plan의 옛 "시작 간격 3.0" 표현은 실제로 공격 종료 뒤 IDLE 대기 3.0초(시작~다음 시작 약 4.0초)를 뜻한다. Plan §5·§20 문구만 고쳤고 값·동작은 그대로이며 개발절 본문은 당시 기록대로 둔다. 그 전: 회차 B Plan 작성(Plan §20, CombatCore-V11-F14·V11-F07 구현 승인, coder 대기, 기준 9eed765). 그 전: 회차 A(V11-F12·V11-F13) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-04 회차 A 사용자 V11 수락" 절, Plan §19 상태 표 ✅. 사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인 유지). 그 전: 회차 A 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 사용자 V11 대기, 고칠 결함 없음, 7f2d0b4 커밋 트리 Bundle 7f32ae45…e21e3 / 작업 트리 b321d71c…040f 재계산 일치). 그 전: 독립 QA 8회차 회차 A(QA 기록 첫 절, 사용자 일시정지로 중단 뒤 같은 날 "QA8 재개" 소절에서 남은 NOT_RUN 실행, 같은 Bundle 54/54 전후 일치, 실행 기준 PASS·FAIL 없음, 사람 손 0.20초 타이밍·HP 0 실제 플레이어 사망·실제 맵 전환·CSV 변경 반영·실기기 NOT_RUN). 그 전: coder 회차 A 구현·기본 검증(로컬 커밋 7f2d0b4, 맨 아래 2026-11-04 개발절). 그 전(2026-11-03): 독립 리뷰 REV-F02·V11-F10·V11-F11 **WAITING**(리뷰 기록 둘째 절, 5c4eda3 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80 재계산 일치, 제품 변경 6경로, 고칠 결함 없음, H1 규칙상 정상, 사용자 V11 대기). 그 전: 독립 QA 7회차 REV-F02·V11-F10·V11-F11·H1(QA 기록 첫 절, 커밋 5c4eda3 / 작업 트리 Bundle fdca556d…ee80 54/54 전후 일치, 전부 PASS·FAIL 없음·결함 후보 없음, 육안·0.20초 손 타이밍·CSV 파일 변경 반영·실제 키 해제 타이밍 NOT_RUN, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
+- 상태·갱신일: 2026-11-06 / 최신: 회차 C(Plan §21, CombatCore-MM-01~06·V11-F15) **사용자 V11 대기**. coder 구현·기본 검증(로컬 커밋 5a605ba, STOPPED 중단 조건 3 → 사용자 월드 재로드로 해소, Maker 재저장분 [ops] b4adbdd) → 독립 QA 10회차(대상 b4adbdd, 55경로 Bundle 222e7a04…476d, 실행 기준 전부 PASS) → 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 결함 없음). 회차 D(Plan §22)는 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤이며, 리뷰가 넘긴 재스폰 프레임 범위 확인은 Plan §22.15에 있다. 그 전: 머쉬맘 모션·사운드 사용자 지시 반영(Plan §21 애니메이션 연결 확인 완료·기준 eca1903, coder 시작 조건은 사용자 재개 지시뿐 / Plan §22 회차 D CombatCore-MM-07~11 구현 승인, 회차 C 사용자 V11 수락 뒤 시작). 그 전: 회차 C Plan 작성(Plan §21, CombatCore-MM-01~06·V11-F15 구현 승인, 사용자 재개 지시 전 정리 단계, coder 전 애니메이션 연결 확인 1건 대기, 기준 8f16a81). 그 전: 회차 B(Plan §20, CombatCore-V11-F14·V11-F07) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-05 회차 B 사용자 V11 수락" 절, Plan §20 상태 표 ✅). 이동·복귀 체감 동일, AttackInterval 의미(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초) 사용자 기대와 같음, HP 바 현재/최대 숫자 정상(HP 바 자릿수 육안 NOT_RUN 해소). CSV 직접 수정은 조건 질문이라 사용자 실시 여부 미확정(AI 근거 QA9·보충 시험 1). 그 전: 회차 B 독립 리뷰 **WAITING**(리뷰 기록 첫 절과 그 "보충 확인" 소절, 결함 0, 사용자 V11 대기). 대상 coder 로컬 커밋 1b4f4ee(기준 9eed765) / 59경로 Bundle 9325c33a…cd19. 독립 QA 9회차(QA 기록 첫 절) 실행 기준 PASS·FAIL 없음, "QA9 보충 시험 1"로 플레이어 MaxHp DataSet 적용 PASS. 문서 정정(planner, 2026-11-05): coder 개발절의 "IDLE→ATTACK 전환 간격 2.96~3.01초"와 Plan의 옛 "시작 간격 3.0" 표현은 실제로 공격 종료 뒤 IDLE 대기 3.0초(시작~다음 시작 약 4.0초)를 뜻한다. Plan §5·§20 문구만 고쳤고 값·동작은 그대로이며 개발절 본문은 당시 기록대로 둔다. 그 전: 회차 B Plan 작성(Plan §20, CombatCore-V11-F14·V11-F07 구현 승인, coder 대기, 기준 9eed765). 그 전: 회차 A(V11-F12·V11-F13) **사용자 V11 수락**(메인이 물은 4항목에 "전부 ok", run "2026-11-04 회차 A 사용자 V11 수락" 절, Plan §19 상태 표 ✅. 사람 손 0.20초 타이밍 NOT_RUN 해소, 모바일·실기기는 기존 V11 미확인 유지). 그 전: 회차 A 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 사용자 V11 대기, 고칠 결함 없음, 7f2d0b4 커밋 트리 Bundle 7f32ae45…e21e3 / 작업 트리 b321d71c…040f 재계산 일치). 그 전: 독립 QA 8회차 회차 A(QA 기록 첫 절, 사용자 일시정지로 중단 뒤 같은 날 "QA8 재개" 소절에서 남은 NOT_RUN 실행, 같은 Bundle 54/54 전후 일치, 실행 기준 PASS·FAIL 없음, 사람 손 0.20초 타이밍·HP 0 실제 플레이어 사망·실제 맵 전환·CSV 변경 반영·실기기 NOT_RUN). 그 전: coder 회차 A 구현·기본 검증(로컬 커밋 7f2d0b4, 맨 아래 2026-11-04 개발절). 그 전(2026-11-03): 독립 리뷰 REV-F02·V11-F10·V11-F11 **WAITING**(리뷰 기록 둘째 절, 5c4eda3 커밋 트리 Bundle 9208e0aa…da79 / 작업 트리 fdca556d…ee80 재계산 일치, 제품 변경 6경로, 고칠 결함 없음, H1 규칙상 정상, 사용자 V11 대기). 그 전: 독립 QA 7회차 REV-F02·V11-F10·V11-F11·H1(QA 기록 첫 절, 커밋 5c4eda3 / 작업 트리 Bundle fdca556d…ee80 54/54 전후 일치, 전부 PASS·FAIL 없음·결함 후보 없음, 육안·0.20초 손 타이밍·CSV 파일 변경 반영·실제 키 해제 타이밍 NOT_RUN, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F08·F09 **WAITING**(리뷰 기록 첫 절, a921c76 / 작업 트리 Bundle 377a5ccc…0363 재계산 일치, 수정 필요 결함 없음, 범위 밖 결함 후보 CombatCore-REV-F02 일반 사망 die 미유지는 사용자 범위 결정 대기, 사용자 V11 육안 대기). 그 전: 독립 QA 6회차 V11-F08·F09(QA 기록 첫 절, 커밋 a921c76 / Bundle 377a5ccc…0363 54/54 전후 일치, F08 세 조건 그로기 전체 hit·종료 뒤 stand·복귀 jump·그로기 중 사망 die·정리 경로, F09 9패턴 문구 없음·칸 속성색, Plan §16 필수 2칸 패턴 F02 복귀 조합 V07·V08 PASS·FAIL 없음, 육안·0.20초 손 타이밍·CSV 변경 반영·실기기·플레이어 사망 중 칸·실제 맵 이동 NOT_RUN, 범위 밖 관찰 일반 사망 stand 표시 재현, 독립 reviewer 대기). 그 전: 독립 리뷰 V11-F01~F06 **WAITING**(리뷰 기록 첫 절, b89de46 / Bundle b985aa4b…74dbf 54/54 재계산 일치, 새 결함 없음, 사용자 V11·CF-F07 연출·V12 대기). 그 전: 독립 QA 5회차 V11-F01~F06(QA 기록 첫 절, Bundle b985aa4b…74dbf 54/54 전후 일치, F06 수치·로그 PASS·FAIL 없음·육안/창 0.20 손 타이밍/CSV 변경/F04 클립 재계측 NOT_RUN, 독립 reviewer F01~F06 일괄 리뷰 대기). 그 전: coder V11-F06 구현·기본 검증 인계(맨 아래 절, 새 Bundle b985aa4b…74dbf 54경로). 그 전(2026-11-02): 독립 QA 4회차 V11-F01~F05(QA 기록 첫 절, Bundle d2b57802…0fbb 54/54 전후 일치, 수치·로그 PASS·육안 일부 NOT_RUN, 독립 reviewer 대기). 그 전: coder V11-F01~F05 구현·기본 검증 인계(맨 아래 절, 새 Bundle d2b57802…0fbb 54경로). 아래는 그 이전 상태 — coder REV-F01 수정·기본 검증(커밋 6614b20 / Bundle 1ac324e6…9de4), 독립 tester 3회차 수치 PASS, 독립 리뷰 WAITING. 사용자 V11 대기. 2026-10-29 QA2·리뷰와 그 이전 기록은 이전 버전 근거.
 - 실행: [20261020-combat-core](../../../../.pipeline/20261020-combat-core/run.md).
 - 삭제 조건: 승인된 범위 구현·필수 확인·결과/미완료 추적 이관·링크 정리 완료 후 삭제. 사용자 직접 확인이 남으면 유지한다.
 
 ## 현재 재개 지점
 
-2026-11-05(머쉬맘 모션·사운드 지시 뒤) 기준: 회차 C([Plan §21](../Plans/2_CombatCore.md))의 머쉬맘 애니메이션 연결은 사용자 확인 완료다(stand←stand, move←move 기본값, jump←jump, hit←hit1, die←die1). 회차 C에서는 모든 공격이 jump 모습이고 ActionSheet 키는 5개다. 기준 커밋 eca1903(제품 파일은 8f16a81과 같음), 예상 작업 트리 변경은 PlayerBaseStatData.csv(V11-F15)·run.md다. coder 시작 조건은 사용자 재개 지시뿐이고 그 전까지 정리 단계만 한다. 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07 패턴별 모션·MM-08 3칸 parry.guard·Pos2 착지·MM-09 비중 4/4/5/3/4와 사용자 Weight 표·MM-10 3칸 이펙트·MM-11 효과음)는 구현 승인 범위이며 회차 C 사용자 V11 수락과 시작 지시 뒤에 시작한다. 이 문서 아래 기존 회차 C 기준 문단은 이전 기록이다.
+2026-11-06(회차 C 리뷰 뒤) 기준: [Plan §21](../Plans/2_CombatCore.md) 회차 C(CombatCore-MM-01~06·V11-F15)는 msw-coder 구현·기본 검증(로컬 커밋 5a605ba, 맨 아래 2026-11-05 개발절) → 중단 조건 3(Maker에 옛 castleenemy 항목 잔존)으로 STOPPED → 사용자가 월드를 다시 열고 주황버섯 모델을 원래 경로로 되돌려 해소, Maker 재저장분은 [ops] b4adbdd(제품 의미 동일) → 별도 msw-tester 독립 QA 10회차(대상 b4adbdd, 55경로 Bundle 222e7a04…476d, castleenemy 스폰 nil 확인, 실행 기준 전부 PASS·FAIL 없음) → 별도 msw-reviewer 독립 리뷰 **WAITING**(리뷰 기록 첫 절, 결함 없음)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 사용자 V11이다(확인 항목은 Plan §21 "사용자 V11 직접 확인"과 리뷰 기록 첫 절 "남은 사용자 V11" 1~8). 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07~11)는 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤에 시작한다. 리뷰가 회차 D로 넘긴 재스폰 개체 프레임 범위 0-0 확인(필수)과 `_T.resolveIndex` 정리(선택)는 Plan §22.15에 적었다. GameDesign §4.2·§5의 예정형 문구는 사용자 V11 수락 뒤 완료형으로 고친다. 남은 NOT_RUN은 QA10 기록 그대로다. 아래 QA·리뷰 절 본문은 당시 근거 그대로 둔다. P01b~P06 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
+
+이전 재개 지점(2026-11-05, 머쉬맘 모션·사운드 지시 뒤) 기준: 회차 C([Plan §21](../Plans/2_CombatCore.md))의 머쉬맘 애니메이션 연결은 사용자 확인 완료다(stand←stand, move←move 기본값, jump←jump, hit←hit1, die←die1). 회차 C에서는 모든 공격이 jump 모습이고 ActionSheet 키는 5개다. 기준 커밋 eca1903(제품 파일은 8f16a81과 같음), 예상 작업 트리 변경은 PlayerBaseStatData.csv(V11-F15)·run.md다. coder 시작 조건은 사용자 재개 지시뿐이고 그 전까지 정리 단계만 한다. 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07 패턴별 모션·MM-08 3칸 parry.guard·Pos2 착지·MM-09 비중 4/4/5/3/4와 사용자 Weight 표·MM-10 3칸 이펙트·MM-11 효과음)는 구현 승인 범위이며 회차 C 사용자 V11 수락과 시작 지시 뒤에 시작한다. 이 문서 아래 기존 회차 C 기준 문단은 이전 기록이다.
 
 이전 재개 지점(2026-11-05, 회차 C Plan 뒤) 기준: [Plan §21](../Plans/2_CombatCore.md) 회차 C가 구현 승인 범위다. MM-01 머쉬맘 리소스 모델(Models/Monsters/Mushmom.model, model://mushmom, 1배), MM-02 키 mushmom(MonsterData·패턴 4행·MonsterStatData), MM-03 규칙 충족형 플레이어→몬스터 피격과 공격 점프 구간 피격 불가 선언, MM-04 공격 범위 도구·AssistModel·범위 열 삭제, MM-05 주황버섯 모델 1배·키 orangemushroom(패턴·스폰 없음), MM-06 stun 키 제거·그로기 hit 직접 지정, V11-F15 사용자 직접 변경 플레이어 수치 100·12·12다. 공격 위치 조건은 규칙에 넣지 않는다(사용자 결정). 새 파일 위치는 [파일 구조 기준](../FileStructure.md)을 따르고 기존 파일 이동은 회차 C 뒤 별도 회차다. 사용자 재개 지시 전까지 정리 단계만 하며, coder 전 사용자 확인 1건(애니메이션 연결 기본안 stand·move·jump·hit1·die1)이 남았다. 그다음 msw-coder 한 회차(기준 8f16a81, 이 기록 맨 아래 새 개발절) → 같은 버전 msw-tester → msw-reviewer → 사용자 V11이다. P01b~P06 🟡 유지.
 
@@ -547,6 +549,117 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-06 독립 리뷰 — 회차 C(CombatCore-MM-01~06·V11-F15) WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). 하지 않은 것: Maker MCP 제어·Play, 제품 파일 수정, Plan 요구·QA 판정 수정, commit·push. 런타임 사실은 coder 절("2026-11-05 coder 회차 C 구현·기본 검증 인계")과 QA10 기록을 대조한 것이며, reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 일:
+  - `git diff e94b981 b4adbdd`, `git diff 5a605ba b4adbdd`, `git status`로 소스 대조
+  - Grep 전수 검색
+  - 과거 커밋 `.model` 3개 버전(e94b981·5a605ba·b4adbdd: Mushmom·주황버섯·DefaultPlayer)을 `git show`로 scratchpad에 내보낸 뒤 **ModelBuilder.read**(listComponents·listValues)로만 비교. 내보내기는 셸 `.model` 가드가 걸리기 전에 실행했고, 그 뒤 내용 읽기는 모두 빌더로 했다.
+  - AssetList·FileStructure·GameDesign·DevelopmentRoadmap 대조
+- 검토 버전: HEAD **b4adbdd**, 55경로 Bundle `222e7a04…476d`(QA10 기재)
+  - 5a605ba→b4adbdd 차이는 8경로다. Mushmom.model·주황버섯.model은 Maker 재저장으로 숫자 표기만 바뀌었다. ModelBuilder 비교 결과 구성요소 14개·값 45개가 완전히 같고, DefaultPlayer도 7개·65개로 같다. 나머지 `.directory` 6개는 CoreVersion만 바뀌었고 manifest 밖이다. 따라서 coder 커밋과 시험 버전의 제품 의미는 같다.
+  - b4adbdd→d6c3d9a는 문서뿐이고, 작업 트리 차이는 run.md뿐이다.
+  - 셸 해시는 `.model` 가드와 충돌하므로 Bundle 문자열 자체는 재계산하지 않았고, 위 git 동일성과 빌더 비교로 대신했다.
+  - QA10 대상 = 이 리뷰 대상이다.
+- 판정: **WAITING**. 고칠 제품 결함 없음(CHANGES_REQUIRED 없음, 새 결함 ID 없음). 남은 것은 Plan §21 사용자 V11 직접 확인뿐이다. 이 판정은 사용자 수락·2단계 완료·회차 D 시작 승인이 아니다.
+
+#### 요구 → 변경 대조 (모두 충족)
+- **MM-01 머쉬맘 1배 모델:** `Models/Monsters/Mushmom.model`(id `mushmom`, Scale 1,1,1)
+  - ActionSheet는 **정확히 5키**(stand 86015373…·move c745828d…·jump 5ecbcc40…·hit 90fee941…·die ec90f0b6…)다. attack·stun·attack1·skill1 키는 없다.
+  - SpriteRUID는 stand, HitComponent BoxSize (1.2,1.1)·ColliderOffset (0,0.55), DamageSkinOffset (0,1.1)이다.
+  - 구성요소 14개는 기존 주황버섯과 같은 구성이다.
+  - QA10 스폰 읽기에서 같은 값으로 PASS.
+- **MM-02 키·데이터 전환:**
+  - MonsterData `1,머쉬맘,model://mushmom`
+  - 패턴 4행: modelId만 castleenemy→mushmom, 다른 칸·Weight 2·2·2·1은 그대로
+  - MonsterStatData `mushmom,100,12,3.0`(값 불변)
+  - 기존 모델은 같은 경로에 id `orangemushroom`, Scale 1로 정리했다. ActionSheet에서 stun 키를 빼 5키다. Name "주황버섯"은 FileStructure대로 이동 회차 부채다.
+  - 패턴이 없어 나오지 않는다(Plan과 일치).
+- **MM-03 규칙 충족형 피격:**
+  - 규칙 6개(currentOpponent·sameMap·notPaused·targetAlive·sameCast·targetHittableSegment)는 Play당 1회 만들어 재사용한다.
+  - 예약 타격 시각에만 ResolveScheduledHit에서 1회, IsAttackTarget에서 1회 확인한다.
+  - 통과하면 대상 콜라이더 중심 0.1×0.1 BoxShape로 `AttackFast`를 호출한다. 실패하면 `[VRF] PlayerHitRule fail rule=…`를 남기고 피해 0이다.
+  - IsAttackTarget 오버라이드에 `@ExecSpace`가 없다(LEA-3014 회피, 올바름).
+  - QA10은 규칙별 실패 이름, 접근 중 10타 전부 targetHittableSegment 실패, 그로기 중 10타 통과를 PASS로 기록했다.
+- **MM-04 구간 선언:** MonsterAttackMotion에 `Segment`(none/approach/return)와 `IsSegmentHittable`(기본 true)·`IsHittableNow`를 더했다(ServerOnly). OrangeMushroomAttack의 동작:
+  - `ApproachHittable=false`·`ReturnHittable=false` 속성과 override를 둔다.
+  - 접근·복귀 시작 때 구간을 지정한다.
+  - CompleteMotion·CancelMotion 때 none으로 되돌린다. CancelMotion은 사망·OnEndPlay·OnMapLeave·Monster_Attack 취소 경로를 덮는다.
+  - QA10에서 정지 중 구간 유지와 Stop 뒤 none이 PASS.
+- **MM-05 삭제:**
+  - 삭제 대상: AttackRangeGizmo·AttackRangeTuner(.mlua, Maker가 지운 .codeblock 포함), `@Assist/RangeGizmo/AttackRangeGizmo.model`, AssistModel DataSet, DefaultPlayer의 두 구성요소와 값 1개
+  - AttackSkillData 4칸 제거와 PlayerSkillEffectTable 필수 칸 `{Damage, AttackCount, FrameCount}`
+  - PlayerCombatComponent의 attackOffset·AttackRange*·ShowAttackRangeGizmo
+  - 제품 파일(Global·RootDesk·map·ui) 대소문자 무시 Grep: castleenemy·AttackRangeGizmo·AttackRangeTuner·AssistModel·ShowAttackRangeGizmo·AttackOffset·AttackRangeWidth·AttackRangeHeight·옛 RUID 27e5fe09·소문자 "stun" 키 → **남은 참조 0건**. 대문자 상태 이름 `STUN`은 정상 사용이다.
+  - 빈 RangeGizmo·AttackRange `.directory`는 FileStructure대로 이동 회차까지 둔다.
+- **MM-06 기절 표시:** MonsterStunComponent는 `SetVisualClip("stun")`을 `SetVisualClip("hit")`로 바꿨다. QA10 표시 시계열에서 그로기 내내 hit(90fee9)이 PASS.
+- **V11-F15 플레이어 기본 능력치:** PlayerBaseStatData `default,100,12,12`(사용자 값). QA10 로드 로그 `MaxHp=100 MoveSpeed=12 ReturnSpeed=12`, `PlayerStat applied MaxHp=100 Hp=100`이 PASS.
+- **범위 밖 변경 없음:** map01·`.ui`·CombatRuleData·MonsterAttackComponent·MonsterManager는 변경 없다. 판정 창·JumpDuration·JumpHeight·패턴·몬스터 수치는 그대로다. 회차 D(§22) 요소(attack1·skill1·parry.guard·이펙트·효과음)는 들어가지 않았다.
+
+#### 중단 조건 3(coder STOPPED 인계) 판단
+- **해소로 인정한다.** coder는 Refresh 뒤 옛 castleenemy 항목(Scale 2·stun 키)이 Maker에 남아 STOPPED로 넘겼다. 그 뒤 해소 경위와 근거:
+  - 사용자가 월드를 다시 열고 모델을 원래 경로로 되돌렸다.
+  - 그 재저장분은 `[ops]` b4adbdd이며, 위 빌더 비교로 의미 변경이 없다.
+  - QA10에서 `SpawnByModelId("castleenemy"/"CastleEnemy")`가 nil(LEA-3028)이었고, mushmom·orangemushroom이 기대 내용으로 등록됐다.
+- coder 구현 산출물은 완료로 받고, 남은 정리는 문서 상태 갱신뿐이다(아래).
+
+#### 관찰 분류
+1. **그로기 중 피격 때 클라이언트 HIT / 서버 STUN:** 결함 아님. QA4·이전 coder 절에 같은 구조가 기록돼 있다. 서버 그로기 기한은 줄지 않고 표시 RUID는 hit로 같다. 이번 회차가 만든 변화가 아니다.
+2. **DoSpawn 재스폰 몬스터의 서버 SpriteRenderer 프레임 범위 0-0**(첫 스폰·클라이언트는 0-2147483647): **회차 C 결함 아님 → 회차 D 필수 확인 항목**으로 넘긴다.
+   - 결함이 아닌 근거:
+     - 회차 C 모델 값에 StartFrameIndex·EndFrameIndex가 없다(빌더 확인).
+     - 이번에 쓰는 stand·jump·hit는 1프레임 클립이라 화면 영향이 없다.
+     - die는 명시 프레임 설정으로 정상 재생·고정됐다(QA10 F12 PASS).
+     - move는 이번 범위에서 쓰지 않는다.
+   - 회차 D의 attack1·skill1은 여러 프레임 클립이므로, 재스폰 개체에서 0-0이면 첫 프레임에 멈출 위험이 있다. 회차 D에서 해야 할 일:
+     - planner·coder: 클립 지정 때 프레임 범위를 초기화할지 정한다.
+     - tester: 재스폰 개체의 서버·클라이언트 실제 재생을 확인한다.
+
+#### 사소한 코드 메모 (결함 아님, 수정 강제 없음)
+- ResolveScheduledHit는 규칙 확인 전에 기한을 소비하고 hitsFired를 올린다. 이전의 재시도 경로(정지·사망·맵 변경·비ATTACK)는 어느 쪽이든 피해로 이어지지 않으므로 결과는 같다.
+- `_T.resolveIndex`는 기록만 하고 읽지 않는다. 정리는 다음 수정 회차에 선택.
+- ApproachHittable·ReturnHittable은 모델 값으로 저장하지 않고 스크립트 기본값(false)을 쓴다. 승인 Plan과 일치한다.
+
+#### 문서 동기화 (비차단, planner의 회차 종료 정리)
+- AssetList·FileStructure는 §21과 일치한다. 머쉬맘 리소스 "사용 중·임시", 회차 D 리소스 "사용 예정", orangemushroom "보관"으로 적혀 있고, 새 파일은 Mushmom.model 하나, 삭제 목록도 일치한다.
+- 낡은 상태 표기(갱신 필요):
+  - Plan §21 상태 표가 "중단 조건 3 보고 대기"다.
+  - 이 WR 머리말(4행)·"현재 재개 지점"(10행)이 coder 재개 대기 상태다.
+  - DevelopmentRoadmap "다음 재개 지점"(2026-11-05)이 coder 시작 전 상태다.
+  - GameDesign §4.2·§5 표의 "회차 C에서 바꾼다"는 아직 미래형이다. 사용자 V11 수락 뒤 완료형으로 바꾸는 것이 맞다.
+
+#### 확인하지 않은 것
+- Bundle SHA-256 재계산(위 사유)
+- 런타임 재실행
+- 화면·소리 육안
+- QA10 NOT_RUN 1~6. PASS로 세지 않는다. 사용자 항목이 아닌 자동 검증 공백은 아래와 같고, 차단 사유로 보지 않는다.
+  - move·hit1 재생 시간
+  - 실제 UIPopup·마우스 클릭
+  - 규칙 6의 "모션 구성요소 없음" 분기와 규칙 4의 실제 흐름
+  - parry.right 대칭 착지 강제 측정·4패턴 빈도 통계
+  - 실제 맵 전환
+  - 실기기 지연
+- F13 실제 키 사례는 판정 창 30초 시험값 근거다.
+
+#### 남은 사용자 V11 (Plan §21)
+1. 머쉬맘 모습과 클립 연결(stand·move·jump·hit1·die1)
+2. 1배 크기·BattlePos1~3와 겹침
+3. HP 게이지·그로기 별·데미지 숫자 위치
+4. 점프 중 무적의 체감과 줄어든 반격 창(패링 약 1.5초·저스트 약 1.0초)
+5. 복귀 점프 중 공격 시 보너스 소모
+6. 이동 속도 12/12·플레이어 HP 100 체감(무대응 12 피해 9회 사망)
+7. 키 이름 orangemushroom 수락
+8. 기존 미확인 모바일·터치·사운드·CF-F07
+
+#### 회차 D로 넘길 것
+- 재스폰 개체 프레임 범위 0-0 확인. attack1·skill1 여러 프레임 클립에서 서버·클라이언트 재생, planner·coder 처리 방식 결정, tester 재스폰 사례 시험.
+- 선택: `_T.resolveIndex` 정리.
+
+#### 다음 담당
+1. 메인: `[CombatCore][review] WAITING` 회차 커밋·push
+2. planner: 회차 종료 문서 동기화(Plan §21 상태, WR 머리말·재개 지점, Roadmap 재개 지점)
+3. 사용자: 위 V11
+4. V11 수락 뒤 GameDesign 완료형 갱신, 회차 D(§22) 재개 지시
 
 ### 2026-11-05 독립 리뷰 — 회차 B(V11-F14·V11-F07) WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 제어/Play·제품·Plan 요구·QA 판정 수정 없음, commit·push 없음. 런타임 사실은 coder 개발절(2026-11-04 회차 B)과 QA9 기록을 대조한 것이며 reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 것은 git show/diff/status·소스 대조(Grep 포함)·`.d.mlua` 확인·변경 9경로 sha256 재계산뿐이다.

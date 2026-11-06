@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: PAUSED
-- 갱신: 2026-11-05 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 메인 (회차 C Plan §21·FileStructure.md 작성 완료, 사용자 확인 대기)
-- 다음 행동·대기 사유: WAITING_USER — 머쉬맘 애니메이션 연결 기본안 확인(Plan §21 "coder 시작 전 사용자 확인") + 사용자 재개 지시. 재개 전 coder 시작 없음. 3단계 자동 시작 없음.
+- 상태: WAITING_USER
+- 갱신: 2026-11-06 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 (회차 C V11 직접 확인)
+- 다음 행동·대기 사유: WAITING_USER — 회차 C reviewer WAITING(결함 없음), 사용자 V11 결과 대기(Plan §21 사용자 V11 목록·WorkRecord 2026-11-06 리뷰 절). 회차 D(Plan §22)는 회차 C V11 수락과 사용자 시작 지시 뒤. 3단계 자동 시작 없음.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -367,3 +367,8 @@
 - 사용자 요청으로 msw-reviewer 중지. 중지 시점은 Foundation 참조 읽기 단계로 WorkRecord·제품 파일 변경 없음(git status 확인). 판정 없음.
 - [ops] 로컬 커밋(run.md + WorkRecord QA10 절). push는 보류: 아직 리뷰 안 된 [code] 5a605ba가 같이 올라가므로 회차 종료 커밋 때 함께 push.
 
+## 2026-11-06 재개 (사용자 "다시 시작")
+- 일시정지 해제. 새 msw-reviewer 호출(대상 b4adbdd, 근거 WorkRecord 회차 C 개발절·QA10). 이전 reviewer는 판정 전 중지라 이어받을 결과 없음.
+- reviewer 판정 WAITING(대상 b4adbdd, 결함 없음, 새 결함 ID 없음). 중단 조건 3 해소 인정. 재스폰 서버 프레임 범위 0-0은 회차 C 결함 아님 → 회차 D 필수 확인(Plan §22.15·22.8 자동 8번). 선택 정리 _T.resolveIndex. 근거 WorkRecord "2026-11-06 독립 리뷰 — 회차 C" 절.
+- planner 회차 종료 문서 동기화: Plan §21 상태 표·다음 흐름·남은 일, §22.8·§22.15 추가, WorkRecord 머리말·재개 지점, 로드맵 재개 지점. GameDesign 예정형 문구는 V11 수락 뒤.
+- 메인: [CombatCore][review] WAITING 회차 커밋 + 비밀값 검사 후 push(5a605ba·b4adbdd·d6c3d9a 포함). 상태 WAITING_USER.

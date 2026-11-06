@@ -1333,15 +1333,18 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-MM-01 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1) |
-| CombatCore-MM-02 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 스크립트 이름 변경은 부채로 분리 |
-| CombatCore-MM-03 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
-| CombatCore-MM-04 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기) |
-| CombatCore-MM-05 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 패턴·스폰 없음(사용자 결정) |
-| CombatCore-MM-06 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기) |
-| CombatCore-V11-F15 | 🟡 coder 구현·기본 검증 완료(2026-11-05, WorkRecord 회차 C coder 절, 중단 조건 3 보고 대기). 사용자 결정 값(작업 트리 CSV) 그대로, coder 커밋에 포함 |
+| CombatCore-MM-01 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1) |
+| CombatCore-MM-02 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 스크립트 이름 변경은 부채로 분리 |
+| CombatCore-MM-03 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
+| CombatCore-MM-04 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
+| CombatCore-MM-05 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 패턴·스폰 없음(사용자 결정) |
+| CombatCore-MM-06 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
+| CombatCore-V11-F15 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 사용자 결정 값(작업 트리 CSV) 그대로, coder 커밋에 포함 |
 
-다음 흐름: 사용자 재개 지시 전까지는 정리 단계만 한다. 애니메이션 연결 확인은 끝났다. 재개 지시가 오면 → coder 한 회차(기준 eca1903, 제품 파일은 8f16a81과 같음, 새 파일은 파일 구조 기준 위치) → 같은 버전 tester → reviewer → 사용자 V11. 회차 C 사용자 V11 수락 뒤 §22 회차 D다. P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
+다음 흐름(2026-11-06 리뷰 뒤): coder(5a605ba) → [ops] b4adbdd(Maker 재저장, 제품 의미 동일) → 같은 버전 tester QA10(실행 기준 전부 PASS) → reviewer WAITING(결함 없음)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 위 "사용자 V11 직접 확인"이다(리뷰 기록 첫 절 "남은 사용자 V11" 1~8과 같은 내용). 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤 §22 회차 D다(회차 C에서 넘어온 확인 항목은 22.15). P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
+
+남은 일:
+- GameDesign §4.2·§5의 "회차 C에서 바꾼다" 같은 예정형 문구는 사용자 V11 수락 뒤 완료형으로 고친다(지금은 그대로 둔다).
 
 ## 22. 회차 D — 머쉬맘 패턴별 모션·3칸 공격·이펙트·사운드 (2026-11-05)
 
@@ -1494,6 +1497,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 5. Weight 변경 프로브: CSV 파일은 고치지 않는다. `maker_execute_script`로 검증·비율 계산 경로에 시험 행(예: Weight 1/1/1/1/1)을 넣어 비율이 20%씩으로 나오는지, 0·음수에서 거부 + 경고 1회인지 본다. coder는 이 프로브가 가능하도록 검증·비율 계산을 행 목록을 받는 함수로 둔다.
 6. 실패 동작(같은 방식의 프로브): MotionClip이 모델에 없는 키 → 스폰 거부 + 경고 1회, RUID 형식 오류 → 카탈로그 거부 + 경고 1회, MonsterSoundData 행 없음 → 스폰 거부 + 경고 1회. 파일을 바꿔야만 확인되는 항목은 미실시로 적고 사용자 V11 6번에서 확인한다.
 7. 사운드 [VRF]: 플레이어 공격 1회(10타)에 damaged 1줄, 사망 때 die 1줄, JUST·PARRY·회피 때 hitplayer 0줄.
+8. 재스폰 개체 여러 프레임 클립 재생(22.15 필수 확인): 첫 스폰과 DoSpawn 재스폰 개체 각각에서 attack1·skill1이 서버·클라이언트 모두 끝 프레임까지 진행한다.
 
 **회귀**
 
@@ -1560,3 +1564,25 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 | CombatCore-MM-11 | ⬜ 구현 승인. 시점·나머지 3종·음량은 V11 확인 |
 
 다음 흐름: 회차 C(§21) → 사용자 V11 수락 → 사용자 시작 지시 → coder 회차 D → 같은 버전 tester → reviewer → 사용자 V11(22.8).
+
+### 22.15 회차 C에서 넘어온 확인 항목 (2026-11-06 회차 C 리뷰)
+
+근거: WorkRecord "2026-11-06 독립 리뷰 — 회차 C" 절의 "관찰 분류" 2번·"회차 D로 넘길 것", QA10 "기타 관찰" 1번. 회차 C 결함이 아니다. 규칙·수치·범위는 바꾸지 않는다.
+
+**필수 확인 — 재스폰 개체의 프레임 범위**
+
+- 관찰(QA10, b4adbdd): DoSpawn으로 다시 스폰한 몬스터는 서버 SpriteRendererComponent 프레임 범위(StartFrameIndex-EndFrameIndex)가 0-0이다. 부팅 첫 스폰은 서버도 0-2147483647이고, 클라이언트는 둘 다 0-2147483647이다. 회차 C 모델 값에는 두 값이 없다.
+- 회차 C에서 영향이 없던 이유: stand·jump·hit는 1프레임 클립이고, die는 명시 프레임 설정으로 재생·고정한다. move는 쓰지 않는다.
+- 회차 D의 위험: attack1·skill1(각 5프레임)이 재스폰 개체에서 첫 프레임에 멈출 수 있다. 참고로 QA8에서는 서버 0/0인 DoSpawn 개체에서도 클라이언트 stand(2프레임)가 정상 반복된 기록이 있다. 회차 D에서 서버·클라이언트를 모두 다시 재야 한다.
+- 처리 방식: 회차 D 시작 때 planner·coder가 정한다(예: 클립을 지정할 때 프레임 범위를 초기화할지). 지금 정하지 않는다. 처리 때문에 22.7 밖 파일을 고쳐야 하면, 그때 planner가 22.7에 추가한 뒤 진행한다.
+- 완료 기준:
+  - tester가 첫 스폰 개체와 DoSpawn 재스폰 개체(사망 뒤 교체) 각각에서 attack1(2칸)·skill1(3칸) 접근 모션을 강제로 실행한다.
+  - 서버: 렌더러 SpriteRUID가 그 클립이고, Start/EndFrameIndex 범위가 끝 프레임을 포함한다(0-0이 아님).
+  - 클라이언트: 소유 클라이언트의 프레임 이벤트(SpriteAnimPlayerChangeFrameEvent)가 프레임 0에서 끝 프레임까지 진행한다.
+  - 클립이 끝난 뒤 stand·jump·hit·die 표시는 회차 C와 같다(die 1회 정지 F12 포함).
+  - 첫 프레임에 멈추는 개체가 하나라도 있으면 FAIL이다.
+- 22.8 자동 8번이 이 항목이다.
+
+**선택 — 코드 정리**
+
+- PlayerCombatComponent의 `_T.resolveIndex`는 기록만 하고 읽지 않는다. 회차 D에서 그 파일을 고치면 함께 지워도 된다. 고치지 않으면 남겨 둔다. 이 항목 때문에 22.7 범위를 넓히지 않는다.
