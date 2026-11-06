@@ -153,6 +153,7 @@ CombatPause의 미검증 항목은 해당 계획에 유지한다. 실제 맵 전
 - 회차 C2([Plan §23](Plans/2_CombatCore.md)): 주황버섯 파일·모델 Name을 OrangeMushroom으로 바꾼다(키 orangemushroom 유지).
 - 회차 D([Plan §22](Plans/2_CombatCore.md), CombatCore-MM-07~11): 머쉬맘 패턴별 모션·3칸 공격·이펙트·사운드.
 - 회차 E([Plan §24](Plans/2_CombatCore.md)): 조작 버튼 메이플 테마·가드 모션/이펙트. 지금은 설계·후보만 있고, 사용자 선택 뒤 구현 범위가 정해진다.
+  - 2026-11-06 회차 E 선택 확정: §24.6 질문 6개 모두 추천안(simplefantasy·칼/화살표 아이콘·ColorTint·가드 alert·로얄 가드 이펙트와 소리 가드 시작 1회). 남은 사용자 확인은 §24.10 E-Q1(RUID 저장 위치) 1건, 회차 시작은 사용자 지시.
 
 P01b~P06 🟡 유지. 2단계 완료와 3단계 시작은 사용자가 결정하며 이 갱신이 승인하지 않는다.
 

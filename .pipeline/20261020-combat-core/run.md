@@ -388,3 +388,10 @@
 - msw-planner 호출: 회차 C 수락 문서 반영, §23 회차 C2, §24 회차 E Plan(후보·사용자 선택 항목 포함). 구현 시작 아님.
 - planner 반환 DONE: Plan §21 ✅·§22 기준 b93e2ac·§23 회차 C2(CombatCore-MM-12)·§24 회차 E(CombatCore-UX-01 버튼 테마, UX-02 가드 모션·이펙트·소리), GameDesign 완료형, 로드맵·WorkRecord 재개 지점, FileStructure·AssetList 후보. 규칙·수치·입력 계약 변경 없음. RUID 10개 래퍼 재확인 일치, 화면 적합성 미확인.
 - 메인: [CombatCore][plan] 커밋 + push.
+
+## 2026-11-06 회차 E 사용자 선택 ("E 선택부터")
+- 1 테마 simplefantasy / 2 아이콘 ←→ 화살표·↑ 칼·↓ 아래 화살표 / 3 눌림 표시 현재처럼 어둡게(ColorTint) / 4 가드 모션 alert / 5 가드 이펙트 로얄 가드(318a4662…) 가드 시작 1회 / 6 효과음 가드 시작 때 로얄 가드 _audio/Use만, 버튼 클릭음 없음. 모두 추천안.
+- 기존 패링 성공 이펙트 유지. 화면 적합성은 회차 E 사용자 V11.
+- msw-planner 호출: Plan §24 확정·AssetList 사용 예정(회차 E) 반영. 구현 시작 아님(순서 C2 → D → E, 각 사용자 시작 지시).
+- planner 반환: §24 확정(24.2 버튼 대응표·24.10 미결정 정리), AssetList 사용 예정(회차 E), WorkRecord·로드맵 한 줄. 사용자 확인 1건 E-Q1(가드 이펙트·소리 RUID 저장 위치, 추천 새 표 PlayerActionFxData). coder 결정 C-1~C-4.
+- 메인 git 확인: 작업 트리에 주황버섯 모델 이름 변경(Models/Monsters/주황버섯 → OrangeMushroom, 메인·담당 편집 아님 → 사용자 Maker 작업으로 판단). 이전 커밋 판과 의미 차이는 모델 Name 주황버섯→OrangeMushroom 1곳뿐(Maker가 Name도 변경). 회차 C2(§23) 순서 2 완료·순서 4의 Name 변경 불필요에 해당. [plan] 커밋에 섞지 않고 C2 coder 커밋에 넣는다.
