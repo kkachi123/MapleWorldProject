@@ -14,7 +14,7 @@
     "Use": "Json",
     "Json": {
       "Version": 1,
-      "Name": "주황버섯",
+      "Name": "OrangeMushroom",
       "BaseModelId": null,
       "Id": "orangemushroom",
       "Components": [

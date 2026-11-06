@@ -2054,3 +2054,50 @@
 - 규칙 실패 이름 중 일부는 합성 시전 스냅샷 직접 호출(프로브 근거)이다.
 - 모델 두 파일의 b4adbdd 재저장 의미 차이 0은 메인의 JSON 비교를 따랐고 나는 Play에서 값만 확인했다(모델 파일 셸 읽기 금지).
 - 사용 종료: 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. 시작·끝 55/55 동일 Bundle(`222e7a04…476d`), 제품 파일 무수정, commit·push 하지 않음. Maker 사용 종료.
+
+## 2026-11-06 coder 회차 C2 구현·기본 검증 인계 (CombatCore-MM-12)
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §23 CombatCore-MM-12뿐이다. 맵·Body·스크립트·규칙·수치·MonsterData·MonsterStatData·MonsterAttackPatternData(주황버섯 행 추가 없음, 6단계)는 바꾸지 않았다. `OrangeMushroomAttack.mlua`의 이름·폴더·한국어 주석(52행)은 범위 밖이라 그대로다.
+- 기준 커밋 105e585(= 회차 C 종료 b93e2ac 이후 제품 파일 동일). 시작 Maker: maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186(앞 회차 기록과 같음). TileMapMode 0(Plan §23 기록, 맵을 바꾸지 않아 다시 읽지 않았다). **maker_clear_logs는 호출하지 않았다.** 큰 로그는 저장 JSON 파일을 `[VRF`·`[VRF C2]` 표지와 시각으로 걸러 읽었다.
+- 파일 이름 변경은 **사용자가 Maker 작업 공간에서 직접** 했다(Plan §23.2 순서 2). 메인 git 확인: 작업 트리 제품 변경은 옛 경로 삭제 + 새 경로 추가 1쌍뿐.
+
+### 순서 4 확인 — 쓰기 없음
+- ModelBuilder.read로 두 판을 비교했다: 기준 커밋 판(`git show`로 임시 파일에 꺼낸 b93e2ac·105e585 두 판)과 작업 트리 `RootDesk/MyDesk/Models/Monsters/OrangeMushroom.model`. 두 판 모두 컴포넌트 14개·Values 45개·자식 0개이고 snapshot 전체(components·properties·values·base_model_id·version) 재귀 비교의 의미 차이는 **name `주황버섯` → `OrangeMushroom` 1곳뿐**이다. 새 파일 model_id `orangemushroom`.
+- Maker가 Name까지 바꿨으므로 `renameModel`은 **호출하지 않았고 모델을 다시 쓰지 않았다**(Plan §23.2 순서 4 단서). 새 파일은 Maker가 직접 저장한 그대로다.
+
+### 변경 파일
+| 파일 | 변경 | ID |
+| --- | --- | --- |
+| RootDesk/MyDesk/Models/Monsters/주황버섯.model → OrangeMushroom.model | 파일 이름 변경(사용자 Maker 작업) + Name `OrangeMushroom`(Maker가 함께 변경). 키 `orangemushroom` 유지. 쓰기는 coder가 하지 않음 | MM-12 |
+| .maplestory-skill-maker-ledger.md | 23행 "실효 대상별 사전 표"의 모델 경로를 새 경로로만 갱신(제품 파일 아님, 1줄) | MM-12 |
+- 원장 갱신 범위: 스킬(`execution-core.md`)의 원장 규칙은 "단계마다 갱신"만 말하고 낡은 내용 정리 범위를 정하지 않는다. Plan §23.2 순서 5의 "규칙에 없으면 경로만" 단서에 따라 경로만 고쳤다. 같은 행 괄호 `(castleenemy)`와 원장의 MHP-01~04.castleenemy·"현재 MonsterData는 castleenemy 1행" 표현은 회차 C 이전 내용이라 **낡았다. 바꾸지 않았고 메인에 보고한다**(주황버섯 키는 orangemushroom, MonsterData는 mushmom 1행).
+- 이 외 Maker 재저장 흔적: 없음(refresh 전후 git status·55경로 manifest 동일, `.directory` 변경도 git status에 없음).
+
+### 버전·바이트 지문
+- 같은 계산법·같은 확장자 집합 manifest(경로 바이트순 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256, 확장자 .mlua·.model·.stateset·.userdataset·.csv·.map·.ui·.config·.collisiongroupset, Global·RootDesk·map·ui 아래). 계산 도구는 이번에 새로 쓴 스크립트이며 b4adbdd 커밋 트리에서 **222e7a041b619cc26bb3bd51492a352cd95a41c42259fc8f6f06e9c5e03b476d(55경로)** 를 재현해 방법이 앞 회차와 같음을 확인했다. 기준 105e585도 같은 값이다.
+- **작업 트리 Bundle SHA-256(55경로): 8ef9c6f1c60d73b7b74f5febd09932abfe6ba5866bfc577cb226c82d5ed2e080.** refresh 전·Play 뒤 Stop 뒤 세 번 계산해 모두 같다(Play가 제품 파일을 바꾸지 않음).
+- 기준 105e585 대비 manifest 차이는 **1경로**: 옛 `RootDesk/MyDesk/Models/Monsters/주황버섯.model` 87686d37a01e7c6464b650257e19fd34c455bebeca78f88b532ebb881eb0c1d4 → 새 `RootDesk/MyDesk/Models/Monsters/OrangeMushroom.model` **28048d8f0be5822f8f9838fd4ff966bcea35ab07c829a472c1a7dfd7eced9ffb**. 나머지 54경로 해시는 같다.
+- **회차 C에서 쓴 Bundle 경로 목록에서 주황버섯 모델 경로가 `…/Models/Monsters/주황버섯.model`에서 `…/Models/Monsters/OrangeMushroom.model`로 바뀐다**(경로 수 55 그대로, 정렬 위치만 달라짐). 이후 tester·reviewer의 55경로 재계산은 새 경로를 쓴다. 로컬 커밋 해시는 메인이 [code] 커밋을 만든 뒤 적는다.
+
+### 실제 기본 검증 (Maker MCP, refresh 1회 + Play 1회, 시험 설정은 Play 내부에서만)
+| Plan §23.3 | 결과 |
+| --- | --- |
+| 1 Glob `RootDesk/MyDesk/**/*.model` | `AttackAreaMark.model`·`Mushmom.model`·`OrangeMushroom.model` 3개, `주황버섯.model`은 어디에도 없음, Mushmom 그대로 PASS |
+| 2 ModelBuilder.read | 위 "순서 4 확인" 그대로. EntryKey/Id 상당 model_id `orangemushroom`, Name `OrangeMushroom`, 기준 판과 의미 차이 Name 1곳 PASS. (파일 형식 차이는 기록 대상으로 보되 snapshot 비교에서 나타나지 않음) |
+| 3 refresh 뒤 build 로그 | refresh status ok, build 로그 83건 전부 Info(LIA 1114/1115 동적 참조 노이즈, 앞 회차와 같은 건수), 오류 0·경고 0 PASS. 옛 이름 항목 징후(경고·파일 이동·내용 되돌림) 없음: refresh 전후 git status·manifest 동일 |
+| 4 Play 회귀 | 부팅 `[VRF] CombatCore catalog ready rules=1 patterns=4 monsterStats=2`, `MonsterStatData id=mushmom MaxHp=100 AttackDamage=12 AttackInterval=3.0 source=DataSet`, `MonsterStat applied key=mushmom MaxHp=100.0 Hp=100.0 … source=DataSet`, `MonsterManager spawned parent=map01 x=3.0`, 맵 자식에 엔티티 이름 `머쉬맘` 1개, Scale (1,1,1), ActionSheet 키 `die,hit,jump,move,stand`(5개). 자연 예고 패턴이 부팅 뒤 `parry.right`·`parry.left`·`parry.any`×2·`parry.right`(예고 id 1~5)로 이어지고 `defense kind=HIT rate=1`이 기록됐다(시험 중 플레이어는 대응하지 않음). 피격 규칙: 몬스터가 ATTACK 상태일 때 서버 요청 직후 실제 입력 경로 `PlayerStateControl:RequestChangeState("ATTACK")`(클라이언트, ok=true)으로 기본 공격 → `PlayerHitRule list built rules=6 builds=1`, hit 1 `fail rule=targetHittableSegment`, hit 2~10 `pass`(checks 2→18, 타격당 2회), 몬스터 HP 100→**91**(통과 9타×1). 회차 C 기록의 "걸친 공격"(앞 타 fail·이후 pass) 사례와 같은 동작. 이후 몬스터 상태 IDLE |
+| 5 직접 스폰 | `_SpawnService:SpawnByModelId("orangemushroom", …)` 성공: Scale (1.000,1.000,1.000), ActionSheet 키 `die,hit,jump,move,stand`(n=5), `ActionSheet["stun"]` nil, SpriteRUID 96e955c1bf27415e84f96deea200a8f1(stand), HitComponent BoxSize (0.630,0.580)·ColliderOffset (0.045,0.290)(앞 회차 기록과 같음). MonsterManager.CurrentMonster가 아님(`isManagerMonster=false`)과 부팅 스폰이 머쉬맘 1개뿐인 것으로 MonsterManager 경로에서는 주황버섯이 나오지 않음을 확인(MonsterData 1행 mushmom, 앞 회차 설계 그대로). 확인 뒤 `Destroy`, 이름 `C2Probe*` 잔존 0(`final leftovers=0`). 대조: `SpawnByModelId("castleenemy")`·`SpawnByModelId("주황버섯")`은 `[LEA-3028] MissingModel`로 nil(옛 이름 항목 없음). 대소문자 다른 `"OrangeMushroom"`은 성공(모델 id 비교가 대소문자 무시, 시험 객체 즉시 Destroy) |
+| 6 Grep | 제품 파일(RootDesk·Global·map·ui) 전체에서 `주황버섯` 일치 1건뿐: `RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua:52` 한국어 주석(범위 밖, 그대로) |
+| 7 git | 제품 변경은 모델 1개(옛 경로 삭제 + 새 경로 추가)뿐. 원장 1줄 변경. 다른 재저장 파일 없음 |
+- 로그 요약(이번 Play, 14:53 시작분): Error 3건 모두 내 프로브 때문이다. (a) 첫 스폰 프로브의 `#e.Components` 길이 조회 `[LEA-2002]`(제품 오류 아님, 그 때문에 첫 프로브가 Destroy 전에 멈춰 두 번째 프로브에서 같은 시험 개체를 읽고 지움), (b)(c) 의도한 `MissingModel`(castleenemy, 주황버섯). 정상 구간 LEA/LWA 없음. 앞 회차 13:53 Play의 로그는 사용자 로그라 지우지 않았다.
+- 프로브 한계: 첫 스폰 프로브 실패로 같은 시험 개체를 두 번째 프로브에서 읽었다. 구성 값은 동일하다. 피격 규칙 시험은 서버 상태를 맞추지 않고 몬스터가 ATTACK일 때 한 번만 실행해 접근 점프 구간·IDLE 전체 통과·패링/저스트 사례는 다시 하지 않았다(회차 C 근거 그대로, tester 범위).
+
+### 실패/미확인/미실시 (PASS로 세지 않음)
+- 실패 없음.
+- 미실시: 사용자 V11(Plan §23.4) — Maker 작업 공간 창에서 주황버섯이 `OrangeMushroom` 하나로만 보이는지(AI는 작업 공간 창을 볼 수 없음), 플레이 화면(머쉬맘)이 회차 C와 같은지. 규칙 6 접근·복귀 구간, 패링/저스트 복귀, 사망 die 정지 같은 회차 C 전수 회귀는 실행하지 않았다(범위 밖, 모델 이름 변경만 했고 이번 회차는 스크립트·Body 무변경). 사람 손 타이밍, 실기기·모바일, 다중 접속.
+- 원장의 낡은 `castleenemy` 내용은 정리하지 않고 보고만 한다(위).
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것(Plan §23.3 같은 버전 독립 재확인): Glob 1, ModelBuilder.read 2(기준 판은 `git show 105e585:`로 임시 파일에 꺼내 비교), refresh 뒤 build 로그 3, 부팅 머쉬맘 스폰·피격 규칙 4(회차 C QA10의 규칙 6 접근/복귀/걸친 공격 회귀를 이번 버전으로 포함할지는 메인 판단), 직접 스폰 5(시험 개체 반드시 Destroy), Grep 6, git 7. 55경로 Bundle은 새 경로 기준으로 재계산해 위 `8ef9c6f1…e080`과 대조. maker_clear_logs는 호출하지 말 것.
