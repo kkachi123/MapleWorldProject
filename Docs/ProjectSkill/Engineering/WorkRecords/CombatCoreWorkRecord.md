@@ -54,6 +54,55 @@
 
 ## QA 기록
 
+### 2026-11-06 독립 QA 11회차 — 회차 C2(CombatCore-MM-12, 주황버섯 모델 영어 이름)
+- 상태: **실행 완료.** 실행 기준 PASS, FAIL·NEEDS_DECISION·새 결함 없음. 독립 reviewer 대기. NOT_RUN과 사용자 직접 확인(V11)은 아래 절.
+- 담당: Claude Code msw-tester(coder와 별도 실행). 제품 코드·모델·맵·UI·DataSet·CSV 수정 없음, commit·push 없음, **maker_clear_logs 호출 없음**(Maker 로그는 저장된 JSON 파일을 `[T11]`·`[VRF]` 표지와 시각으로 걸러 읽음). coder 개발절의 PASS는 이번 실행으로 세지 않았다.
+- 대상 버전: HEAD **163fc37**(coder `[code]` 커밋, 기준 105e585). 55경로 manifest(경로 바이트순 정렬, 경로 + TAB + sha256 + LF 연결의 SHA-256, 확장자 .mlua·.model·.stateset·.userdataset·.csv·.map·.ui·.config·.collisiongroupset, Global·RootDesk·map·ui 아래) **Bundle SHA-256 `8ef9c6f1c60d73b7b74f5febd09932abfe6ba5866bfc577cb226c82d5ed2e080`**. 나는 이 값을 **커밋 트리(git ls-tree·show)와 작업 트리(파일 읽기) 양쪽에서 새로 계산**해 coder 보고와 일치함을 확인했다(계산 스크립트는 scratchpad, 앞 회차와 같은 규칙으로 105e585 커밋 트리에서 `222e7a041b619cc26bb3bd51492a352cd95a41c42259fc8f6f06e9c5e03b476d`도 재현해 방법이 같음을 확인). **시험 전·후 작업 트리 값 모두 동일**(Play·refresh가 제품 파일을 바꾸지 않음). 작업 트리 `git status`는 시험 전·후 모두 run.md(메인)만 변경.
+- 환경: maker_get_current_map map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186(앞 회차와 같음). TileMapMode는 앞 기록(0 MapleTile)을 따랐고 다시 읽지 않았다(이번 회차는 맵·Body 무변경). Play 1회(2026-11-06 15:00:15 부팅~15:02 종료), 마지막 Stop 뒤 map01 / edit 확인.
+- 방법 구분: (A) 서버 프로브 = maker_execute_script(server_main). (B) 실제 키 입력 = maker_keyboard_input(UpArrow 100ms 탭). 시험값(Play 내부, Stop으로 폐기): 몬스터 AttackInterval 9999 → 0.2 → 9999, 몬스터 Hp 5. 시험 개체 이름 접두사 `T11Probe_`.
+
+| Plan §23.3 | 방식 | 이번 독립 실행 결과 | 판정 |
+| --- | --- | --- | --- |
+| 1 Glob | Glob 도구 | `RootDesk/**/*.model` = `Models/MapObjects/AttackAreaMark.model`·`Models/Monsters/Mushmom.model`·`Models/Monsters/OrangeMushroom.model` 3개. `**/주황버섯*` 일치는 `.handoff-backups/2026-11-02-claude-setup-before/…/주황버섯.model` 1건뿐(2026-11-02 설정 이전 백업 폴더, 제품 경로·Maker 대상 아님). 제품 경로에 `주황버섯.model` 없음, Mushmom 그대로 | PASS |
+| 2 ModelBuilder.read 비교 | 내가 `git show 105e585:…/주황버섯.model`을 임시 파일로 꺼내 ModelBuilder.read로 두 판 snapshot 재귀 비교 (b93e2ac 판도 같은 결과) | 두 판 모두 컴포넌트 14·Values 45·자식 0. model_id `orangemushroom`(EntryKey `model://orangemushroom`, 안쪽 Id `orangemushroom`). **snapshot 의미 차이 1곳: name `주황버섯` → `OrangeMushroom`.** 원문 바이트 비교: 옛 파일에서 `주황버섯`(1회 등장)을 `OrangeMushroom`으로 바꾸면 새 파일과 **완전히 같다**(+2바이트: 한글 4자 12바이트 → 영문 14바이트). 형식·숫자 표기 차이도 없음. 파일 값 대조(ModelBuilder): ActionSheet 5키 stand 96e955c1…·move 6ad988b3…·jump 94bbe2a7…·hit aec9504d…·die 65a2bfb0…, Scale (1,1,1), SpriteRUID 96e955c1…, HitComponent BoxSize (0.63,0.58)·ColliderOffset (0.045,0.29) | PASS |
+| 3 refresh 뒤 build 로그 | maker_refresh_workspace + maker_logs(build) | refresh ok. build 로그 83건 전부 Info(LIA 1114/1115 동적 참조), 오류 0·경고 0, 앞 회차와 같은 건수. 항목 시각이 모두 12:57:08(= .mlua 변경이 없어 재컴파일 없음, 모델 이름 변경은 build 로그 대상 아님). Play 부팅에서 모델이 정상 스폰되어 옛 이름 항목 잔존 징후(경고·경로 이동·내용 되돌림) 없음. 이 항목은 Play 뒤 build 로그를 다시 읽지 않았다 | PASS |
+| 4 Play 회귀(머쉬맘 부팅·수치) | A + 부팅 [VRF] | `catalog ready rules=1 patterns=4 monsterStats=2`, `MonsterStatData id=mushmom MaxHp=100 AttackDamage=12 AttackInterval=3.0 source=DataSet`, `MonsterStat applied key=mushmom MaxHp=100.0 Hp=100.0 AttackDamage=12.0 AttackInterval=3.0 …`, `MonsterManager spawned parent=map01 x=3.0`. MonsterData 행 1개(`머쉬맘 / model://mushmom`). 서버 프로브: 맵 자식 `머쉬맘` 1개, Scale (1,1,1), MaxHp/Hp 100, AttackDamage 12, AttackInterval 3.0, modelKey mushmom, 상태 IDLE. 플레이어 `PlayerBaseStatData … MaxHp=100 MoveSpeed=12 ReturnSpeed=12`, `PlayerStat applied MaxHp=100 Hp=100`, `MovementInput boot speed=12.0 return=12.0` | PASS |
+| 4 피격 규칙 — 통과 | **실제 UpArrow 100ms 탭 1회**(몬스터 IDLE) | `PlayerHitRule list built rules=6 builds=1`, hit 1~10 모두 `pass`(checks 1→19, 타격당 2회), 몬스터 Hp 100→**90** | PASS |
+| 4 피격 규칙 — targetHittableSegment 실패 | A(논리: 몬스터 AttackInterval 0.2로 낮춰 ATTACK 진입 시 타이머가 0.05초 뒤 서버 `player.StateComponent:ChangeState("ATTACK")`, 진입 직후 AttackInterval 9999 복귀) | 몬스터 ATTACK(예고 parry.right) 진입 +0.05초 시전: hit 1~10 모두 `fail rule=targetHittableSegment`, 몬스터 Hp 90 그대로 | PASS (실제 키 입력이 아니라 논리 경로) |
+| 4 사망 F12 — die 한 번 재생·끝 모습 정지 | 몬스터 Hp 5(시험값) + **실제 UpArrow 100ms 탭 1회**, 서버 30ms 폴링으로 SpriteRUID·프레임 범위·상태 변화 기록 | hit 1~5 pass(Hp 5→4→…→0), 상태 HIT→(Hp 0)DEAD, `MonsterDie start frames=6 total=1.100 freezeAfter=0.800` **1회**, `DeadEvent` 연결 카운트 **1**, `MonsterHealth lethal state=DEAD` 1회. SpriteRUID는 stand 860153…→**die ec90f0b6…(프레임 0~끝)** 로 한 번 바뀐 뒤 +0.8초 `MonsterDie freeze frame=5` **1회**, 범위 5-5로 고정. 이후 시각 15:02:00·15:02:03(고정 +약 4.5~8초)에도 `ec90f0b6… 5-5 DEAD` 유지. hit 6~10은 로그에 없음(사망 뒤 타격 제외) | PASS |
+| 5 직접 스폰 | A(`_SpawnService:SpawnByModelId("orangemushroom", "T11Probe_orangemushroom", 스폰 위치-2, 맵)`) | 성공. 이름 그대로, Scale (1,1,1), SpriteRUID 96e955c1…(stand), ActionSheet 5키 stand 96e955c1bf27415e84f96deea200a8f1·move 6ad988b3ef6d4ceab3a504d300755a5b·jump 94bbe2a7eb9c4f9caa10dd9de44ee860·hit aec9504d5dc24aceb5646b79d30abad4·die 65a2bfb039614f2e9e4ccc354340153d(**파일 값과 키·RUID 전부 일치**), stun·attack 키 없음, HitComponent BoxSize (0.63,0.58)·ColliderOffset (0.045,0.29). `isManagerMonster=false`. 같은 방식으로 `mushmom`도 1회 스폰해 구성 확인(Scale 1, 5키, BoxSize (1.2,1.1)·Offset (0,0.55)). 둘 다 Destroy. **잔존 확인: 1.5초 뒤 맵 자식 목록에 `T11Probe*` 0개**(자식 14개 = 원래 목록과 같음). 대조: `SpawnByModelId("castleenemy")`·`("주황버섯")` 둘 다 nil, `[LEA-3028] MissingModel` 각 1건(의도한 프로브 오류) | PASS |
+| 5 MonsterManager 경로 미출현 | A + 부팅 [VRF] | MonsterData 행 1개(`머쉬맘`), 부팅 스폰이 머쉬맘 1개, 직접 스폰한 주황버섯은 `mm.CurrentMonster`와 다름. 오로지 코드·데이터 근거로 DoSpawn이 주황버섯을 고를 행이 없음(행 수 1) | PASS |
+| 6 Grep | Grep 도구 | `주황버섯` 일치: 제품 파일(.mlua·.model·.map·.ui·.csv·.userdataset·.config·.stateset·.collisiongroupset·.codeblock·.directory)에서 `RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua:52` 한국어 주석 **1건뿐**(범위 밖, 그대로). 그 밖에 `.claude/skills/msw-ui-system/…/style-1-black/HUDGroup.ui:1048`과 `.agents/…` 같은 파일은 스킬 템플릿 문구(제품 파일 아님) | PASS |
+| 7 git 변경 범위 | `git diff -M 105e585 163fc37` | 제품 변경은 **모델 1개 경로 변경 `주황버섯.model → OrangeMushroom.model`(R097, 한 줄)뿐**. 그 밖에 `.maplestory-skill-maker-ledger.md` 1줄(23행 모델 경로만), Plan 1줄, WorkRecord 추가 47줄. 다른 재저장 파일 없음(.directory 포함). 원장 행의 괄호 `(castleenemy)`·"현재 MonsterData는 castleenemy 1행" 표현은 낡았지만 coder가 보고한 대로 바꾸지 않았다(범위 밖 관찰) | PASS |
+| 지문 | Bundle 계산 | 위 대상 버전 절. 시험 전 = 시험 후 = 8ef9c6f1…e080 (55/55) | PASS |
+
+#### 시험 오류·불확실성 분리 (제품 오류 아님)
+- 첫 직접 스폰 프로브가 `#e.Components` 길이 조회로 `[LEA-2002]`을 냈다(coder 인계에 이미 적힌 같은 실수를 내가 반복). 그 때문에 첫 시험 개체 `T11Probe_orangemushroom`이 Destroy 전에 멈춰 남았고, 수정한 두 번째 프로브가 시작에서 그 개체를 지운 뒤(`destroying stale probe`) 다시 스폰·확인·Destroy했다. 최종 잔존 0. 이 오류 1건은 로그에 보존했다.
+- 시험 시작 전에 몬스터 자연 공격이 플레이어에게 12씩 9번 들어가 플레이어가 한 번 사망→5초 뒤 부활했다(`duel player=none` 15:00:58 → 복귀 15:01:04, 이후 Hp 100). 시험 준비 지연 때문이며 이번 회차 범위의 제품 동작(앞 회차와 같은 사망·부활)이다.
+- 추가로 요청 범위 밖이지만 `mushmom` 모델도 1회 스폰해 비교용으로 확인했다(Destroy됨).
+- Play 로그 Error 3건: 위 LEA-2002(내 프로브) 1 + 의도한 LEA-3028 2. 제품 경로의 Error·Warning 0.
+
+#### NOT_RUN (PASS로 세지 않음)
+1. 회차 C 전수 회귀(접근 점프 중 내 시전 외 구간 — 복귀 중 무대응/패링/저스트, 착지 뒤, 걸친 공격, 그로기 중 시전, 반격 창, 규칙 실패 이름별 프로브, 크기 무관), 그로기 중 사망, 패링·저스트·가드 실제 입력(F13), V07 팝업 정지, V10 UI 출처 합산, DataSet 검증/실패 동작. 이번 변경은 모델 Name 한 줄이라 지시대로 전수 회귀는 하지 않았다.
+2. Stop 뒤 **새 Play에서 시험값(AttackInterval·Hp)이 남지 않는지** 다시 확인하지 않았다(제품 파일 지문은 같고 시험값은 런타임 값이므로 Stop 폐기 근거만 있음).
+3. 대소문자 다른 `"OrangeMushroom"` 키 스폰(coder가 확인한 항목, 이번에 다시 하지 않음).
+4. 사람 손 타이밍, 실기기·모바일·터치, 다중 접속, 화면 육안(스크린샷 안 찍음).
+
+#### 사용자 V11 직접 확인 항목 (Plan §23.4, AI 결과로 대신하지 않음)
+- Maker 작업 공간 창에 주황버섯 모델이 `OrangeMushroom` **하나로만** 보이는지(옛 이름 항목이 없는지). AI는 작업 공간 창을 볼 수 없다. (AI 쪽 근거: 디스크·ModelBuilder·런타임 등록은 하나뿐이고 `castleenemy`·`주황버섯` 키 스폰은 nil.)
+- 플레이 화면은 회차 C와 같아야 한다(머쉬맘). 주황버섯은 나오지 않는다.
+
+#### 재현 방법
+1. Glob `RootDesk/**/*.model`, `git diff -M 105e585 163fc37`, `git show 105e585:RootDesk/MyDesk/Models/Monsters/주황버섯.model`을 임시 파일로 꺼내 ModelBuilder.read로 두 판 snapshot 비교.
+2. 작업 트리·커밋 트리 55경로 Bundle 계산(대조 값 8ef9c6f1…e080).
+3. 편집 모드 refresh → build 로그 → Play. 서버(server_main)에서 맵 자식을 순회해 MonsterManager를 찾고 `SpawnByModelId("orangemushroom", …, 맵)` 구성 확인 후 Destroy, `castleenemy`·`주황버섯` 스폰 nil 확인. 실제 UpArrow 100ms 탭(몬스터 IDLE)으로 규칙 pass 10건과 Hp 100→90, 몬스터 ATTACK 진입 +0.05초 시전으로 targetHittableSegment 실패 10건, 몬스터 Hp 5 + UpArrow 탭으로 die 시작 1회·정지 프레임 5-5.
+
+#### reviewer가 알아야 할 근거의 한계
+- 피격 규칙의 segment 실패 사례는 서버 `ChangeState("ATTACK")` 논리 경로이고, pass 사례와 사망 사례만 실제 UpArrow 입력이다. 규칙·사망의 회차 C 전수는 하지 않았다.
+- 모델 파일 의미 비교는 ModelBuilder snapshot 재귀 비교와 원문 문자열 치환 일치(바이트 단위)로 했다. 파일의 형식 차이는 없었다.
+- 원장(`.maplestory-skill-maker-ledger.md`)의 낡은 `castleenemy` 표현은 정리되지 않았다(coder가 보고). 규칙에 정리 범위가 없어 결함으로 세지 않고 메인 판단에 남긴다.
+- 사용 종료: 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료. 시험 뒤 55/55 동일 Bundle(`8ef9c6f1…e080`), 제품 파일 무수정, commit·push 하지 않음.
+
 ### 2026-11-04 독립 QA 9회차 — 회차 B(V11-F14·V11-F07)
 - 상태: **실행 완료.** 실행 기준 PASS, FAIL·새 결함 없음. 결함 후보 없음(추가 항목 (a)는 재현되지 않음). 독립 reviewer 대기. NOT_RUN과 사용자 직접 확인은 아래 절.
 - 담당: Claude Code msw-tester(coder와 별도 실행). 제품 코드·모델·맵·UI·.codeblock 수정 없음. CSV는 Plan 지시대로 2종만 시험 변경 후 백업에서 복원했고 byte 일치를 확인했다(아래). commit·push 없음. coder 개발절의 PASS는 이번 실행으로 세지 않았다. **maker_clear_logs는 호출하지 않았다**(Maker 로그는 저장된 JSON 파일을 `[T9…]` 표지와 시각으로 걸러 읽었다).

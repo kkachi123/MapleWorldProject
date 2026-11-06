@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: WAITING_USER
+- 상태: PAUSED
 - 갱신: 2026-11-06 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 C2 시작 지시·회차 E 선택 질문)
-- 다음 행동·대기 사유: WAITING_USER — 회차 C 수락 완료(2026-11-06). 다음은 회차 C2(Plan §23, 사용자 Maker 파일 이름 변경 필요) 시작 지시 → 회차 D(§22) → 회차 E(§24, 사용자 선택 질문 6개). 각 회차 시작은 사용자 지시.
+- 현재 담당: 없음 (회차 C2 reviewer 사용자 일시정지)
+- 다음 행동·대기 사유: PAUSED — 사용자 재개 지시 시 새 msw-reviewer 호출(회차 C2, 대상 163fc37, 근거 WorkRecord C2 coder 절·QA11) → [review] 커밋·push(163fc37 포함). 그 뒤 회차 D·E는 사용자 시작 지시.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -395,3 +395,17 @@
 - msw-planner 호출: Plan §24 확정·AssetList 사용 예정(회차 E) 반영. 구현 시작 아님(순서 C2 → D → E, 각 사용자 시작 지시).
 - planner 반환: §24 확정(24.2 버튼 대응표·24.10 미결정 정리), AssetList 사용 예정(회차 E), WorkRecord·로드맵 한 줄. 사용자 확인 1건 E-Q1(가드 이펙트·소리 RUID 저장 위치, 추천 새 표 PlayerActionFxData). coder 결정 C-1~C-4.
 - 메인 git 확인: 작업 트리에 주황버섯 모델 이름 변경(Models/Monsters/주황버섯 → OrangeMushroom, 메인·담당 편집 아님 → 사용자 Maker 작업으로 판단). 이전 커밋 판과 의미 차이는 모델 Name 주황버섯→OrangeMushroom 1곳뿐(Maker가 Name도 변경). 회차 C2(§23) 순서 2 완료·순서 4의 Name 변경 불필요에 해당. [plan] 커밋에 섞지 않고 C2 coder 커밋에 넣는다.
+
+## 2026-11-06 회차 E E-Q1 사용자 답
+- 가드 이펙트·소리 RUID는 새 표 PlayerActionFxData(id·EffectClip·EffectSound, 행 guard, serveronly, 생성 절차는 회차 D MonsterSoundData와 같음). 오류 처리: 빈 칸은 그 연출만 생략, 형식 오류·행 없음은 경고 1회 뒤 가드 연출만 끄고 전투 진행. 모두 추천안. Plan §24.10 반영은 회차 E 시작 때 planner 범위 확인에서.
+
+## 2026-11-06 회차 C2 시작 (사용자 "C2 시작")
+- 기준 커밋 105e585. 작업 트리: 사용자 Maker 이름 변경(주황버섯 → OrangeMushroom, 의미 차이 Name 1곳)과 run.md. Plan §23 범위 그대로라 planner 범위 확인은 생략(순서 2 완료, 순서 4 Name 변경 불필요는 run 기록으로 충분). msw-coder 호출.
+- coder 반환 DONE: 모델 미기록(Maker 저장본 그대로, 105e585 대비 Name 1곳), 원장 23행 경로만 갱신(낡은 castleenemy 표현은 원장 규칙에 정리 조항 없어 유지·보고), refresh 오류 0, orangemushroom 직접 스폰 정상·castleenemy/주황버섯 nil, 머쉬맘 부팅·피격 규칙 회귀, MonsterManager 경로 미출현. 55경로 Bundle 8ef9c6f1c60d73b7b74f5febd09932abfe6ba5866bfc577cb226c82d5ed2e080. Maker edit·사용 종료.
+- 메인: [code] 로컬 커밋 163fc37(git rename 인식). msw-tester 호출.
+- tester 독립 QA11(대상 163fc37, 55경로 Bundle 8ef9c6f1…e080 커밋·작업 트리 일치, 105e585에서 222e7a04… 재현): §23 기준 7개 전부 PASS, 회차 C 대표 회귀(부팅 수치·피격 pass/segment fail·F12 die 1회 정지) PASS, FAIL·NEEDS_DECISION 없음. NOT_RUN: 회차 C 전수 회귀, Stop 뒤 시험값 잔존 재확인, 실기기·모바일·화면 육안. 사용자 V11: Maker 창에 OrangeMushroom 하나, 플레이 화면 회차 C와 같음. Maker edit·사용 종료.
+- msw-reviewer 호출.
+
+## 2026-11-06 회차 C2 reviewer 일시정지
+- 사용자 "reviewer 작업은 일시정지". msw-reviewer 중지, 판정 없음, 제품·WorkRecord 변경 없음(git 확인, WorkRecord 변경분은 tester QA11 절).
+- [ops] 로컬 커밋(run.md + WorkRecord QA11). push 보류: 리뷰 전 [code] 163fc37이 같이 올라가므로 회차 종료 커밋 때 함께 push(회차 C 선례).
