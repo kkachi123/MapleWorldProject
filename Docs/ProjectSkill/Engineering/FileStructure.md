@@ -74,7 +74,7 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 | Player/@Assist/Skill/PlayerSkillEffectTable.mlua | Catalog/ | 이름 유지(스킬 교체 단계에서 재검토 가능) |
 | Player/@Assist/Stat/PlayerBaseStatCatalog.mlua | Catalog/ | |
 | UIPopup.mlua·UIToast.mlua(MyDesk 바로 아래) | UI/ | |
-| Models/Monsters/주황버섯.model | Models/Monsters/OrangeMushroom.model | 키 orangemushroom은 회차 C에서 먼저 정리. 모델 Name도 OrangeMushroom으로 |
+| Models/Monsters/주황버섯.model | Models/Monsters/OrangeMushroom.model | 키 orangemushroom은 회차 C에서 먼저 정리. 모델 Name도 OrangeMushroom으로. **회차 C2에서 처리**([Plan §23](Plans/2_CombatCore.md), 2026-11-06 사용자 결정. 파일 이름은 사용자가 Maker 작업 공간에서 바꾸고, Name은 coder가 ModelBuilder로 바꾼다) |
 | Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 유지 | 6단계 몬스터 일반화 때 이름·폴더 결정 |
 | 빈 폴더 @Assist·Player/@Assist·Models/Effects | @Assist 계열은 제거, Effects는 유지 | 폴더 메타데이터 정리 방식은 이동 회차에서 확인 |
 | 그 밖(Combat/·Managers/·Monster/·Player/·UI/·@StateControl, ui/·map/) | 유지 | |
@@ -95,7 +95,7 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 | Maker 재인식: 이동한 스크립트가 새 항목으로 잡히거나 옛 .codeblock이 남아 이름이 겹침 | Stop 상태에서 위험이 낮은 1건(예: UIToast .mlua+.codeblock 짝)을 먼저 옮겨 refresh → 빌드 로그 오류 0, 같은 이름 스크립트 1개, .codeblock Id 유지, Play [VRF]를 본다. 실패하면 이동을 멈추고 Maker UI 이동(사용자)으로 돌린다 |
 | 모델·DataSet 재인식 | 모델 EntryKey와 DataSet 이름이 그대로인지(ModelBuilder.read, GetTable), 스폰·로드 [VRF] |
 | 빈 폴더 .directory 잔존 | refresh 뒤 결과 기록. .directory를 손으로 고치지 않는다 |
-| `.maplestory-skill-maker-ledger.md` 경로 | 지금 `RootDesk/MyDesk/Models/Monsters/주황버섯.model` 1곳을 가리킨다. 이동 회차에서 새 경로로 갱신(그 스킬 원장 규칙대로) |
+| `.maplestory-skill-maker-ledger.md` 경로 | 지금 `RootDesk/MyDesk/Models/Monsters/주황버섯.model` 1곳을 가리킨다. 이동 회차에서 새 경로로 갱신(그 스킬 원장 규칙대로). 이 파일의 이동 회차는 회차 C2이며, coder가 [Plan §23](Plans/2_CombatCore.md) 순서 5에서 갱신한다 |
 | 문서 링크 | 현재 기준 문서(이 문서, 진행 중 Plan 대상 표, GameDesign·로드맵, Features/README)만 갱신. 지난 회차 기록(Plan 이전 절·WorkRecord·run)은 고쳐 쓰지 않는다 |
 | 회차 A·B·C 회귀 | 이동 뒤 한 통합 회차: DataSet 로드 값과 실패 동작(회차 B), die 1회 정지(F12)·Pos2 JUST·PARRY(F13), 팝업 정지·토스트(UIPopup·UIToast), 머쉬맘 스폰·피격 규칙(회차 C) |
 | 범위 밖 재저장 | refresh가 다른 파일을 다시 저장하면 기록하고 이동 커밋에 섞지 않는다 |

@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-06 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 C V11 직접 확인)
-- 다음 행동·대기 사유: WAITING_USER — 회차 C reviewer WAITING(결함 없음), 사용자 V11 결과 대기(Plan §21 사용자 V11 목록·WorkRecord 2026-11-06 리뷰 절). 회차 D(Plan §22)는 회차 C V11 수락과 사용자 시작 지시 뒤. 3단계 자동 시작 없음.
+- 현재 담당: 사용자 (회차 C2 시작 지시·회차 E 선택 질문)
+- 다음 행동·대기 사유: WAITING_USER — 회차 C 수락 완료(2026-11-06). 다음은 회차 C2(Plan §23, 사용자 Maker 파일 이름 변경 필요) 시작 지시 → 회차 D(§22) → 회차 E(§24, 사용자 선택 질문 6개). 각 회차 시작은 사용자 지시.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -372,3 +372,19 @@
 - reviewer 판정 WAITING(대상 b4adbdd, 결함 없음, 새 결함 ID 없음). 중단 조건 3 해소 인정. 재스폰 서버 프레임 범위 0-0은 회차 C 결함 아님 → 회차 D 필수 확인(Plan §22.15·22.8 자동 8번). 선택 정리 _T.resolveIndex. 근거 WorkRecord "2026-11-06 독립 리뷰 — 회차 C" 절.
 - planner 회차 종료 문서 동기화: Plan §21 상태 표·다음 흐름·남은 일, §22.8·§22.15 추가, WorkRecord 머리말·재개 지점, 로드맵 재개 지점. GameDesign 예정형 문구는 V11 수락 뒤.
 - 메인: [CombatCore][review] WAITING 회차 커밋 + 비밀값 검사 후 push(5a605ba·b4adbdd·d6c3d9a 포함). 상태 WAITING_USER.
+
+## 2026-11-06 회차 C 사용자 V11 결과·추가 요청
+- 사용자: V11 1~6 확인. 8(모바일·터치·사운드·CF-F07) 이상 없음(사운드 실청취는 회차 D). 7은 "영어로 바꾸고, 머쉬맘처럼 MonsterData에 주황버섯으로 추가".
+- 추가 요청 1: 방향키·공격·패링 UI 버튼의 임의 이미지를 MSW 리소스의 메이플 테마 버튼으로 교체.
+- 추가 요청 2: 패링 모션이 sit이라 어색함(PlayerStateControl GUARD→sit). 플레이어 모션·스킬 이펙트 후보 조사 요청.
+- 메인 확인: MonsterManager.DoSpawn은 MonsterData 행 중 무작위 1행을 스폰한다. 주황버섯 행만 추가하면 수치 행이 없어 약 절반의 스폰이 거부되고(상대 없음), 수치 행을 넣어도 공격 패턴 행이 없는 몬스터가 머쉬맘 대신 나온다. 일반 몬스터 추가·공격 구성은 로드맵 6단계 범위. 사용자 결정 대기.
+- 메인 조사(읽기 전용): UI 키트 simplefantasy(메이플슬래시) 테마에 원형 행동 버튼 120×120(Btn_Attack/Btn_Jump)·Btn_Skill 80×80·화살표 아이콘. 스킬 팩 로얄 가드(skill/5100.img/skill/51001006)·로얄 가드 강화(skill/40000.img/skill/400004230, pre/loop/end)·파워 가드(skill/800033.img/skill/80003317). 아바타 기본 모션 후보 alert·crouch, 순간 모션 stabO1 등. 화면 적합성은 미확인.
+- 상태 WAITING_USER 유지. 제품·Maker 작업 없음.
+
+## 2026-11-06 사용자 결정 — MonsterData 주황버섯 행 6단계로
+- 사용자 "6단계로 미루기": 주황버섯 MonsterData 행(능력치·패턴 포함)은 6단계 일반 몬스터 추가 때. 지금은 영어 이름 변경만.
+- 회차 C V11 수락으로 처리(1~6 확인, 7 이름 변경 후속, 8 이상 없음·사운드 실청취는 회차 D).
+- 메인 추천 순서(사용자 이의 없음, 각 회차 시작은 사용자 지시): 회차 C2 주황버섯 영어 이름 → 회차 D(§22) → 회차 E 조작 버튼 테마·가드 모션/이펙트.
+- msw-planner 호출: 회차 C 수락 문서 반영, §23 회차 C2, §24 회차 E Plan(후보·사용자 선택 항목 포함). 구현 시작 아님.
+- planner 반환 DONE: Plan §21 ✅·§22 기준 b93e2ac·§23 회차 C2(CombatCore-MM-12)·§24 회차 E(CombatCore-UX-01 버튼 테마, UX-02 가드 모션·이펙트·소리), GameDesign 완료형, 로드맵·WorkRecord 재개 지점, FileStructure·AssetList 후보. 규칙·수치·입력 계약 변경 없음. RUID 10개 래퍼 재확인 일치, 화면 적합성 미확인.
+- 메인: [CombatCore][plan] 커밋 + push.

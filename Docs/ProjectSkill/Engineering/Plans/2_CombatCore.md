@@ -1,6 +1,7 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-11-05(머쉬맘 모션·사운드 사용자 지시). §21 "coder 시작 전 사용자 확인"(애니메이션 연결)이 끝났다. 회차 C의 머쉬맘 연결은 stand←stand·move←move·jump←jump·hit←hit1·die←die1이며, 회차 C에서는 모든 공격이 지금처럼 jump 모습이다. coder 시작 조건은 사용자 재개 지시만 남았다(기준 eca1903, 제품 파일은 8f16a81과 같음). 사용자가 정한 패턴별 공격 모션(1칸 jump·2칸 attack1·3칸 skill1)·3칸 패링형 공격 추가(2026-11-03 "3칸 가드형은 머쉬맘 미사용" 결정을 뒤집음)·3칸 착지 Pos2·skill1 이펙트·비중 4·4·5·3·4(합 20)·사운드는 §22 회차 D로 분리했다(회차 C 사용자 V11 수락 뒤 시작). 비중은 사용자가 패턴 표 Weight 열을 직접 고쳐 조절한다(2026-11-05 사용자 요구). 사운드 재생 시점 세부는 기본안(사용자 V11 확인)이다. D01~D04 수치와 판정 규칙은 바뀌지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 갱신: 2026-11-06(회차 C 사용자 V11 수락). 사용자가 회차 C V11 1~6(머쉬맘 모습·클립 연결, 1배 크기·겹침, HP 게이지·그로기 별·숫자 위치, 점프 중 무적·줄어든 반격 창, 복귀 점프 중 보너스 소모, 속도 12/12·HP 100 체감)을 확인했고, 8(모바일·터치·사운드·CF-F07)은 이상 없다고 답했다(사운드 실청취는 회차 D). 그래서 §21의 MM-01~06·V11-F15를 완료로 표시했다(회차 종료 커밋 b93e2ac). 7(키 이름)은 "영어로 바꾸기"로 답해 §23 회차 C2(파일·모델 Name을 OrangeMushroom으로, 키 orangemushroom 유지)로 분리했다. 주황버섯 MonsterData·MonsterStatData·패턴 행은 6단계 일반 몬스터 추가 때 넣는다(사용자 "6단계로 미루기"). 사용자 추가 요청 2건은 §24 회차 E에 설계·후보로만 등록했다(구현 승인 아님, 사용자 선택 대기). 하나는 방향·공격·가드 버튼 이미지를 메이플 분위기 MSW 리소스로 바꾸는 것, 다른 하나는 가드 모션 sit을 대신할 모션·이펙트다. 순서는 회차 C2 → 회차 D(§22) → 회차 E이고, 각 회차는 사용자 시작 지시가 있어야 시작한다. 규칙·수치·입력 계약 변경 없음. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 이전 갱신: 2026-11-05(머쉬맘 모션·사운드 사용자 지시). §21 "coder 시작 전 사용자 확인"(애니메이션 연결)이 끝났다. 회차 C의 머쉬맘 연결은 stand←stand·move←move·jump←jump·hit←hit1·die←die1이며, 회차 C에서는 모든 공격이 지금처럼 jump 모습이다. coder 시작 조건은 사용자 재개 지시만 남았다(기준 eca1903, 제품 파일은 8f16a81과 같음). 사용자가 정한 패턴별 공격 모션(1칸 jump·2칸 attack1·3칸 skill1)·3칸 패링형 공격 추가(2026-11-03 "3칸 가드형은 머쉬맘 미사용" 결정을 뒤집음)·3칸 착지 Pos2·skill1 이펙트·비중 4·4·5·3·4(합 20)·사운드는 §22 회차 D로 분리했다(회차 C 사용자 V11 수락 뒤 시작). 비중은 사용자가 패턴 표 Weight 열을 직접 고쳐 조절한다(2026-11-05 사용자 요구). 사운드 재생 시점 세부는 기본안(사용자 V11 확인)이다. D01~D04 수치와 판정 규칙은 바뀌지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-05(회차 C Plan). 사용자 회차 C 답변·결정으로 §21을 추가했다. 머쉬맘 리소스(mob/6130101.img)로 1배 새 모델 model://mushmom을 만들어 패턴 4행을 적용하고(MM-01·MM-02, §18 대체), 플레이어→몬스터 피격을 규칙 충족형으로 바꾸며 공격 점프(접근·복귀) 중에는 맞지 않게 몬스터 동작이 구간별 피격 가능을 선언한다(MM-03). 공격 범위 표시·조정 도구와 AttackSkillData 범위 열 4개를 지우고(MM-04), 기존 모델은 1배 주황버섯 모델(orangemushroom, 패턴·스폰 없음)로 정리하며(MM-05), ActionSheet의 stun 키를 지워 그로기는 hit를 직접 쓴다(MM-06). 사용자가 직접 바꾼 플레이어 기본 수치 100·12·12를 반영한다(V11-F15). 몬스터→플레이어 판정과 D01~D04 수치는 바꾸지 않는다. 공격 위치 조건은 규칙에 넣지 않고 입력 조건(IDLE=Pos2)에 맡긴다(사용자 결정). 새 파일은 새 [파일 구조 기준](../FileStructure.md) 위치에 두며 기존 파일 이동은 회차 C 뒤 별도 회차다. 사용자 재개 지시 전까지 정리 단계만 하며, coder 전 사용자 확인 1건(애니메이션 연결 기본안)이 남았다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-05(회차 B 사용자 V11 수락). 메인이 물은 회차 B V11 4항목(이동·복귀 체감이 회차 A와 같은지, 해 보셨다면 CSV 직접 수정 반영과 표·열 이름, AttackInterval 3.0의 의미, 플레이어 HP 바 현재/최대 숫자)에 사용자가 "전부 ok"로 답해 §20의 CombatCore-V11-F14·V11-F07을 완료로 표시했다. HP 바 자릿수 육안 NOT_RUN은 사용자 확인으로 해소했고, AttackInterval 의미(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)는 사용자가 생각한 공격 간격과 같다고 확정했다. CSV 직접 수정은 조건 질문이라 사용자 실시 여부가 확정되지 않았다(AI 근거는 QA9 CSV 변경 반영 사례와 보충 시험 1). 규칙·수치·범위 변경 없음. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이며, 시작하면 §18 "시작 전 사용자 질문"의 답을 먼저 받는다. P01b~P06 🟡 유지, 2단계 완료·회차 C 시작·3단계 시작 아님.
 > 이전 갱신: 2026-11-05(회차 B 리뷰 뒤). §20 회차 B(CombatCore-V11-F14·V11-F07)는 coder(로컬 커밋 1b4f4ee, 기준 9eed765, 59경로 Bundle 9325c33a…cd19)·같은 버전 독립 QA9(실행 기준 PASS, 보충 시험 1로 플레이어 MaxHp DataSet 적용 PASS)·독립 리뷰 **WAITING**(결함 0)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 사용자 V11이다(§20 "사용자 V11 직접 확인"). 리뷰 문서 대조에 따라 AttackInterval 서술을 실제 동작(공격 종료 뒤 IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)으로 바로잡았다(§5·§20). 값·동작·규칙은 바뀌지 않았고 표현만 고쳤다. 이 의미가 사용자가 생각한 "공격 간격"과 같은지는 V11 확인 항목이다. tester 비차단 후속 (a)는 재현 안 됨·종결, (b)는 PASS. 그 뒤 회차 C(§18) 순서는 그대로다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
@@ -185,7 +186,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 - msw-general/references/dataset.md·authoring.md: DataSet/CSV 적용·등록·검증. 구조 파일을 바꾸면 builder-protocol과 대상별 model/map/ui 참조도 읽기.
 - msw-ui-system의 component-api.md·runtime-patterns.md: CombatScreen 표시/소유 클라이언트. 새 자원이 실제 필요할 때만 msw-search·msw-sprite-ruid 사용.
 
-2026-11-05(머쉬맘 모션·사운드 지시 뒤) 현재 §21 회차 C(MM-01~06·V11-F15)가 구현 승인 범위이고 coder 전 사용자 확인(애니메이션 연결)은 끝났다. 사용자 재개 지시 전까지는 정리 단계만 한다. 재개 지시가 오면 coder 한 회차(기준 eca1903, 제품 파일은 8f16a81과 같음) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §21 "coder 인계 범위"를 따른다. §22 회차 D(MM-07~11)는 사용자 결정이 끝난 구현 승인 범위지만 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤에 시작한다. 아래는 그 이전 기록이다. 2026-11-05(회차 C Plan) 당시 coder 전에 메인이 사용자 확인 1건(머쉬맘 애니메이션 연결 기본안 stand·move·jump·hit1·die1)을 받기로 했다. 2026-11-05(회차 B 사용자 V11 수락) 현재 §20 회차 B(V11-F14·V11-F07)는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING에 이어 사용자 V11 "전부 ok"로 완료했고 AI 담당 작업은 없다. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이다. 시작 지시가 오면 planner가 §18 "시작 전 사용자 질문"(애니메이션 선택·크기·modelId·공격 구성·수치 행 등)의 답을 받은 뒤 회차 C Plan을 확정한다. 아래는 그 이전 기록이다. 2026-11-05(회차 B 리뷰 뒤) 현재 §20 회차 B는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING까지 마쳤고 AI 담당 작업은 없다. 다음은 사용자 V11(§20 "사용자 V11 직접 확인")이고, 그 결과에 따라 회차 C(§18)다. 아래는 그 이전 기록이다. 2026-11-04(회차 B) 당시 다음 작업은 §20 coder 한 회차(V11-F14·V11-F07, 기준 9eed765) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §20 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-04(회차 A) 당시 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
+2026-11-06(회차 C 사용자 V11 수락 뒤) 현재 §21 회차 C(MM-01~06·V11-F15)는 완료다(회차 종료 커밋 b93e2ac). AI 담당 작업은 없다. 다음은 §23 회차 C2(주황버섯 파일·모델 Name 영어 정리)이고, 그 뒤 §22 회차 D, §24 회차 E 순서다. 각 회차는 사용자 시작 지시가 있어야 시작한다. §24는 설계·후보 단계이고 사용자 선택(§24.6)이 끝나야 구현 범위가 정해진다. 아래는 그 이전 기록이다. 2026-11-05(머쉬맘 모션·사운드 지시 뒤) 현재 §21 회차 C(MM-01~06·V11-F15)가 구현 승인 범위이고 coder 전 사용자 확인(애니메이션 연결)은 끝났다. 사용자 재개 지시 전까지는 정리 단계만 한다. 재개 지시가 오면 coder 한 회차(기준 eca1903, 제품 파일은 8f16a81과 같음) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §21 "coder 인계 범위"를 따른다. §22 회차 D(MM-07~11)는 사용자 결정이 끝난 구현 승인 범위지만 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤에 시작한다. 아래는 그 이전 기록이다. 2026-11-05(회차 C Plan) 당시 coder 전에 메인이 사용자 확인 1건(머쉬맘 애니메이션 연결 기본안 stand·move·jump·hit1·die1)을 받기로 했다. 2026-11-05(회차 B 사용자 V11 수락) 현재 §20 회차 B(V11-F14·V11-F07)는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING에 이어 사용자 V11 "전부 ok"로 완료했고 AI 담당 작업은 없다. 다음은 회차 C(§18 머쉬맘 전환) 시작 여부 사용자 결정이다. 시작 지시가 오면 planner가 §18 "시작 전 사용자 질문"(애니메이션 선택·크기·modelId·공격 구성·수치 행 등)의 답을 받은 뒤 회차 C Plan을 확정한다. 아래는 그 이전 기록이다. 2026-11-05(회차 B 리뷰 뒤) 현재 §20 회차 B는 coder(1b4f4ee)·QA9(보충 시험 1 포함)·리뷰 WAITING까지 마쳤고 AI 담당 작업은 없다. 다음은 사용자 V11(§20 "사용자 V11 직접 확인")이고, 그 결과에 따라 회차 C(§18)다. 아래는 그 이전 기록이다. 2026-11-04(회차 B) 당시 다음 작업은 §20 coder 한 회차(V11-F14·V11-F07, 기준 9eed765) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §20 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-04(회차 A) 당시 다음 작업은 §19 coder 한 회차(V11-F12·F13, 기준 5c4eda3) → 같은 버전 tester → reviewer → 사용자 V11이다. 사전 참조는 §19 "coder 인계 범위"를 따른다. 아래는 그 이전 기록이다. 2026-11-03(V11 결과 뒤) 당시 다음 작업은 §17 coder 한 회차(REV-F02·F10·F11) → 같은 버전 tester(H1 포함) → reviewer → 사용자 V11 재확인이었고, 리뷰 WAITING(5c4eda3)까지 마쳤다. 사전 참조는 §17 "coder 인계 범위"를 따랐다. 2026-11-03 §15 F06 coder(b89de46) → F01~F06 같은 버전 독립 QA5(a43b1b5) → reviewer F01~F06 일괄 리뷰 WAITING(2dbaa07, 새 결함 없음)까지 마쳤다(1447ff8 단독 리뷰는 중단돼 하지 않음). 다음은 사용자 V11 재확인(§15 끝 "사용자 V11 확인 항목")이며 AI 담당 작업은 없다. V11에서 새 요구나 실기기 재현 결함이 나오면 해당 ID만 다시 돈다. 아래는 2026-11-02 당시 기록이다. 2026-11-02 사용자 V11 부분 피드백을 §14에 분류하고 Q1~Q6 결정과 F04 자원 확인을 반영했다. 당시 다음은 §14 "coder 인계 범위"의 coder 한 회차 → 같은 버전 tester → reviewer → 사용자 V11 재확인이다(직전 독립 리뷰 WAITING, 대상 coder 커밋 6614b20 / Bundle 1ac324e6…9de4). 결함 경과: QA-F01은 2026-10-25 QA1 FAIL(§10) → 2026-10-29 수정·QA2 수치 PASS(§11~§12), REV-F01은 2026-10-29 리뷰 CHANGES_REQUIRED → 2026-11-02 수정·QA3 수치 PASS·리뷰 해소(§13). 과거 FAIL과 이전 버전 QA/리뷰는 당시 근거로 보존한다. CombatFoundation-F07은 수치(HP 감소=HitEvent 합계=Damages 합계) 근거만 확보했고 화면 숫자 가시성·피격/die 연출은 V11에서 평가하며 그 전에는 종결하지 않는다. V12 실제 외부 환경과 기존 외부 후속 ID는 미완료로 유지한다. V11에서 새 규칙·수치 요구가 나오면 관련 D/R/V만 재검토한다. 3단계 승패·정산과 Run·성장·몬스터 점프 튜닝은 범위 밖이며 자동 시작하지 않는다.
 
 ## 9. Plan 변경 이력
 
@@ -203,6 +204,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 | 2026-11-05 | 사용자 결정 아님. 회차 B 리뷰 WAITING의 "문서 대조"(비차단)와 QA9 판정 메모: AttackInterval 문구 "시작 간격 3.0"이 실제 동작(IDLE 대기 3.0초, 시작~다음 시작 약 4.0초)과 다름 | §5 MonsterStatData 설명과 §20 확인 기준 "공격 간격" 행의 표현만 정정. 값·동작·규칙 불변. 의미가 사용자 기대와 같은지는 §20 사용자 V11 항목으로 추가(다르면 새 요구). §20 상태 표·NOT_RUN·다음 흐름, §8 재개 문단 갱신. GameDesign은 AttackInterval 문구 변경 없음(§8 전투 구성 236행은 2026-11-04 사용자 확정 수치 DataSet 기본안으로 동기화) |
 | 2026-11-05 | 사용자 회차 C 답변·결정(run "2026-11-05 회차 C 질문 사용자 답변" 절): 플레이어 기본 수치 사용자 직접 변경 100·12·12 "변경된 값을 사용", ActionSheet 기본 키만·stun 키 제거, 플레이어→몬스터 규칙 충족형·몬스터→플레이어 유지, 피격 가능 시점 "B: 공격 점프 중에는 안 맞음"(확장성), 범위 열·범위 도구·AssistModel·표시용 모델 삭제, 키 mushmom, 머쉬맘 리소스 모델 1배+패턴 4행, 기존 모델은 1배 주황버섯 모델. 추가 결정: 주황버섯 일반 몬스터 패턴 미등록(6단계 사용자 작성), 메인의 "Pos2에서 시전" 명시 규칙 제안은 넣지 않음(공격 위치는 입력 조건에 맡김), 파일 구조 추천안 승인(기준 문서만, 이동은 회차 C 뒤) | §21 신설(MM-01~06·V11-F15). §18 MM-01·MM-02를 §21이 대체. D03 사거리 문구 주석, §5 데이터 계약(AttackSkillData 열, PlayerBaseStatData 값, MonsterStatData 키), §6 매핑, §8 재개 문단. GameDesign §4.2·§5·§8, 로드맵 재개 지점, 에셋 목록(AssetList.md) 잠정 생성, 파일 구조 기준(FileStructure.md) 신설. D01·D02·D04 수치·몬스터→플레이어 판정 불변 |
 | 2026-11-05 | 사용자 지시·결정(run "2026-11-05 머쉬맘 모션·사운드 사용자 지시" 절): 회차 C 애니메이션 연결 확인(stand·jump·hit1·die1, move 기본안, 회차 C 공격은 모두 jump). 회차 D: 1칸 jump·무음, 2칸 attack1·_audio/Attack1, 3칸(신규, 패링 가능·가드 경감 가능) skill1·attack1 이펙트·_audio/Skill1(앞 지시 2칸 skill1·3칸 attack1 대체), 3칸 착지 Pos2, 비중 1칸:2칸:3칸 = 4:4:2·1칸 안 특수 15%(합 20: 4·4·5·3·4), 사운드는 회차 D. 사용자 정정 "빠른 가드가 40%, 늦으면 가드 실패로 100%"(현재 규칙과 같음). 사용자 요구 "비율을 내가 표로 세팅할 수 있으면 좋겠음" | §21 사용자 확인 완료·기준 eca1903. §22 신설(MM-07~11). D01 가드형 줄, §15 사용자 결정 2에 대체 표시(2026-11-03 "3칸 가드형 머쉬맘 미사용"을 뒤집음). §5 데이터 계약(패턴 표 새 열·MonsterSoundData), §8 재개 문단. GameDesign §4.2·§5·§8, 로드맵 재개 지점, AssetList 동기화. 사운드 재생 시점 세부는 기본안(사용자 V11). D01~D04 수치·판정 규칙 불변 |
+| 2026-11-06 | 사용자 회차 C V11 결과·결정(run "2026-11-06 회차 C 사용자 V11 결과·추가 요청", "2026-11-06 사용자 결정 — MonsterData 주황버섯 행 6단계로"): 1~6 확인, 8 이상 없음(사운드 실청취는 회차 D), 7 "영어로 바꾸기"·주황버섯 MonsterData 행은 "6단계로 미루기". 추가 요청: 조작 버튼을 메이플 테마 MSW 리소스로, 가드 sit 모션 대체 모션·이펙트. 순서 C2 → D → E(각 회차 사용자 시작 지시) | §21 상태 완료(b93e2ac)·다음 흐름·남은 일, §22 머리말 기준 b93e2ac·시작 조건·22.14, §23 회차 C2 신설(MM-12), §24 회차 E 설계·후보 신설(UX-01·UX-02, 구현 승인 아님). GameDesign §4.2·§5 완료형, 로드맵 재개 지점·§3 "6:", WorkRecord 머리말·재개 지점, FileStructure §5·§7, AssetList. 규칙·수치·입력 계약 불변 |
 
 ## 10. 독립 QA 상태 (2026-10-25)
 
@@ -1333,24 +1335,28 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-MM-01 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1) |
-| CombatCore-MM-02 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 스크립트 이름 변경은 부채로 분리 |
-| CombatCore-MM-03 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
-| CombatCore-MM-04 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
-| CombatCore-MM-05 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 패턴·스폰 없음(사용자 결정) |
-| CombatCore-MM-06 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
-| CombatCore-V11-F15 | 🟡 구현·QA10 PASS·리뷰 WAITING, 사용자 V11 대기(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 사용자 결정 값(작업 트리 CSV) 그대로, coder 커밋에 포함 |
+| CombatCore-MM-01 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 애니메이션 연결 사용자 확인 완료(stand·move·jump·hit1·die1) |
+| CombatCore-MM-02 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 스크립트 이름 변경은 부채로 분리 |
+| CombatCore-MM-03 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 규칙 1~6(공격 위치는 입력 조건에 맡김, 사용자 결정) |
+| CombatCore-MM-04 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
+| CombatCore-MM-05 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 패턴·스폰 없음(사용자 결정). 남은 모델 Name·파일 이름 영어 정리는 §23 회차 C2, MonsterData·MonsterStatData·패턴 행은 6단계(2026-11-06 사용자) |
+| CombatCore-MM-06 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절) |
+| CombatCore-V11-F15 | ✅ **완료(사용자 V11 수락 2026-11-06, 회차 종료 커밋 b93e2ac).** 구현·QA10 PASS·리뷰 WAITING(coder 5a605ba, 중단 조건 3은 사용자 월드 재로드로 해소·[ops] b4adbdd / QA10 대상 b4adbdd / 2026-11-06 리뷰 결함 없음, WorkRecord 회차 C 개발절·QA10·리뷰 첫 절). 사용자 결정 값(작업 트리 CSV) 그대로, coder 커밋에 포함 |
 
-다음 흐름(2026-11-06 리뷰 뒤): coder(5a605ba) → [ops] b4adbdd(Maker 재저장, 제품 의미 동일) → 같은 버전 tester QA10(실행 기준 전부 PASS) → reviewer WAITING(결함 없음)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 위 "사용자 V11 직접 확인"이다(리뷰 기록 첫 절 "남은 사용자 V11" 1~8과 같은 내용). 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤 §22 회차 D다(회차 C에서 넘어온 확인 항목은 22.15). P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
+다음 흐름(2026-11-06 사용자 V11 수락 뒤): 회차 C 완료(회차 종료 커밋 b93e2ac). 사용자 V11 결과는 다음과 같다(run "2026-11-06 회차 C 사용자 V11 결과·추가 요청", "2026-11-06 사용자 결정"). 1~6은 확인했다. 7(키 이름)은 영어 이름으로 바꾸기로 했고, 이 작업은 §23 회차 C2에서 한다. 키 orangemushroom은 이미 영어라 그대로 두고, 파일 이름과 모델 Name만 OrangeMushroom으로 바꾼다. 주황버섯 MonsterData·MonsterStatData·패턴 행은 6단계 일반 몬스터 추가 때 넣는다(사용자 "6단계로 미루기"). 지금 MonsterData에 행만 넣으면 MonsterManager.DoSpawn이 무작위 1행을 고르므로, 수치 행이 없는 쪽이 뽑힌 스폰은 거부되고 패턴 없는 몬스터가 머쉬맘 대신 나올 수 있다. 8(모바일·터치·사운드·CF-F07)은 이상 없다(사운드 실청취는 회차 D). 현재 AI 담당 작업은 없다. 다음은 사용자 시작 지시 뒤 §23 회차 C2 → §22 회차 D → §24 회차 E이다. 각 회차는 사용자가 시작을 지시한다. P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
+
+당시 흐름(2026-11-06 리뷰 뒤): coder(5a605ba) → [ops] b4adbdd(Maker 재저장, 제품 의미 동일) → 같은 버전 tester QA10(실행 기준 전부 PASS) → reviewer WAITING(결함 없음)까지 마쳤다. 현재 AI 담당 작업은 없고 다음은 위 "사용자 V11 직접 확인"이다(리뷰 기록 첫 절 "남은 사용자 V11" 1~8과 같은 내용). 회차 C 사용자 V11 수락과 사용자 시작 지시 뒤 §22 회차 D다(회차 C에서 넘어온 확인 항목은 22.15). P01b~P06 🟡 유지. 2단계 완료·3단계 시작은 사용자가 결정한다.
 
 남은 일:
-- GameDesign §4.2·§5의 "회차 C에서 바꾼다" 같은 예정형 문구는 사용자 V11 수락 뒤 완료형으로 고친다(지금은 그대로 둔다).
+- (완료, 2026-11-06) GameDesign §4.2·§5의 "회차 C에서 바꾼다" 같은 예정형 문구를 완료형으로 고쳤다.
+- 회차 C2(§23): 주황버섯 파일 이름·모델 Name 영어 정리(V11 7번 후속). FileStructure §5 이동 표의 해당 행이 이 회차다.
+- 6단계: 주황버섯 MonsterData·MonsterStatData·패턴 행(로드맵 §3 "6:"에 적음).
 
 ## 22. 회차 D — 머쉬맘 패턴별 모션·3칸 공격·이펙트·사운드 (2026-11-05)
 
 > 근거: run.md "2026-11-05 머쉬맘 모션·사운드 사용자 지시"와 같은 날 메인 추가 전달(사용자 요구 "비율을 내가 표로 세팅할 수 있으면 좋겠음").
-> 시작 조건: **회차 C 사용자 V11 수락 + 사용자 시작 지시.** 그 전에는 이 절을 구현하지 않는다. 회차 C(§21)의 범위·결과는 바꾸지 않는다.
-> 기준 버전: 회차 C 회차 종료 커밋(아직 없음). coder는 시작할 때 HEAD 해시와 제품 파일 바이트 지문을 WorkRecord·run에 적는다.
+> 시작 조건: **회차 C 사용자 V11 수락 + 사용자 시작 지시.** 그 전에는 이 절을 구현하지 않는다. 회차 C(§21)의 범위·결과는 바꾸지 않는다. (2026-11-06: 회차 C 수락 충족. 순서는 §23 회차 C2 다음이며, 사용자 시작 지시가 남았다.)
+> 기준 버전: 회차 C 회차 종료 커밋 b93e2ac(2026-11-06). §23 회차 C2를 먼저 마치면 그 회차 종료 커밋이 기준이다. coder는 시작할 때 HEAD 해시와 제품 파일 바이트 지문을 WorkRecord·run에 적는다.
 > 대상 맵: map01, `TileMapMode` 0(MapleTile), 몬스터 Body는 `RigidbodyComponent`(변경 없음). 새 파일 위치는 [파일 구조 기준](../FileStructure.md)을 따른다.
 
 ### 22.1 사용자 확정 (2026-11-05)
@@ -1557,13 +1563,14 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-MM-07 | ⬜ 구현 승인(2026-11-05 사용자 지시). 회차 C V11 수락 + 시작 지시 대기 |
+| CombatCore-MM-07 | ⬜ 구현 승인(2026-11-05 사용자 지시). 회차 C V11 수락은 충족(2026-11-06). 추천 순서상 §23 회차 C2 뒤 사용자 시작 지시 대기 |
 | CombatCore-MM-08 | ⬜ 구현 승인. id `parry.guard`는 기본안 |
 | CombatCore-MM-09 | ⬜ 구현 승인. 사용자 비율 표 운영 포함 |
 | CombatCore-MM-10 | ⬜ 구현 승인. 위치·크기는 V11 확인 |
 | CombatCore-MM-11 | ⬜ 구현 승인. 시점·나머지 3종·음량은 V11 확인 |
 
 다음 흐름: 회차 C(§21) → 사용자 V11 수락 → 사용자 시작 지시 → coder 회차 D → 같은 버전 tester → reviewer → 사용자 V11(22.8).
+2026-11-06 갱신: 회차 C 사용자 V11 수락은 끝났다(b93e2ac). 사용자와 정한 순서는 §23 회차 C2 → 회차 D → §24 회차 E이며, 각 회차 시작은 사용자가 지시한다. 회차 D 시작 지시가 C2보다 먼저 오면 메인이 사용자에게 순서를 확인한다. C2는 주황버섯 모델만 바꾸므로 22.7 범위와 겹치지 않는다.
 
 ### 22.15 회차 C에서 넘어온 확인 항목 (2026-11-06 회차 C 리뷰)
 
@@ -1586,3 +1593,265 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 **선택 — 코드 정리**
 
 - PlayerCombatComponent의 `_T.resolveIndex`는 기록만 하고 읽지 않는다. 회차 D에서 그 파일을 고치면 함께 지워도 된다. 고치지 않으면 남겨 둔다. 이 항목 때문에 22.7 범위를 넓히지 않는다.
+
+## 23. 회차 C2 — 주황버섯 파일·모델 이름 영어 정리 (2026-11-06)
+
+> 근거: run "2026-11-06 회차 C 사용자 V11 결과·추가 요청"(V11 7번 "영어로 바꾸고…")과 "2026-11-06 사용자 결정 — MonsterData 주황버섯 행 6단계로"("지금은 영어 이름 변경만").
+> 시작 조건: **사용자 시작 지시.** 순서는 이 회차 → §22 회차 D → §24 회차 E다.
+> 기준 버전: 회차 C 회차 종료 커밋 b93e2ac. coder는 시작할 때 HEAD 해시와 제품 파일 바이트 지문을 WorkRecord·run에 적는다.
+> 대상 맵: map01, `TileMapMode` 0(MapleTile). 이 회차는 맵·Body·스크립트를 건드리지 않는다.
+
+### 23.1 범위
+
+| ID | 내용 |
+| --- | --- |
+| CombatCore-MM-12 | 파일 `RootDesk/MyDesk/Models/Monsters/주황버섯.model` → `RootDesk/MyDesk/Models/Monsters/OrangeMushroom.model`, 모델 Name `주황버섯` → `OrangeMushroom`. 키(EntryKey·Id `orangemushroom`)와 모델 내용(구성요소·값·ActionSheet 5키·Scale 1·HitComponent)은 그대로 둔다 |
+
+바꾸지 않는 것: 키 `orangemushroom`, MonsterData·MonsterStatData·MonsterAttackPatternData(주황버섯 행을 넣지 않는다, 6단계), `Monster/OrangeMushroom/OrangeMushroomAttack.mlua`의 이름·폴더·주석(FileStructure §5 "유지, 6단계"), 머쉬맘 모델, FileStructure §5의 다른 이동 행, 규칙·수치·입력 계약.
+
+### 23.2 절차 (메인 추천안을 참조와 대조해 그대로 채택)
+
+대조 근거:
+- Maker는 새 파일을 RootDesk에서만 등록하고, 파일을 바꾼 뒤에는 Stop 상태에서 refresh해야 한다(workspace.md).
+- `renameModel(name, modelId)`는 EntryKey·Json.Id·Name을 함께 정한다(model.md). 이번에는 키가 같으므로 Name만 바뀐다.
+- 회차 C의 중단 조건 3은 키를 바꾸며 같은 경로에 다시 쓴 탓에 Maker에 옛 항목(`castleenemy`)이 남은 경우였다. 그 뒤 사용자가 Maker 작업 공간에서 파일을 옮겼을 때는 의미 차이 0으로 정상 반영됐다(run 2026-11-05~06, WorkRecord 회차 C 개발절).
+- 따라서 파일 이름은 Maker(사용자)가 바꾸고, AI는 키를 바꾸지 않는 Name 변경만 한다. 참조와 충돌하는 점은 없다.
+
+| 순서 | 담당 | 작업 | 확인 |
+| --- | --- | --- | --- |
+| 1 | 메인 | Maker가 Stop(편집 모드)인지, 작업 트리에 run.md 외 제품 변경이 없는지 확인 | git status |
+| 2 | 사용자 | Maker 작업 공간에서 주황버섯 모델 파일 이름을 `OrangeMushroom`으로 바꾸고 저장 | — |
+| 3 | 메인 | git으로 확인: 제품 변경이 옛 경로 삭제·새 경로 추가 1쌍뿐인지. 다른 경로의 재저장이 있으면 기록하고 이 회차 커밋에 섞지 않는다 | git status·diff |
+| 4 | coder | b93e2ac 판(git show로 임시 파일에 꺼냄)과 새 경로 파일을 ModelBuilder로 읽어 비교한다. Name 외 의미 차이가 0이어야 한다. Name이 아직 `주황버섯`이면 `renameModel("OrangeMushroom", "orangemushroom")`로 Name만 바꿔 같은 새 경로에 쓰고 Maker refresh. Maker가 Name까지 바꿨으면 쓰지 않고 기록만 한다 | 쓰기 뒤 read로 EntryKey·Id `orangemushroom`, Name `OrangeMushroom`, 나머지 값이 b93e2ac 판과 같음 |
+| 5 | coder | `.maplestory-skill-maker-ledger.md`의 주황버섯 행 경로를 새 경로로 갱신(FileStructure §7, maplestory-skill-maker 원장 규칙대로). 그 행의 다른 옛 내용(키 castleenemy 등) 갱신 범위도 그 규칙을 따른다. 규칙에 없으면 경로만 고치고 나머지는 메인에 보고 | 원장 diff |
+| 6 | coder | 23.3 확인 | — |
+
+순서(파일 이름 먼저, Name 나중)를 고른 이유: Maker의 이름 바꾸기가 모델 Name까지 바꾸는지 모른다. 파일을 먼저 바꾸면 4번에서 실제 결과를 보고 필요한 경우에만 쓴다.
+
+대안(4번 이후 문제가 생길 때):
+- Maker에 옛 이름 항목이 남거나 파일이 다른 위치(예: MyDesk 바로 아래)로 가면, 디스크에서 직접 옮기거나 지우지 않는다. coder는 멈추고 반환한다. 사용자가 월드를 다시 열거나 Maker에서 항목을 정리·재이동한다(회차 C 해소 방식).
+- 사용자가 Maker 작업을 원하지 않으면 coder가 node fs로 옮긴 뒤 refresh하는 방법이 있다. 하지만 FileStructure §7의 재인식 위험을 그대로 지므로 추천하지 않는다. 쓰려면 메인이 사용자 확인을 받는다.
+
+### 23.3 완료 기준 (AI, 같은 버전 tester가 독립 재확인)
+
+1. Glob `RootDesk/MyDesk/**/*.model`: `Models/Monsters/OrangeMushroom.model`이 하나 있고, `주황버섯.model`은 어느 위치에도 없다. `Models/Monsters/Mushmom.model`은 그대로다.
+2. ModelBuilder.read(새 경로): EntryKey·Id `orangemushroom`, Name `OrangeMushroom`. 구성요소 수·값(ActionSheet 5키 stand·move·jump·hit·die, Scale 1, HitComponent)이 b93e2ac 판과 의미상 같다. 빌더 재기록에 따른 형식 차이(줄 끝·형식 버전 문자열·숫자 표기)는 기록만 하고 결함으로 보지 않는다(회차 F04 선례).
+3. refresh 뒤 build 로그 오류 0.
+4. Play 회귀: 부팅 스폰이 머쉬맘(MonsterData `mushmom` 1행)이고, 스폰·피격 규칙 [VRF] 로그가 회차 C와 같다.
+5. Play에서 maker_execute_script로 `orangemushroom` 모델을 직접 1회 스폰해 성공하는지, 구성(ActionSheet 5키·Scale 1)이 파일과 같은지 보고 지운다. MonsterManager 경로로는 스폰되지 않는다(MonsterData 행 없음, 회차 C 설계 그대로).
+6. Grep: 제품 파일(.model·.map·.ui·.csv·.userdataset)에 `주황버섯` 문자열이 없다. `OrangeMushroomAttack.mlua`의 한국어 주석은 범위 밖이라 그대로 둔다.
+7. git: 이 회차 제품 변경은 모델 1개(경로 변경 + Name)뿐이고, 원장 1행이 함께 바뀐다. 다른 재저장 파일은 분리해 기록한다.
+
+### 23.4 사용자 V11
+
+- Maker 작업 공간에 주황버섯 모델이 `OrangeMushroom` 하나로만 보이는지(옛 이름 항목이 없는지). AI는 작업 공간 창을 볼 수 없다.
+- 플레이 화면은 회차 C와 같아야 한다(머쉬맘). 주황버섯은 화면에 나오지 않는다.
+
+### 23.5 중단 조건 (대안 구현 없이 멈추고 선택지를 메인에 돌려줌)
+
+- 3번이나 4번에서 모델 외 제품 경로에 의미 변경이 있거나, 모델에 Name 외 의미 차이가 있다.
+- refresh 뒤 옛 항목이 남은 징후가 보인다(build 경고, 파일이 다른 경로로 옮겨지거나 옛 내용으로 되돌아감).
+- 머쉬맘 스폰 회귀가 실패한다.
+
+### 23.6 미결정
+
+- Maker 작업 공간의 이름 바꾸기가 모델 Name도 바꾸는지(3·4번에서 기록).
+- 원장 행의 경로 외 내용을 어디까지 고칠지(maplestory-skill-maker 원장 규칙을 따름).
+- 회차 종료 때 planner가 할 문서 정리: FileStructure §5 행·§7 원장 행을 완료로 표시하고, AssetList 보관 행에 새 경로를 적는다.
+
+### 23.7 상태
+
+| ID | 상태 |
+| --- | --- |
+| CombatCore-MM-12 | ⬜ 범위 확정(2026-11-06 사용자 V11 7번 결정). 사용자 시작 지시 대기 |
+
+다음 흐름: 사용자 시작 지시 → 메인 Stop 확인 → 사용자 Maker 이름 바꾸기 → 메인 git 확인 → coder → 같은 버전 tester → reviewer → 사용자 V11(23.4) → 회차 종료. 그 뒤 §22 회차 D(사용자 시작 지시).
+
+## 24. 회차 E — 조작 버튼 메이플 테마·가드 모션/이펙트 (2026-11-06 설계·후보)
+
+> 근거: run "2026-11-06 회차 C 사용자 V11 결과·추가 요청"의 추가 요청 1(방향·공격·패링 버튼 이미지를 MSW 메이플 테마 버튼으로)·2(가드 모션 sit이 어색함, 모션·스킬 이펙트 후보)와 같은 날 메인 조사.
+> 상태: **설계·후보 단계이며 구현 승인이 아니다.** 24.6 사용자 선택이 끝나면 planner가 범위를 확정한다. 시작은 회차 D 뒤 사용자 시작 지시로 한다.
+> 화면 적합성: 이 절의 후보는 하나도 Maker 화면으로 보지 않았다(미확인). RUID는 msw-ui-kit 데이터와 msw-search 래퍼 응답에서 옮겼다.
+> 바꾸지 않는 것: 입력 계약(↑ 공격·↓ 가드·← 뒤·→ 앞, GameDesign §7.1·§7.4 배치, 터치 88px 이상·간격 16px 이상), 판정 규칙·수치, 가드·패링 판정, 기존 패링 성공 이펙트(MonsterStunComponent의 SparkRadialExplosion, 사용자가 마음에 들어 함)와 그로기 별.
+
+### 24.1 현재 상태 (2026-11-06 읽기)
+
+**버튼 (ui/CombatScreen.ui, UIBuilder로 읽음)**
+
+| 엔티티(UUID 앞 8자) | 크기·위치(앵커 아래 가운데) | 현재 이미지 RUID | 하이라이트 |
+| --- | --- | --- | --- |
+| BtnAttack ↑ (c004ea3c) | 140×140, (0, 270) | fa75318d112040f9a941da89ad5d2e53 | 없음 |
+| BtnBack ← (6327b6bf) | 140×140, (-170, 110) | b5c63f01645645c095611f64b34078df | Highlight(93225eff) |
+| BtnGuard ↓ (3ad5d628) | 140×140, (0, 110) | 9eff8b12dcde45ca989e9cd5a95e441c | Highlight(f486d930) |
+| BtnForward → (ae5fcd10) | 140×140, (170, 110) | 83feab30f7744c629ecc1344e1c4e49b | Highlight(c7d65fee) |
+
+- 공통: SpriteGUIRenderer는 Simple·흰색·PreserveSprite다. ButtonComponent는 ColorTint(눌림 0.78)이고 상태 스프라이트가 없다. TextGUI는 빈 문자열이다.
+- Highlight: 부모에 맞춰 늘어나고, RUID 2860136c06ab075439721c027de365af·Sliced·노란색(파일의 알파는 0)이며 raycast는 꺼져 있다. CombatInputController(56~58행)가 LEFT·GUARD·RIGHT 입력에 따라 Enable을 켜고 끈다.
+- 이미지 출처: Docs/UIimg의 free-icon 4장(sword·defence·left/right arrow)으로 보이지만, RUID와 파일의 대응을 적은 문서가 없어 추정이다.
+- 바인딩: CombatInputController는 ButtonComponent 4개와 Highlight 3개를 엔티티 UUID로 묶는다. 엔티티를 새로 만들지 않고 값만 바꾸면 바인딩은 그대로다.
+
+**플레이어 애니메이션 연결 (기존 설정, 사용자 확인용)**
+
+| 플레이어 상태 | 현재 연결 | 설정 위치 | 보이는 모습 |
+| --- | --- | --- | --- |
+| IDLE | stand(기본) | 기본 시트 | stand1·stand2 |
+| MOVE(회피 이동·복귀) | walk | PlayerStateControl OnBeginPlay(서버). PlayerMoveComponent.SetWalking도 클라이언트에 Walk/Stand를 보낸다(정지 중에는 건너뜀) | walk1 |
+| ATTACK | attack | PlayerStateControl | 장착 무기 종류에 따라 정해짐(무기가 없으면 alert) |
+| GUARD | **sit** | PlayerStateControl | 앉기(사용자 "어색함") |
+| DEAD | dead(기본) | 기본 시트 | dead |
+
+- 코스튬: DefaultPlayer.model에 Custom*Equip·UseCustomEquipOnly가 없다. 그래서 사용자 계정 코스튬과 무기를 쓰며, 무기 종류는 알 수 없다.
+- 가드: Player_Guard OnEnter·OnExit(서버)가 PlayerGuardComponent:SetGuarding을 부른다.
+- 패링 성공: MonsterAttackComponent PARRY → MonsterStunComponent:NotifyParry → `ParryEffect` @Sync → 클라이언트 PlayParryEffect(SparkRadialExplosion).
+- 이펙트 선례: PlayerCombatComponent는 서버에서 `_EffectService:PlayEffect`로 기본 공격 이펙트를 낸다.
+
+### 24.2 A. 버튼 테마 설계
+
+- 테마: **simplefantasy(메이플슬래시) 추천.** msw-ui-kit §1의 RPG 기본값이고, 원형 행동 버튼(Btn_Attack/Btn_Jump)과 화살표·칼 아이콘이 있다. 한 화면 한 테마 규칙에 따라 버튼 4개의 배경과 아이콘을 모두 이 테마에서 고른다.
+- 비교한 다른 테마는 casualrpg(메이플소울히어로)다. 메이플 계열이고 100×100 버튼 부품(Group_5 Button_21~)이 있다. 하지만 부품 이름에 역할이 없고 화살표·방패 아이콘도 찾지 못해 고르기 어렵다.
+- 방패 아이콘은 simplefantasy에 없다. minimalcombat의 "Guardian"(80×80)은 다른 테마라 섞을 수 없다(ui-kit 규칙).
+
+버튼별 구성 (아이콘은 24.6 Q2의 추천안 2 기준):
+
+| 버튼 | 배경 | 아이콘(새 자식 엔티티) | 색 | 크기 |
+| --- | --- | --- | --- | --- |
+| BtnAttack ↑ | Slot_03/Btn_Attack `e314c09b9b39486bb1c68d018b2abded`(원래 120×120, Sliced) | Icon_Sword `3119d2807ea7466e8e9056d0590a35cc`(틴트). 안 1이면 Icon_Arrow_Up `21a4739b4d654e51810c638f273d9c54` | 배경 `#FFFFFF`, 아이콘 `#FFFFFF`(틴트 부품이라 색을 꼭 넘김) | 배경 140×140 유지(Sliced). 아이콘: Sword는 기록 비율 20:25로 48×60, Up은 60×60 |
+| BtnGuard ↓ | 같음 | Icon_Arrow_Down `a714a1eaa4aa46098c0c265110ee91c0`(틴트) | 같음 | 60×60 |
+| BtnBack ← | 같음 | Icon_Arrow_L `002ca90cd5794836b1e44da160de287a`(틴트) | 같음 | 기록 비율 24:36으로 40×60 |
+| BtnForward → | 같음 | Icon_Arrow_R `740aba24726c4c6580cf054b0e1e1fd5`(틴트) | 같음 | 40×60 |
+
+- 눌림 표시: 지금처럼 ColorTint를 쓴다(추천, 누르는 느낌이 지금과 같다). 다른 안은 SpriteSwap으로 눌림 스프라이트 `4eed2985436c4007890c3314c4d42dc0`(같은 Slot_03 항목의 pressed)를 쓰는 것이다.
+- 원래 크기 규칙: 배경은 Sliced 부품이라 140으로 키워도 된다(ui-kit ALWAYS 2). 아이콘은 Simple이라 비율을 지켜 키운다. 테마 문서는 아이콘을 60×60으로 적지만, 데이터 기록 크기는 Sword 20×25, Arrow_L·R 24×36, Arrow_Up 30×30, Arrow_Down 60×60으로 서로 다르다. 실제 그림 비율은 화면에서 확인해야 한다(미확인).
+- 터치·간격: 크기와 위치를 바꾸지 않으므로 140px(88 이상)와 간격(좌우 30px·위아래 20px, 16 이상)이 그대로다.
+- 만드는 방법: UIBuilder만 쓴다.
+  - 버튼 4개는 엔티티를 그대로 두고 SpriteGUIRenderer의 ImageRUID·Type(Sliced)·Color만 패치한다.
+  - 버튼마다 자식 스프라이트 `Icon`을 하나 더한다. 가운데 고정·raycast 끔·`#FFFFFF`로 만들고, 형제 순서는 Highlight 앞에 둔다(형제 순서 = 그리는 순서라 Highlight가 위에 남는다).
+  - CombatInputController는 고치지 않는다.
+- Highlight(테마 밖 RUID 2860136c…)는 입력 표시 계약이라 그대로 둔다. 테마와 어울리지 않으면 V11 뒤 후속으로 다룬다.
+- 배경과 아이콘 색: 원형 버튼 그림의 밝기는 모른다(미확인). 흰 아이콘이 밝은 배경에서 안 보이면 테마 문자색(#2D2D2D 계열) 같은 강조색으로 바꾸는 것을 V11에서 정한다.
+
+### 24.3 B. 가드 모션·이펙트 후보
+
+**모션** (msw-avatar 기본 상태 해석표 기준)
+
+| 안 | 연결 | 보이는 모습 | 무기 의존 | 메모 |
+| --- | --- | --- | --- | --- |
+| 1 (추천) | GUARD → `alert` | alert(경계 자세, ZigzagLoop) | 없음 | PlayerStateControl의 SetActionSheet 한 줄(서버) |
+| 2 | GUARD → `crouch` | prone(엎드림) | 없음 | 엎드린 모습이라 가드로는 어색할 가능성이 크다 |
+| 3 | sit 유지 | sit | — | 바꾸지 않음 |
+| 추가(선택) | 패링 성공 때 한 번 `stabO1` 같은 무기 동작 | 찌르기 | 한손 무기가 필요하다. 계정 코스튬의 무기를 알 수 없고, 무기가 없으면 안 보이거나 다르게 보일 수 있다 | 클라이언트 ActionStateChangedEvent(몸체 엔티티, Onetime)가 필요하다. GUARD 시트가 다시 보내는 자동 재생과 충돌하는 문제도 처리해야 한다. 추천하지 않는다 |
+
+**이펙트 후보** (2026-11-06 planner가 msw-search 래퍼 batch·packs로 10개 RUID의 존재·종류·크기·프레임 수·소속 팩을 다시 확인했다. 모습·크기·방향은 미확인)
+
+| 후보 | 소속 팩 | RUID | 크기·프레임 | 소리(_audio/Use) |
+| --- | --- | --- | --- | --- |
+| 로얄 가드 effect | skill/5100.img/skill/51001006 | 318a46627eca4ae5b9c5d1fb16244e3c | 124×147, 13프레임 | 605da1fc42f34ef4a1468387004a6223 |
+| 로얄 가드 강화 effect | skill/40000.img/skill/400004230 | a6c32468ecc14665baf9c056cfabae0c | 138×156, 8프레임 | 6416b7d7c92148bfa05835e6b7aee9b0 |
+| 로얄 가드 강화 effect_ple pre·loop·end | 같은 팩 | 0f93a8d6560547ddab87b8a0eb387e19 · 12c03f6ac9374b5a91d993f09384c113 · f75c5a210fd24430b9e4a1122b6f82c8 | 178×176 5프레임 · 180×180 8프레임 · 178×176 5프레임 | 위와 같음 |
+| 파워 가드 effect·effect0·affected | skill/800033.img/skill/80003317 | af4e6abe766e4970a0e90aca58c6cc1c · a15d331295524094a9b1096df300022c · 1838b57cb0314900bc00b690580f8f36 | 64×85 12프레임 · 60×80 4프레임 · 31×39 12프레임 | 찾지 않음 |
+
+**붙일 시점**
+
+| 시점 | 방식 | 일시정지(CombatPause) | 범위 영향 |
+| --- | --- | --- | --- |
+| 가드 시작 1회 (추천) | PlayerGuardComponent.SetGuarding의 서버 시작 분기에서 PlayEffect 1회. 위치는 플레이어, 반복 없음(기본 공격 이펙트 선례) | 정지 중에도 이펙트가 멈추지 않는다(§22.11의 기존 부채, 플레이어 공격 이펙트와 같음). 1회라 영향이 짧다 | 22.7과 겹치지 않음 |
+| 가드 유지(루프) | 로얄 가드 강화 pre → loop → end. GUARD 진입에서 시작하고 이탈에서 끝낸다 | 팝업 정지 중에는 홀드가 유지돼 루프가 계속된다. 재개하면 홀드가 풀리므로(PreparePopupResume → ReturnToIdle) 모든 이탈 경로에서 루프를 끝내야 한다. 루프를 멈추는 API(PlayEffect 반환값·정지 방법)는 확인하지 않았다 | 위험이 크다 |
+| 패링 성공 1회 | PARRY 결과 때 플레이어 위치에서 PlayEffect | 기존 몬스터 쪽 스파크와 겹치므로 화면 확인이 필요하다 | MonsterAttackComponent(22.7 대상)나 플레이어 방어 경로를 고친다. 회차 D와 겹치므로 회차 D 뒤에만 할 수 있다 |
+
+- 일시정지 계약(`_UtilLogic:SetClientTimeScale(0)`)은 바꾸지 않는다. 정지 중에 alert(ZigzagLoop)·sit 같은 아바타 반복 모션이 멈추는지는 미확인이다(지금 sit도 같은 조건).
+
+**효과음 — 회차 D와 나누는 방법**
+
+- 회차 E의 소리는 플레이어 쪽(가드) 소리다. 회차 D의 MonsterSoundData(몬스터 키별 DamagedSound·HitPlayerSound·DieSound)와 패턴 표 AttackSound에는 넣지 않는다. 몬스터 소리는 모두 회차 D에 남긴다.
+- 저장 위치: 플레이어 기본 공격 이펙트 RUID가 AttackSkillData에서 오는 선례가 있다. 그래서 회차 E 확정 때 planner가 AttackSkillData 열 구성을 읽고 정한다(가드 행·열 추가 또는 새 작은 표). 지금은 정하지 않는다. 코드 상수가 아니라 데이터에 두는 쪽이 GameDesign §4.2 "효과음은 데이터" 원칙(몬스터 기준)과 같은 방향이다.
+- 재생: `_SoundService:PlaySound(ruid, 1.0, 결투 플레이어 UserId)`로 서버에서 그 클라이언트에만 보낸다(22.6과 같은 방식). 빈 값이면 재생하지 않는다.
+- 겹침: 회차 D의 HitPlayerSound는 GUARD 결과(가드 성공 40% 피해)에도 난다. 가드 시작음과 시점은 다르지만, 가드 직후 맞으면 두 소리가 잇달아 난다(V11 확인).
+
+### 24.4 대상 파일 (선택에 따라 달라짐)
+
+| 파일 | 변경 | 관련 선택 |
+| --- | --- | --- |
+| ui/CombatScreen.ui | UIBuilder: 버튼 4개의 이미지·Type·색 패치, 아이콘 자식 4개 추가(Highlight 앞 순서), 눌림 방식 | Q1~Q3 |
+| Player/@StateControl/PlayerStateControl.mlua | `SetActionSheet("GUARD", …)` 한 줄 | Q4 |
+| Player/PlayerGuardComponent.mlua | 가드 시작 분기에 PlayEffect·PlaySound·[VRF] | Q5·Q6(가드 시작) |
+| 가드 이펙트·소리 데이터(AttackSkillData 또는 새 표)와 그 로더 | 열·행 추가 | Q5·Q6 |
+| MonsterAttackComponent 또는 플레이어 방어 경로 | 패링 성공 1회 이펙트·순간 모션 | Q4 추가·Q5 패링 성공(회차 D 뒤) |
+
+- §22.7과의 관계: CombatScreen.ui·PlayerStateControl·PlayerGuardComponent는 22.7에 없다. 겹치는 것은 패링 성공 시점을 고를 때의 MonsterAttackComponent뿐이다. 순서가 D → E이므로 회차 E coder는 회차 D 회차 종료 커밋을 기준으로 시작한다.
+- 새 제품 파일은 데이터 표를 새로 만들 때만 생긴다(위치는 FileStructure §4: DataSet/). CombatInputController는 고치지 않는다.
+
+### 24.5 위험
+
+| 위험 | 대응 |
+| --- | --- |
+| 틴트 아이콘 색을 빼먹으면 거의 안 보임 | 아이콘마다 `#FFFFFF`(또는 정한 색)를 명시 |
+| 원형 배경 위 흰 아이콘이 안 보임 | V11에서 색 조정(테마 문자색 계열) |
+| 아이콘 실제 비율이 기록과 다름 | 화면 확인 뒤 비율만 맞춤(크기 계약 안) |
+| 엔티티를 다시 만들어 UUID가 바뀜 | 새로 만들지 않고 패치만 함. read로 UUID 비교 |
+| 서버 PlayEffect가 클라이언트에 안 보임 | 기본 공격 선례로는 보인다. 안 보이면 MonsterStunComponent 방식(@Sync → 클라이언트 재생)으로 바꾼다 |
+| alert가 대기(stand)와 비슷해 가드로 안 보임 | V11. 그러면 이펙트로 보완하거나 다른 안을 고른다 |
+
+### 24.6 사용자 질문 (회차 E 범위 확정용, 메인이 그대로 물을 수 있게)
+
+1. **테마**
+   - (a) simplefantasy(메이플슬래시) — 추천
+   - (b) casualrpg(메이플소울히어로)
+   - (c) 다른 테마
+2. **버튼 아이콘 구성** (← Icon_Arrow_L, → Icon_Arrow_R은 공통)
+   - 안 2: ↑ 칼(Icon_Sword), ↓ 아래 화살표(Icon_Arrow_Down) — 추천. 공격이 칼로 바로 보인다. 테마에 방패가 없어 가드는 방향 화살표로 둔다.
+   - 안 1: 네 방향 모두 화살표(↑ Icon_Arrow_Up)
+   - 안 3: 가드만 테마 밖 방패 아이콘(msw-search, 테마 혼합 예외)
+3. **눌림 표시**
+   - (a) 지금처럼 색 어둡게(ColorTint) — 추천
+   - (b) 테마의 눌림 그림으로 바꾸기(SpriteSwap)
+4. **가드 모션**
+   - (a) alert — 추천, 무기 무관
+   - (b) crouch(엎드림)
+   - (c) sit 유지
+   - 덧붙여 패링 성공 때 한 번 찌르기 모션(stabO1)을 넣을지도 정한다: 넣지 않음 — 추천. 넣으면 한손 무기 장착 여부를 먼저 정해야 한다.
+5. **가드 이펙트와 시점**
+   - (a) 가드 시작 때 1회, 로얄 가드 effect 318a4662 — 추천
+   - (b) 가드 시작 1회, 로얄 가드 강화 a6c32468
+   - (c) 가드 시작 1회, 파워 가드 af4e6abe(작음)
+   - (d) 가드 유지 동안 반복(로얄 가드 강화 pre·loop·end, 위험 큼)
+   - (e) 패링 성공 때 1회 추가(회차 D 뒤, 기존 스파크와 겹침)
+   - (f) 이펙트 없음
+6. **효과음**
+   - 가드 시작 때 고른 스킬의 소리(_audio/Use)를 낸다 — 추천. 다른 안은 소리 없음.
+   - 버튼 누름 소리: 없음 — 추천(전투 입력이 잦고 공격·가드 소리와 겹친다). 다른 안은 UI 기본 클릭음.
+
+### 24.7 완료 기준 (AI, 범위 확정 뒤 다듬음)
+
+- UIBuilder.read 확인:
+  - 버튼 4개의 엔티티 UUID가 그대로다.
+  - ImageRUID·Type·Color가 고른 값이다.
+  - 아이콘 자식이 있고 raycast가 꺼져 있으며, Highlight보다 앞 순서다.
+  - 크기 140·위치가 그대로다. lint를 통과한다.
+- Play 입력 회귀:
+  - 4버튼 각 입력의 [VRF] 입력 로그·상태 전환이 회차 A·V10 입력 계약(출처 합산·반환 잠금)과 같다.
+  - Highlight Enable 토글도 같다.
+- 가드 모션:
+  - 서버 AvatarStateAnimationComponent의 GUARD 값이 고른 값이다.
+  - 가드에 들어가면 아바타 상태가 그 값으로 바뀐다(프로브).
+- 이펙트·소리:
+  - 가드 시작마다 PlayEffect가 1회 나고, [VRF](RUID 앞 8자)로 남는다. 홀드 중이나 연타 때 중복이 없다.
+  - 소리는 `[VRF] sfx`로 남는다.
+- 다른 회귀:
+  - 가드 판정(40%)·Pos2 패링·저스트, 패링 스파크·그로기 별이 바뀌지 않는다.
+  - 팝업 정지·재개 때 가드가 풀리는 동작이 같다.
+  - build 오류 0.
+- 화면 적합성은 AI가 판정하지 않는다(24.8).
+
+### 24.8 사용자 V11 (회차 E 뒤)
+
+- 버튼 모양·아이콘이 메이플 분위기와 맞는지, 눌림 표시, 모바일 터치, 노란 Highlight와 어울리는지.
+- 가드 모습, 이펙트 크기·위치·방향(좌우 반전이 필요한지), 소리 크기, 팝업 정지 중 모습.
+
+### 24.9 상태
+
+| ID | 상태 |
+| --- | --- |
+| CombatCore-UX-01 | ⬜ 후보(2026-11-06 사용자 요청 1, 조작 버튼 메이플 테마). 24.6 Q1~Q3 답 대기, 구현 승인 아님 |
+| CombatCore-UX-02 | ⬜ 후보(2026-11-06 사용자 요청 2, 가드 모션·이펙트·소리). 24.6 Q4~Q6 답 대기, 구현 승인 아님 |
+
+다음 흐름: 메인이 24.6을 사용자에게 묻는다(시점은 메인 판단, 회차 D 진행과 무관) → planner가 범위·대상 파일·완료 기준을 확정 → 회차 D 종료 뒤 사용자 시작 지시 → coder → 같은 버전 tester → reviewer → 사용자 V11(24.8).

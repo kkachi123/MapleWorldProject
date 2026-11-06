@@ -12,7 +12,7 @@
 
 연결(stand·move·jump·hit1·die1, move는 기본값 유지)은 2026-11-05 사용자가 확인했다(Plan §21).
 
-## 사용 예정 (회차 D, Plan §22, 회차 C 사용자 V11 수락 뒤)
+## 사용 예정 (회차 D, Plan §22, 사용자 시작 지시 뒤. 회차 C 사용자 V11 수락은 2026-11-06 충족)
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
@@ -40,3 +40,6 @@
 | mob/6130101.img(머쉬맘) 나머지 | attack1·skill1·attack1 이펙트·효과음 5종은 2026-11-05 사용자 지시로 "사용 예정"(회차 D)으로 옮겼다 |
 | 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
 | 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |
+| 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit), [Plan §24](Plans/2_CombatCore.md) | 배경 Slot_03/Btn_Attack e314c09b9b39486bb1c68d018b2abded(120×120 Sliced, 눌림 4eed2985436c4007890c3314c4d42dc0). 틴트 아이콘: Icon_Sword 3119d2807ea7466e8e9056d0590a35cc, Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54, Icon_Arrow_Down a714a1eaa4aa46098c0c265110ee91c0, Icon_Arrow_L 002ca90cd5794836b1e44da160de287a, Icon_Arrow_R 740aba24726c4c6580cf054b0e1e1fd5. 화면 적합성 미확인. 사용자 선택(Plan §24.6) 대기 |
+| 회차 E가 바꿀 현재 조작 버튼 이미지(지금 사용 중, ui/CombatScreen.ui) | BtnAttack fa75318d112040f9a941da89ad5d2e53, BtnBack b5c63f01645645c095611f64b34078df, BtnGuard 9eff8b12dcde45ca989e9cd5a95e441c, BtnForward 83feab30f7744c629ecc1344e1c4e49b. Highlight 2860136c06ab075439721c027de365af는 유지 예정. 원본이 Docs/UIimg의 free-icon 이미지라는 것은 추정이다 |
+| 회차 E 가드 이펙트·소리 후보(스킬 팩, 2026-11-06 msw-search 재확인) | 로얄 가드 skill/5100.img/skill/51001006: effect 318a46627eca4ae5b9c5d1fb16244e3c(124×147, 13프레임), 소리 605da1fc42f34ef4a1468387004a6223. 로얄 가드 강화 skill/40000.img/skill/400004230: effect a6c32468ecc14665baf9c056cfabae0c(138×156, 8프레임), effect_ple pre 0f93a8d6560547ddab87b8a0eb387e19·loop 12c03f6ac9374b5a91d993f09384c113·end f75c5a210fd24430b9e4a1122b6f82c8, 소리 6416b7d7c92148bfa05835e6b7aee9b0. 파워 가드 skill/800033.img/skill/80003317: effect af4e6abe766e4970a0e90aca58c6cc1c(64×85, 12프레임), effect0 a15d331295524094a9b1096df300022c, affected 1838b57cb0314900bc00b690580f8f36. 모습·크기 미확인 |
