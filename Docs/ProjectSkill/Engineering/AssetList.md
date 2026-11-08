@@ -45,7 +45,7 @@
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
-| 일반 몬스터 주황버섯 모델(model://orangemushroom, 회차 C 전에는 model://castleenemy로 머쉬맘 대신 쓰임) | 주황버섯 클립(팩은 미확인. "주황버섯" 팩 검색 결과 mob/9010026.img·mob/1210102.img·mob/2300102.img의 RUID와 다름) | stand → 96e955c1bf27415e84f96deea200a8f1(64×58), move → 6ad988b3ef6d4ceab3a504d300755a5b, jump → 94bbe2a7eb9c4f9caa10dd9de44ee860, hit → aec9504d5dc24aceb5646b79d30abad4, die → 65a2bfb039614f2e9e4ccc354340153d | 임시(일반 몬스터용 보관) | 6단계에서 주황버섯 공격 구성을 사용자가 정할 때 자원도 확정 |
+| 일반 몬스터 주황버섯 모델(model://orangemushroom, 파일 `RootDesk/MyDesk/Models/Monsters/OrangeMushroom.model`·Name OrangeMushroom, 회차 C2 2026-11-08 수락. 회차 C 전에는 model://castleenemy로 머쉬맘 대신 쓰임) | 주황버섯 클립(팩은 미확인. "주황버섯" 팩 검색 결과 mob/9010026.img·mob/1210102.img·mob/2300102.img의 RUID와 다름) | stand → 96e955c1bf27415e84f96deea200a8f1(64×58), move → 6ad988b3ef6d4ceab3a504d300755a5b, jump → 94bbe2a7eb9c4f9caa10dd9de44ee860, hit → aec9504d5dc24aceb5646b79d30abad4, die → 65a2bfb039614f2e9e4ccc354340153d | 임시(일반 몬스터용 보관) | 6단계에서 주황버섯 공격 구성을 사용자가 정할 때 자원도 확정 |
 
 ## 후보 (쓰지 않음, 기록만)
 
