@@ -7,7 +7,9 @@
 
 ## 현재 재개 지점
 
-2026-11-08(회차 C2 사용자 V11 수락 뒤) 기준: [Plan §23](../Plans/2_CombatCore.md) 회차 C2(CombatCore-MM-12)는 사용자 V11 수락으로 완료했다(회차 종료 커밋 7a796aa). 사용자는 Plan §23.4 두 항목(Maker 작업 공간에 주황버섯 모델이 OrangeMushroom 하나로만 보임, 플레이 화면이 회차 C와 같음)을 확인했다. 파일 이름과 Name은 사용자가 Maker에서 바꿨고 coder는 모델을 다시 쓰지 않았다. 근거는 아래 C2 coder 절, QA 기록 첫 절(QA11), 리뷰 기록 첫 절이다. 현재 AI 담당 작업은 없다. 다음은 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07~11, 기준 7a796aa, 재스폰 프레임 범위 확인 §22.15 포함)이며 **사용자 시작 지시를 기다린다**. 그 뒤 회차 E([Plan §24](../Plans/2_CombatCore.md))도 사용자 시작 지시 뒤다. 회차 D coder는 이 기록 맨 아래에 새 개발절을 만든다. 범위 밖 남은 사항: `.maplestory-skill-maker-ledger.md`의 낡은 castleenemy 문구(원장 규칙에 정리 조항 없음, 정리 시점은 사용자 결정, Plan §23.6). 남은 NOT_RUN은 QA11 기록 그대로이며 PASS로 세지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
+2026-11-08 회차 D 시작: 사용자 "회차 D 시작"(기준 7a796aa). planner가 [Plan §22](../Plans/2_CombatCore.md) 범위만 확인했다(22.14 "2026-11-08 회차 D 시작 범위 확인", 22.7 OrangeMushroomAttack 명시, 22.15 재스폰 프레임 범위 처리 원칙, 선택 항목 `_T.resolveIndex` 제외 → 22.13 부채). 규칙·수치 변경 없음. ~~시작 전 확인 1건 D-Q1(MonsterSoundData 생성 방법)이 메인에 있다.~~ → D-Q1 사용자 답 "AI 수동 작성"(Plan 22.5·22.9·22.10 반영). 회차 D coder는 이 기록 맨 아래에 새 개발절을 만든다.
+
+이전 재개 지점 — 2026-11-08(회차 C2 사용자 V11 수락 뒤) 기준: [Plan §23](../Plans/2_CombatCore.md) 회차 C2(CombatCore-MM-12)는 사용자 V11 수락으로 완료했다(회차 종료 커밋 7a796aa). 사용자는 Plan §23.4 두 항목(Maker 작업 공간에 주황버섯 모델이 OrangeMushroom 하나로만 보임, 플레이 화면이 회차 C와 같음)을 확인했다. 파일 이름과 Name은 사용자가 Maker에서 바꿨고 coder는 모델을 다시 쓰지 않았다. 근거는 아래 C2 coder 절, QA 기록 첫 절(QA11), 리뷰 기록 첫 절이다. 현재 AI 담당 작업은 없다. 다음은 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07~11, 기준 7a796aa, 재스폰 프레임 범위 확인 §22.15 포함)이며 **사용자 시작 지시를 기다린다**. 그 뒤 회차 E([Plan §24](../Plans/2_CombatCore.md))도 사용자 시작 지시 뒤다. 회차 D coder는 이 기록 맨 아래에 새 개발절을 만든다. 범위 밖 남은 사항: `.maplestory-skill-maker-ledger.md`의 낡은 castleenemy 문구(원장 규칙에 정리 조항 없음, 정리 시점은 사용자 결정, Plan §23.6). 남은 NOT_RUN은 QA11 기록 그대로이며 PASS로 세지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
 
 이전 재개 지점(2026-11-06, 회차 C 사용자 V11 수락 뒤) 기준: [Plan §21](../Plans/2_CombatCore.md) 회차 C(CombatCore-MM-01~06·V11-F15)는 사용자 V11 수락으로 완료했다(회차 종료 커밋 b93e2ac). 리뷰 기록 첫 절의 "남은 사용자 V11" 1~6은 확인, 8은 이상 없음(사운드 실청취는 회차 D)이다. 7은 영어 이름 정리로 답해 [Plan §23](../Plans/2_CombatCore.md) 회차 C2로 넘겼다. 키 orangemushroom은 그대로 두고 파일 이름과 모델 Name만 OrangeMushroom으로 바꾼다. 주황버섯 MonsterData·MonsterStatData·패턴 행은 6단계다(사용자 "6단계로 미루기"). 현재 AI 담당 작업은 없다. 다음은 사용자 시작 지시 뒤 회차 C2 → 회차 D([Plan §22](../Plans/2_CombatCore.md), 재스폰 프레임 범위 확인 §22.15 포함) → 회차 E([Plan §24](../Plans/2_CombatCore.md))다. 회차 E는 사용자 선택(§24.6) 전에는 구현 범위가 정해지지 않는다. 회차 C2 coder는 이 기록 맨 아래에 새 개발절을 만든다.
 
@@ -2229,3 +2231,79 @@
 ### 사용 종료·다음 담당
 - 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. Maker 사용 종료. commit·push는 하지 않았다.
 - tester가 확인할 것(Plan §23.3 같은 버전 독립 재확인): Glob 1, ModelBuilder.read 2(기준 판은 `git show 105e585:`로 임시 파일에 꺼내 비교), refresh 뒤 build 로그 3, 부팅 머쉬맘 스폰·피격 규칙 4(회차 C QA10의 규칙 6 접근/복귀/걸친 공격 회귀를 이번 버전으로 포함할지는 메인 판단), 직접 스폰 5(시험 개체 반드시 Destroy), Grep 6, git 7. 55경로 Bundle은 새 경로 기준으로 재계산해 위 `8ef9c6f1…e080`과 대조. maker_clear_logs는 호출하지 말 것.
+
+## 2026-11-08 coder 회차 D 구현·기본 검증 인계 (CombatCore-MM-07~11) — 22.10 중단 (구현 전)
+
+### 범위·연결
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §22 CombatCore-MM-07~11이다. **제품 파일은 하나도 바꾸지 않았다**(수정 전 중단).
+- 기준: HEAD c595e0f(= 제품 파일은 회차 종료 커밋 7a796aa와 같음, 직전 커밋은 문서만 변경). 같은 계산법·같은 확장자 집합 manifest로 작업 트리 55경로 Bundle SHA-256 **8ef9c6f1c60d73b7b74f5febd09932abfe6ba5866bfc577cb226c82d5ed2e080**(회차 C2 값과 같음). 시작 전·중단 뒤 두 번 계산해 모두 같다(Play가 제품 파일을 바꾸지 않음).
+- 시작 Maker: maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186. TileMapMode 0. maker_clear_logs는 호출하지 않았다.
+
+### Plan 22.9 순서 2 — 클립 길이·피벗 상승량 측정 (Maker Play 1회, server_main 프로브, 읽기만)
+| 클립 | 프레임 | 프레임 Delay(초) | Delay 합 | 클립 PlayRate | 피벗 y(px, 프레임 0→끝) |
+| --- | --- | --- | --- | --- | --- |
+| attack1 90c5456e… | 5 | 0.80 / 0.20 / 0.05 / 0.05 / 0.75 | **1.85** | 1.0 | 0 / -88 / -70 / -8 / 0 |
+| skill1 b9345875… | 5 | 0.80 / 0.20 / 0.05 / 0.05 / 0.75 | **1.85** | 1.0 | 0 / -88 / -70 / -8 / 0 (attack1과 같은 값) |
+| jump 5ecbcc40…(참고) | 1 | 0.12 | 0.12 | 1.0 | 0 |
+| stand 86015373…(참고) | 1 | 0.12 | 0.12 | 1.0 | 0 |
+| 이펙트 05113e9d… | 15 | 0.1×6, 0.2, 0.3, 0.1×5, 0.2, 0.05 | **1.85** | 1.0 | 프레임별 -21~+1(px), 크기 w 32~254·h 1~79(px), ppu 100 |
+- 렌더러 PlayRate 기본 1.0, 접근 점프 JumpDuration 0.5. 클립 길이(Delay 합 ÷ PlayRate)는 attack1·skill1 모두 **1.85초**다.
+- 피벗 상승량: 프레임 1에서 최대 0.88 단위(Plan 22.10의 "최대 약 0.88"과 일치). 판단은 하지 않고 수치만 적는다(JumpHeight 0.8과 합치면 최대 1.68이 될 수 있음, 사용자 V11).
+- 이펙트: 충격파 프레임(f8~f13)은 모션 시작 뒤 Delay 누적 **1.1초**에 시작해 1.8초에 끝난다. 판정(접근 점프 끝, 모션 시작 뒤 TelegraphLeadSec 0.5초)과 충격파 시작은 **약 0.6초** 어긋난다(충격파가 판정보다 늦음). 충격파 폭 최대 254px = 2.54 단위, 3칸 범위 약 4.5 단위. 서버 PlayEffect의 화면 표시 확인은 구현 전이라 못 했다.
+
+### 22.15 수정 전 기준선 (구현 전, 같은 Play)
+- 부팅 첫 스폰 개체(서버): StartFrameIndex-EndFrameIndex = **0-2147483647**, SpriteRUID = stand(86015373…).
+- `MonsterManager:DoSpawn()` 재스폰 개체(서버): 직후 **0-0**, 1초 뒤에도 **0-0** — QA10 관찰이 재현됐다.
+- 같은 재스폰 개체의 클라이언트: 0-2147483647(둘 다 이상 없음).
+- 다음 단계(범위 지정 + 같은 RUID 재지정 재시작 시험)는 구현 뒤 측정 항목이라 하지 못했다.
+
+### 중단 사유 (Plan 22.10 첫 항목)
+- 클립 길이 **1.85초 ≥ 1.0초**: "1.0초 이상(절반 넘게 잘림)" 조건에 해당한다. 접근 점프 0.5초 동안 attack1·skill1은 첫 프레임(Delay 0.8초, 정지 자세, 피벗 0)에서 끝나고 나머지 4프레임(기 모으기·도약·착지)은 보이지 않는다. 대안 구현은 하지 않고 멈췄다.
+- 이 중단 뒤 한 일: Stop → map01 편집 모드 확인. 코드·모델·CSV·.userdataset 변경 0, Refresh 0, commit·push 없음.
+- 메인에 돌려준 선택지는 반환 보고에 적었다.
+
+### 2026-11-08 coder 회차 D 재개 (사용자 D-Q2 "재생 2.2배로 판정에 맞춤") — 구현·기본 검증, 22.10 정렬 기준 일부 초과로 판단 대기
+
+#### 범위·기준
+- 기준 HEAD c595e0f(제품 파일은 7a796aa와 같음). 재개 때 55경로 Bundle `8ef9c6f1…e080` 재확인(변경 없음). maker_clear_logs는 호출하지 않았다.
+- D-Q1(MonsterSoundData 수동 작성)과 §22.15 처리 원칙(서버 클립 지정 때 프레임 범위 전체로 맞춘 뒤 SpriteRUID) 그대로 구현했다. 2단계 측정은 다시 하지 않았다.
+
+#### 변경 파일
+| 파일 | 변경 |
+| --- | --- |
+| Models/Monsters/Mushmom.model | ActionSheet에 attack1(90c5456e…)·skill1(b9345875…) 추가(ModelBuilder). 다른 값은 snapshot 비교로 변화 0. 빌더가 줄바꿈을 LF·숫자를 `6`처럼 다시 써서 git diff가 파일 전체로 보인다(`--ignore-cr-at-eol` 기준 의미 변경은 ActionSheet 2키) |
+| @Assist/DataSet/MonsterAttackPatternData.csv | Weight 4/4/5/3/4, 열 MotionClip·AttackSound·EffectClip·MotionPlayRate, parry.guard 행(2.2/2.2/1/1/2.2) |
+| DataSet/MonsterSoundData.userdataset·.csv (새, 수동 작성) + DataSet.directory(Maker 생성) | mushmom 행. Refresh 뒤 인식 확인: 로드 [VRF] `monsterSounds=1`, `MonsterSoundData id=mushmom damaged=c611ae50 hitplayer=7c8e5f1e die=d48ec1cc` |
+| Combat/CombatRuleCatalog.mlua | 새 열 검증(MotionClip 소문자 키·die 금지, RUID 32자 소문자 16진수, MotionPlayRate 양의 유한수·빈 값 1), `FormatWeights`·`ParseOptionalRuid`·`ValidateSoundRows`, 사운드 표 로드·거부, `GetMonsterSounds`, `PlayMonsterSound`, 로드 [VRF](행별 Weight·비율%, 행별 clip/rate/sound/effect, 사운드 행) |
+| Managers/MonsterManager.mlua | 스폰 전 사운드 행 확인, 스폰 뒤 모든 MotionClip 키가 ActionSheet에 있는지 확인(없으면 파괴·거부·경고 1회) |
+| Monster/MonsterAttackMotion.mlua | `SetMotionClip(key, rate)`(범위 0~끝으로 맞춘 뒤 SpriteRUID, 배율 기록, `ApplyClipRate`), `SetVisualClip`은 배율 1로 위임, `ApplyClipRate`(PlayRate = 클립 배율 × ActionRate, 사망 표시 뒤에는 쓰지 않음), `ResetClipRate`, `PlayAttackEffect`, `PlayDieOnce`가 PlayRate 1 명시, `PerformAttackMotion` 시그니처에 클립·배율·착지 x 추가 |
+| Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 접근은 패턴 클립·배율, 복귀는 jump·배율 1, 착지 x는 서버가 넘긴 값, `CancelMotion`이 배율 1로 되돌림. 이름·폴더·기존 주석 줄 유지 |
+| Monster/MonsterAttackComponent.mlua | 스냅샷에 `area.landingX`(1·2칸 = 영역 중앙 그대로, 앵커 1~3 전부 = Pos2 앵커 x), 공격음(PrepareAttack 성공 직후), 플레이어 피격음(nativeHit이고 HIT·GUARD·UNGUARDABLE) |
+| Monster/@StateControl/Monster_Attack.mlua | 패턴 클립·배율·착지 x 전달, 모션 시작과 함께 PlayAttackEffect |
+| Monster/MonsterHealthComponent.mlua | 피격음(공격자 PlayerCombatComponent의 `_T.attackId`가 바뀐 첫 HitEvent에서 한 번), 사망음(ApplyDamage에서 사망 확정 때 한 번, 대상은 MonsterManager.CurrentPlayer) |
+| Monster/@StateControl/MonsterStateControl.mlua (22.7 조건부) | **고쳤다.** 이유: 슬로우가 시작할 때 렌더러 PlayRate를 `_T.savedPlayRate`에 저장하고 끝날 때 복원하는 방식은 접근 배율 2.2를 저장값에 섞어 종료 뒤 다른 클립(die·stand)에 남기거나 접근 도중 1로 되돌린다. 저장·복원 3곳(ApplySlow·ClearCombatEffects·OnUpdate 만료)을 `_T.slowPlayRateOn` 플래그 + `ApplyMotionClipRate()`(모션 쪽 `ApplyClipRate` 호출)로 바꿨다. 슬로우 시간·배율·ActionRate·액션 시계·공격 대기 규칙·수치는 그대로 |
+- 재생 배율 구현 방식: 렌더러 PlayRate는 항상 `그 클립 배율(_T.clipRate) × 현재 ActionRate`로 계산한다. 클립을 지정할 때(`SetMotionClip`), 슬로우 시작·종료 때, 접근 취소 때 같은 함수를 부른다.
+
+#### 버전·바이트 지문
+- 작업 트리 Bundle SHA-256: 기존 55경로 manifest 방식에 새 DataSet 2파일을 더한 **57경로 `a7bc3d7395d636863c92ef5e6af853a12003ba4cd34a925eb9c534c36b32539d`**(refresh 직후·Play 뒤 Stop 뒤 같음). 기준 55경로 값은 `8ef9c6f1…e080`.
+- 변경 경로 SHA-256: Catalog 4866f69d…0aaf · MonsterManager 73882929…75f3 · Mushmom.model 5704ffa3…11ad · MonsterStateControl 4db78beb…c146 · Monster_Attack b7c6ec30…7169 · MonsterAttackComponent 4ca00fd6…60e6e0 · MonsterAttackMotion f6cb5af8…2cce · MonsterHealth 284f6d45…b3ce · OrangeMushroomAttack af21c7ef…b738 · PatternData.csv d1692795…d655 · (새) MonsterSoundData.csv 89883a3f…347f · (새) .userdataset 22a4e314…2412.
+
+#### 기본 검증 (Maker Play 1회 + 저장 로그, 시험값은 Play 안에서만)
+- 빌드: Refresh 뒤 build 로그 90건 전부 Info(LIA 노이즈), 오류 0·경고 0. 새 .mlua 없음(.codeblock 새로 생기지 않음).
+- 로드 [VRF]: 패턴 5행 `total=20 parry.left=4(20.0%) parry.right=4(20.0%) parry.any=5(25.0%) special.random=3(15.0%) parry.guard=4(20.0%)`, 행별 `clip/rate/sound/effect`, `MonsterSoundData` 1행. PASS.
+- 패턴별 결정적 실행(패턴 목록을 한 행으로 교체): attack1(parry.left·right)·skill1(parry.guard)·jump(parry.any·special.random) 클립 PASS. 착지 x: parry.left 0.750(= 영역 중앙, 회차 C와 같은 식)·parry.right -0.750·parry.guard **0.000 = Pos2**·parry.any 0.000·special.random -1.500. 공격음 [VRF]: 2칸 f135fc39·3칸 5da7bb48·1칸 없음. 이펙트 호출은 parry.guard만(x=0.000 y=0.581 playRate=2.2). PASS.
+- 판정(parry.guard, 실제 DownArrow·LeftArrow 홀드): 판정 창 안 가드(홀드가 이른 가드) → GUARD rate 0.4(hitplayer 음 1줄), 패링 창을 30초로 넓힌 시험 → PARRY rate 0·그로기·hitplayer 0줄, LeftArrow(Pos2 시작 회피) + 저스트 창 30초 시험 → JUST·슬로우·hitplayer 0줄, 입력 없음/이동 → HIT rate 1(hitplayer 1줄). 시험 창 값은 모두 원래 0.2로 되돌렸다. PASS(프로브·창 조정 근거).
+- 사운드: 플레이어 UpArrow 1회(10타)에 `sfx kind=damaged` 1줄, 사망 때 `kind=die` 1줄, 자연 공격 HIT에서 `kind=hitplayer`. PASS.
+- 22.15 재스폰: 부팅 첫 스폰 서버 0-2147483647, `DoSpawn` 재스폰 서버 직후 **0-0**(기준선 재현). 재스폰 개체에서 attack1·skill1 접근 실행: 서버 범위 0-2147483647로 맞춰지고 클라이언트 프레임 이벤트가 f0→f1→f2→f3 진행(f4는 stand 쓰기와 겹쳐 있기도 없기도 함, 착지 시점 f4 시작). 첫 스폰 개체도 같음. 같은 RUID 재지정 때 재시작 여부는 **미실시**(로그 버퍼 가득, 아래).
+- 재생 배율·정렬(22.8 자동 9번): 슬로우 없음 attack1·skill1: 서버 PlayRate 2.2, 클라이언트 f0→f4 시작 **0.497~0.500초**, 판정 0.517~0.534초(샘플 0.017초 간격) → 차이 0.02~0.04초 PASS. 이펙트 충격파(f8)는 PlayRate 2.2로 계산상 1.1÷2.2 = 0.5초(클라이언트 측정 불가). 1칸 parry.any는 PlayRate 1. 착지 뒤 stand PlayRate 1. 슬로우 계속(접근 전 ApplySlow 3초×0.5): 접근 PlayRate 1.1, f3 0.973·계산 f4 1.0초, 판정 1.022초 → 차이 0.02초 PASS. 슬로우 종료 뒤 stand PlayRate 1 PASS. die는 슬로우 중 치명타에서도 PlayRate 1이고 마지막 프레임(5)에 정지하며 슬로우 만료 뒤에도 유지(F12 회귀 PASS).
+- **22.10 정렬 기준 초과(슬로우 변화가 접근 도중에 생기는 경우)**: 렌더러 PlayRate를 클립 도중 바꾸면 클라이언트 애니메이션이 프레임 0부터 다시 시작한다(PlayRate 변화 때 `idx=0` 이벤트가 다시 옴, 슬로우 시험 S1·S2). S1(슬로우 0.3초 뒤 종료): PlayRate 1.1→2.2, 재시작 0.291초, 판정 0.660초, 재시작 기준 f4 시작은 약 0.77초로 판정보다 약 0.11초 늦음. S2(접근 0.2초에 슬로우 시작, 1.5초): 재시작 0.221초, 판정 0.816초, f1에 도달하지 못한 채 착지(f4 시작 계산 약 1.22초, 판정보다 약 0.4초 늦음). 두 경우 모두 슬로우 종료 뒤 렌더러 PlayRate는 "클립 배율 × ActionRate"로 정확히 돌아왔다(접근 중 2.2, 복귀·stand 0.5→1). 이펙트는 재생 시작 때 PlayRate 고정이라 접근 중 슬로우 변화는 따라가지 않는다(22.6 기존 부채).
+  - 자연 흐름 참고: 슬로우 시작은 판정 순간(저스트 성공)이므로 접근 도중에 시작하지 않는다. 지금 SlowDurationSec 2.0·AttackInterval 3.0(액션 시계)에서는 슬로우가 다음 접근 전에 끝난다. 접근 중에 시작·종료가 생기는 것은 값을 크게 바꾸거나 시험 프로브로 만들 때만이다.
+- 실패 동작(프로브): 패턴 표 RUID 형식 오류·대문자 RUID·짧은 RUID → 카탈로그 거부 + 경고 1회, MotionClip 빈 값·`die`·대문자 → 거부 + 경고 1회, MotionPlayRate 0·-1·abc·1e999 → 거부 + 경고 1회, Weight 0·-2·abc → 거부 + 경고, Weight 1/1/1/1/1 → 비율 20%씩, 빈 MotionPlayRate는 1, 사운드 표 형식 오류·열 누락 → 표 거부. 스폰: 모델 ActionSheet에 없는 MotionClip → 스폰 거부 + 엔티티 파괴 + 경고 1회, 사운드 행 없음·사운드 표 무효 → 스폰 거부 + 경고 1회(같은 원인 반복은 경고 없음), 모두 현재 상대 유지. PASS.
+- 서버 PlayEffect 화면 표시: 같은 이펙트를 서버에서 반복 재생하고 스크린샷으로 확인했다(스케일 3, 클라이언트에서 옅은 노란색 별 모양이 보임). 서버 호출이 클라이언트에 보인다 → @Sync 대체 경로 불필요. 이펙트가 옅고 얇다.
+
+#### 미실시·미확인 (PASS로 세지 않음)
+- **로그 버퍼 가득**: Maker 로그가 764건(사용자 16:51 세션 94건 포함, 357k자)에서 더 늘지 않아 17:29:10 이후 로그가 기록되지 않았다. 그 뒤 계획한 아래는 못 했다: 통계 프로브(SelectPattern 2만 회 비율 ±1%p)와 누적 경계 단위 프로브(스크립트는 실행됐으나 결과 로그 없음, 코드 `SelectPattern`은 이번에 바꾸지 않음), 같은 RUID 재지정 시 재시작 여부, 이펙트 크기·높이 두 배 판단(수치만: 피벗 상승 최대 0.88, 이펙트 충격파 폭 최대 2.54).
+- 사람 손 타이밍, 모바일, 사용자 V11(22.8) 전부.
+
+#### 사용 종료
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.

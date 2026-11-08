@@ -1404,13 +1404,14 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 ### 22.4 패턴 표 설계 (MonsterAttackPatternData)
 
-새 열 3개를 Weight·AreaTarget 뒤에 붙인다. 기존 열 순서·뜻은 바꾸지 않는다.
+새 열 ~~3개~~ → 4개(2026-11-08 D-Q2로 `MotionPlayRate` 추가)를 Weight·AreaTarget 뒤에 붙인다. 기존 열 순서·뜻은 바꾸지 않는다.
 
 | 열 | 형식 | 빈 값 | 검증 실패 |
 | --- | --- | --- | --- |
 | `MotionClip` | ActionSheet 키(소문자 문자열) | 허용 안 함 | 카탈로그 단계: 빈 값·`die`면 카탈로그 전체 거부 + 경고 1회. 스폰 단계: 스폰할 모델 ActionSheet에 그 키가 없으면 MonsterManager가 스폰을 거부(이미 만든 엔티티는 파괴) + 경고 1회 |
 | `AttackSound` | 사운드 RUID(소문자 16진수 32자) | 무음 | 형식이 틀리면 카탈로그 전체 거부 + 경고 1회 |
 | `EffectClip` | 애니메이션 클립 RUID(소문자 16진수 32자) | 이펙트 없음 | 형식이 틀리면 카탈로그 전체 거부 + 경고 1회 |
+| `MotionPlayRate`(2026-11-08 D-Q2로 추가, EffectClip 뒤) | 양의 유한수. 그 행의 MotionClip(접근 클립)과 EffectClip에 같이 곱하는 재생 배율 | 1 | 0 이하·숫자 아님·무한·NaN이면 카탈로그 전체 거부 + 경고 1회(Weight와 같은 처리) |
 
 - 열이 없으면 지금 ReadRows 규칙대로 카탈로그 전체를 거부한다. 대체 값으로 돌지 않는다(폴백 없음).
 - 빈 값 = 없음/무음이다. 능력치 표의 "빈 값 = default 행 값" 규칙과 다르다. 패턴 표에는 default 행이 없다는 점을 로더 주석과 [VRF]에 남긴다.
@@ -1426,6 +1427,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 | special.random | ANY | SPECIAL | 0 | 0 | 3 | RANDOM | jump | (빈 값) | (빈 값) |
 | parry.guard | GUARD | PARRY | 1 | 3 | 4 | FIXED | skill1 | 5da7bb48092947f395e9f76f601323ca | 05113e9dc86448cb8581731824106d75 |
 
+- 2026-11-08 D-Q2 추가 열 `MotionPlayRate`(위 표 뒤에 붙음): parry.left **2.2**, parry.right **2.2**, parry.any **1**, special.random **1**, parry.guard **2.2**. 2.2 = 클립 착지(f3 끝)·이펙트 충격파 시작(f8) 1.1초 ÷ 판정 0.5초(coder 측정, WorkRecord "2026-11-08 coder 회차 D … 22.10 중단" 절). 1칸 행은 jump(1프레임)라 1이다. 사용자는 Weight처럼 CSV에서 이 값을 고쳐 V11에서 조정할 수 있다(Refresh → Play).
 - 표에 없는 열(AreaPaddingX 0.5, AreaHeight 1, AreaOffsetY 0.4, TelegraphLeadSec 0.5)은 모든 행이 기존 값 그대로다.
 - `parry.guard`는 FIXED이고 ANY가 아니므로 기존 "ANY ⇔ FIXED 아님" 검증을 통과한다.
 
@@ -1447,7 +1449,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 | `HitPlayerSound` | 이 몬스터 공격이 플레이어에 맞을 때 RUID | 무음 |
 | `DieSound` | 사망음 RUID | 무음 |
 
-- 위치: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset` + `.csv`(파일 구조 기준 DataSet/, 이름 규칙 `{대상}Data`). serveronly true. .userdataset은 Maker UI로 만드는 것을 우선한다(dataset 참조). Maker 생성이 막히면 coder는 멈추고 메인에 돌려준다.
+- 위치: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset` + `.csv`(파일 구조 기준 DataSet/, 이름 규칙 `{대상}Data`). serveronly true. ~~.userdataset은 Maker UI로 만드는 것을 우선한다(dataset 참조). Maker 생성이 막히면 coder는 멈추고 메인에 돌려준다.~~ → 2026-11-08 사용자 D-Q1 답 "AI 수동 작성": coder가 회차 B처럼 dataset 참조 "Manual creation" 절차로 기존 .userdataset 래퍼 형식(CoreVersion은 Environment/config 값)과 같은 이름 .csv를 작성하고, Refresh 뒤 로드 [VRF]로 인식을 확인한다. 인식에 실패할 때만 멈추고 메인에 돌려준다.
 - 로더: CombatRuleCatalog가 함께 읽고 검증한다(새 Catalog 파일을 만들지 않는다). 열 없음·RUID 형식 오류 → 표 전체 거부 + 경고 1회.
 - default 행이 없다. 스폰할 몬스터 키의 행이 없으면 MonsterManager가 스폰을 거부하고 경고 1회(능력치 행 없음과 같은 처리). 무음을 원하면 행을 두고 칸을 비운다.
 - 머쉬맘 행: `mushmom, c611ae50c5d84814a6d2ccfad8a472c5, 7c8e5f1ef0b549c59aec820909458d4f, d48ec1cc57a247028f390041fc89c97f`.
@@ -1460,8 +1462,24 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 - 모델 ActionSheet에 `attack1`(90c5456e2a8a45478df02500797a9afd)·`skill1`(b9345875a8134c7c9a1b6aed8551d808)을 ModelBuilder로 추가한다. 키 `attack`은 쓰지 않는다. `StateComponent.IsLegacy` false라 `attack` 키는 ATTACK 상태 진입 때 자동 재생되어 지금 수동 클립 교체와 충돌하기 때문이다.
 - Monster_Attack은 선택된 패턴의 MotionClip과 착지 x를 모션에 넘긴다(정확한 시그니처는 coder가 정한다).
 - 접근 점프는 jump 대신 MotionClip을 재생한다 → 착지에서 stand → 판정 → 복귀 점프는 jump(지금과 같음). 1칸 행은 MotionClip이 jump라 지금 동작과 같아야 한다.
-- 점프 높이 0.8·시간 0.5·궤적 식은 바꾸지 않는다. 슬로우 때 PlayRate·ActionRate 연동도 지금 코드 그대로 클립에 적용된다.
-- coder는 Maker에서 attack1·skill1 클립 길이(프레임 Delay 합 ÷ PlayRate)와 피벗 상승량을 확인해 WorkRecord에 적는다.
+- 점프 높이 0.8·시간 0.5·궤적 식은 바꾸지 않는다. ~~슬로우 때 PlayRate·ActionRate 연동도 지금 코드 그대로 클립에 적용된다.~~ → 2026-11-08 D-Q2: 아래 "재생 배율" 계약으로 대체.
+- coder는 Maker에서 attack1·skill1 클립 길이(프레임 Delay 합 ÷ PlayRate)와 피벗 상승량을 확인해 WorkRecord에 적는다. (2026-11-08 측정 완료: 각 5프레임 1.85초, 피벗 최대 0.88 단위, 클립 착지 f3 끝 1.1초.)
+
+**재생 배율 (2026-11-08 사용자 D-Q2 "재생 2.2배로 판정에 맞춤")**
+
+- 근거: attack1·skill1은 착지(f3 끝)가 1.1초, 3칸 이펙트 충격파 시작(f8)이 1.1초인데 판정은 접근 시작 뒤 0.5초다. 사용자는 클립과 이펙트를 약 2.2배로 재생해 클립 착지·충격파 시작을 판정 시각에 맞추기로 했다. 전체 1.85초를 0.5초에 넣는 ×3.7안은 착지가 약 0.3초로 판정보다 일러 채택하지 않았다.
+- 값의 위치: 코드 상수가 아니라 패턴 표 `MotionPlayRate` 열(22.4, 빈 값 = 1)이다. 22.1 "모션 키·사운드 RUID는 데이터에서 온다"와 같은 원칙이고, 사용자가 V11에서 CSV로 조정한다. 새 DataSet·새 파일은 만들지 않는다.
+- 적용 대상: 접근 클립(MotionClip)과 그 행의 EffectClip에 같은 값을 쓴다. 복귀 점프 jump·stand·hit·die에는 쓰지 않는다(배율 1).
+- 슬로우 연동: 실제 배율 = `MotionPlayRate × 현재 ActionRate`. 접근 시간은 액션 시계(ActionRate)로 늘어나므로, 클립도 같은 곱을 써야 슬로우 중에도 착지·판정 정렬이 유지된다(실시간 착지 1.1 ÷ (2.2 × AR) = 0.5 ÷ AR).
+  - 렌더러: 접근 클립을 지정할 때 PlayRate = MotionPlayRate × ActionRate. 다른 클립으로 바뀔 때는 1 × ActionRate로 돌아간다.
+  - 이펙트: 22.6 이펙트의 "옵션 PlayRate = 현재 ActionRate"를 "MotionPlayRate × 현재 ActionRate"로 바꾼다. 재생 중 슬로우 변화는 따라가지 않는다(기존 이펙트 부채와 같은 성격, 22.13).
+  - 지켜야 할 경계: 지금 MonsterStateControl의 슬로우는 시작할 때 렌더러 PlayRate를 "기본 배율"로 저장하고 끝날 때 그 값으로 되돌린다(소스 읽기 확인). 모션 배율이 이 저장값에 섞이면 슬로우 종료가 다른 클립에 2.2를 남기거나(예: die가 2.2배로 재생), 접근 도중 1로 되돌린다. 그래서 모션 배율은 슬로우의 저장·복원에 섞이면 안 된다. 클립이 바뀐 뒤에도, 슬로우가 시작·종료된 뒤에도 렌더러 PlayRate는 항상 "그 클립의 배율 × 현재 ActionRate"여야 한다. 구현 방식은 coder가 정해 기록한다.
+- 착지(판정) 뒤 처리: **지금 계약 그대로 착지 때 stand로 바꾼다.** 2.2배면 착지 시점에 클립은 f4(마무리 자세, 0.75 ÷ 2.2 ≈ 0.34초)를 막 시작하지만 보이지 않고 잘린다. 근거:
+  - 승인된 시각(판정, 복귀 점프 시작)과 22.6의 "착지에서 stand" 계약을 바꾸지 않는다.
+  - f4를 마저 보이려면 착지 뒤 지연 stand 쓰기가 새로 필요하다. 이 늦은 쓰기는 HIT·그로기·die와 겹칠 위험이 있다(REV-F02·F08과 같은 종류).
+  - 충돌 순간 자세(f2·f3)는 판정 직전에 보인다.
+  - f4가 잘려 어색한지는 사용자 V11 1번에서 본다. f4 표시는 22.13 부채로 둔다.
+- 높이 겹침: 클립 자체 도약(최대 0.88 단위, 2.2배면 접근 시작 뒤 약 0.36~0.50초 구간)과 JumpHeight 0.8의 겹침은 22.10대로 수치만 기록하고 V11에서 본다(바꾸지 않음).
 
 **착지 (MM-08)**
 
@@ -1470,7 +1488,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 **이펙트 (MM-10)**
 
-- 공격 모션(접근 점프, PerformAttackMotion) 시작 시점에 EffectClip이 비어 있지 않으면 서버에서 `_EffectService:PlayEffect`를 1회 호출한다(2026-11-05 사용자 확정 "모션 시작과 함께". 이펙트 15프레임이 기 모으기 0~6 → 충격파 8~13 구조라 판정 시점 시작이면 충격파가 판정보다 늦기 때문, 메이플 info/effect 관례). coder는 이펙트·skill1 클립 길이와 충격파 프레임이 착지(판정) 시각과 몇 초 어긋나는지 기록하고, 정렬 조정(지연 등)은 하지 않고 V11에 넘긴다. 위치는 착지 x(3칸은 Pos2)·몬스터 지면 y, 회전 0, 배율 1, 반복 없음, 옵션 PlayRate = 현재 ActionRate.
+- 공격 모션(접근 점프, PerformAttackMotion) 시작 시점에 EffectClip이 비어 있지 않으면 서버에서 `_EffectService:PlayEffect`를 1회 호출한다(2026-11-05 사용자 확정 "모션 시작과 함께". 이펙트 15프레임이 기 모으기 0~6 → 충격파 8~13 구조라 판정 시점 시작이면 충격파가 판정보다 늦기 때문, 메이플 info/effect 관례). coder는 이펙트·skill1 클립 길이와 충격파 프레임이 착지(판정) 시각과 몇 초 어긋나는지 기록하고, 정렬 조정(지연 등)은 하지 않고 V11에 넘긴다. 위치는 착지 x(3칸은 Pos2)·몬스터 지면 y, 회전 0, 배율 1, 반복 없음, 옵션 PlayRate = ~~현재 ActionRate~~ → 그 행 MotionPlayRate × 현재 ActionRate(2026-11-08 D-Q2, 위 "재생 배율"). 정렬 조정을 하지 않는다는 앞 문장은 D-Q2 배율 외의 추가 조정(지연 등)을 하지 않는다는 뜻으로 읽는다.
 - 서버 호출이 클라이언트에 보이는지는 프로젝트 선례(PlayerCombatComponent.DoAttack 서버 경로 PlayEffect)에서 추정한 것이다. coder가 Maker에서 화면 표시를 먼저 확인하고, 보이지 않으면 MonsterStunComponent의 `@Sync` + OnSyncProperty 클라이언트 재생 방식으로 바꾼다(같은 계약 안의 경로 선택이라 승인 범위 안).
 - 크기(배율 1이면 폭 약 2.56 단위, 3칸 범위는 약 4.5 단위)·시작 지연·길이는 coder가 Maker에서 재고 기록한다. 크기·위치 조정은 사용자 V11 항목이다.
 
@@ -1485,13 +1503,17 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 | 파일 | 변경 |
 | --- | --- |
-| DataSet MonsterAttackPatternData(.csv, 회차 C 뒤 위치) | Weight 4/4/5/3, 열 3개, parry.guard 행 |
+| DataSet MonsterAttackPatternData(.csv, 회차 C 뒤 위치) | Weight 4/4/5/3, 열 3개, parry.guard 행. 2026-11-08 D-Q2: `MotionPlayRate` 열 추가(22.4) |
 | DataSet MonsterSoundData(.userdataset·.csv, 새로) | 22.5 |
 | 머쉬맘 모델(model://mushmom) | ActionSheet `attack1`·`skill1` 추가(ModelBuilder) |
-| CombatRuleCatalog | 새 열 검증, MonsterSoundData 로드·검증, 로드 [VRF] 비율 |
+| CombatRuleCatalog | 새 열 검증(2026-11-08: MotionPlayRate 포함), MonsterSoundData 로드·검증, 로드 [VRF] 비율 |
 | MonsterManager | 스폰 때 MotionClip 키 존재·사운드 행 확인 |
 | Monster_Attack(@StateControl) · MonsterAttackMotion(또는 회차 C 뒤 이름) · MonsterAttackComponent | 모션 키·착지 전달, 공격음·플레이어 피격음·이펙트 |
+| `Monster/OrangeMushroom/OrangeMushroomAttack.mlua`(2026-11-08 planner 범위 확인으로 명시) | 머쉬맘의 실제 점프 모션(FileStructure §3·§5). 접근 점프 클립 선택(MM-07, 지금 JumpToLocalX가 접근·복귀 모두 `jump`), 3칸 Pos2 착지(MM-08, 지금 PerformAttackMotion의 `(minX+maxX)*0.5`). 이름·폴더·주석은 바꾸지 않는다(§21 부채) |
 | MonsterHealthComponent | 피격음·사망음 |
+| `Monster/@StateControl/MonsterStateControl.mlua`(2026-11-08 D-Q2, **필요할 때만**) | 슬로우 시작·종료가 렌더러 PlayRate를 저장·복원하는 부분만, 모션 배율이 섞이지 않게 고친다(22.6 "재생 배율"의 경계). 슬로우 시간·배율·ActionRate·액션 시계·공격 대기 같은 규칙·수치는 바꾸지 않는다. MonsterAttackMotion 쪽만으로 경계를 지킬 수 있으면 이 파일은 고치지 않는다 |
+
+2026-11-08 범위 확인: 위 "MonsterAttackMotion(또는 회차 C 뒤 이름)"은 회차 C에서 이름이 바뀌지 않아 기반 MonsterAttackMotion과 그 하위 OrangeMushroomAttack 두 파일을 뜻한다. MM-07·MM-08의 승인 내용을 그대로 구현하려면 하위 파일 수정이 필요하므로(소스 읽기 확인) 범위를 넓히는 것이 아니라 대상을 명시한 것이다. 22.15 재스폰 프레임 범위 처리도 MonsterAttackMotion 안에서 한다.
 
 이 밖의 파일을 고쳐야 하면 coder는 멈추고 메인에 돌려준다. 몬스터 → 플레이어 판정 규칙·피해 수치·회차 C 피격 규칙 코드는 고치지 않는다.
 
@@ -1507,6 +1529,17 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 6. 실패 동작(같은 방식의 프로브): MotionClip이 모델에 없는 키 → 스폰 거부 + 경고 1회, RUID 형식 오류 → 카탈로그 거부 + 경고 1회, MonsterSoundData 행 없음 → 스폰 거부 + 경고 1회. 파일을 바꿔야만 확인되는 항목은 미실시로 적고 사용자 V11 6번에서 확인한다.
 7. 사운드 [VRF]: 플레이어 공격 1회(10타)에 damaged 1줄, 사망 때 die 1줄, JUST·PARRY·회피 때 hitplayer 0줄.
 8. 재스폰 개체 여러 프레임 클립 재생(22.15 필수 확인): 첫 스폰과 DoSpawn 재스폰 개체 각각에서 attack1·skill1이 서버·클라이언트 모두 끝 프레임까지 진행한다.
+   - 2026-11-08 D-Q2 보충: 착지 때 stand로 바뀌므로 "끝 프레임까지"는 착지 시점까지 f0→f3이 진행되고 f4가 시작되는 것으로 본다. 서버 범위는 22.15대로 끝 프레임을 포함해야 한다.
+9. 재생 배율(2026-11-08 D-Q2): 2칸(parry.left)·3칸(parry.guard)을 각각 강제로 실행해 확인한다.
+   - 슬로우 없음: 접근 클립 지정 때 서버 렌더러 PlayRate = 2.2이고, 3칸 PlayEffect 옵션 PlayRate = 2.2이다([VRF]에 배율 기록).
+   - 클라이언트 프레임 이벤트로 잰 f3 끝(f4 시작) 시각과, 이펙트 기준 계산 충격파 시작 시각(1.1 ÷ 배율)이 판정 시각과 **±0.05초 안**이어야 한다.
+   - 착지 뒤 stand가 되고 PlayRate는 1로 돌아간다.
+   - 1칸(parry.any)은 PlayRate 1이다.
+   - 슬로우 1회(예: rate 0.5): 접근 중 렌더러 2.2 × 0.5 = 1.1, 이펙트도 1.1이고 착지·판정 정렬이 ±0.05초 안에 유지된다.
+   - 슬로우가 접근 전에 시작해 접근 중에 끝나는 경우와, 접근 중에 시작해 착지 뒤에 끝나는 경우를 각각 1회씩 본다. 두 경우 모두 종료 뒤 렌더러 PlayRate가 "그 클립의 배율 × ActionRate"다(접근 중이면 2.2, stand면 1).
+   - die는 PlayRate 1로 재생되고 F12 정지가 회귀하지 않는다.
+   - 로드 [VRF]에 행별 MotionPlayRate가 찍힌다.
+   - 실패 동작(6번과 같은 방식의 프로브): MotionPlayRate 0·음수·숫자 아님이면 카탈로그 거부 + 경고 1회.
 
 **회귀**
 
@@ -1514,7 +1547,7 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 
 **사용자 V11 (Maker에서 직접)**
 
-1. 2칸 공격이 attack1, 3칸이 skill1 + 이펙트, 1칸이 jump로 보이는지. 모션이 어색하거나 높이가 두 배로 보이는지(22.10 선택지 중 고름).
+1. 2칸 공격이 attack1, 3칸이 skill1 + 이펙트, 1칸이 jump로 보이는지. 모션이 어색하거나 높이가 두 배로 보이는지(22.10 선택지 중 고름). 2026-11-08 D-Q2 추가: 2.2배 재생 속도와, 착지 때 마무리 프레임(f4)이 잘리고 stand로 바뀌는 것이 괜찮은지. 배율은 CSV `MotionPlayRate`로 직접 바꿔 볼 수 있다(6번과 같은 절차).
 2. 3칸 공격에서 Pos2 착지, 빠른 가드 40%·늦은 가드 100%·Pos2 패링 그로기가 의도대로인지.
 3. 효과음 4종의 시점·음량(22.2 기본안)이 괜찮은지.
 4. 이펙트 위치·크기가 괜찮은지.
@@ -1524,19 +1557,19 @@ coder 시작 전 조건: **해소(9eed765).** Maker 재저장 3파일(AssistMode
 ### 22.9 coder 인계 순서 (회차 C V11 수락 + 시작 지시 뒤)
 
 1. 기준 HEAD·제품 파일 지문 기록. Foundation·dataset·model·builder-protocol(core + model) 참조를 갖춘다.
-2. Maker에서 attack1·skill1 클립 길이·피벗 상승량, 이펙트 크기·길이를 재고 기록한다. 22.10 중단 조건에 걸리면 여기서 멈춘다.
+2. Maker에서 attack1·skill1 클립 길이·피벗 상승량, 이펙트 크기·길이를 재고 기록한다. 22.10 중단 조건에 걸리면 여기서 멈춘다. (2026-11-08 완료: 옛 22.10 첫 조건으로 멈춤 → D-Q2로 해소. 재개 때 다시 잴 필요는 없고 기준 HEAD·지문만 다시 확인한다. 배율 정렬은 7단계에서 22.8 자동 9번으로 확인한다.)
 3. 모델 ActionSheet 키 추가(ModelBuilder) → Refresh.
-4. MonsterSoundData 생성(Maker UI) → 패턴 표 열·행·Weight 수정.
+4. MonsterSoundData 생성(~~Maker UI~~ → 수동 작성, 2026-11-08 D-Q1 답, 22.5) → 패턴 표 열·행·Weight 수정.
 5. CombatRuleCatalog 검증·[VRF] → MonsterManager 스폰 확인.
 6. 모션·착지 → 이펙트 → 사운드 순서로 구현, [VRF] 심기.
 7. Refresh → 한 실행 주기로 22.8 자동 항목 → Stop → 편집 모드 인계.
 
 ### 22.10 중단 조건 (대안 구현 없이 멈추고 선택지를 메인에 돌려줌)
 
-- 클립 길이가 접근 점프 0.5초와 크게 어긋남: 0.25초 이하(접근 동안 2회 이상 반복) 또는 1.0초 이상(절반 넘게 잘림). planner 기본 기준이며, 그 사이 값은 진행하고 기록만 한다.
+- ~~클립 길이가 접근 점프 0.5초와 크게 어긋남: 0.25초 이하(접근 동안 2회 이상 반복) 또는 1.0초 이상(절반 넘게 잘림). planner 기본 기준이며, 그 사이 값은 진행하고 기록만 한다.~~ → 2026-11-08 coder가 이 조건(1.85초 ≥ 1.0초)으로 멈췄고, 사용자 D-Q2 "재생 2.2배로 판정에 맞춤"으로 해소했다. 새 기준(planner 기본 기준): MotionPlayRate를 적용한 뒤 접근 클립 착지(f3 끝)나 3칸 이펙트 충격파 시작(f8)이 판정 시각과 **±0.05초 넘게** 어긋나면 멈춘다. 또 배율을 적용한 클립 전체 길이가 접근 0.5초 이하(접근 동안 반복)가 되어도 멈춘다. 슬로우 없음과 슬로우 중을 모두 본다. 기준 안이면 진행하고 측정값만 기록한다.
 - 클립 자체 상승(최대 약 0.88 단위)과 점프 높이 0.8이 겹쳐 높이가 두 배로 보일 위험: AI는 판단하지 않고 수치(피벗 상승량)만 기록하고, 사용자 V11에서 본다. 미리 정한 선택지: (가) 그 공격만 점프 높이를 줄이는 값(사용자 수치 결정), (나) 이동 중에는 jump, 착지 순간 MotionClip 재생.
 - 메인 브리프의 "어색하면 멈춤"을 위처럼 객관 기준(길이) + V11 판단(높이·어색함)으로 나눴다. 메인이 다르게 원하면 이 항목을 고친다.
-- 이펙트가 서버 호출·@Sync 경로 모두에서 보이지 않음, `.userdataset` Maker 생성 불가, 승인 범위 밖 파일 수정이 필요함.
+- 이펙트가 서버 호출·@Sync 경로 모두에서 보이지 않음, ~~`.userdataset` Maker 생성 불가~~ → 수동 작성한 `.userdataset`을 Refresh 뒤 인식하지 못함(2026-11-08 D-Q1 답), 승인 범위 밖 파일 수정이 필요함.
 
 ### 22.11 위험
 
@@ -1561,20 +1594,46 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 | 이펙트 배율·위치 열 | 사용자 V11에서 조정을 원할 때 |
 | 일시정지 중 이펙트 정지 | 기존 부채와 함께 |
 | OrangeMushroomAttack 등 스크립트 이름 변경 | §21 부채 그대로 |
+| 접근 클립 마무리 프레임(f4) 표시 | 사용자 V11에서 f4가 잘리는 것이 어색하다고 할 때. 착지 뒤 지연 stand는 늦은 쓰기 위험이 있어 이번에 넣지 않는다(2026-11-08 D-Q2) |
+| 클립·이펙트 배율 분리 열(예: EffectPlayRate) | 사용자 V11에서 둘을 따로 조정하길 원할 때. 지금은 `MotionPlayRate` 하나가 둘에 같이 쓰인다 |
+| 재생 중 이펙트의 슬로우 변화 추종 | 기존 이펙트 일시정지 부채와 함께 |
+| PlayerCombatComponent `_T.resolveIndex`(기록만 하고 읽지 않음) 제거 | 그 파일을 고치는 회차에서 함께. 회차 D는 그 파일을 고치지 않는다(2026-11-08 범위 확인, 22.15 선택 항목) |
 
 ### 22.14 상태
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-MM-07 | ⬜ 구현 승인(2026-11-05 사용자 지시). 회차 C V11 수락은 충족(2026-11-06). §23 회차 C2 완료(2026-11-08, 7a796aa). 사용자 시작 지시 대기 |
-| CombatCore-MM-08 | ⬜ 구현 승인. id `parry.guard`는 기본안 |
-| CombatCore-MM-09 | ⬜ 구현 승인. 사용자 비율 표 운영 포함 |
-| CombatCore-MM-10 | ⬜ 구현 승인. 위치·크기는 V11 확인 |
-| CombatCore-MM-11 | ⬜ 구현 승인. 시점·나머지 3종·음량은 V11 확인 |
+| CombatCore-MM-07 | ~~⬜ 구현 승인(2026-11-05 사용자 지시). 회차 C V11 수락은 충족(2026-11-06). §23 회차 C2 완료(2026-11-08, 7a796aa). 사용자 시작 지시 대기~~ → 🟡 coder 진행 대기(2026-11-08 사용자 "회차 D 시작", 기준 7a796aa, planner 범위 확인 완료) |
+| CombatCore-MM-08 | ~~⬜ 구현 승인~~ → 🟡 coder 진행 대기. id `parry.guard`는 기본안 |
+| CombatCore-MM-09 | ~~⬜ 구현 승인~~ → 🟡 coder 진행 대기. 사용자 비율 표 운영 포함 |
+| CombatCore-MM-10 | ~~⬜ 구현 승인~~ → 🟡 coder 진행 대기. 위치·크기는 V11 확인 |
+| CombatCore-MM-11 | ~~⬜ 구현 승인~~ → 🟡 coder 진행 대기. 시점·나머지 3종·음량은 V11 확인 |
 
 다음 흐름: 회차 C(§21) → 사용자 V11 수락 → 사용자 시작 지시 → coder 회차 D → 같은 버전 tester → reviewer → 사용자 V11(22.8).
 2026-11-06 갱신: 회차 C 사용자 V11 수락은 끝났다(b93e2ac). 사용자와 정한 순서는 §23 회차 C2 → 회차 D → §24 회차 E이며, 각 회차 시작은 사용자가 지시한다. 회차 D 시작 지시가 C2보다 먼저 오면 메인이 사용자에게 순서를 확인한다. C2는 주황버섯 모델만 바꾸므로 22.7 범위와 겹치지 않는다.
 2026-11-08 갱신: §23 회차 C2는 사용자 V11 수락으로 완료했다(회차 종료 커밋 7a796aa). 회차 D 기준 버전은 7a796aa다. 남은 시작 조건은 사용자 시작 지시뿐이다. 시작 때 22.15의 재스폰 프레임 범위 처리 방식은 planner·coder가 정한다(지금 정하지 않음).
+
+**2026-11-08 회차 D 시작 범위 확인 (planner, 문서만)**
+
+- 근거: run "2026-11-05 머쉬맘 모션·사운드 사용자 지시"·"2026-11-08 회차 D 시작". 22.1~22.13의 규칙·수치·범위는 바꾸지 않았다. 기본안(22.2)은 기본안으로 구현하고 사용자 V11(22.8)에서 확인하는 구조 그대로다.
+- 사용자 지시 대조: 1칸 jump·무음·이펙트 없음, 2칸 attack1 + `_audio/Attack1`·이펙트 없음, 3칸 skill1 + `attack1/info/effect` + `_audio/Skill1`, 3칸 착지 Pos2, 3칸 GUARD·PARRY(빠른 가드 40%·늦으면 HIT), 비율 4·4·5·3·4, 이펙트는 접근 모션 시작과 함께, 사운드·모션·3칸은 회차 D — 22.1·22.4·22.6과 일치한다. run에는 자원 이름만 있고 RUID는 없으므로, RUID는 이름→RUID 대응(AssetList 19~26행, 22.4·22.5·22.6)이 서로 같은지만 대조했다(일치, 새로 고르지 않음).
+- 대상 파일 명시: 22.7에 OrangeMushroomAttack.mlua를 적었다(승인 요구 MM-07·MM-08 구현에 필요한 기존 모션 파일, 범위 확대 아님).
+- 22.15 처리 원칙을 정했다(22.15 "처리 방식" 항목).
+- 선택 항목(`_T.resolveIndex`)은 이번 회차에서 제외하고 22.13 부채로 옮겼다. PlayerCombatComponent는 22.7에 없고, 22.15가 "이 항목 때문에 22.7 범위를 넓히지 않는다"고 정했기 때문이다.
+- 시작 전 확인 1건(D-Q1, 메인이 사용자에게 확인): MonsterSoundData `.userdataset` 생성 방법. 22.5·22.9 4단계는 "Maker UI 생성 우선, 막히면 coder가 멈춤"인데 Maker MCP에는 DataSet 생성 도구가 없다(dataset 참조 "Dedicated MCP tool for datasets: None"). 그대로면 coder가 4단계에서 22.10으로 멈출 가능성이 높다. 선택지: (가) 회차 B와 같은 수동 작성(dataset 참조 "Manual creation", 기존 래퍼 형식, CoreVersion은 Environment/config, Refresh 뒤 로드 [VRF]로 인식 확인, 인식 실패 때만 멈춤) — 추천, (나) 사용자가 Maker UI에서 `RootDesk/MyDesk/DataSet/`에 빈 MonsterSoundData(serveronly)를 만든 뒤 coder가 열·행 작성, (다) 지금 문구 유지. 답은 회차 E PlayerActionFxData(§24.10 "생성 절차는 회차 D와 같음")에도 적용된다. ~~답 전에는 22.5·22.9 문구를 바꾸지 않는다.~~ → **2026-11-08 사용자 답: (가) "AI 수동 작성".** 22.5·22.9 4단계·22.10에 반영했다. 회차 E PlayerActionFxData에도 같은 절차가 적용되며, §24 반영은 회차 E 시작 때 한다.
+
+**2026-11-08 coder 22.10 중단과 사용자 D-Q2**
+
+- coder는 22.9 2단계에서 옛 22.10 첫 조건(클립 1.85초 ≥ 1.0초)에 걸려 구현 전에 멈췄다(제품 변경 0). 측정값은 WorkRecord "2026-11-08 coder 회차 D … 22.10 중단 (구현 전)" 절에 있다. 22.15 기준선(재스폰 서버 0-0, 클라이언트 0-2147483647)도 그 절에 있다.
+- 사용자 D-Q2: "재생 2.2배로 판정에 맞춤". 이 답으로 바꾼 곳:
+  - 22.4: `MotionPlayRate` 열, 값 2.2/2.2/1/1/2.2
+  - 22.6: "재생 배율" 계약(실제 배율 = MotionPlayRate × ActionRate, 착지 때 stand 유지, 슬로우 저장·복원 경계), 이펙트 PlayRate
+  - 22.7: CSV·Catalog 보충, MonsterStateControl은 필요할 때만
+  - 22.8: 자동 8번 보충, 9번 신설, V11 1번
+  - 22.9: 2단계 완료 표시
+  - 22.10: 첫 조건을 ±0.05초 정렬 기준으로 바꿈
+  - 22.13: 부채 3행
+- 바꾸지 않은 것: TelegraphLeadSec 0.5·JumpDuration 0.5·JumpHeight 0.8·판정 창·D01~D04·복귀 점프 시각. 높이 겹침은 기록만 하고 V11에서 본다.
 
 ### 22.15 회차 C에서 넘어온 확인 항목 (2026-11-06 회차 C 리뷰)
 
@@ -1585,7 +1644,13 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 - 관찰(QA10, b4adbdd): DoSpawn으로 다시 스폰한 몬스터는 서버 SpriteRendererComponent 프레임 범위(StartFrameIndex-EndFrameIndex)가 0-0이다. 부팅 첫 스폰은 서버도 0-2147483647이고, 클라이언트는 둘 다 0-2147483647이다. 회차 C 모델 값에는 두 값이 없다.
 - 회차 C에서 영향이 없던 이유: stand·jump·hit는 1프레임 클립이고, die는 명시 프레임 설정으로 재생·고정한다. move는 쓰지 않는다.
 - 회차 D의 위험: attack1·skill1(각 5프레임)이 재스폰 개체에서 첫 프레임에 멈출 수 있다. 참고로 QA8에서는 서버 0/0인 DoSpawn 개체에서도 클라이언트 stand(2프레임)가 정상 반복된 기록이 있다. 회차 D에서 서버·클라이언트를 모두 다시 재야 한다.
-- 처리 방식: 회차 D 시작 때 planner·coder가 정한다(예: 클립을 지정할 때 프레임 범위를 초기화할지). 지금 정하지 않는다. 처리 때문에 22.7 밖 파일을 고쳐야 하면, 그때 planner가 22.7에 추가한 뒤 진행한다.
+- 처리 방식: ~~회차 D 시작 때 planner·coder가 정한다(예: 클립을 지정할 때 프레임 범위를 초기화할지). 지금 정하지 않는다. 처리 때문에 22.7 밖 파일을 고쳐야 하면, 그때 planner가 22.7에 추가한 뒤 진행한다.~~ → 2026-11-08 planner 처리 원칙(아래). 구체 구현은 coder가 Maker에서 확인한 뒤 정해 WorkRecord에 적는다.
+  - 원칙 1 — 지정 시점에 맞춘다: 스폰 때 남아 있는 값에 기대지 않는다. 몬스터 클립을 지정하는 서버 경로(공통 진입점 MonsterAttackMotion.SetVisualClip과 새 MotionClip 경로)에서, 사망 고정이 아닌 모든 클립 지정 때 렌더러 프레임 범위를 끝 프레임을 포함하는 전체 범위로 맞춘 뒤 SpriteRUID를 쓴다. 근거: SpriteRendererComponent의 StartFrameIndex(기본 0)·EndFrameIndex(기본 2147483647)는 @Sync 속성이고(.d.mlua), 같은 파일의 PlayDieOnce가 이미 서버에서 같은 순서(범위 초기화 → SpriteRUID)로 die를 재생한다(회차 A 선례).
+  - 원칙 2 — 서버 한쪽: 몬스터 클립 쓰기는 지금처럼 서버(ServerOnly)만 한다. 클라이언트에 새 클립 쓰기 경로를 만들지 않는다. 클라이언트 진행은 22.15 완료 기준(프레임 이벤트 0→끝)으로 확인한다.
+  - 원칙 3 — 사망 고정을 깨지 않는다: die 시작 뒤에는 SetVisualClip이 아무것도 하지 않는 기존 가드(`_T.dieStarted`)를 그대로 두어, TickDie의 마지막 프레임 고정(Start=End=마지막)을 덮지 않는다. F12 회귀(22.8 회귀)로 확인한다.
+  - 원칙 4 — 모델에 값을 더하지 않는다: 0-0이 생기는 원인이 확인되지 않았으므로 모델에 StartFrameIndex·EndFrameIndex 값을 넣는 방식은 기본으로 하지 않는다(22.7 모델 변경은 ActionSheet 키 추가만).
+  - coder가 정해 기록할 것: 수정 전 DoSpawn 재스폰 개체의 서버 범위 0-0 재현 여부(기준선), 범위를 맞추는 정확한 위치·순서, SpriteRUID가 같은 값일 때의 재시작 여부, 적용 뒤 서버·클라이언트 측정값.
+  - 22.7 추가 파일: 필요 없다(MonsterAttackMotion·OrangeMushroomAttack 안에서 처리). 서버 지정 시점 처리로 클라이언트가 첫 프레임에 멈추는 문제가 남거나 22.7 밖 파일이 필요하면 coder는 대체 구현 없이 멈추고 메인에 돌려준다(22.10).
 - 완료 기준:
   - tester가 첫 스폰 개체와 DoSpawn 재스폰 개체(사망 뒤 교체) 각각에서 attack1(2칸)·skill1(3칸) 접근 모션을 강제로 실행한다.
   - 서버: 렌더러 SpriteRUID가 그 클립이고, Start/EndFrameIndex 범위가 끝 프레임을 포함한다(0-0이 아님).
@@ -1597,6 +1662,7 @@ D01~D04 수치·판정 규칙, 몬스터 → 플레이어 판정, 회차 C 피�
 **선택 — 코드 정리**
 
 - PlayerCombatComponent의 `_T.resolveIndex`는 기록만 하고 읽지 않는다. 회차 D에서 그 파일을 고치면 함께 지워도 된다. 고치지 않으면 남겨 둔다. 이 항목 때문에 22.7 범위를 넓히지 않는다.
+- 2026-11-08 범위 확인: 회차 D는 PlayerCombatComponent를 고치지 않으므로(22.7에 없음) 이번 회차에서 제외하고 22.13 부채로 옮겼다.
 
 ## 23. 회차 C2 — 주황버섯 파일·모델 이름 영어 정리 (2026-11-06)
 

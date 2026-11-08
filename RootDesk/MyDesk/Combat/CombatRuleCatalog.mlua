@@ -4,6 +4,8 @@ script CombatRuleCatalog extends Logic
 	property table rules = {}
 	property table patterns = {}
 	property table monsterStats = {}
+	property table monsterSounds = {}
+	property boolean soundsReady = false
 	property table warned = {}
 	property boolean Ready = false
 
@@ -76,12 +78,66 @@ script CombatRuleCatalog extends Logic
 				if data.AreaFromAnchor > data.AreaToAnchor then self:WarnOnce("invalid pattern area"); return nil end
 			end
 			if data.AreaPaddingX < 0 or data.AreaHeight <= 0 or data.TelegraphLeadSec < math.max(rules.JustWindowSec, rules.ParryWindowSec) then self:WarnOnce("invalid pattern area or lead"); return nil end
+			-- 연출 열(회차 D). 패턴 표에는 default 행이 없고, 사운드·이펙트 빈 값은 "없음"이며 MotionPlayRate 빈 값은 1이다. 열이 없으면 ReadRows가 이미 표 전체를 거부한다.
+			local motionClip = type(row.MotionClip) == "string" and string.match(row.MotionClip, "^%s*(.-)%s*$") or ""
+			if motionClip == "" or motionClip == "die" or not string.match(motionClip, "^[a-z][a-z0-9_]*$") then self:WarnOnce("invalid motion clip"); return nil end
+			data.MotionClip = motionClip
+			local attackSound = self:ParseOptionalRuid(row.AttackSound)
+			if attackSound == nil then self:WarnOnce("invalid attack sound ruid"); return nil end
+			data.AttackSound = attackSound
+			local effectClip = self:ParseOptionalRuid(row.EffectClip)
+			if effectClip == nil then self:WarnOnce("invalid effect clip ruid"); return nil end
+			data.EffectClip = effectClip
+			local rateRaw = row.MotionPlayRate
+			local motionRate = 1
+			if rateRaw ~= nil and not (type(rateRaw) == "string" and not self:HasText(rateRaw)) then motionRate = tonumber(rateRaw) end
+			if not self:IsFinite(motionRate) or motionRate <= 0 then self:WarnOnce("invalid motion play rate"); return nil end
+			data.MotionPlayRate = motionRate
 			ids[data.id] = true
 			if result.patterns[data.modelId] == nil then result.patterns[data.modelId] = {} end
 			table.insert(result.patterns[data.modelId], data)
 		end
 		if #patternRows == 0 then self:WarnOnce("patterns missing"); return nil end
 		return result
+	end
+
+	method any ParseOptionalRuid(any raw)
+		-- 빈 칸은 "없음"(빈 문자열), 소문자 16진수 32자는 그대로, 그 밖의 형식은 nil(무효)을 돌려준다.
+		if raw == nil then return "" end
+		if type(raw) ~= "string" then return nil end
+		local text = string.match(raw, "^%s*(.-)%s*$")
+		if text == "" then return "" end
+		if #text == 32 and string.match(text, "^[0-9a-f]+$") ~= nil then return text end
+		return nil
+	end
+
+	method string FormatWeights(string modelId, table rows)
+		-- 한 몬스터 키의 행별 Weight와 비율(%)을 한 줄로 만든다. 같은 행 목록으로 시험 프로브에서도 부를 수 있다.
+		local total = 0
+		for _, row in ipairs(rows) do total = total + row.Weight end
+		local text = "pattern weights " .. modelId .. " total=" .. string.format("%g", total)
+		for _, row in ipairs(rows) do
+			text = text .. " " .. row.id .. "=" .. string.format("%g", row.Weight) .. "(" .. string.format("%.1f", row.Weight / total * 100) .. "%)"
+		end
+		return text
+	end
+
+	method any ValidateSoundRows(table rows)
+		-- 몬스터 키별 사운드 표. default 행이 없고 빈 칸은 무음이다. 하나라도 무효면 표 전체를 거부한다.
+		local byId = {}
+		for _, row in ipairs(rows) do
+			if not self:HasText(row.id) then self:WarnOnce("MonsterSoundData invalid id"); return nil end
+			local id = string.match(row.id, "^%s*(.-)%s*$")
+			if byId[id] ~= nil then self:WarnOnce("MonsterSoundData duplicate id"); return nil end
+			local entry = { id = id }
+			for _, key in ipairs({"DamagedSound", "HitPlayerSound", "DieSound"}) do
+				local ruid = self:ParseOptionalRuid(row[key])
+				if ruid == nil then self:WarnOnce("MonsterSoundData invalid ruid"); return nil end
+				entry[key] = ruid
+			end
+			byId[id] = entry
+		end
+		return byId
 	end
 
 	method boolean IsValidStat(any value, string kind)
@@ -148,7 +204,7 @@ script CombatRuleCatalog extends Logic
 		if self._T.attempted then return self.Ready end
 		self._T.attempted = true
 		local ruleRows = self:ReadRows(_DataService:GetTable("CombatRuleData"), {"id", "JustWindowSec", "ParryWindowSec", "GuardDamageRate", "CounterWindowSec", "CounterDamageMultiplier", "SlowDurationSec", "SlowRate", "GroggyDurationSec"})
-		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget"})
+		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget", "MotionClip", "AttackSound", "EffectClip", "MotionPlayRate"})
 		local statRows = self:ReadRows(_DataService:GetTable("MonsterStatData"), {"id", "MaxHp", "AttackDamage", "AttackInterval"})
 		if ruleRows == nil or patternRows == nil then self:WarnOnce("DataSet or required columns missing"); return false end
 		if statRows == nil then self:WarnOnce("MonsterStatData missing or required columns missing"); return false end
@@ -156,12 +212,32 @@ script CombatRuleCatalog extends Logic
 		if result == nil then return false end
 		local stats = self:ValidateStatRows("MonsterStatData", statRows, {{ key = "MaxHp", kind = "posint" }, { key = "AttackDamage", kind = "nonneg" }, { key = "AttackInterval", kind = "pos" }})
 		if stats == nil then return false end
+		-- 사운드 표는 몬스터 키별 행이라 표가 무효이거나 없으면 그 표만 거부한다(행을 찾지 못하는 몬스터는 스폰이 거부된다).
+		local soundSource = _DataService:GetTable("MonsterSoundData")
+		local soundRows = self:ReadRows(soundSource, {"id", "DamagedSound", "HitPlayerSound", "DieSound"})
+		local sounds = nil
+		if soundRows == nil then self:WarnOnce("MonsterSoundData missing or required columns missing")
+		else sounds = self:ValidateSoundRows(soundRows) end
 		self.rules = result.rules
 		self.patterns = result.patterns
 		self.monsterStats = stats
+		self.monsterSounds = sounds or {}
+		self.soundsReady = sounds ~= nil
 		self.Ready = true
 		if Environment:IsMakerPlay() then
-			log("[VRF] CombatCore catalog ready rules=" .. tostring(#ruleRows) .. " patterns=" .. tostring(#patternRows) .. " monsterStats=" .. tostring(#statRows))
+			log("[VRF] CombatCore catalog ready rules=" .. tostring(#ruleRows) .. " patterns=" .. tostring(#patternRows) .. " monsterStats=" .. tostring(#statRows) .. " monsterSounds=" .. tostring(soundRows ~= nil and #soundRows or -1))
+			for modelId, list in pairs(result.patterns) do
+				log("[VRF] " .. self:FormatWeights(modelId, list))
+				for _, row in ipairs(list) do
+					log("[VRF] pattern row id=" .. row.id .. " clip=" .. row.MotionClip .. " rate=" .. string.format("%g", row.MotionPlayRate) .. " sound=" .. (row.AttackSound ~= "" and string.sub(row.AttackSound, 1, 8) or "-") .. " effect=" .. (row.EffectClip ~= "" and string.sub(row.EffectClip, 1, 8) or "-") .. " (no default row, blank = none/rate 1)")
+				end
+			end
+			if soundRows ~= nil and sounds ~= nil then
+				for _, row in ipairs(soundRows) do
+					local entry = sounds[string.match(row.id, "^%s*(.-)%s*$")]
+					log("[VRF] MonsterSoundData id=" .. entry.id .. " damaged=" .. (entry.DamagedSound ~= "" and string.sub(entry.DamagedSound, 1, 8) or "-") .. " hitplayer=" .. (entry.HitPlayerSound ~= "" and string.sub(entry.HitPlayerSound, 1, 8) or "-") .. " die=" .. (entry.DieSound ~= "" and string.sub(entry.DieSound, 1, 8) or "-"))
+				end
+			end
 			for _, row in ipairs(statRows) do
 				local entry = stats[string.match(row.id, "^%s*(.-)%s*$")]
 				log("[VRF] MonsterStatData id=" .. entry.id .. " MaxHp=" .. tostring(entry.MaxHp) .. " AttackDamage=" .. tostring(entry.AttackDamage) .. " AttackInterval=" .. tostring(entry.AttackInterval) .. " source=DataSet")
@@ -177,6 +253,28 @@ script CombatRuleCatalog extends Logic
 		local row = self.monsterStats[modelKey]
 		if row == nil or modelKey == "default" then self:WarnOnce("monster stat row missing: " .. modelKey); return nil end
 		return row
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetMonsterSounds(string modelKey)
+		-- 스폰할 몬스터의 사운드 행을 돌려준다. 표가 무효이거나 행이 없으면 대신할 값 없이 nil과 경고 한 번이다(스폰 거부).
+		if not self:EnsureInitialized() then return nil end
+		if not self.soundsReady then self:WarnOnce("MonsterSoundData unavailable"); return nil end
+		local row = self.monsterSounds[modelKey]
+		if row == nil then self:WarnOnce("monster sound row missing: " .. modelKey); return nil end
+		return row
+	end
+
+	@ExecSpace("ServerOnly")
+	method void PlayMonsterSound(string kind, string ruid, Entity player)
+		-- 빈 RUID면 호출하지 않는다. 결투 플레이어의 클라이언트에만 음량 1.0으로 재생한다.
+		if ruid == nil or ruid == "" then return end
+		local userId = ""
+		local pc = isvalid(player) and player.PlayerComponent or nil
+		if isvalid(pc) then userId = pc.UserId end
+		if Environment:IsMakerPlay() then log("[VRF] sfx kind=" .. kind .. " ruid=" .. string.sub(ruid, 1, 8) .. " user=" .. (userId ~= "" and "있음" or "없음")) end
+		if userId == "" then return end
+		_SoundService:PlaySound(ruid, 1.0, userId)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -218,6 +316,8 @@ script CombatRuleCatalog extends Logic
 		self.rules = {}
 		self.patterns = {}
 		self.monsterStats = {}
+		self.monsterSounds = {}
+		self.soundsReady = false
 		self.warned = {}
 		self.Ready = false
 		self._T.attempted = nil

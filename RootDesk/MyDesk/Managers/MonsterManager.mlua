@@ -111,9 +111,28 @@ script MonsterManager extends Component
 			if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawn refused key=" .. modelKey .. " reason=stats") end
 			return
 		end
+		-- 사운드 표에 이 몬스터 키의 행이 없거나 표가 무효이면 스폰하지 않는다(무음을 원하면 행을 두고 칸을 비운다).
+		if _CombatRuleCatalog:GetMonsterSounds(modelKey) == nil then
+			if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawn refused key=" .. modelKey .. " reason=sounds") end
+			return
+		end
 		local position = self.SpawnPosition.TransformComponent.WorldPosition
 		local monster = _SpawnService:SpawnByModelId(row.modelid, row.name, position, map)
 		if not isvalid(monster) then log_warning("[MonsterManager] Spawn failed: " .. row.modelid); return end
+		-- 패턴 표의 모든 MotionClip 키가 스폰한 모델의 ActionSheet에 있어야 한다. 없으면 이미 만든 엔티티를 파괴하고 스폰을 거부한다.
+		local patternRows = _CombatRuleCatalog:GetPatterns(modelKey)
+		local animation = monster.StateAnimationComponent
+		if patternRows ~= nil then
+			for _, pattern in ipairs(patternRows) do
+				local ruid = isvalid(animation) and animation.ActionSheet[pattern.MotionClip] or nil
+				if ruid == nil or ruid == "" then
+					monster:Destroy()
+					_CombatRuleCatalog:WarnOnce("motion clip missing in ActionSheet: " .. modelKey .. " " .. pattern.MotionClip)
+					if Environment:IsMakerPlay() then log("[VRF] MonsterManager spawn refused key=" .. modelKey .. " reason=motionClip clip=" .. pattern.MotionClip) end
+					return
+				end
+			end
+		end
 		local health = monster:GetComponent("script.MonsterHealthComponent")
 		local damage = monster:GetComponent("script.MonsterAttackComponent")
 		local control = monster:GetComponent("script.MonsterStateControl")

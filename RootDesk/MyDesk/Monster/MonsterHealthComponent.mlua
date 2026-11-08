@@ -26,6 +26,12 @@ script MonsterHealthComponent extends Component
 		if self.Hp == 0 then
 			self.IsDead = true
 			local attack = self.Entity:GetComponent("script.MonsterAttackComponent")
+			-- 사망음: 사망이 확정되는 이 순간 한 번(IsDead가 위에서 켜져 같은 몬스터는 다시 들어오지 않는다).
+			if isvalid(attack) and attack._T.modelKey ~= nil then
+				local sounds = _CombatRuleCatalog:GetMonsterSounds(attack._T.modelKey)
+				local manager = attack:GetManager()
+				if sounds ~= nil and isvalid(manager) then _CombatRuleCatalog:PlayMonsterSound("die", sounds.DieSound, manager.CurrentPlayer) end
+			end
 			if isvalid(attack) then attack:CancelPendingAttack() end
 			local control = self.Entity:GetComponent("script.MonsterStateControl")
 			local stun = self.Entity:GetComponent("script.MonsterStunComponent")
@@ -48,6 +54,23 @@ script MonsterHealthComponent extends Component
 	end
 
 	@ExecSpace("ServerOnly")
+	method void PlayDamagedSound(Entity attacker)
+		-- 피격음은 플레이어 공격 1회(10타)마다 한 번, 규칙을 통과해 HitEvent가 된 첫 타에서만 낸다. 회차는 공격자 PlayerCombatComponent의 공격 식별자로 구분한다.
+		if not isvalid(attacker) then return end
+		local combat = attacker:GetComponent("script.PlayerCombatComponent")
+		if not isvalid(combat) then return end
+		local round = combat._T.attackId
+		if round == nil or self._T.soundRound == round then return end
+		self._T.soundRound = round
+		local attack = self.Entity:GetComponent("script.MonsterAttackComponent")
+		local key = isvalid(attack) and attack._T.modelKey or nil
+		if key == nil then return end
+		local sounds = _CombatRuleCatalog:GetMonsterSounds(key)
+		if sounds == nil then return end
+		_CombatRuleCatalog:PlayMonsterSound("damaged", sounds.DamagedSound, attacker)
+	end
+
+	@ExecSpace("ServerOnly")
 	method void OnUpdate(number delta)
 		-- 사망 표시(die 1회 재생 뒤 마지막 프레임 정지)의 정지 시점만 확인한다.
 		if not self.IsDead then return end
@@ -64,6 +87,7 @@ script MonsterHealthComponent extends Component
 		local amount = event.TotalDamage
 		self._T.hitEvents = (self._T.hitEvents or 0) + 1
 		self._T.hitEventTotal = (self._T.hitEventTotal or 0) + amount
+		self:PlayDamagedSound(event.AttackerEntity)
 		self:ApplyDamage(amount)
 		local state = self.Entity.StateComponent
 		if amount > 0 and not self.IsDead and isvalid(state) and state.CurrentStateName ~= "ATTACK" and state.CurrentStateName ~= "STUN" and state.CurrentStateName ~= "HIT" and state.CurrentStateName ~= "DEAD" then

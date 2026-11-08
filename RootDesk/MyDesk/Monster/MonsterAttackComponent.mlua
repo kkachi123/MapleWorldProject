@@ -145,15 +145,20 @@ script MonsterAttackComponent extends AttackComponent
 		-- 저스트·패링 성공 조건(V11-F13): Pos2 칸 경계는 인접 앵커 중점이고, 영역이 Pos2 앵커를 포함하는지는 실행마다 한 번 고정한다.
 		local pos2Cell = { minX = (anchorXs[1] + anchorXs[2]) * 0.5, maxX = (anchorXs[2] + anchorXs[3]) * 0.5,
 			areaIncludes = anchorXs[2] >= minimum and anchorXs[2] <= maximum }
+		-- 착지 x(MM-08): 1·2칸은 영역 중앙 그대로, 세 칸 전부(앵커 1~3)를 덮는 공격은 영역 중앙 계산에 기대지 않고 Pos2 기준점이다.
+		local landingX = (minimum + maximum) * 0.5
+		if fromIndex == 1 and toIndex == 3 then landingX = anchorXs[2] end
 		local snapshot = { id = self.AttackSequence, map = map, player = player, pattern = pattern, rules = rules,
-			area = { cells = cells, minX = minimum, maxX = maximum }, validDirs = validDirs, targetCell = targetCell, pos2Cell = pos2Cell,
+			area = { cells = cells, minX = minimum, maxX = maximum, landingX = landingX }, validDirs = validDirs, targetCell = targetCell, pos2Cell = pos2Cell,
 			shape = BoxShape(Vector2((minimum + maximum) * 0.5, 0), Vector2(maximum - minimum, pattern.AreaHeight), 0), resolved = false }
 		self._T.snapshot = snapshot
 		self.TelegraphResponse = pattern.ResponseType
 		self.TelegraphAttribute = pattern.AttackAttribute
 		self.TelegraphRemaining = pattern.TelegraphLeadSec
 		self.TelegraphCells = cells
-		if Environment:IsMakerPlay() then log("[VRF] CombatCore telegraph id=" .. tostring(snapshot.id) .. " pattern=" .. pattern.id .. " min=" .. tostring(minimum) .. " max=" .. tostring(maximum) .. " cells=" .. cells .. " target=" .. tostring(targetCell) .. " dirs=" .. (validDirs.LEFT and "L" or "") .. (validDirs.RIGHT and "R" or "")) end
+		if Environment:IsMakerPlay() then log("[VRF] CombatCore telegraph id=" .. tostring(snapshot.id) .. " pattern=" .. pattern.id .. " min=" .. tostring(minimum) .. " max=" .. tostring(maximum) .. " cells=" .. cells .. " target=" .. tostring(targetCell) .. " dirs=" .. (validDirs.LEFT and "L" or "") .. (validDirs.RIGHT and "R" or "") .. " landing=" .. string.format("%.3f", landingX) .. " clip=" .. pattern.MotionClip .. " motionRate=" .. string.format("%g", pattern.MotionPlayRate)) end
+		-- 공격음은 텔레그래프 시작(PrepareAttack 성공) 때 한 번 낸다. 빈 RUID는 무음이다.
+		_CombatRuleCatalog:PlayMonsterSound("attack", pattern.AttackSound, player)
 		return snapshot
 	end
 
@@ -195,6 +200,11 @@ script MonsterAttackComponent extends AttackComponent
 		if isvalid(combat) then
 			combat:RecordDefense(not snapshot.result.success and not snapshot.nativeHit and "EVADE" or snapshot.result.kind)
 			if snapshot.result.success then combat:GrantCounter(self.Entity, snapshot.rules) end
+		end
+		-- 플레이어 피격음: 실제로 맞은 결과(HIT·GUARD·UNGUARDABLE)에서만 한 번 낸다. JUST·PARRY·회피 성공은 무음이다.
+		if snapshot.nativeHit and (snapshot.result.kind == "HIT" or snapshot.result.kind == "GUARD" or snapshot.result.kind == "UNGUARDABLE") then
+			local sounds = isvalid(self.Entity) and self._T.modelKey ~= nil and _CombatRuleCatalog:GetMonsterSounds(self._T.modelKey) or nil
+			if sounds ~= nil then _CombatRuleCatalog:PlayMonsterSound("hitplayer", sounds.HitPlayerSound, snapshot.player) end
 		end
 		if snapshot.result.kind == "JUST" then
 			local control = self.Entity:GetComponent("script.MonsterStateControl")

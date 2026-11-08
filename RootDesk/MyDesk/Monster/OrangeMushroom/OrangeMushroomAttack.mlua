@@ -27,15 +27,15 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
-	method number JumpToLocalX(number targetLocalX)
-		-- Preserve the authored arc, rejecting an unready or invalid motion.
+	method number JumpToLocalX(number targetLocalX, string clip, number motionRate)
+		-- Preserve the authored arc, rejecting an unready or invalid motion. 접근은 패턴의 클립·배율을, 복귀는 jump·배율 1을 쓴다.
 		if not self.HomeCaptured or self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then return -1 end
 		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return -1 end
 		self.JumpStartX = self.Entity.TransformComponent.Position.x
 		self.JumpTargetX = targetLocalX
 		self.JumpStartTime = self._T.control:GetActionTime()
 		self.JumpActive = true
-		self:SetVisualClip("jump")
+		self:SetMotionClip(clip, motionRate)
 		return self.JumpDuration
 	end
 
@@ -48,13 +48,14 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
-	method number PerformAttackMotion(string cells, number minX, number maxX)
+	method number PerformAttackMotion(string cells, number minX, number maxX, string clip, number motionRate, number landingX)
 		-- 주황버섯은 점프 한 번으로 영역 중앙에 착지한다(2칸은 두 칸의 중간, 1칸은 그 칸). 이 규칙은 이 몬스터 모션 한정이다.
-		if minX ~= minX or maxX ~= maxX or minX > maxX then return -1 end
+		-- 착지 x는 서버가 고정해 넘긴다(1·2칸은 영역 중앙 그대로, 3칸은 Pos2 기준점). 클립 키와 재생 배율도 패턴 표에서 온다.
+		if minX ~= minX or maxX ~= maxX or minX > maxX or landingX ~= landingX then return -1 end
 		-- Convert the target world X to this entity's parent-local X.
 		local transform = self.Entity.TransformComponent
-		local targetLocalX = transform.Position.x + (minX + maxX) * 0.5 - transform.WorldPosition.x
-		local duration = self:JumpToLocalX(targetLocalX)
+		local targetLocalX = transform.Position.x + landingX - transform.WorldPosition.x
+		local duration = self:JumpToLocalX(targetLocalX, clip, motionRate)
 		if duration >= 0 then self.Segment = "approach" end
 		return duration
 	end
@@ -62,7 +63,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	@ExecSpace("ServerOnly")
 	method number PerformReturnMotion()
 		-- Reuse the same arc to the captured home.
-		local duration = self:JumpToLocalX(self.Home.x)
+		local duration = self:JumpToLocalX(self.Home.x, "jump", 1)
 		if duration >= 0 then self.Segment = "return" end
 		return duration
 	end
@@ -75,14 +76,16 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 		self.Segment = "none"
 		local body = self.Entity.RigidbodyComponent
 		if isvalid(body) then body:SetPosition(Vector2(self.JumpTargetX, self.Home.y)) end
+		-- 착지 때 stand로 바꾸며 배율도 1 x ActionRate로 돌아간다(마무리 프레임 f4는 보이지 않고 잘린다, 22.6).
 		self:SetVisualClip("stand")
 	end
 
 	@ExecSpace("ServerOnly")
 	method void CancelMotion()
-		-- Never write stand over HIT or DEAD while cancelling.
+		-- Never write stand over HIT or DEAD while cancelling. 클립은 건드리지 않고 접근 배율만 1로 돌린다.
 		self.JumpActive = false
 		self.Segment = "none"
+		self:ResetClipRate()
 	end
 
 	@ExecSpace("ServerOnly")

@@ -19,15 +19,62 @@ script MonsterAttackMotion extends Component
 
 	@ExecSpace("ServerOnly")
 	method void SetVisualClip(string key)
-		-- Reuse this monster's existing animation mappings.
-		-- 사망 표시가 시작된 뒤에는 어떤 늦은 경로도 클립을 바꾸거나 die를 다시 시작하지 못한다.
+		-- Reuse this monster's existing animation mappings. 접근 클립이 아닌 모든 표시는 배율 1이다.
+		self:SetMotionClip(key, 1)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SetMotionClip(string key, number motionRate)
+		-- 클립 지정의 공통 진입점. 사망 표시가 시작된 뒤에는 어떤 늦은 경로도 클립을 바꾸거나 die를 다시 시작하지 못한다.
 		if self._T.dieStarted then return end
 		if key == "die" then self:PlayDieOnce(); return end
 		local animation = self.Entity.StateAnimationComponent
 		local renderer = self.Entity.SpriteRendererComponent
 		if not isvalid(animation) or not isvalid(renderer) then return end
 		local ruid = animation.ActionSheet[key]
-		if ruid ~= nil and ruid ~= "" then renderer.SpriteRUID = ruid end
+		if ruid == nil or ruid == "" then return end
+		-- 재스폰 개체의 서버 프레임 범위가 0-0으로 남을 수 있어(22.15) 지정 때마다 끝 프레임을 포함하는 전체 범위로 맞춘 뒤 SpriteRUID를 쓴다(PlayDieOnce와 같은 순서).
+		renderer.StartFrameIndex = 0
+		renderer.EndFrameIndex = 2147483647
+		renderer.SpriteRUID = ruid
+		-- 재생 배율 = 그 클립의 배율 x 현재 ActionRate. 슬로우의 저장·복원에는 섞지 않고 매번 이 곱으로 다시 계산한다(22.6).
+		self._T.clipRate = motionRate
+		self:ApplyClipRate()
+		if Environment:IsMakerPlay() then log("[VRF] clip set key=" .. key .. " motionRate=" .. string.format("%g", motionRate) .. " playRate=" .. string.format("%g", renderer.PlayRate) .. " range=" .. tostring(renderer.StartFrameIndex) .. "-" .. tostring(renderer.EndFrameIndex)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ApplyClipRate()
+		-- 렌더러 PlayRate를 "현재 클립 배율 x 현재 ActionRate"로 맞춘다. 사망 표시 뒤에는 쓰지 않는다(die는 배율 1).
+		if self._T.dieStarted then return end
+		local renderer = self.Entity.SpriteRendererComponent
+		if not isvalid(renderer) then return end
+		local control = self.Entity:GetComponent("script.MonsterStateControl")
+		local actionRate = isvalid(control) and control.ActionRate or 1
+		if not _CombatRuleCatalog:IsFinite(actionRate) or actionRate <= 0 then actionRate = 1 end
+		local clipRate = self._T.clipRate or 1
+		renderer.PlayRate = clipRate * actionRate
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ResetClipRate()
+		-- 접근이 취소되거나 끝나면 다음 표시가 이전 배율을 이어받지 않게 배율 1로 되돌린다.
+		self._T.clipRate = 1
+		self:ApplyClipRate()
+	end
+
+	@ExecSpace("ServerOnly")
+	method void PlayAttackEffect(string effectRuid, number x, number motionRate)
+		-- 공격 모션 시작과 함께 서버에서 한 번 재생한다. 위치는 착지 x·몬스터 지면 y, 배율 1, 반복 없음, 옵션 PlayRate = 그 행 MotionPlayRate x 현재 ActionRate.
+		if effectRuid == nil or effectRuid == "" then return end
+		local control = self.Entity:GetComponent("script.MonsterStateControl")
+		local actionRate = isvalid(control) and control.ActionRate or 1
+		if not _CombatRuleCatalog:IsFinite(actionRate) or actionRate <= 0 then actionRate = 1 end
+		local y = self.Entity.TransformComponent.WorldPosition.y
+		local options = {}
+		options["PlayRate"] = motionRate * actionRate
+		local serial = _EffectService:PlayEffect(effectRuid, self.Entity, Vector3(x, y, 0), 0, Vector3(1, 1, 1), false, options)
+		if Environment:IsMakerPlay() then log("[VRF] effect played ruid=" .. string.sub(effectRuid, 1, 8) .. " x=" .. string.format("%.3f", x) .. " y=" .. string.format("%.3f", y) .. " playRate=" .. string.format("%g", motionRate * actionRate) .. " serial=" .. tostring(serial)) end
 	end
 
 	@ExecSpace("ServerOnly")
@@ -44,6 +91,9 @@ script MonsterAttackMotion extends Component
 		local clip = _ResourceService:LoadAnimationClipAndWait(ruid)
 		renderer.StartFrameIndex = 0
 		renderer.EndFrameIndex = 2147483647
+		-- die는 접근 배율·슬로우 배율과 무관하게 배율 1로 재생한다(마지막 프레임 고정 시각 계산도 이 값을 쓴다).
+		renderer.PlayRate = 1
+		self._T.clipRate = 1
 		renderer.SpriteRUID = ruid
 		local count = clip ~= nil and clip.Frames.Count or 0
 		if count <= 0 or not isvalid(pause) then
@@ -76,8 +126,9 @@ script MonsterAttackMotion extends Component
 	end
 
 	@ExecSpace("ServerOnly")
-	method number PerformAttackMotion(string cells, number minX, number maxX)
-		-- The server-fixed area (cell set "111" form + world x range) is handed to the monster-specific motion.
+	method number PerformAttackMotion(string cells, number minX, number maxX, string clip, number motionRate, number landingX)
+		-- The server-fixed area (cell set "111" form + world x range), the pattern's approach clip and play rate, and the
+		-- server-fixed world landing x are handed to the monster-specific motion.
 		-- A zero-duration base implementation needs no movement.
 		return 0
 	end
