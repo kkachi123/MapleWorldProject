@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: PAUSED
-- 갱신: 2026-11-06 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (회차 C2 reviewer 사용자 일시정지)
-- 다음 행동·대기 사유: PAUSED — 사용자 재개 지시 시 새 msw-reviewer 호출(회차 C2, 대상 163fc37, 근거 WorkRecord C2 coder 절·QA11) → [review] 커밋·push(163fc37 포함). 그 뒤 회차 D·E는 사용자 시작 지시.
+- 상태: WAITING_USER
+- 갱신: 2026-11-08 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 (회차 C2 V11, Plan §23.4)
+- 다음 행동·대기 사유: WAITING_USER — 회차 C2 리뷰 WAITING(결함 없음). 사용자 V11(작업 공간에 OrangeMushroom 하나만, 플레이 화면 회차 C와 같음) 수락 뒤 planner 회차 종료 문서 정리(Plan §23.7·FileStructure·AssetList·GameDesign·로드맵·WorkRecord 머리말). 그 뒤 회차 D·E는 사용자 시작 지시.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -409,3 +409,8 @@
 ## 2026-11-06 회차 C2 reviewer 일시정지
 - 사용자 "reviewer 작업은 일시정지". msw-reviewer 중지, 판정 없음, 제품·WorkRecord 변경 없음(git 확인, WorkRecord 변경분은 tester QA11 절).
 - [ops] 로컬 커밋(run.md + WorkRecord QA11). push 보류: 리뷰 전 [code] 163fc37이 같이 올라가므로 회차 종료 커밋 때 함께 push(회차 C 선례).
+
+## 2026-11-08 회차 C2 reviewer 재개
+- 사용자 "다시시작해". 새 msw-reviewer 호출(이전 중지 작업 결과 없음). 대상 163fc37, 근거 WorkRecord C2 coder 절·QA11.
+- reviewer 판정 WAITING(WorkRecord "2026-11-08 독립 리뷰 — 회차 C2(CombatCore-MM-12) WAITING"). 결함·새 ID 없음. 절차 생략(renameModel·planner 범위 확인)은 Plan §23.2 단서대로 정당, 원장 castleenemy 문구는 C2 이전부터 있던 범위 밖 기록, 회차 C 전수 회귀 NOT_RUN은 차단 아님(PASS로 세지 않음). Bundle은 reviewer가 셸 가드로 재계산하지 못하고 git 동일성·QA11 독립 계산으로 대신함.
+- 메인 확인: 변경은 WorkRecord 리뷰 절 추가뿐(제품·Plan 변경 없음). [review] WAITING 커밋, 비밀값 검사 뒤 163fc37·c02aab4와 함께 push.

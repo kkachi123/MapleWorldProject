@@ -603,6 +603,83 @@
 
 ## 리뷰 기록
 
+### 2026-11-08 독립 리뷰 — 회차 C2(CombatCore-MM-12) WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). 2026-11-06 reviewer 호출은 사용자가 판정 전에 중지했고 남긴 결과가 없어, 처음부터 따로 판단했다.
+  - 하지 않은 것: Maker MCP 제어·Play·refresh, 제품 파일 수정, Plan 요구·QA 판정 수정, commit·push.
+  - 런타임 사실(refresh·build 로그·Play·직접 스폰)은 coder 절("2026-11-06 coder 회차 C2 구현·기본 검증 인계")과 QA11 기록을 대조한 것이다. reviewer가 다시 실행한 결과가 아니다.
+- reviewer가 직접 한 일:
+  - git 대조: `git diff b93e2ac 105e585 -- Global RootDesk map ui`(제품 차이 없음), `git diff -M --numstat 105e585 163fc37`, `git diff 163fc37 c02aab4`, `git status --porcelain --untracked-files=all`, `git log origin/main..HEAD`.
+  - Glob `RootDesk/MyDesk/**/*.model`, Grep(`주황버섯` 제품 경로 전수, 원장 `castleenemy`).
+  - Plan §23, run C2 절, FileStructure·AssetList·GameDesign·DevelopmentRoadmap 대조.
+- 검토 버전: coder 로컬 커밋 **163fc37**. 55경로 Bundle `8ef9c6f1c60d73b7b74f5febd09932abfe6ba5866bfc577cb226c82d5ed2e080`(coder·QA11 기재).
+  - 105e585→163fc37 제품 차이는 모델 1경로뿐이다. `주황버섯.model → OrangeMushroom.model` 이름 변경(R097)이고 바뀐 줄은 1줄(+1/−1)이다. 나머지는 원장 1줄·Plan 1줄·WorkRecord 47줄이다. `.directory`·`.codeblock` 변경은 없다.
+  - 163fc37→c02aab4는 run.md와 WorkRecord(QA11 절)뿐이고 제품 변경은 없다. 작업 트리 차이는 run.md(메인)뿐이고 추적하지 않는 파일도 없다.
+  - b93e2ac→105e585의 제품 차이는 0이다. 따라서 Plan의 기준 b93e2ac와 coder가 쓴 기준 105e585는 제품상 같다. 사용자의 이름 변경은 [plan] 커밋(89fd986·105e585)에 섞이지 않았다.
+  - Bundle 문자열은 다시 계산하지 못했다. 셸 계산 명령이 프로젝트의 `.model` 셸 가드에 막혔고, 가드를 우회하지 않았다. 대신 위 git 동일성으로 확인했다. QA11은 커밋 트리와 작업 트리 양쪽에서 같은 값을 독립 계산했고, 105e585에서 222e7a04…476d도 재현했다.
+  - QA11 대상 = coder 커밋 = 이 리뷰 대상이다.
+  - 모델 내용의 의미 비교는 reviewer가 ModelBuilder로 다시 하지 않았다. 근거는 다음 세 가지다. git 기준 바뀐 줄 1줄, coder·QA11의 ModelBuilder snapshot 재귀 비교(의미 차이 Name 1곳), QA11의 원문 치환 바이트 일치.
+- 판정: **WAITING**. 고칠 제품·문서 결함은 없다(CHANGES_REQUIRED 없음, 새 결함 ID 없음). 남은 것은 Plan §23.4 사용자 V11 직접 확인뿐이다. 이 판정은 사용자 수락·회차 D 시작 승인이 아니다.
+
+#### 요구 → 변경 대조 (CombatCore-MM-12, 충족)
+- 파일: 제품 경로의 모델은 `Models/MapObjects/AttackAreaMark.model`·`Models/Monsters/Mushmom.model`·`Models/Monsters/OrangeMushroom.model` 3개다(reviewer Glob). `주황버섯.model`은 없고 Mushmom은 변경이 없다.
+- Name `OrangeMushroom`, 키 `orangemushroom`(EntryKey·Id)은 그대로다. 구성요소 14·값 45·ActionSheet 5키·Scale 1·HitComponent가 기준 판과 같다(coder·QA11 ModelBuilder, git 1줄 차이와 일치).
+- 바꾸지 않을 것도 지켰다: MonsterData·MonsterStatData·패턴 표, `OrangeMushroomAttack.mlua`, 머쉬맘 모델, 맵·Body·스크립트·규칙·수치. 105e585→163fc37 제품 차이가 위 1경로뿐인 것이 근거다.
+- 요구가 빠지거나 늘지 않았다. 사용자 요청 7번 "MonsterData에 주황버섯으로 추가"는 사용자 결정("6단계로 미루기")으로 범위에서 빠졌다. 이것은 Plan §23.1·로드맵 §6에 적혀 있다.
+
+#### Plan §23.3 완료 기준 — 같은 버전 근거
+| 기준 | coder(163fc37 작업 트리) | QA11(163fc37) | 리뷰 판단 |
+| --- | --- | --- | --- |
+| 1 Glob | PASS | PASS(백업 폴더 `.handoff-backups/…` 1건은 제품 경로 밖) | 충족. reviewer Glob도 같음 |
+| 2 ModelBuilder 비교 | 의미 차이 Name 1곳 | 105e585·b93e2ac 두 판 모두 Name 1곳, 원문 치환 바이트 일치 | 충족 |
+| 3 refresh 뒤 build 로그 | 83건 Info, 오류·경고 0 | 같음 | 충족. Play 뒤 build 로그는 다시 읽지 않았다(QA11 기재) |
+| 4 Play 회귀 | 부팅 머쉬맘, 걸친 공격(실제 클라이언트 요청 경로, hit1 fail·2~10 pass) | 부팅 머쉬맘·수치, 실제 UpArrow pass 10건, segment fail 10건(서버 ChangeState 논리 경로), F12 die 1회 정지 | 충족. 이번 변경은 MonsterManager가 스폰하지 않는 모델의 Name 한 줄이다. 그래서 대표 사례로 기준 4의 "회차 C와 같다"를 뒷받침한다고 본다. 전수는 아래 NOT_RUN |
+| 5 직접 스폰 | 성공, 구성 일치, 잔존 0, castleenemy·주황버섯 nil | 같음, 잔존 0 | 충족 |
+| 6 Grep | 주석 1건 | 같음 | 충족. reviewer Grep(Global·RootDesk·map·ui)도 `OrangeMushroomAttack.mlua:52` 주석 1건뿐 |
+| 7 git 범위 | 모델 1개 + 원장 1줄 | 같음 | 충족. reviewer git도 같음 |
+
+#### 특히 판단한 점
+1. **§23.2 절차 생략·순서 차이:** 결함이 아니다(정당).
+   - renameModel·모델 재기록을 하지 않았다: §23.2 순서 4 단서("Maker가 Name까지 바꿨으면 쓰지 않고 기록만 한다")대로다. 쓰지 않았으므로 빌더 재기록에 따른 형식 차이도 생기지 않았다.
+   - 사용자 이름 변경이 시작 지시 전에 있었다: Plan은 "시작 지시 → Stop 확인 → 사용자 이름 변경" 순서다. 실제로는 사용자가 먼저 바꿨다(run "회차 E 사용자 선택" 절). 순서 1~3의 목적(다른 제품 재저장 없음, 옛 경로·새 경로 1쌍)은 다음 근거로 충족됐다. 메인 git 확인, coder 시작 때 map01/edit 확인, reviewer의 b93e2ac→105e585 제품 차이 0. Play 중 변경이었다는 징후는 없다.
+   - planner 범위 확인 생략: Plan §23 "다음 흐름"에 planner 단계가 없다. planner 계약도 "이미 승인된 계획을 매 실행마다 다시 설계하지 않는다"이다. §23.6 미결정 3개의 처리:
+     - Name 변경 여부: 관찰로 정해졌다(run·coder 기록).
+     - 원장 범위: Plan 단서대로 처리했다.
+     - 문서 정리: 회차 종료 때 planner 몫이다.
+   - 따라서 coder 시작을 막는 미결정은 없었다. 승인 범위·완료 기준을 어기지 않았다.
+2. **원장의 낡은 castleenemy 문구:** 이번 회차 결함이 아니라 **범위 밖 기록 사항**이다.
+   - 근거 1: `git log`상 원장은 초기 커밋 29433b7 이후 163fc37에서 처음 바뀌었다. `(castleenemy)`·MHP-01~04.castleenemy·"MonsterData는 castleenemy 1행"과 실효 모델 표에 머쉬맘이 없는 점은 회차 C 이전부터 있던 상태다.
+   - 근거 2: §23.2 순서 5는 "규칙에 없으면 경로만 고치고 나머지는 메인에 보고"이고, coder는 그대로 했다.
+   - 한계: reviewer는 maplestory-skill-maker 원장 규칙 원문을 직접 확인하지 않았다(스킬 파일을 경로로 읽지 않음). 규칙 판단은 coder 인용을 따랐다. 다만 낡은 내용이 C2 전부터 있었으므로 판정은 같다.
+   - 권고(비차단): 회차 D에서 이 스킬을 다시 쓸 때 그 단계의 원장 갱신으로 실효 대상(머쉬맘)과 키 표현을 정리할지는 메인·사용자가 정한다. 이미 사용자에게 알렸다고 메인이 전했다.
+3. **회차 C 전수 회귀 NOT_RUN:** C2 판정을 막지 않는다. PASS로 세지 않는다.
+   - 근거 1: §23.3이 요구하는 회귀는 기준 4(부팅 머쉬맘·규칙 [VRF])다. 위 대표 사례로 충족했다.
+   - 근거 2: 나머지 54경로는 QA10 버전(b4adbdd)과 바이트가 같고(git), 회차 C 근거가 그대로 적용된다.
+   - 남은 NOT_RUN(QA11 그대로):
+     - 회차 C 전수(접근·복귀 구간 실제 입력, 그로기 중 사망, 패링·저스트·가드 실제 입력, V07 팝업, V10, DataSet 실패 동작)
+     - Stop 뒤 새 Play에서 시험값이 남지 않는지
+     - 대소문자 다른 키 스폰(QA11 재실행 없음, coder만 확인)
+     - 사람 손 타이밍·실기기·모바일·다중 접속·화면 육안
+4. **버전·지문:** coder·QA11·리뷰 대상이 163fc37로 같다. Bundle 재계산은 위 사유로 하지 못했고, git 동일성으로 대신했다.
+5. **문서 동기화:** 누락 결함은 없다. 남은 일은 Plan §23.6에 적힌 회차 종료 정리이며, planner가 사용자 V11 뒤에 한다. 지금 낡은 곳은 다음과 같다.
+   - Plan §23.7 상태가 "같은 버전 tester·reviewer 대기"로 남아 있다(QA11·이 리뷰 미반영).
+   - FileStructure §5 77행에 "Name은 coder가 ModelBuilder로 바꾼다"라는 예정형이 남아 있다. 실제로는 Maker가 Name까지 바꿨다. §7 98행에는 옛 경로 문구가 남아 있다.
+   - AssetList 48행 주황버섯 보관 행에 새 경로가 없다.
+   - GameDesign 132행과 로드맵 153행에 C2 예정형이 남아 있다.
+   - WorkRecord 머리말과 "현재 재개 지점"에 C2 진행이 반영되지 않았다.
+   - Plan §23.7 갱신은 이전 회차와 같이 회차 종료 planner 동기화에 맡긴다. reviewer는 Plan을 고치지 않았다.
+6. **커밋 범위:** 사용자가 직접 바꾼 범위 밖 파일은 섞이지 않았다.
+   - 163fc37의 제품 변경은 사용자 Maker 이름 변경 1경로(이번 범위)뿐이다.
+   - 같은 시기 [plan] 커밋 105e585 본문에도 "주황버섯 모델 이름 변경은 회차 C2 범위라 포함하지 않음"이라고 적혀 있고, git으로도 확인된다.
+   - push 전 커밋은 163fc37·c02aab4 두 개다. 회차 종료 커밋 때 메인이 함께 push한다.
+
+#### 다음 행동
+- 사용자(V11, Plan §23.4):
+  - Maker 작업 공간 창에 주황버섯 모델이 `OrangeMushroom` 하나로만 보이는지(옛 이름 항목이 없는지). AI 근거는 디스크·런타임 등록 1개, `castleenemy`·`주황버섯` 스폰 nil뿐이고 창 화면은 보지 못했다.
+  - 플레이 화면이 회차 C와 같은지(머쉬맘, 주황버섯 미출현).
+- planner(V11 수락 뒤 회차 종료): 위 5번 문서를 정리한다.
+- 메인: 회차 종료 커밋 전 비밀값 검사 → push. 원장 정리 시점을 정한다(위 2번).
+- coder·tester: 이번 범위의 추가 작업은 없다. V11에서 옛 항목이 보이면 Plan §23.2 대안(디스크 직접 이동·삭제 금지, 사용자 Maker 정리)대로 다시 판단한다.
+
 ### 2026-11-06 독립 리뷰 — 회차 C(CombatCore-MM-01~06·V11-F15) WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). 하지 않은 것: Maker MCP 제어·Play, 제품 파일 수정, Plan 요구·QA 판정 수정, commit·push. 런타임 사실은 coder 절("2026-11-05 coder 회차 C 구현·기본 검증 인계")과 QA10 기록을 대조한 것이며, reviewer가 다시 실행한 결과가 아니다. reviewer가 직접 한 일:
   - `git diff e94b981 b4adbdd`, `git diff 5a605ba b4adbdd`, `git status`로 소스 대조
