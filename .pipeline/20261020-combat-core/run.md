@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: WAITING_USER
+- 상태: PAUSED
 - 갱신: 2026-11-08 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (회차 D 사용자 시작 지시 대기)
-- 다음 행동·대기 사유: WAITING_USER — 회차 C2 완료(7a796aa). 회차 D(Plan §22, 기준 7a796aa, MM-07~11)는 사용자 시작 지시 대기. 그 뒤 회차 E(§24, 시작 때 planner가 E-Q1 답 반영). 범위 밖 남은 사항: 원장 castleenemy 문구(정리 시점 사용자 결정).
+- 현재 담당: 없음 (회차 D [code] 로컬 커밋 뒤 사용자 일시정지)
+- 다음 행동·대기 사유: PAUSED — 재개 시 먼저 사용자 판단 2건: (1) 22.10 정렬 초과(접근 도중 슬로우 시작·종료 때 클립 재시작) 처리, (2) Maker 로그 버퍼 포화로 남은 프로브를 위해 로그 비우기 허용 여부. 그 뒤 같은 버전 tester(대상 e5f7249, 57경로 a7bc3d73…539d) → reviewer → [review] 커밋·push(e5f7249·[ops] 포함). 범위 밖 남은 사항: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -419,3 +419,23 @@
 - 사용자 "V11 확인 완료"(Plan §23.4: 작업 공간에 OrangeMushroom 하나만, 플레이 화면 회차 C와 같음). 회차 C2 수락.
 - msw-planner 호출: 회차 종료 문서 정리(Plan §23.7·FileStructure·AssetList·GameDesign·로드맵·WorkRecord 머리말). 회차 D 시작 아님.
 - planner 정리 완료: Plan(§8·§9·§21·§22 기준 7a796aa 확정·§22.14·§23.6·§23.7 ✅), FileStructure, AssetList, GameDesign, 로드맵 §5 재개 지점, WorkRecord 머리말·재개 지점. §24·규칙·수치·제품 변경 없음(메인 git 확인). [plan] 커밋·push.
+
+## 2026-11-08 회차 D 시작
+- 사용자 "회차 D 시작". Plan §22(CombatCore-MM-07~11), 기준 7a796aa. 승인 Plan이 있어 planner는 범위 확인만 한다(§22.15 재스폰 프레임 범위 처리 방식 포함).
+- planner 범위 확인 결과: 규칙·수치·범위 미결정 없음. 22.7에 OrangeMushroomAttack.mlua 명시(접근 클립·착지 계산 위치, 범위 확대 아님). §22.15 처리 원칙: 서버 클립 지정 시점에 프레임 범위를 전체로 맞춘 뒤 SpriteRUID(PlayDieOnce 선례), die 고정 가드 유지, 모델 값 추가 없음. 선택 항목 _T.resolveIndex 제거는 제외(22.13 부채). 바뀐 파일: Plan §22.7·22.13·22.14·22.15, WorkRecord 재개 지점.
+- D-Q1(사용자 질문): MonsterSoundData .userdataset 생성 방식. Plan 22.5 "Maker UI 우선, 막히면 멈춤"인데 AI Maker 도구에 DataSet 생성 기능이 없음. 메인 확인: 회차 B(1b4f4ee)에서 PlayerBaseStatData·MonsterStatData .userdataset을 기존 래퍼 형식으로 수동 작성해 로드 [VRF] 확인된 선례 있음. 답은 회차 E PlayerActionFxData에도 적용.
+- D-Q1 사용자 답(2026-11-08): "AI 수동 작성"(추천안). coder가 회차 B와 같이 기존 .userdataset 래퍼 형식으로 수동 작성 → Refresh 뒤 로드 [VRF]로 인식 확인, 인식 실패 때만 멈춤. 회차 E PlayerActionFxData에도 같은 절차 적용. planner가 Plan 22.5·22.9에 반영.
+- planner D-Q1 반영: Plan 22.5·22.9 4단계·22.10(수동 작성 .userdataset 미인식 때만 중단)·22.14, WorkRecord 재개 지점. 남은 사용자 질문 없음 → msw-coder 호출.
+- coder 22.10 중단(구현 전, 제품 변경 0, Refresh 0, Maker map01/edit 사용 종료). 측정: attack1·skill1 각 5프레임 Delay 0.80/0.20/0.05/0.05/0.75 = 1.85초, 피벗 y 0/-88/-70/-8/0px(클립 자체 도약 최대 0.88). 이펙트 15프레임 1.85초, 충격파 f8~f13 = 1.1~1.8초(판정 0.5초보다 0.6초 늦음). 클립 착지(f3 끝)도 1.1초. 22.15 기준선: DoSpawn 재스폰 서버 0-0 재현, 클라이언트 0-2147483647. 기준 Bundle 8ef9c6f1…e080 불변.
+- 메인 판단: 클립 착지·이펙트 충격파가 모두 1.1초로 원래 맞물려 있음. coder 선택지 2(전체 1.85초를 0.5초에 넣는 ×3.7)는 착지가 0.3초로 판정보다 이르게 되어 부적합. 판정 0.5초에 착지·충격파를 맞추는 ×2.2(1.1÷0.5) 또는 텔레그래프를 1.1초로 늘리는 안을 사용자에게 질문(D-Q2).
+- D-Q2 사용자 답(2026-11-08): "재생 2.2배로 판정에 맞춤"(추천안). attack1·skill1 클립과 3칸 이펙트를 약 2.2배(클립 착지·충격파 1.1초 ÷ 판정 0.5초)로 재생해 착지·충격파를 판정 시각에 맞춘다. 승인 수치(TelegraphLeadSec 0.5·JumpDuration 0.5·JumpHeight 0.8·판정창)는 그대로. 클립 도약 0.88 + 점프 높이 0.8 겹침은 기존 22.10대로 V11. planner가 Plan 22.4·22.6·22.10 등에 반영.
+- planner D-Q2 반영: 패턴 표 새 열 MotionPlayRate(빈 값 1, left/right/guard 2.2, any/special 1), 실제 배율 = MotionPlayRate × ActionRate(클립·이펙트), 착지 때 stand(f4 잘림은 V11·부채), 22.10 정렬 기준 ±0.05초, 22.8 자동 9번 신설, 22.13 부채 3행. 22.7에 MonsterStateControl.mlua 조건부 추가(슬로우 PlayRate 저장·복원 부분만, 규칙·수치 불변, MonsterAttackMotion만으로 해결되면 미변경).
+- 메인 판단: MonsterStateControl 조건부 추가는 D-Q2(사용자 승인) 구현에 필요한 결과이고 규칙·수치 변경이 없어 승인 범위 안으로 수락. coder 재개(같은 작업자, 측정 재사용).
+- coder 재개 결과(2026-11-08): 22.7 범위 안 변경(Mushmom 모델 ActionSheet 2키·패턴 CSV·MonsterSoundData 수동 작성 + Maker 생성 DataSet.directory·mlua 8개, MonsterStateControl 조건부 수정: 슬로우 PlayRate 저장·복원을 플래그 + ApplyClipRate로). 22.8 1·2·3·5·6·7·8 PASS, 9 슬로우 없음(f4 시작 0.497~0.500초 vs 판정 0.517~0.534초)·접근 전체 슬로우·die PASS. 이펙트 서버 PlayEffect 클라이언트 표시 확인(옅음). 22.15 재스폰 서버 0-0 재현 → 적용 뒤 0-2147483647·클라이언트 f0→f3 진행.
+- coder 미결: 접근 도중 슬로우 시작·종료 시 PlayRate 변경으로 클라이언트 클립이 f0부터 재시작 → 22.10 ±0.05초 초과(S1 약 0.11초, S2 약 0.4초 늦음). 현재 값(슬로우 2.0초·AttackInterval 3.0)에선 자연 흐름에 안 나옴. coder 추천: 부채로 수락하고 tester 9번 슬로우 시험을 조정.
+- 미실시: 22.8 4 통계·경계 프로브, 같은 RUID 재지정 재시작(Maker 로그 버퍼 764건에서 더 기록 안 됨, maker_clear_logs 미호출). Maker 최종 map01/edit.
+- 메인 확인: 변경 파일 22.7 범위 안, .codeblock 변경 없음. [code] 로컬 커밋 e5f7249(57경로 Bundle a7bc3d7395d636863c92ef5e6af853a12003ba4cd34a925eb9c534c36b32539d). Mushmom 모델은 빌더 재기록으로 git diff가 파일 전체로 보이나 의미 변경 2키(coder 기재).
+
+## 2026-11-08 회차 D 사용자 일시정지 ([code] 로컬 커밋 뒤)
+- 사용자 "로컬 커밋 완료 후 작업 일시 정지" — 로컬 커밋 단계를 마친 뒤 멈추라는 뜻. coder 종료 확인 → [code] e5f7249 → 이 [ops] 로컬 커밋 후 정지. tester·reviewer 호출 안 함.
+- push 보류: 리뷰 전 [code] e5f7249가 함께 올라가므로 회차 종료 커밋 때 함께 push(회차 C2 선례).
