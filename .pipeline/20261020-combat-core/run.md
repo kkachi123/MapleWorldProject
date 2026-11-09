@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: PAUSED
-- 갱신: 2026-11-08 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음 (회차 D [code] 로컬 커밋 뒤 사용자 일시정지)
-- 다음 행동·대기 사유: PAUSED — 재개 시 먼저 사용자 판단 2건: (1) 22.10 정렬 초과(접근 도중 슬로우 시작·종료 때 클립 재시작) 처리, (2) Maker 로그 버퍼 포화로 남은 프로브를 위해 로그 비우기 허용 여부. 그 뒤 같은 버전 tester(대상 e5f7249, 57경로 a7bc3d73…539d) → reviewer → [review] 커밋·push(e5f7249·[ops] 포함). 범위 밖 남은 사항: 원장 castleenemy 문구.
+- 상태: WAITING_USER
+- 갱신: 2026-11-09 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 (회차 D V11·REV-D-O1 처리 결정)
+- 다음 행동·대기 사유: WAITING_USER — 회차 D 리뷰 WAITING(결함 없음, 대상 a5efe69). 사용자 결정: 관찰 REV-D-O1(특정 TelegraphLeadSec·MotionPlayRate 조합에서 공격이 경고 없이 취소될 수 있음)을 V11 전에 고칠지. 그 뒤 사용자 V11(22.8 V11 1~9) + 속도 조절 항목 안내·설정(22.16.9) → 수락 뒤 planner 회차 종료 정리(리뷰 목록). 범위 밖: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -439,3 +439,29 @@
 ## 2026-11-08 회차 D 사용자 일시정지 ([code] 로컬 커밋 뒤)
 - 사용자 "로컬 커밋 완료 후 작업 일시 정지" — 로컬 커밋 단계를 마친 뒤 멈추라는 뜻. coder 종료 확인 → [code] e5f7249 → 이 [ops] 로컬 커밋 후 정지. tester·reviewer 호출 안 함.
 - push 보류: 리뷰 전 [code] e5f7249가 함께 올라가므로 회차 종료 커밋 때 함께 push(회차 C2 선례).
+
+## 2026-11-08 사용자 이펙트·모션 매칭 설명 (일시정지 중)
+- 사용자 설명: 원작 순서는 attack1 1프레임 → effect 1~6(머쉬맘 눈빛) → 나머지 공격 모션 → 나머지 effect(착지 뒤 주변 먼지). 비슷하게 맞으면 무시, 아니면 다음 작업 시작 때 조사·점검 요청.
+- 메인 대조(coder 측정값 기준): 순서·시각은 맞음. 1배 기준 attack1 f0 0~0.8초 = effect f0~f6 기 모으기 0~0.8초, attack1 f1~f3(도약·착지) 0.8~1.1초 = effect f7 빈 프레임, 착지 1.1초 = effect f8 먼지 시작. 지금 구현은 모션·이펙트를 같은 순간·같은 배율(2.2×ActionRate)로 시작하므로 순서 유지. skill1은 attack1과 프레임·Delay·피벗 동일.
+- 재개 때 점검할 것: (1) 이펙트 위치 — 지금은 시작부터 착지 지점(3칸 Pos2 x·지면 y)에 고정 재생이라, 눈빛(f0~f6)이 머쉬맘 얼굴이 아닌 빈 착지 지점에 보일 가능성(원작은 제자리 공격·몹 기준). 실제 화면과 이펙트 원점 기준으로 조사 후 선택지를 사용자에게. (2) 착지 때 stand로 바뀌어 attack1 f4 마무리가 잘림(22.13 부채). (3) 접근 도중 슬로우 변화 때 클립 재시작으로 순서가 깨짐(미결 1번과 같은 건). 참고: 이펙트 원 소속은 attack1(attack1/info/effect)이나 22.1 결정상 2칸(attack1)은 이펙트 없음 — 바꾸지 않고 필요하면 재개 때 사용자 확인.
+- 사용자 추가 요구(2026-11-08): "눈빛 중에는 점프 시작이 아니므로 점프 상태이면 안 됨." → 2칸·3칸(attack1·skill1) 접근에서 기 모으기(f0, 눈빛 effect f0~f6) 동안 제자리 유지, 그 뒤 도약(f1~f3) 구간에서만 실제 이동·점프. 현재 구현(e5f7249)은 모션 시작과 동시에 0.5초 점프 이동이라 요구와 다름 → 재개 때 planner 재설계 대상(D-Q2 2.2배 결정과 같이 다시 봄).
+- 메인 사전 분석: 판정 0.5초·2.2배 유지 시 눈빛 제자리 약 0.36초 + 실제 점프 약 0.14초(f1~f3 0.3초÷2.2)라 점프가 매우 빠름. JumpDuration 0.5·TelegraphLeadSec 0.5는 22.12 고정 수치라 바꾸면 사용자 수치 결정 필요. 이펙트 위치는 `_EffectService:PlayEffectAttached`(EffectService.d.mlua 12행, 몬스터에 붙여 따라감)로 눈빛은 얼굴·먼지는 착지 지점에 맞출 가능성 있음(재개 때 coder 확인).
+- 사용자 질문 "공격 속도 조절법" 답(메인): 공격 빈도 = MonsterStatData.csv AttackInterval(mushmom 3.0초), 모션·이펙트 재생 속도 = MonsterAttackPatternData.csv MotionPlayRate(행별), 판정까지 시간 = 같은 표 TelegraphLeadSec(행별 0.5, 전투 규칙 수치), 착지·판정 정렬식 MotionPlayRate = 1.1 ÷ TelegraphLeadSec. 점프 시간·높이(JumpDuration 0.5·JumpHeight 0.8)는 표가 아닌 OrangeMushroomAttack 속성. 절차 CSV 수정 → Maker Refresh → Play.
+- 사용자 지시(2026-11-08): "너의 다음 작업으로 하고, 내가 점검하는 단계 때 다시 속도 조절 항목 설정은 해줘. 아직 작업 재개는 하지마." → 위 재설계를 재개 첫 작업으로 등록, V11 단계에 속도 조절 항목 안내·설정 포함. 재개 전까지 에이전트 호출 없음.
+
+## 2026-11-09 회차 D 재개
+- 사용자 "작업 재개". 첫 작업으로 msw-planner에 재설계 요청(눈빛 중 제자리·도약 프레임에서만 점프, 이펙트 위치, 남은 미결 2건 질문 정리). 대상 기준 e5f7249.
+- planner 재설계(Plan §22.16 신설, 22.4·22.6·22.7·22.8·22.10·22.12·22.13·22.14 대체 표시): 2·3칸 순서 windup(f0·눈빛 제자리) → 시각 W에 실제 점프 → 착지 = 판정 = 먼지. 새 열 JumpStartFrame(1/1/빈/빈/1). 이펙트 2분할(눈빛 f0~6 공격 시작 때 머쉬맘 위치, 먼지 f8~끝 판정 때 Pos2·지면) — 메인이 EffectService.d.mlua에서 StartFrameIndex·EndFrameIndex 옵션 존재 확인.
+- 사용자 답(2026-11-09):
+  - D-Q3 시간 구조: **원작 속도 1배(판정 1.1초)** — 2·3칸 행 TelegraphLeadSec 0.5→1.1, MotionPlayRate 2.2→1. 제자리 0.8초 + 점프 0.3초. (D-Q2 2.2배는 이 행들에서 대체, planner 추천 (가)와 다름)
+  - D-Q4 눈빛 중 피격: **맞는다**(원칙대로, 실제 점프 구간만 피격 불가).
+  - D-Q5 2·3칸 실제 점프 높이: **수평 이동만(높이 0)**. 1칸·복귀 점프 0.8 유지.
+  - D-Q6 접근 중 슬로우 변화 클립 재시작: **지금 고침**(현재 프레임부터 이어 재생, planner 추천 부채안과 다름. 가능 여부 미확인 → coder 확인, 안 되면 중단·보고).
+  - D-Q7 Maker 로그: **AI가 비우는 것 허용** — 이번 회차 coder·tester가 각자 시작 때 1회, 지우기 전 건수·시간 범위만 기록(이번 회차 한정 허용, 상시 규칙은 그대로).
+- 다음: planner가 답을 Plan에 확정 반영(수치·D-Q6 구현 계약·중단 조건) → coder.
+- planner 확정 반영: Plan 22.4·22.6·22.8·22.10·22.12·22.13·22.14, 22.16.3~22.16.12(D-Q6 계약: 후보 1 서버 프레임 단위 구동 → 후보 2 변경 순간 재고정, 둘 다 실패면 중단). 새 사용자 미결정 없음. msw-coder 재작업 호출(같은 작업자).
+- coder 재작업 결과(2026-11-09): 중단 없음. 22.16.7 10~16 PASS(W 0.806~0.814초·클라이언트 f1 ±0.01초, 착지=f4=판정 0.001초 안, 2·3칸 높이 0, 눈빛 중 피격, 이펙트 2분할 로그·구간 옵션 화면 확인, D-Q6 후보 1 서버 프레임 구동으로 슬로우 S1~S5 재시작 없음). 22.8 회귀·누적 경계·같은 RUID 재시작 PASS. 미실시: 2만 회 분포(스크립트 속도), 이펙트 위치·방향 육안, approach·return 실입력 차단. MonsterStateControl 이번엔 미변경. Maker 로그 clear 1회(D-Q7, 전부 coder 세션 로그). Maker map01/edit.
+- 메인 확인: 변경 22.7 범위 안. [code] 로컬 커밋 a5efe69(57경로 Bundle 8dccccf58c6138d16e5b84277fa275c6a982c8d397e487d85e1f55e33e6ab738, DataSet.directory Maker 자동 저장 포함). msw-tester 호출.
+- tester QA12(2026-11-09, 대상 a5efe69, Bundle 8dccccf5…b738 커밋·작업 트리 재계산 일치): 실행 기준 전부 PASS, FAIL·NEEDS_DECISION·새 결함 없음. 22.8-4 분포 3표본(2만+) 최대 편차 -0.50%p PASS, 22.16.7 10~16 PASS(D-Q6 8회 재시작 없음), 제자리 피격·approach/return 차단 실입력 PASS, 눈빛 이펙트 머쉬맘 눈 위치 스크린샷 PASS. NOT_RUN: 먼지 위치·방향 육안, 판정 전 취소 2단계 재확인, 재스폰 개체 die, 사람 손 타이밍·실기기, 효과음 청취. D-Q7 로그 clear 1회(123건). Maker map01/edit. 메인 확인: 변경은 WorkRecord QA12 절뿐. msw-reviewer 호출.
+- reviewer 판정 WAITING(2026-11-09, WorkRecord "2026-11-09 독립 리뷰 — 회차 D(CombatCore-MM-07~11) WAITING"). 결함·새 ID 없음. Bundle 3커밋 재계산 일치, 범위 22.7(+22.16.6) 안, 모델 의미 차이 attack1·skill1 2키, 22.12 승인 외 수치 변경 없음, D-Q7 로그 비우기 허용 범위 안, die 가드·22.15 유지, modelId 하드코딩 없음, 비밀값·경로 없음. 관찰 REV-D-O1(비차단): BeginWindup이 W+(lead−W)를 돌려줘 W<lead/2이면 1 ulp 커져 Monster_Attack의 lead<duration 검사로 그 행 공격이 경고 없이 IDLE 취소 가능(현재 값에선 미발생, 예 0.9+2.5에서 발생). 회차 종료 planner 정리 목록은 리뷰 절.
+- 메인 확인: 변경은 WorkRecord 리뷰 절뿐. [review] WAITING 커밋, 비밀값 검사 뒤 e5f7249·f82c549·a5efe69와 함께 push.
