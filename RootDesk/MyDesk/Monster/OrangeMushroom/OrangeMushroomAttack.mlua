@@ -3,7 +3,10 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 
 	property number JumpHeight = 0.8
 	property number JumpDuration = 0.5
-	-- 구간별 피격 가능 선언: 접근·복귀 점프 중에는 플레이어의 타격이 막힌다.
+	-- 2·3칸 접근(실제 점프)의 높이. 0이면 수평 이동만이고 높이는 클립이 그린 도약이 담당한다(D-Q5). 1칸 접근·복귀 점프는 JumpHeight를 쓴다.
+	property number LeapJumpHeight = 0
+	-- 구간별 피격 가능 선언: 제자리 기 모으기(windup)는 맞고, 접근·복귀 점프 중에는 플레이어의 타격이 막힌다.
+	property boolean WindupHittable = true
 	property boolean ApproachHittable = false
 	property boolean ReturnHittable = false
 	@HideFromInspector
@@ -27,37 +30,74 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
+	method boolean IsMotionReady()
+		-- 점프 이동의 공통 준비 조건: 기준 위치 확보·유효한 시간 속성·정지 중 아님.
+		if not self.HomeCaptured or self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then return false end
+		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return false end
+		return true
+	end
+
+	@ExecSpace("ServerOnly")
 	method number JumpToLocalX(number targetLocalX, string clip, number motionRate)
-		-- Preserve the authored arc, rejecting an unready or invalid motion. 접근은 패턴의 클립·배율을, 복귀는 jump·배율 1을 쓴다.
-		if not self.HomeCaptured or self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then return -1 end
-		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return -1 end
+		-- Preserve the authored arc, rejecting an unready or invalid motion. 1칸 접근은 패턴의 클립·배율을, 복귀는 jump·배율 1을 쓰며 둘 다 JumpDuration·JumpHeight 점프다.
+		if not self:IsMotionReady() then return -1 end
 		self.JumpStartX = self.Entity.TransformComponent.Position.x
 		self.JumpTargetX = targetLocalX
 		self.JumpStartTime = self._T.control:GetActionTime()
+		self._T.activeDuration = self.JumpDuration
+		self._T.activeHeight = self.JumpHeight
+		self._T.windupPending = false
 		self.JumpActive = true
 		self:SetMotionClip(clip, motionRate)
 		return self.JumpDuration
 	end
 
 	@ExecSpace("ServerOnly")
+	method number BeginWindup(number targetLocalX, string clip, number motionRate, number windupSec, number jumpSec)
+		-- 2·3칸 접근: 클립 f0부터 제자리에서 기 모으기(windup)를 하고, 액션 시계로 windupSec가 지나면 실제 점프(approach)를 jumpSec 동안 한다. 착지 = 판정 = windupSec + jumpSec.
+		if not self:IsMotionReady() or jumpSec <= 0 then return -1 end
+		self.JumpStartX = self.Entity.TransformComponent.Position.x
+		self.JumpTargetX = targetLocalX
+		self.JumpStartTime = self._T.control:GetActionTime() + windupSec
+		self._T.leapStart = self.JumpStartTime
+		self._T.activeDuration = jumpSec
+		self._T.activeHeight = self.LeapJumpHeight
+		self.JumpActive = false
+		self._T.windupPending = true
+		self.Segment = "windup"
+		if not self:StartDrivenClip(clip, motionRate) then
+			self:CancelMotion()
+			return -1
+		end
+		return windupSec + jumpSec
+	end
+
+	@ExecSpace("ServerOnly")
 	method boolean IsSegmentHittable(string segment)
-		-- 접근·복귀 점프 구간의 선언을 이 모션의 속성으로 돌려준다. 그 밖의 구간은 맞는다.
+		-- 구간별 선언을 이 모션의 속성으로 돌려준다. 그 밖의 구간은 맞는다.
+		if segment == "windup" then return self.WindupHittable end
 		if segment == "approach" then return self.ApproachHittable end
 		if segment == "return" then return self.ReturnHittable end
 		return true
 	end
 
 	@ExecSpace("ServerOnly")
-	method number PerformAttackMotion(string cells, number minX, number maxX, string clip, number motionRate, number landingX)
+	method number PerformAttackMotion(string cells, number minX, number maxX, string clip, number motionRate, number landingX, number leadSec, number jumpStartFrame)
 		-- 주황버섯은 점프 한 번으로 영역 중앙에 착지한다(2칸은 두 칸의 중간, 1칸은 그 칸). 이 규칙은 이 몬스터 모션 한정이다.
-		-- 착지 x는 서버가 고정해 넘긴다(1·2칸은 영역 중앙 그대로, 3칸은 Pos2 기준점). 클립 키와 재생 배율도 패턴 표에서 온다.
+		-- 착지 x는 서버가 고정해 넘긴다(1·2칸은 영역 중앙 그대로, 3칸은 Pos2 기준점). 클립 키·재생 배율·점프 시작 프레임도 패턴 표에서 온다.
+		-- 점프 시작 프레임이 0이면 시작과 동시에 JumpDuration 점프(1칸), 1 이상이면 그 프레임 전까지 제자리(windup)이고 남은 시간이 실제 점프다(2·3칸).
 		if minX ~= minX or maxX ~= maxX or minX > maxX or landingX ~= landingX then return -1 end
 		-- Convert the target world X to this entity's parent-local X.
 		local transform = self.Entity.TransformComponent
 		local targetLocalX = transform.Position.x + landingX - transform.WorldPosition.x
-		local duration = self:JumpToLocalX(targetLocalX, clip, motionRate)
-		if duration >= 0 then self.Segment = "approach" end
-		return duration
+		if jumpStartFrame <= 0 then
+			local duration = self:JumpToLocalX(targetLocalX, clip, motionRate)
+			if duration >= 0 then self.Segment = "approach" end
+			return duration
+		end
+		local windup = self:GetWindupSeconds(clip, jumpStartFrame, motionRate)
+		if windup == nil or windup >= leadSec then return -1 end
+		return self:BeginWindup(targetLocalX, clip, motionRate, windup, leadSec - windup)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -71,8 +111,11 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	@ExecSpace("ServerOnly")
 	method void CompleteMotion()
 		-- The timer and update loop converge on one exact endpoint.
-		if not self.JumpActive then return end
+		if not self.JumpActive and not self._T.windupPending then return end
+		-- 착지 시각까지의 프레임(f4 시작)을 먼저 올린 뒤 stand로 바꾼다.
+		self:TickClip()
 		self.JumpActive = false
+		self._T.windupPending = false
 		self.Segment = "none"
 		local body = self.Entity.RigidbodyComponent
 		if isvalid(body) then body:SetPosition(Vector2(self.JumpTargetX, self.Home.y)) end
@@ -82,8 +125,9 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 
 	@ExecSpace("ServerOnly")
 	method void CancelMotion()
-		-- Never write stand over HIT or DEAD while cancelling. 클립은 건드리지 않고 접근 배율만 1로 돌린다.
+		-- Never write stand over HIT or DEAD while cancelling. 클립은 건드리지 않고 접근 배율·프레임 구동만 정리한다.
 		self.JumpActive = false
+		self._T.windupPending = false
 		self.Segment = "none"
 		self:ResetClipRate()
 	end
@@ -102,19 +146,30 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			end
 			return
 		end
-		if not self.JumpActive then return end
+		if not self.JumpActive and not self._T.windupPending then return end
 		local state = self.Entity.StateComponent
 		if not isvalid(state) or state.CurrentStateName ~= "ATTACK" then
 			self:CancelMotion()
 			return
 		end
-		local t = math.max(0, (self._T.control:GetActionTime() - self.JumpStartTime) / self.JumpDuration)
+		-- 접근 클립은 서버가 액션 시계로 프레임을 올린다(22.16.12).
+		self:TickClip()
+		local now = self._T.control:GetActionTime()
+		if self._T.windupPending then
+			-- 제자리 구간: 움직이지 않는다. 도약 프레임 시작 시각이 되면 실제 점프로 넘어간다.
+			if now < self._T.leapStart then return end
+			self._T.windupPending = false
+			self.JumpActive = true
+			self.Segment = "approach"
+			if Environment:IsMakerPlay() then log("[VRF] leap start x=" .. string.format("%.3f", self.Entity.TransformComponent.WorldPosition.x) .. " duration=" .. string.format("%.3f", self._T.activeDuration) .. " height=" .. string.format("%g", self._T.activeHeight) .. " clock=" .. self:ClockText()) end
+		end
+		local t = math.max(0, (now - self.JumpStartTime) / self._T.activeDuration)
 		if t >= 1 then
 			self:CompleteMotion()
 			return
 		end
 		local x = self.JumpStartX + (self.JumpTargetX - self.JumpStartX) * t
-		local y = self.Home.y + 4 * self.JumpHeight * t * (1 - t)
+		local y = self.Home.y + 4 * self._T.activeHeight * t * (1 - t)
 		body:SetPosition(Vector2(x, y))
 	end
 

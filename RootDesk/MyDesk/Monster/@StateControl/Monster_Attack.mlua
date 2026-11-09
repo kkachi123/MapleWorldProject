@@ -44,14 +44,14 @@ script Monster_Attack extends StateType
 		-- 공통 계층은 서버가 고정한 영역(칸 집합·x 범위)만 모션 담당에 넘기고, 착지 방식은 몬스터별 모션이 정한다.
 		-- 패턴 표의 접근 클립·재생 배율과 서버가 고정한 착지 x(3칸은 Pos2)도 함께 넘긴다.
 		local pattern = snapshot.pattern
-		local duration = self.motion:PerformAttackMotion(snapshot.area.cells, snapshot.area.minX, snapshot.area.maxX, pattern.MotionClip, pattern.MotionPlayRate, snapshot.area.landingX)
+		local duration = self.motion:PerformAttackMotion(snapshot.area.cells, snapshot.area.minX, snapshot.area.maxX, pattern.MotionClip, pattern.MotionPlayRate, snapshot.area.landingX, pattern.TelegraphLeadSec, pattern.JumpStartFrame)
 		if duration < 0 or duration ~= duration or duration == math.huge or snapshot.pattern.TelegraphLeadSec < duration then
 			self:CancelExecution()
 			self.ParentComponent:ChangeState("IDLE")
 			return
 		end
-		-- 공격 모션(접근 점프) 시작과 함께 이펙트를 한 번 재생한다. 빈 EffectClip이면 호출하지 않는다.
-		self.motion:PlayAttackEffect(pattern.EffectClip, snapshot.area.landingX, pattern.MotionPlayRate)
+		-- 공격 시작과 함께 이펙트 1단계(눈빛)를 머쉬맘 현재 위치에 재생한다. 빈 EffectClip이면 호출하지 않는다.
+		self.motion:PlayWindupEffect(pattern.EffectClip, pattern.MotionPlayRate)
 		self.attackDue = self.control:GetActionTime() + snapshot.pattern.TelegraphLeadSec
 	end
 
@@ -82,6 +82,9 @@ script Monster_Attack extends StateType
 		if self.attackDue < 0 or not self:IsCurrent(id) then return end
 		self.attackDue = -1
 		self.motion:CompleteMotion()
+		-- 이펙트 2단계(먼지)는 착지(판정) 때 착지 x·지면 y에 재생한다. 판정 전에 취소된 공격은 이 줄에 오지 못한다(IsCurrent).
+		local executing = self.attack._T.snapshot
+		if executing ~= nil then self.motion:PlayDustEffect(executing.pattern.EffectClip, executing.area.landingX, executing.pattern.MotionPlayRate) end
 		self.attack:ResolveAttack()
 		if not self:IsCurrent(id) then return end
 		-- 패링 성공이면 처음 위치 복귀를 마친 뒤 그로기에 들어간다(복귀 중에는 그로기가 아니다).

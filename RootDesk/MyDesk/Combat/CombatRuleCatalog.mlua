@@ -93,6 +93,12 @@ script CombatRuleCatalog extends Logic
 			if rateRaw ~= nil and not (type(rateRaw) == "string" and not self:HasText(rateRaw)) then motionRate = tonumber(rateRaw) end
 			if not self:IsFinite(motionRate) or motionRate <= 0 then self:WarnOnce("invalid motion play rate"); return nil end
 			data.MotionPlayRate = motionRate
+			-- 실제 점프가 시작되는 접근 클립 프레임(0부터). 빈 값 = 0 = 시작과 동시에 점프. 프레임 수·제자리 시간과의 관계는 스폰 때 모션 담당이 읽은 클립으로 MonsterManager가 확인한다.
+			local frameRaw = row.JumpStartFrame
+			local jumpFrame = 0
+			if frameRaw ~= nil and not (type(frameRaw) == "string" and not self:HasText(frameRaw)) then jumpFrame = tonumber(frameRaw) end
+			if not self:IsFinite(jumpFrame) or jumpFrame < 0 or jumpFrame ~= math.floor(jumpFrame) then self:WarnOnce("invalid jump start frame"); return nil end
+			data.JumpStartFrame = jumpFrame
 			ids[data.id] = true
 			if result.patterns[data.modelId] == nil then result.patterns[data.modelId] = {} end
 			table.insert(result.patterns[data.modelId], data)
@@ -204,7 +210,7 @@ script CombatRuleCatalog extends Logic
 		if self._T.attempted then return self.Ready end
 		self._T.attempted = true
 		local ruleRows = self:ReadRows(_DataService:GetTable("CombatRuleData"), {"id", "JustWindowSec", "ParryWindowSec", "GuardDamageRate", "CounterWindowSec", "CounterDamageMultiplier", "SlowDurationSec", "SlowRate", "GroggyDurationSec"})
-		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget", "MotionClip", "AttackSound", "EffectClip", "MotionPlayRate"})
+		local patternRows = self:ReadRows(_DataService:GetTable("MonsterAttackPatternData"), {"id", "modelId", "ResponseType", "AttackAttribute", "AreaFromAnchor", "AreaToAnchor", "AreaPaddingX", "AreaHeight", "AreaOffsetY", "TelegraphLeadSec", "Weight", "AreaTarget", "MotionClip", "AttackSound", "EffectClip", "MotionPlayRate", "JumpStartFrame"})
 		local statRows = self:ReadRows(_DataService:GetTable("MonsterStatData"), {"id", "MaxHp", "AttackDamage", "AttackInterval"})
 		if ruleRows == nil or patternRows == nil then self:WarnOnce("DataSet or required columns missing"); return false end
 		if statRows == nil then self:WarnOnce("MonsterStatData missing or required columns missing"); return false end
@@ -229,7 +235,7 @@ script CombatRuleCatalog extends Logic
 			for modelId, list in pairs(result.patterns) do
 				log("[VRF] " .. self:FormatWeights(modelId, list))
 				for _, row in ipairs(list) do
-					log("[VRF] pattern row id=" .. row.id .. " clip=" .. row.MotionClip .. " rate=" .. string.format("%g", row.MotionPlayRate) .. " sound=" .. (row.AttackSound ~= "" and string.sub(row.AttackSound, 1, 8) or "-") .. " effect=" .. (row.EffectClip ~= "" and string.sub(row.EffectClip, 1, 8) or "-") .. " (no default row, blank = none/rate 1)")
+					log("[VRF] pattern row id=" .. row.id .. " clip=" .. row.MotionClip .. " rate=" .. string.format("%g", row.MotionPlayRate) .. " jumpFrame=" .. string.format("%g", row.JumpStartFrame) .. " lead=" .. string.format("%g", row.TelegraphLeadSec) .. " sound=" .. (row.AttackSound ~= "" and string.sub(row.AttackSound, 1, 8) or "-") .. " effect=" .. (row.EffectClip ~= "" and string.sub(row.EffectClip, 1, 8) or "-") .. " (no default row, blank = none/rate 1)")
 				end
 			end
 			if soundRows ~= nil and sounds ~= nil then

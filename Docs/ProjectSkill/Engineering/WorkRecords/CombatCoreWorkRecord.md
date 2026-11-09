@@ -7,6 +7,8 @@
 
 ## 현재 재개 지점
 
+2026-11-09 회차 D 재개(planner, 문서만): coder 구현 e5f7249(57경로 Bundle a7bc3d73…539d) 뒤 사용자 새 요구 "눈빛 중에는 점프 시작이 아니므로 점프 상태이면 안 됨"으로 [Plan §22.16](../Plans/2_CombatCore.md)에 2칸·3칸 접근 재설계(제자리 → 도약 프레임에서 점프 → 착지 = 판정, `JumpStartFrame` 열, 이펙트 2단계 분할 재생, V11 속도 조절 안내)를 적었다. 22.4·22.6·22.7·22.8·22.10·22.12·22.13·22.14에는 대체 표시만 달았다. ~~사용자 질문 D-Q3(시간 구조)·D-Q4(제자리 피격)·D-Q5(접근 점프 높이)·D-Q6(미결 (A))·D-Q7(미결 (B) 로그 버퍼)이 메인에 있다.~~ → 같은 날 사용자 답(Plan 22.16.11): D-Q3 원작 속도 1배(2·3칸 판정 1.1초·배율 1), D-Q4 제자리 피격 가능, D-Q5 수평 이동만, D-Q6 지금 고침(계약 22.16.12), D-Q7 이번 회차 한정 로그 비우기 허용. 답 뒤 coder가 22.16.10 순서로 재작업하고 이 기록 맨 아래 회차 D 개발절에 이어 적는다. 아래 2026-11-08 문단은 이전 기록이다.
+
 2026-11-08 회차 D 시작: 사용자 "회차 D 시작"(기준 7a796aa). planner가 [Plan §22](../Plans/2_CombatCore.md) 범위만 확인했다(22.14 "2026-11-08 회차 D 시작 범위 확인", 22.7 OrangeMushroomAttack 명시, 22.15 재스폰 프레임 범위 처리 원칙, 선택 항목 `_T.resolveIndex` 제외 → 22.13 부채). 규칙·수치 변경 없음. ~~시작 전 확인 1건 D-Q1(MonsterSoundData 생성 방법)이 메인에 있다.~~ → D-Q1 사용자 답 "AI 수동 작성"(Plan 22.5·22.9·22.10 반영). 회차 D coder는 이 기록 맨 아래에 새 개발절을 만든다.
 
 이전 재개 지점 — 2026-11-08(회차 C2 사용자 V11 수락 뒤) 기준: [Plan §23](../Plans/2_CombatCore.md) 회차 C2(CombatCore-MM-12)는 사용자 V11 수락으로 완료했다(회차 종료 커밋 7a796aa). 사용자는 Plan §23.4 두 항목(Maker 작업 공간에 주황버섯 모델이 OrangeMushroom 하나로만 보임, 플레이 화면이 회차 C와 같음)을 확인했다. 파일 이름과 Name은 사용자가 Maker에서 바꿨고 coder는 모델을 다시 쓰지 않았다. 근거는 아래 C2 coder 절, QA 기록 첫 절(QA11), 리뷰 기록 첫 절이다. 현재 AI 담당 작업은 없다. 다음은 회차 D([Plan §22](../Plans/2_CombatCore.md), CombatCore-MM-07~11, 기준 7a796aa, 재스폰 프레임 범위 확인 §22.15 포함)이며 **사용자 시작 지시를 기다린다**. 그 뒤 회차 E([Plan §24](../Plans/2_CombatCore.md))도 사용자 시작 지시 뒤다. 회차 D coder는 이 기록 맨 아래에 새 개발절을 만든다. 범위 밖 남은 사항: `.maplestory-skill-maker-ledger.md`의 낡은 castleenemy 문구(원장 규칙에 정리 조항 없음, 정리 시점은 사용자 결정, Plan §23.6). 남은 NOT_RUN은 QA11 기록 그대로이며 PASS로 세지 않는다. P01b~P06 🟡 유지, 2단계 완료·3단계 진행은 사용자 결정이며 이 기록이 승인하지 않는다.
@@ -2304,6 +2306,58 @@
 #### 미실시·미확인 (PASS로 세지 않음)
 - **로그 버퍼 가득**: Maker 로그가 764건(사용자 16:51 세션 94건 포함, 357k자)에서 더 늘지 않아 17:29:10 이후 로그가 기록되지 않았다. 그 뒤 계획한 아래는 못 했다: 통계 프로브(SelectPattern 2만 회 비율 ±1%p)와 누적 경계 단위 프로브(스크립트는 실행됐으나 결과 로그 없음, 코드 `SelectPattern`은 이번에 바꾸지 않음), 같은 RUID 재지정 시 재시작 여부, 이펙트 크기·높이 두 배 판단(수치만: 피벗 상승 최대 0.88, 이펙트 충격파 폭 최대 2.54).
 - 사람 손 타이밍, 모바일, 사용자 V11(22.8) 전부.
+
+#### 사용 종료
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.
+
+
+### 2026-11-09 coder 회차 D 재작업 (Plan §22.16, 사용자 D-Q3~D-Q7) — 구현·기본 검증
+
+#### 시작 기준·로그 정리
+- 기준: coder 로컬 커밋 e5f7249(57경로 Bundle `a7bc3d7395d636863c92ef5e6af853a12003ba4cd34a925eb9c534c36b32539d`). 시작 HEAD f82c549(e5f7249 뒤 [ops] 문서 커밋). 작업 트리에는 Maker가 자동 저장한 `RootDesk/MyDesk/DataSet.directory`(StudioVersion "" → "0.1.0.0") 변경이 있었고 내 변경이 아니라 그대로 두었다(이번에도 git status에 남아 있음, Bundle 대상 밖). 시작 시 같은 계산법으로 Bundle을 다시 계산해 위 값과 일치함을 확인했다.
+- 시작 Maker: map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit.
+- D-Q7 로그 정리: 세션 시작 때 `maker_logs(normal)`은 **0건**이었다(이전 세션 로그는 Maker 쪽에서 이미 비어 있었음). 그래서 처음에는 clear를 부르지 않았다. 검증 중 내 시험 로그(프레임 이벤트 포함)로 버퍼가 약 333k자·741건(17:30:43~17:37:11, 전부 이번 세션 시험 로그)에서 더 늘지 않아(새 로그 미기록) 허용된 `maker_clear_logs`를 **1회** 호출했다(clearedCount 741). 그 밖에는 지우지 않았다.
+
+#### 변경 파일 (22.7 + 22.16.6 안, 새 파일 없음)
+| 파일 | 변경 |
+| --- | --- |
+| @Assist/DataSet/MonsterAttackPatternData.csv | 열 `JumpStartFrame` 추가(1/1/빈/빈/1). parry.left·parry.right·parry.guard 행 TelegraphLeadSec 0.5→1.1, MotionPlayRate 2.2→1. 1칸 행은 0.5·1 그대로 |
+| Combat/CombatRuleCatalog.mlua | JumpStartFrame 검증(빈 값=0, 0 이상 정수가 아니면 카탈로그 전체 거부 + 경고 1회), ReadRows 필수 열에 추가, 로드 [VRF]에 행별 jumpFrame·lead |
+| Managers/MonsterManager.mlua | 스폰 확인: JumpStartFrame>0 행은 프레임이 클립 안인지, 제자리 시간 W < TelegraphLeadSec인지(아니면 파괴·스폰 거부·경고 1회) |
+| Monster/MonsterAttackMotion.mlua | 구간 `windup` 이름·주석, 클립 타임라인 캐시 `GetClipTimeline`·`GetWindupSeconds`, 서버 프레임 구동 `StartDrivenClip`·`TickClip`·`StopDrive`(D-Q6 후보 1), 이펙트 2단계 분할 `PlayWindupEffect`·`PlayDustEffect`·`PlayEffectRange`(옵션 StartFrameIndex·EndFrameIndex), [VRF]용 `ClockText`, `PerformAttackMotion` 시그니처에 leadSec·jumpStartFrame 추가. 이펙트 프레임 경계는 속성 `EffectWindupLastFrame`=6·`EffectDustFirstFrame`=8(이 이펙트 자원의 구조, modelId 분기 아님) |
+| Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 2·3칸: 공격 시작~W 제자리(windup) → W에 실제 점프(approach, 시간 J = TelegraphLeadSec − W, 높이 속성 `LeapJumpHeight` 기본 0) → 착지 = 판정. 속성 `WindupHittable` 기본 true. 1칸·복귀는 JumpDuration·JumpHeight 그대로(`JumpToLocalX`). `OnUpdate`에서 TickClip. 이름·폴더 그대로 |
+| Monster/@StateControl/Monster_Attack.mlua | 패턴의 TelegraphLeadSec·JumpStartFrame 전달, 공격 시작 때 이펙트 1단계(눈빛, 머쉬맘 현재 위치), 착지(판정) 때 2단계(먼지, 착지 x). 판정 전 취소되면 OnAttackComplete에 오지 못해 2단계 없음 |
+- **MonsterStateControl.mlua는 이번에 고치지 않았다**(e5f7249의 `ApplyMotionClipRate` 알림 그대로 사용). 22.7 밖 파일 수정 없음.
+- 구현 방식 근거(D-Q6): 후보 1(서버가 액션 시계로 프레임 경계마다 `Start=End=k`)로 완료 기준을 지켰다. 후보 2는 시험하지 않았다. 측정으로 확인한 엔진 동작: (a) 클립(SpriteRUID)을 바꾸면 프레임 범위가 전체로 돌아가므로 RUID를 먼저 쓰고 그 뒤에 `Start=End=0`을 쓴다(처음엔 반대 순서라 클라이언트가 `0-max`로 자연 재생했고, 순서를 바꾸자 클라이언트가 `0-0`을 본다). (b) 같은 RUID에서 `Start=End=k`를 쓰면 클라이언트가 즉시 그 프레임으로 가고 프레임 이벤트가 나온다(`idx=3` +0.014초). (c) 같은 RUID를 다시 지정해도 재시작 이벤트가 없다. (d) 한 프레임 고정 중 PlayRate를 바꾸면 같은 프레임 이벤트만 한 번 다시 온다(되돌림 아님).
+
+#### 버전·바이트 지문
+- 작업 트리 57경로 Bundle SHA-256: **`8dccccf58c6138d16e5b84277fa275c6a982c8d397e487d85e1f55e33e6ab738`**(Refresh 뒤·Play 뒤 Stop 뒤 같음). 바뀐 경로 6개: PatternData.csv f1ebd85e…58e4 · CombatRuleCatalog a326f630…cbef · MonsterManager 41aac3d2…36d0 · Monster_Attack 3cbdfcc3…b4f1 · MonsterAttackMotion 6cde25aa…e77a · OrangeMushroomAttack b4922c96…589e. 나머지 51경로는 e5f7249와 같다.
+
+#### 기본 검증 (Maker Play 2회, 시험 설정은 Play 안에서만)
+- 빌드: Refresh 뒤 build 로그 93건 전부 Info(LIA 노이즈), 오류 0.
+- 로드 [VRF]: 패턴 5행 비율 20/20/25/15/20%, 행별 `rate=1 jumpFrame=1 lead=1.1`(left·right·guard)·`jumpFrame=0 lead=0.5`(any·special), 사운드 1행.
+- **10 제자리·도약 분리**(서버 샘플 0.01초, 클라이언트 프레임 이벤트·프로퍼티 폴링):
+  - 슬로우 없음 parry.left: 제자리 x 변화 3.000..3.000, JumpActive false·구간 windup, W 시점에 구간 approach·JumpActive true(서버 `leap start` 전투 시계 W = 0.807초 후), 실제 점프 0.3초, 착지 x 0.750(영역 중앙, 회차 C와 같음), 착지 y 0.581(변화 0). 클라이언트 f1 이벤트 f0 대비 +0.803~0.810초(W와 ±0.01), f2 +1.01, f3 +1.06, **f4는 서버가 같은 틱에 stand로 바꿔 클라이언트에 그려지지 않음**(착지 때 stand 계약). f4 시작 시각은 서버 `frame set frame=4` 전투 시계 elapsed 1.102~1.114와 판정 `defense` clock이 0.001초 안으로 같다. parry.guard: 착지 x 0.000(= Pos2), W 0.806~0.814, f4 elapsed 1.102~1.116 = 판정 같은 시계.
+  - 접근 전체 슬로우(rate 0.5, parry.guard): W 실제 1.605초(클라이언트 f1 +1.603), 착지 = 판정 = f4 2.210초(resolved 2.228 샘플), 렌더러 PlayRate 0.5, 이펙트 PlayRate 0.5.
+- **11 이펙트 분할**(parry.guard): 1단계 호출 시각 = 공격 시작(`clip driven`과 같은 전투 시계), 위치 머쉬맘 현재 x 3.000·지면 y 0.581, 프레임 0-6, PlayRate = 1 × ActionRate. 2단계 호출 시각 = 판정(`defense` clock과 같은 값), 위치 x 0.000(Pos2)·y 0.581, 프레임 8-끝. 판정 전 취소(공격 시작 0.6초 뒤 `CancelPendingAttack` + IDLE): 2단계 호출 없음, 렌더러 범위 0-2147483647·PlayRate 1로 복구. 화면 확인: 같은 이펙트를 `StartFrameIndex=0`·`EndFrameIndex=6` 옵션으로 반복 재생해 스크린샷으로 옅은 별 모양을 확인(구간 옵션이 동작함). 먼지 구간(8~끝)과 스케일 1 눈빛은 얇고 옅어 스크린샷으로 구분하지 못했다. 방향(FlipX·SyncFlip) 확인은 못 했다(스케일 1 이펙트가 방향 판별이 안 되게 옅음).
+- **12 제자리 피격**: windup 중 플레이어 UpArrow 10타가 규칙을 모두 통과해(`PlayerHitRule pass hit=1..10`) 몬스터 HP 100→90, 피격음 1줄. 샘플러의 구간별 피격 선언 값: windup true, approach false, return false, none true. approach·return 실제 타격 차단은 규칙 코드를 바꾸지 않았고(회차 C) 선언 값만 확인했다(실입력 시험은 미실시).
+- **13 높이**: 2·3칸 접근 y 0.581..0.581(변화 0). 1칸 parry.any·special.random 접근 y 0.581..1.380(+0.8), 시작과 동시에 점프, 판정 0.52~0.53초, 착지 x 0.000·1.500(회차 C와 같음).
+- **15 검증 실패**: JumpStartFrame -1·1.5·abc → 카탈로그 거부 + 경고 1회("invalid jump start frame", 경고 키 하나), 빈 값·0 허용(0), 4 허용(스폰 단계가 거름). 스폰: JumpStartFrame 5(≥ 프레임 수 5) → 거부 + 경고 1회 + 엔티티 파괴, TelegraphLeadSec 0.7(W 0.8 ≥ 0.7) → 거부 + 경고 1회, 두 경우 모두 현재 상대 유지, 정상 값은 다시 스폰 성공.
+- **16 접근 클립 이어 재생(D-Q6)**: 클라이언트 프레임 번호가 되돌아간 적이 없다(모든 경우 0→1→2→3, 같은 프레임 이벤트 반복은 PlayRate 변경 때뿐).
+  - S1(parry.left, windup 0.4초에 슬로우 시작·2.0초, 착지 뒤 종료): f1 클라이언트 +1.193초, 서버 W(전투 시계) +1.199초 → 0.006초. 착지·f4 +1.806초 = 판정.
+  - S2(슬로우 0.6초 뒤 windup 도중 종료): f1 +1.100, 서버 W +1.103 → 0.003초. 착지 +1.413 = 판정.
+  - S3(parry.guard, 도약 0.9~1.1초 사이에 슬로우 시작·종료): f1 +0.808, W +0.813 → 0.005초. f2 서버 1.107, 클라이언트 +1.102, f4 1.213 = 판정.
+  - S4(ApplySlow 0.95초 = windup 안에서 종료)·S5(ApplySlow 1.9초 = 도약 안에서 종료): f1 W와 ±0.01초, 클라이언트 프레임 단조 증가. S5 f1 클라이언트 +1.621초·서버 W +1.617.
+  - 슬로우 종료 뒤 렌더러 PlayRate는 "클립 배율 × ActionRate"(접근 중 1.0·0.5, 판정 뒤 stand·jump는 배율 1 × ActionRate).
+- **14 1칸 회귀·F12·사운드**: 1칸 PlayRate 1·클립 jump·착지 후 stand. 슬로우 중 치명타에서도 die PlayRate 1, 마지막 프레임(5)에 정지(F12 회귀 PASS). 공격음(2칸 f135fc39·3칸 5da7bb48·1칸 없음), 피격음 1줄/공격 1회, 사망음 1줄, HIT·GUARD에서 hitplayer, PARRY에서 hitplayer 0줄. 판정 규칙(parry.guard): 이른 가드 GUARD 0.4, 창을 넓힌 가드 PARRY·그로기(hit 클립 PlayRate 1), 무대응 HIT. 모두 e5f7249와 같은 결과.
+- **22.8 4번 통계·경계**: 누적 경계 프로브(제품 `SelectPattern` 직접 호출) PASS: u=0·0.1999999→parry.left, 0.2·0.3999999→parry.right, 0.4·0.6499999→parry.any, 0.65·0.7999999→special.random, 0.8·0.9999999→parry.guard. 제품 함수와 같은 알고리즘의 시험용 복사본을 150개 난수로 비교해 불일치 0. 20,000회 분포 프로브는 **미실시**: 제품 함수 호출은 한 번에 약 8ms(200회 1.6초)라 한 스크립트로 2만 회가 끝나지 않고, 같은 알고리즘의 시험용 복사본으로 돌려도 Maker 시험 스크립트가 초당 약 170회 수준이라(6,000회 34.7초) 2만 회 스크립트는 로그를 남기기 전에 끝나지 않았다(스크립트는 컨텍스트마다 한 번에 하나만 돌고 새 스크립트를 보내면 앞 것이 멈춘다). 분포 ±1.0%p는 근거 없음(NOT_RUN).
+- **같은 RUID 재지정 재시작**: PASS(위 구현 근거 (c)): 같은 RUID를 다시 쓰면 프레임 이벤트·범위 변화가 없다(재시작 없음).
+
+#### 미실시·미확인 (PASS로 세지 않음)
+- f4(착지 시점)는 서버 쓰기 기준으로만 판정과 일치를 확인했다(클라이언트에는 그려지지 않음, 계약).
+- 이펙트 눈빛·먼지의 화면 위치·방향(FlipX) 육안 확인, approach·return 중 실제 플레이어 타격 차단 실입력, 사람 손 타이밍, 모바일, 사용자 V11.
+- 시험용 [VRF D] 프로브·`cf/cp` 로그는 제품 코드가 아니다.
+- 시험 중 `LEA-3051 MemoryLeak`(내 클라이언트 프로브의 반복 타이머가 Play 종료 때 남음) 1건은 제품 오류가 아니다.
 
 #### 사용 종료
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.
