@@ -3,9 +3,9 @@
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
-- 갱신: 2026-11-09 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 D V11·REV-D-O1 처리 결정)
-- 다음 행동·대기 사유: WAITING_USER — 회차 D 리뷰 WAITING(결함 없음, 대상 a5efe69). 사용자 결정: 관찰 REV-D-O1(특정 TelegraphLeadSec·MotionPlayRate 조합에서 공격이 경고 없이 취소될 수 있음)을 V11 전에 고칠지. 그 뒤 사용자 V11(22.8 V11 1~9) + 속도 조절 항목 안내·설정(22.16.9) → 수락 뒤 planner 회차 종료 정리(리뷰 목록). 범위 밖: 원장 castleenemy 문구.
+- 갱신: 2026-11-10 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 (회차 D V11, 대상 8428a05)
+- 다음 행동·대기 사유: WAITING_USER — 회차 D reviewer 재검토 WAITING(REV-D-O1 해결, 새 결함 없음). 사용자 V11 1~9 + 속도 조절 설정(Plan §22.16.9, 리뷰 절 갱신 표). V11 수락 뒤 planner 회차 종료 정리(리뷰 절 목록 + REV-D-O1 수정 완료 기록·§22.16.9 경고 동작·QA13 날짜 표기). 범위 밖: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -465,3 +465,10 @@
 - tester QA12(2026-11-09, 대상 a5efe69, Bundle 8dccccf5…b738 커밋·작업 트리 재계산 일치): 실행 기준 전부 PASS, FAIL·NEEDS_DECISION·새 결함 없음. 22.8-4 분포 3표본(2만+) 최대 편차 -0.50%p PASS, 22.16.7 10~16 PASS(D-Q6 8회 재시작 없음), 제자리 피격·approach/return 차단 실입력 PASS, 눈빛 이펙트 머쉬맘 눈 위치 스크린샷 PASS. NOT_RUN: 먼지 위치·방향 육안, 판정 전 취소 2단계 재확인, 재스폰 개체 die, 사람 손 타이밍·실기기, 효과음 청취. D-Q7 로그 clear 1회(123건). Maker map01/edit. 메인 확인: 변경은 WorkRecord QA12 절뿐. msw-reviewer 호출.
 - reviewer 판정 WAITING(2026-11-09, WorkRecord "2026-11-09 독립 리뷰 — 회차 D(CombatCore-MM-07~11) WAITING"). 결함·새 ID 없음. Bundle 3커밋 재계산 일치, 범위 22.7(+22.16.6) 안, 모델 의미 차이 attack1·skill1 2키, 22.12 승인 외 수치 변경 없음, D-Q7 로그 비우기 허용 범위 안, die 가드·22.15 유지, modelId 하드코딩 없음, 비밀값·경로 없음. 관찰 REV-D-O1(비차단): BeginWindup이 W+(lead−W)를 돌려줘 W<lead/2이면 1 ulp 커져 Monster_Attack의 lead<duration 검사로 그 행 공격이 경고 없이 IDLE 취소 가능(현재 값에선 미발생, 예 0.9+2.5에서 발생). 회차 종료 planner 정리 목록은 리뷰 절.
 - 메인 확인: 변경은 WorkRecord 리뷰 절뿐. [review] WAITING 커밋, 비밀값 검사 뒤 e5f7249·f82c549·a5efe69와 함께 push.
+
+## 2026-11-09 REV-D-O1 수정 회차
+- 사용자 "먼저 고침": reviewer 관찰 REV-D-O1(BeginWindup이 W+(lead−W)를 돌려줘 W<lead/2이면 1 ulp 커져 Monster_Attack lead<duration 검사로 공격이 경고 없이 IDLE 취소 가능)을 V11 전에 수정. 승인 범위 안 수정이라 planner 재설계 없이 coder → tester → reviewer. 기준 9918e3d(제품 = a5efe69).
+- coder 작업이 API 사용 한도로 1회 끊김(제품 변경 없음 확인) → 같은 작업자 재개. 결과: BeginWindup이 leadSec 그대로 반환, 불가능 조합 취소 + 경고 1회 추가(Monster_Attack·OrangeMushroomAttack 2파일, 22.7 안). 9조합(재현 0.9+2.5 포함) 취소 없음·W·판정 ±0.02초, 현재 값 회귀 PASS. Maker map01/edit, 로그 clear 0건.
+- 메인 확인: [code] 로컬 커밋 8428a05(57경로 Bundle 8d5b6d1c029d1eefad8e6ac2a878ec55facf069aab23d77c96a6fa3465f04eed). msw-tester 재검증 호출.
+- tester QA13(대상 8428a05, Bundle 8d5b6d1c…4eed 57/57 일치, a5efe69 대비 제품 2경로): 실행 기준 전부 PASS. coder와 다른 12조합(재현 0.9+2.5·W≈lead/2 포함) 취소 없음·W ±0.019·판정 ±0.015초, 불가능 조합 6종 경고 정확히 1회, 일시 상태 경고 없음, 현재 값·D-Q6 슬로우 3경우·제자리 피격/차단(실입력)·die·사운드·이펙트 회귀 PASS. NOT_RUN: 수정 전 버전 조용한 취소 재현, IsMotionReady 정지 분기, 사람 손·실기기·V11. 로그 clear 1회(247건, coder 세션 로그). Maker edit. 참고: CSV에서 W ≥ lead 같은 값은 MonsterManager 스폰 검증이 먼저 거부(V11 안내 필요). msw-reviewer 재검토 호출.
+- reviewer 재검토(대상 8428a05, Bundle 57/57 재계산 일치): WAITING. REV-D-O1 근본 해결(BeginWindup이 leadSec 그대로 반환, 판정 예약 1곳), 경고 3종은 규칙·수치 불변·원인별 1회·일시 상태 제외로 22.7 안, 나머지 55경로 동일 바이트로 앞 판정 근거 유지, NOT_RUN 2건은 판정 비차단. 새 결함 없음. 속도 조절 표에 거부·취소 경고 동작 추가. 상태 WAITING_USER(V11).
