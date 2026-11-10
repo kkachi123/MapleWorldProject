@@ -46,6 +46,10 @@ script Monster_Attack extends StateType
 		local pattern = snapshot.pattern
 		local duration = self.motion:PerformAttackMotion(snapshot.area.cells, snapshot.area.minX, snapshot.area.maxX, pattern.MotionClip, pattern.MotionPlayRate, snapshot.area.landingX, pattern.TelegraphLeadSec, pattern.JumpStartFrame)
 		if duration < 0 or duration ~= duration or duration == math.huge or snapshot.pattern.TelegraphLeadSec < duration then
+			-- 접근 시간이 판정 시각(TelegraphLeadSec)보다 길어 공격을 취소해야 하면 조용히 취소하지 않고 원인을 한 번 남긴다(-1은 정지·기준 위치 같은 일시 상태일 수 있어 제외).
+			if duration >= 0 and duration == duration and duration ~= math.huge then
+				_CombatRuleCatalog:WarnOnce("attack cancelled: approach " .. string.format("%.3f", duration) .. " exceeds telegraph " .. string.format("%.3f", snapshot.pattern.TelegraphLeadSec) .. " (" .. pattern.id .. ")")
+			end
 			self:CancelExecution()
 			self.ParentComponent:ChangeState("IDLE")
 			return

@@ -32,7 +32,12 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	@ExecSpace("ServerOnly")
 	method boolean IsMotionReady()
 		-- 점프 이동의 공통 준비 조건: 기준 위치 확보·유효한 시간 속성·정지 중 아님.
-		if not self.HomeCaptured or self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then return false end
+		if self.JumpDuration <= 0 or self.JumpDuration ~= self.JumpDuration or self.JumpDuration == math.huge then
+			-- 속성 값이 잘못돼 점프를 못 하는 경우는 조용히 취소하지 않고 한 번 알린다.
+			_CombatRuleCatalog:WarnOnce("attack cancelled: invalid JumpDuration " .. tostring(self.JumpDuration))
+			return false
+		end
+		if not self.HomeCaptured then return false end
 		if not isvalid(self._T.pause) or self._T.pause.IsPaused or not isvalid(self._T.control) then return false end
 		return true
 	end
@@ -53,8 +58,10 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
-	method number BeginWindup(number targetLocalX, string clip, number motionRate, number windupSec, number jumpSec)
-		-- 2·3칸 접근: 클립 f0부터 제자리에서 기 모으기(windup)를 하고, 액션 시계로 windupSec가 지나면 실제 점프(approach)를 jumpSec 동안 한다. 착지 = 판정 = windupSec + jumpSec.
+	method number BeginWindup(number targetLocalX, string clip, number motionRate, number windupSec, number leadSec)
+		-- 2·3칸 접근: 클립 f0부터 제자리에서 기 모으기(windup)를 하고, 액션 시계로 windupSec가 지나면 실제 점프(approach)를 leadSec - windupSec 동안 한다. 착지 = 판정 = leadSec.
+		-- 접근 전체 시간은 계산해 다시 더하지 않고 leadSec를 그대로 돌려준다(부동소수 오차로 호출 쪽 "리드 < 접근 시간" 검사가 뒤집히지 않게, REV-D-O1).
+		local jumpSec = leadSec - windupSec
 		if not self:IsMotionReady() or jumpSec <= 0 then return -1 end
 		self.JumpStartX = self.Entity.TransformComponent.Position.x
 		self.JumpTargetX = targetLocalX
@@ -69,7 +76,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			self:CancelMotion()
 			return -1
 		end
-		return windupSec + jumpSec
+		return leadSec
 	end
 
 	@ExecSpace("ServerOnly")
@@ -96,8 +103,12 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			return duration
 		end
 		local windup = self:GetWindupSeconds(clip, jumpStartFrame, motionRate)
-		if windup == nil or windup >= leadSec then return -1 end
-		return self:BeginWindup(targetLocalX, clip, motionRate, windup, leadSec - windup)
+		if windup == nil or windup >= leadSec then
+			-- 스폰 확인이 거르는 조합이라 보통 오지 않지만, 시간이 정말 맞지 않아 취소할 때는 조용히 취소하지 않고 경고를 남긴다.
+			_CombatRuleCatalog:WarnOnce("attack cancelled: windup " .. (windup ~= nil and string.format("%.3f", windup) or "nil") .. " is not shorter than telegraph " .. string.format("%.3f", leadSec) .. " (clip " .. clip .. ", JumpStartFrame " .. string.format("%g", jumpStartFrame) .. ")")
+			return -1
+		end
+		return self:BeginWindup(targetLocalX, clip, motionRate, windup, leadSec)
 	end
 
 	@ExecSpace("ServerOnly")

@@ -2532,3 +2532,53 @@
 
 #### 사용 종료
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.
+
+
+### 2026-11-09 REV-D-O1 수정 (reviewer 관찰, 사용자 "먼저 고침") — 부동소수 경계·조용한 취소 제거
+
+#### 시작 기준
+- 시작 HEAD 9918e3d(제품 = a5efe69), 57경로 Bundle `8dccccf58c6138d16e5b84277fa275c6a982c8d397e487d85e1f55e33e6ab738`로 재계산해 일치. 작업 트리는 메인 run.md만 수정된 상태(제품 변경 없음, 앞 작업이 API 한도로 끊겼으나 쓰다 만 제품·WorkRecord 변경은 남아 있지 않았음). 시작 Maker map01 / edit.
+- 로그(D-Q7): 시작 때 clear 호출 결과 clearedCount 0(Maker 쪽에서 이미 비어 있음). 이번에는 시험 로그가 적어 추가 clear는 하지 않았다.
+
+#### 원인과 수정
+- 원인: `OrangeMushroomAttack.BeginWindup`이 `windupSec + (leadSec − windupSec)`를 돌려줬다. W가 TelegraphLeadSec의 절반보다 작으면 이 합이 부동소수로 1 ulp 커질 수 있고, `Monster_Attack.OnEnter`의 `TelegraphLeadSec < duration` 검사에 걸려 그 패턴 공격이 경고 없이 IDLE로 취소됐다(TelegraphLeadSec 0.9 + MotionPlayRate 2.5 등).
+- 수정(근본): `BeginWindup(…, windupSec, leadSec)`가 `jumpSec = leadSec − windupSec`를 안에서 쓰되 **접근 전체 시간으로 leadSec를 그대로 돌려준다**(다시 더하지 않음). 그래서 호출 쪽 비교가 오차로 뒤집힐 수 없다. `PerformAttackMotion`은 `BeginWindup`에 `leadSec`를 넘긴다.
+- 같은 종류 점검: 
+  - `windup >= leadSec`(PerformAttackMotion·스폰 검증 `windup >= TelegraphLeadSec`): 두 곳이 **같은 `GetWindupSeconds` 결과를 같은 leadSec와 비교**하고 합을 만들지 않아 오차로 갈리지 않는다. 그대로 둔다(경계 W == lead면 J = 0이라 진짜 불가 조합).
+  - 1칸 `JumpToLocalX`는 `JumpDuration`을 그대로 돌려주고 `lead < JumpDuration`은 두 입력 값의 직접 비교라 재계산이 없다. 그대로 둔다.
+  - 착지 판정 순서(`attackDue = 시작 + lead`, 점프 끝 `시작 + W + J`)는 두 경로가 같은 곳으로 수렴해(CompleteMotion은 한 번만 실행) 1 ulp 차이가 동작을 바꾸지 않는다. `TickClip`의 f4 경계도 같은 이유로 ulp 차이는 표시 한 틱 차이일 뿐이다. 그대로 둔다.
+- 진짜 시간이 맞지 않아 취소해야 하는 경우의 **경고 추가**(규칙·수치·CSV는 바꾸지 않음, 22.7 안 파일만):
+  - `Monster_Attack.OnEnter`: 접근 시간이 TelegraphLeadSec보다 길어 취소하면 경고 1회("attack cancelled: approach … exceeds telegraph … (id)"). 정지·기준 위치 같은 일시 상태로 -1이 오는 경우는 경고하지 않는다.
+  - `OrangeMushroomAttack.PerformAttackMotion`: 제자리 시간 W가 TelegraphLeadSec 이상이면 경고 1회("attack cancelled: windup … is not shorter than telegraph …").
+  - `OrangeMushroomAttack.IsMotionReady`: `JumpDuration`이 0 이하·숫자 아님이면 경고 1회, 기준 위치 미확보(`HomeCaptured`)는 일시 상태라 경고 없이 false를 그대로 돌려준다.
+
+#### 변경 파일
+- `RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua`
+- `RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua`
+- 그 밖 변경 없음(CSV·카탈로그·매니저·모션 베이스 그대로).
+
+#### 검증 (Maker Play 1회, 시험 행 값은 Play 안 메모리에서만 바꾸고 복원)
+- 방법: 시험 행의 TelegraphLeadSec·MotionPlayRate를 바꿔 한 행으로 강제 실행하고, 제품 [VRF] 전투 시계로 시작(`clip driven`)·W(`leap start`)·f4(`frame set frame=4`)·먼지(`effect dust`)·판정(`defense`)을 대조했다. 기대값 W = 0.8 ÷ MotionPlayRate, 판정 = TelegraphLeadSec.
+- 재현 조합과 정렬식 조합(MotionPlayRate = 1.1 ÷ lead): 모두 공격이 취소되지 않고(상태 IDLE로 정상 종료, telegraph·판정 도달) W·판정이 ±0.02초 안.
+
+| 조합(행) | lead | rate | W 측정(기대) | f4 | 판정 측정(기대) |
+| --- | --- | --- | --- | --- | --- |
+| 재현 (parry.left) | 0.9 | 2.5 | 0.335(0.320) | 0.453 | 0.901(0.900) |
+| 정렬 (parry.guard) | 0.6 | 1.833 | 0.451(0.436) | 0.605 | 0.607(0.600) |
+| 정렬 (parry.left) | 0.8 | 1.375 | 0.589(0.582) | 0.803 | 0.803(0.800) |
+| 정렬 (parry.right) | 1.0 | 1.1 | 0.731(0.727) | 1.007 | 1.008(1.000) |
+| 정렬 (parry.guard) | 1.3 | 0.846 | 0.953(0.945) | 1.315 | 1.316(1.300) |
+| 정렬 (parry.left) | 1.5 | 0.733 | 1.093(1.091) | 1.511 | 1.513(1.500) |
+| 이탈 (parry.left) | 1.1 | 2.0 | 0.414(0.400) | 0.554 | 1.105(1.100) |
+| 이탈 (parry.guard) | 1.5 | 3.0 | 0.276(0.267) | 0.379 | 1.503(1.500), 먼지 1.502 |
+| 이탈 (parry.right) | 0.7 | 1.7 | 0.475(0.471) | 0.648 | 0.715(0.700) |
+- 정렬식에서 벗어난 조합은 취소되지 않고 W·판정(실제 점프 시작·착지)은 맞으며, 클립 f4 자세만 판정과 어긋난다(Plan 22.16.3 안내대로).
+- 진짜 불가능 조합: parry.left lead 0.7 + rate 0.5(W 1.6 ≥ 0.7) → 공격 취소 + 경고 1회 "attack cancelled: windup 1.600 is not shorter than telegraph 0.700 (clip attack1, JumpStartFrame 1)". parry.any lead 0.4(JumpDuration 0.5 > 0.4) → 취소 + 경고 1회 "attack cancelled: approach 0.500 exceeds telegraph 0.400 (parry.any)". 두 경우 모두 이전에는 경고 없이 취소됐다.
+- 회귀(현재 CSV 값, 제품 전투 시계): parry.left W 0.807·판정 1.100, parry.guard W 0.811·f4 1.105·먼지 1.106·판정 1.106, parry.any(1칸) 시작과 동시에 점프·판정 0.505(시험 러너 샘플 0.522). 모두 취소 없음. 사운드: 공격음 2칸 f135fc39·3칸 5da7bb48, 플레이어 UpArrow 1회(10타)에 피격음 1줄, 사망음 1줄. die: 슬로우 중 치명타에서도 PlayRate 1, 마지막 프레임 5에 정지(F12 PASS).
+- 이번 시험은 시험용 [VRF D] 러너로 한 번의 Play에서 했고, 시험 행 값은 Play 끝에 메모리에서 원래 값으로 되돌렸다(CSV 파일은 바꾸지 않음). 로그 용량은 시험 로그를 줄여 가득 차지 않았다.
+
+#### 버전·바이트 지문
+- 작업 트리 57경로 Bundle: **`8d5b6d1c029d1eefad8e6ac2a878ec55facf069aab23d77c96a6fa3465f04eed`**(Refresh 뒤·Play 뒤 Stop 뒤 같음). 바뀐 경로 2개: Monster_Attack 225ee465…4656 · OrangeMushroomAttack dcc35351…147d. 나머지 55경로는 a5efe69와 같다.
+
+#### 사용 종료
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.
