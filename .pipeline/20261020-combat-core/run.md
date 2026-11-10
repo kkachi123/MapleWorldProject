@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-10 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 D V11, 대상 8428a05)
-- 다음 행동·대기 사유: WAITING_USER — 회차 D reviewer 재검토 WAITING(REV-D-O1 해결, 새 결함 없음). 사용자 V11 1~9 + 속도 조절 설정(Plan §22.16.9, 리뷰 절 갱신 표). V11 수락 뒤 planner 회차 종료 정리(리뷰 절 목록 + REV-D-O1 수정 완료 기록·§22.16.9 경고 동작·QA13 날짜 표기). 범위 밖: 원장 castleenemy 문구.
+- 현재 담당: 사용자 (MM-14 버벅임 순간 지목, 회차 D2 [code] 커밋 대상)
+- 다음 행동·대기 사유: WAITING_USER — MM-13·MM-15 구현·기본 검증 PASS, [code] 로컬 커밋 완료. MM-14는 coder 기준선 B2~B5 통과(측정되는 끊김 없음)로 계약 22.17.3에 따라 미수정 STOP. 사용자가 0.7배 버전을 보고 버벅이는 순간을 지목 → planner 계약 → coder → tester → reviewer. 범위 밖: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -472,3 +472,13 @@
 - 메인 확인: [code] 로컬 커밋 8428a05(57경로 Bundle 8d5b6d1c029d1eefad8e6ac2a878ec55facf069aab23d77c96a6fa3465f04eed). msw-tester 재검증 호출.
 - tester QA13(대상 8428a05, Bundle 8d5b6d1c…4eed 57/57 일치, a5efe69 대비 제품 2경로): 실행 기준 전부 PASS. coder와 다른 12조합(재현 0.9+2.5·W≈lead/2 포함) 취소 없음·W ±0.019·판정 ±0.015초, 불가능 조합 6종 경고 정확히 1회, 일시 상태 경고 없음, 현재 값·D-Q6 슬로우 3경우·제자리 피격/차단(실입력)·die·사운드·이펙트 회귀 PASS. NOT_RUN: 수정 전 버전 조용한 취소 재현, IsMotionReady 정지 분기, 사람 손·실기기·V11. 로그 clear 1회(247건, coder 세션 로그). Maker edit. 참고: CSV에서 W ≥ lead 같은 값은 MonsterManager 스폰 검증이 먼저 거부(V11 안내 필요). msw-reviewer 재검토 호출.
 - reviewer 재검토(대상 8428a05, Bundle 57/57 재계산 일치): WAITING. REV-D-O1 근본 해결(BeginWindup이 leadSec 그대로 반환, 판정 예약 1곳), 경고 3종은 규칙·수치 불변·원인별 1회·일시 상태 제외로 22.7 안, 나머지 55경로 동일 바이트로 앞 판정 근거 유지, NOT_RUN 2건은 판정 비차단. 새 결함 없음. 속도 조절 표에 거부·취소 경고 동작 추가. 상태 WAITING_USER(V11).
+
+### 2026-11-10 회차 D V11 피드백(사용자)
+- 사용자 V11 피드백: "atttack1 모션을 사용하는 공격(2칸 공격, 전범위 공격)의 모션이 좀 어색(버벅이는 것처럼 보임)하고 동작이 빠름. 조절 할 수 있을까?" 이어서 "추가로 1칸 공격은 jump 사운드 적용해줘."
+- 메인 확인: attack1 행은 parry.left·parry.right(2칸), parry.guard(3칸)는 skill1이지만 같은 시간표(f0 0.8·f1~f3 0.3초·JumpStartFrame 1)와 서버 프레임 구동을 쓴다. 머쉬맘 팩(mob/6130101) 소리는 Attack1·CharDam1·Damage·Die·Skill1뿐이고 점프 소리 없음.
+- D-Q8 속도: "0.7배" — 2·3칸 세 행 MotionPlayRate 0.7, TelegraphLeadSec = 1.1 ÷ 0.7(약 1.571; 눈빛 약 1.143·점프 약 0.429초). 판정 시각·난이도 변화는 사용자 승인 수치.
+- D-Q9 버벅임: "조사·수정 진행" — coder가 원인 측정(의심: 0.05초 프레임의 서버 구동 동기화, 짧은 점프 중 위치 동기화). 규칙·수치를 바꾸는 해결책이면 사용자에게 다시 질문.
+- D-Q10 1칸 점프음: "후보 3개 넣고 들어보고 고름" — 1칸 두 행(parry.any·special.random) AttackSound 기본값 35ee15e5…(0.29초, mob), 후보 64c83d14…(0.86초)·09df8556…(1.25초). V11에서 사용자가 듣고 CSV 값만 교체. 머쉬맘 팩 밖 리소스.
+- planner(2026-11-10): 구현 승인 범위 확인, 막는 미결정 없음. Plan §22.17 신설(MM-13 0.7배: 2·3칸 TelegraphLeadSec 1.571429·MotionPlayRate 0.7 / MM-14 버벅임 측정·계약 안 수정, 기준 B1~B5, 멈춤 조건 22.17.3 / MM-15 1칸 AttackSound 35ee15e5, 코드 변경 없음), 22.1·22.4·22.8-2·22.12·22.16.9 취소선 대체, AssetList 임시 행. 리뷰의 회차 종료 정리 목록은 최종 V11 수락 뒤.
+- 메인 해석(D-Q7): 로그 비우기 허용은 사용자 원문상 "회차 D, coder·tester 각 1회"이고 이미 사용됐으므로 D2에 넓히지 않는다. coder·tester는 [VRF] 범위 읽기로 처리하고, 로그 포화로 측정이 막히면 지우지 말고 메인에 반환(메인이 사용자에게 질문).
+- coder(2026-11-10): MM-13·MM-15 DONE — 제품 변경 패턴 CSV 1파일(2·3칸 lead 1.571429·rate 0.7, 1칸 AttackSound 35ee15e5). W 1.144~1.152·판정=f4=먼지 1.574~1.588초, D-Q6 S1~S3 4경우 되돌림 0, 스폰 거부 경고 1회, 1칸 점프음 [VRF] 점프 시작 같은 틱. Bundle 57경로 1bd2447a…fd00(8428a05 대비 CSV 1경로). MM-14 STOP: 기준선 B2~B5 통과·(다) 관찰 0, B1 순서 정상이나 구동 프레임 이벤트가 같은 ms 2회 도착(Start·End 두 @Sync, 눈에 보이는 영향 미측정). 어색함 후보: 4자세 도약 + 수평 직선 미끄러짐, 제자리 정지 직후 도약·이동 동시 시작, 판정 틱에 착지 자세 없이 곧바로 복귀 점프(22.16.2 구조). 한계: Maker 로컬 Play는 지연 없음. NOT_RUN: approach·return 실입력 차단, die F12, GUARD/PARRY/HIT, 취소 시 먼지 없음, 육안·청취, 실접속. maker_clear_logs 미사용. Maker edit.

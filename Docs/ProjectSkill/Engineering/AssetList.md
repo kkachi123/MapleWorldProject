@@ -24,6 +24,7 @@
 | 머쉬맘 피격음 | mob/6130101.img _audio/Damage | c611ae50c5d84814a6d2ccfad8a472c5(MonsterSoundData DamagedSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
 | 플레이어 피격음(머쉬맘 공격) | mob/6130101.img _audio/CharDam1 | 7c8e5f1ef0b549c59aec820909458d4f(MonsterSoundData HitPlayerSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
 | 머쉬맘 사망음 | mob/6130101.img _audio/Die | d48ec1cc57a247028f390041fc89c97f(MonsterSoundData DieSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
+| 1칸 공격 효과음(점프음, 2026-11-10 사용자 D-Q10, [Plan §22.17.4](Plans/2_CombatCore.md)) | **머쉬맘 팩 밖**(팩에 점프 소리 없음). 원본 이름 없음(래퍼 응답 names 없음, 메인 확인 dname audioclip-*). 2026-11-10 msw-search 래퍼 `getResourcesBatch`로 확인 | 기본값 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, "캐릭터가 점프할 때 발생하는 짧고 간결한 효과음") → 패턴 표 parry.any·special.random AttackSound. V11 후보: 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초, "가볍게 점프할 때"), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초, "짧고 경쾌한") | **임시**. 사용자가 V11에서 들어 보고 고름(실청취 미확인) | 회차 D 사용자 V11 선택·수락. 고르지 않은 후보는 "후보"로 옮긴다. 6단계 견본 아트·사운드 확정 때 다시 본다 |
 
 회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.
 

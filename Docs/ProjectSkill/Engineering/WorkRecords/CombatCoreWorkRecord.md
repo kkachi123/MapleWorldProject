@@ -2730,3 +2730,78 @@
 
 #### 사용 종료
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음.
+
+
+### 2026-11-10 회차 D2 — MM-13~15 (Plan §22.17, 사용자 D-Q8~D-Q10) coder
+
+#### 시작 기준
+- 기준: 원격 HEAD 7cbf14e(제품 = 8428a05). 시작 때 57경로 Bundle을 커밋 트리(8428a05)와 작업 트리에서 같은 계산법(경로 바이트순, 경로 TAB sha256 LF, 확장자 9종, Global·RootDesk·map·ui)으로 계산해 둘 다 `8d5b6d1c029d1eefad8e6ac2a878ec55facf069aab23d77c96a6fa3465f04eed` 일치. 작업 트리의 미커밋 변경은 메인·planner 문서(run.md, Plan, AssetList)뿐이었다.
+- 시작 Maker: map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit.
+- 로그: `maker_clear_logs` **호출 0회**(D-Q7 허용은 이미 사용됨). 시작 때 기존 normal 로그 **1181건, 2026-11-10 20:18:09~20:49:33**(앞 tester 세션 로그)이었고 지우지 않았다. `[VRF]`·시험 태그를 저장된 JSON에서 걸러 읽었다. 끝났을 때 2029건·약 1.23M자였고 새 로그 기록이 끊기지 않았다(포화로 멈춘 적 없음).
+
+#### 변경 파일 (제품 1개, 22.17.5 안)
+| 파일 | 변경 |
+| --- | --- |
+| RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv | MM-13: parry.left·parry.right·parry.guard TelegraphLeadSec 1.1 → **1.571429**, MotionPlayRate 1 → **0.7**. MM-15: parry.any·special.random AttackSound (빈 값) → **35ee15e50b17410093e768c33f7f76d6**. 그 밖의 열·행·순서·줄 끝(CRLF)은 그대로 |
+- 코드(.mlua)·모델·카탈로그·매니저 변경 없음. MM-14는 계약 안 수정이 필요하다고 확정되지 않아 구현하지 않았다(아래).
+
+#### 버전·바이트 지문
+- 작업 트리 57경로 Bundle SHA-256: **`1bd2447a48103cf163eb058b9348291e78f5400fddde70bee27734fe0d1efd00`**(Refresh 뒤·Play 뒤 Stop 뒤 같음). 8428a05 manifest와의 차이는 1경로뿐: `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv` f1ebd85e…58e4 → **f71c57a5…142e**. 나머지 56경로는 8428a05와 같다(manifest 줄 diff 확인).
+
+#### 로드 확인 (Refresh 뒤 Play)
+- build 로그 93건 전부 Info(LIA 노이즈), 오류 0(앞 회차와 같은 건수).
+- 로드 [VRF]: 패턴 비율 20/20/25/15/20%, 행별 `parry.left/right/guard rate=0.7 jumpFrame=1 lead=1.57143`, `parry.any/special.random rate=1 jumpFrame=0 lead=0.5 sound=35ee15e5`, MonsterSoundData 1행, MonsterStatData default·mushmom. 스폰 성공·경고 0.
+
+#### MM-14 — 접근 버벅임 기준선 측정 (코드 변경 전, 22.17.2 CSV만 적용한 상태, Maker 로컬 Play)
+- 방법: 서버 `server_main` 프로브가 `_CombatRuleCatalog.patterns["mushmom"]`을 한 행 복제본으로 바꾸고 몬스터 AttackInterval 9999, 플레이어 HP 보충 뒤 `StateComponent:ChangeState("ATTACK")`로 강제 실행(시작 위치는 Home x=3.0 확인). 서버는 20ms 타이머로 위치·구간·JumpActive·프레임 범위·PlayRate를 기록하고, 클라이언트 프로브가 `SpriteAnimPlayerChangeFrameEvent`와 클라이언트 `WorldPosition`·렌더러 Start/End/PlayRate를 매 프레임(약 17ms) 기록했다. 두 쪽이 같은 `ServerElapsedSeconds` 시계를 쓴다. 시험 값(패턴 한 행 교체, AttackInterval, HP)은 Play 안에서만 두고 Stop으로 정리했다.
+- 규모: 슬로우 없음 parry.left 3회·parry.right 3회·parry.guard 3회(첫 Play 2회씩 + 새 Play 1회씩), 접근 전체 슬로우(rate 0.5) 3칸·2칸 각 1회 이상, 1칸 비교 parry.any 2회·special.random 1회.
+- 결과(슬로우 없음 9회, 클라이언트 기준, 첫 f0 이벤트 = 0):
+
+| 지표 | 측정 | 기준 | 판정 |
+| --- | --- | --- | --- |
+| B1 프레임 순서 | 0→1→2→3→(착지 stand) 순서, 건너뜀 0, 되돌림 0 | 0→1→2→3, 건너뜀 0 | 순서·건너뜀·되돌림은 통과. 아래 **관찰 1** 참고 |
+| B2 프레임 시각 | f1 시작 1.136~1.160초(기대 1.143, 차 −0.007~+0.017), f2 시작 차 −0.001~+0.024(기대 1.429), f3 시작 차 +0.001~+0.021(기대 1.500). f1 표시 0.273~0.297초, f2 표시 0.068~0.088초, f3 표시 0.068~0.089초 | ±0.05초, f2·f3 0.035초 이상 | PASS |
+| B3 위치 연속성 | approach 구간(클라이언트 J 0.430~0.449초) 역행 0, 같은 x에 멈춘 가장 긴 구간 0.018~0.035초, 두 샘플 사이 최대 이동 0.0945~0.2975(한도 = 거리 × 0.05 ÷ J = 0.2506~0.4360) | 정지 0.05초 이하, 최대 이동 ≤ 한도 | PASS |
+| B4 착지 튐·높이 | 클라이언트 y 0.5810 ~ 0.5810(변화 0). 착지 x에 도달한 뒤 되돌아오는 움직임 없음(착지 뒤 위치는 같은 틱에 시작한 복귀 점프의 이동뿐) | y ±0.01, 벗어났다 돌아오기 0 | PASS |
+| B5 제자리 | windup 구간 클라이언트 x 3.0000 고정, 렌더러 Start-End 0-0(f0만) | x ±0.01, f0만 | PASS |
+| (다) Start≠End 따로 도착 | 클라이언트 프레임 단위 샘플에서 approach 전 구간 Start≠End 행 0, k−1 프레임 이벤트 0 | 0 | 관찰되지 않음 |
+
+- 서버 [VRF] 대조(parry.left): `clip driven` 시계 22.104 → `frame set 1` elapsed 1.146 = `leap start`(같은 틱) → f2 1.443 → f3 1.512 → f4 1.582(= stand 지정 = 판정 틱) → `clip set jump`(복귀) 같은 틱 +0.001. parry.guard는 같은 틱에 `effect dust x=0.000 playRate=0.7`.
+- 서버 위치도 같은 직선이다(서버 샘플 0.0595/34ms, 클라이언트 0.0297/17ms). Maker 로컬 Play는 서버–클라이언트 사이 네트워크 지연이 없어, 위 지표는 지연이 있는 실제 접속의 위치 동기화 단차를 대변하지 못한다(아래 한계).
+- 접근 전체 슬로우 2칸·3칸: 프레임 0,1,2,3,0 순서 유지, 렌더러 PlayRate 0.70 → 0.35(슬로우 중) → stand 0.5, B3 역행 0·최대 이동이 한도 이하(0.0919/0.1299, 0.1225/0.1767).
+- 1칸 비교(parry.any 2회·special.random 1회): 0.5초, 클라이언트 y 최대 1.380(+0.8), x 3.0 → 0.0 / −1.5, 두 샘플 최대 이동 0.204 / 0.315(1칸이 초당 이동거리가 더 크다: 6~9 단위/초, 2칸 우 8.6·좌 5.2). 판정 기준에 쓰지 않는 기록이다.
+
+**관찰 1 — 같은 프레임 이벤트가 같은 시각에 2회 도착 (B1 "재수신 0"을 이벤트 수까지 엄밀히 읽으면 어긋남)**
+- 클라이언트 프레임 이벤트가 구동 프레임마다 같은 프레임 번호로 같은 시각(ms 단위 같음)에 2번 온다(f0는 클립 지정 때 3번). 예: `f1@1.147 f1@1.147 f2@1.444 f2@1.445 f3@1.513 f3@1.513`.
+- 분리 시험(Play 안, 몬스터가 IDLE일 때 렌더러를 직접 구동): (A) End=k → Start=k 순서(제품 순서), (B) Start=k → End=k 순서 모두 프레임마다 이벤트가 2번 온다. (C) End만 올리면(Start 0 유지) 프레임이 안 바뀐다. (D) 구동 없이 자연 재생(Start 0·End 최대)하면 프레임마다 이벤트가 1번이다(f0@0, f1 +0.810, f2 +0.205, f3 +0.051, f4 +0.034, f0 +0.753).
+- 해석: Start·End 두 @Sync 속성 쓰기가 각각 프레임 변경 이벤트를 낸다. 같은 프레임·같은 시각이고 k−1 프레임 이벤트는 없어 눈에 보이는 되돌림·깜박임·건너뜀은 측정되지 않았다. 쓰기 순서를 바꿔도 사라지지 않는다. 없애려면 구동 방식을 바꿔야 하고(자연 재생 + 경계 재고정 등) D-Q6(22.16.12) 완료 기준을 다시 증명해야 한다. 눈에 보이는 문제로 확인되지 않아 이번에 고치지 않았다. 판정은 메인·planner 몫이다.
+- 한계: 첫 Play의 첫 측정(1회)에서는 이벤트가 1번씩만 왔다(원인 미확인). 이후 측정(같은 Play 안, 새 Play)은 모두 2번이다. 새 Play에서 핸들러 하나만 연결해도 같다.
+
+**원인 확정 결과: 계약 22.17.3 3번(측정으로 잡히는 끊김 없음, (라))**
+- B2~B5는 모두 통과, B1은 눈에 보이는 순서가 통과(위 관찰 1은 비가시 이중 도착)이므로 원인 (가)·(나)·(다)로 확정할 지표가 없다. 22.17.3 3번에 따라 **코드를 고치지 않았다**. 분리 시험은 B1 이중 도착 확인 목적으로만 했고 제품 파일에는 남기지 않았다.
+- 어색해 보일 수 있는 지점(측정으로 "끊김"은 아니지만 사용자에게 물어볼 후보. 클립 피벗은 Plan 22.16.1 측정값 인용):
+  1. 클립 자체 도약이 4개 자세로만 그려진다. 피벗 y가 f0 0 → f1 −88px(약 +0.88 단위) → f2 −70px → f3 −8px → stand 0이고, f1이 0.273~0.297초 머무는 동안 x는 2.25~3.75 단위를 직선으로 미끄러진다. 높이는 W 순간 0.88 단위로 한 번에 오르고 f2·f3 0.07초씩 사이에 거의 내려온다(자세 사이에 보간이 없음).
+  2. 도약 시작 순간: 제자리 f0 1.143초 정지 직후 f1로 튀어 오르며 같은 순간 수평 이동이 시작된다(이동 속도 2칸 좌 5.2·우 8.6 단위/초, 클라이언트 한 프레임 0.09~0.14 단위).
+  3. 착지 순간 정지 시간 0: 판정 틱에 stand 지정과 복귀 jump 클립 지정이 같은 틱(약 0.001초 차)이라 착지 자세(f4·stand)가 화면에 보이지 않고 곧바로 복귀 점프(높이 0.8, 0.5초)가 시작된다. 이 구조(착지 = 판정 → 복귀)는 Plan 22.16.2가 정한 것이고 이번 계약에서 바꾸지 않는다.
+- 실제 접속(서버–클라이언트 지연)의 위치 단차(후보 (나))는 Maker 로컬 Play에서 측정할 수 없었다. 사용자의 V11도 Maker 로컬 Play이면 같은 조건에서 위 지표가 통과한 것이다.
+- 선택지(메인이 사용자에게 어느 순간이 버벅이는지 물은 뒤 정한다): (a) 사용자가 순간을 지목하면 그 순간만 대상으로 planner가 계약을 정하고 coder가 고친다. (b) 관찰 1의 이중 도착을 눈에 보이지 않아도 고치려면 구동 방식 변경(D-Q6 재증명 필요)이 든다. (c) 착지 자세 정지·보간 도약은 규칙·수치(1칸·복귀 경로, 높이 0)를 바꾸므로 사용자 결정이다.
+
+#### 기본 검증 결과 (22.17.7 항목, Maker Play 2회, 시험 값은 Play 안에서만)
+| 항목 | 결과 |
+| --- | --- |
+| 1 로드 [VRF]·build | PASS(위 "로드 확인") |
+| 2 MM-13 시각(parry.left·right·guard, 슬로우 없음) | PASS. 서버 시계: W = `frame set 1`·`leap start` elapsed 1.144~1.152(기대 1.1429), f4 쓰기 = 판정 = 먼지 호출 elapsed 1.574~1.588(기대 1.5714, ±0.05 이내), 클라이언트 f1 W+0.001~0.017. 렌더러 PlayRate 0.7(`clip driven playRate=0.7`), 3칸 `effect windup`(공격 시작 틱, 머쉬맘 현재 x=3.000, frames 0-6, playRate 0.7)·`effect dust`(판정 틱, x=0.000 = Pos2, frames 8-end, playRate 0.7). 착지 x: 2칸 좌 0.750·우 −0.750(영역 중앙), 3칸 0.000 |
+| 2 접근 전체 슬로우 | PASS. 3칸·2칸: 렌더러 PlayRate 0.35, 이펙트 PlayRate 0.35, 시각 2배(예: 슬로우 0.4초 시작 때 f1 1.887초, 착지 2.749초, 기대 1.886·2.743) |
+| 3 MM-13 스폰 | PASS. 현재 CSV로 스폰 성공·경고 0. 시험 행(Play 안 메모리) TelegraphLeadSec 1.1 + MotionPlayRate 0.7(W 1.142857 ≥ 1.1) → `spawn refused reason=windup not shorter than telegraph row=parry.left windup=1.143` + 경고 1회, 현재 몬스터 유지. 복원 뒤 정상 스폰 성공 |
+| 4 MM-14 B1~B5 | 위 기준선 측정(고치지 않아 개선 비교 없음) |
+| 5 D-Q6 S1~S3(0.7배) | PASS. 프레임 되돌림 0(0→1→2→3, 같은 프레임 반복은 PlayRate 변경 시점에만 추가). S1(2칸, 0.4초에 시작한 6초 슬로우): f1 W 정확(서버 action 1.147), 판정 2.749초. S2(3칸, 슬로우 1.0초가 windup 안에서 종료): f1 1.652초(기대 1.0 + 0.644), 판정 2.082초(기대 2.071). S3(2칸, 접근 중 1.2초에 시작한 0.3초 슬로우): f1 W 정확, 판정 1.734초(기대 1.721), 클라이언트 f1 이벤트가 PlayRate 변경 시점(1.224·1.517초)에 반복, f2 1.585·f3 1.653. S3b(3칸, 접근 중 시작 6초): 판정 1.948초(기대 1.942). 렌더러 PlayRate는 "0.7 × ActionRate", 끝 뒤 stand 1 × ActionRate |
+| 6 MM-15 공격음 | PASS. parry.any·special.random 강제 실행마다 `[VRF] sfx kind=attack ruid=35ee15e5 user=있음` 1줄, 공격 시작(telegraph)과 같은 틱·`clip set jump`(점프 시작)와 0.001초 이내. 2칸 f135fc39·3칸 5da7bb48 공격음 회귀 없음. 후보 64c83d144b5d46ffa6d460ca61a66f1d·09df85566b984d72b97c7aa9860c4b18은 `ParseOptionalRuid`를 통과(원문 그대로 반환), 8자 줄임·비16진수는 nil. 소리 자체는 미청취 |
+| 7 회귀 | 1칸 parry.any·special.random: stand 지정(착지)이 시작 +0.500초, 복귀 jump → stand +0.516초, y 최대 +0.8, 착지 x 0.000 / −1.500. windup 피격 통과: 늘린 시험 행(lead 24, rate 0.05, W 16)에서 windup 중 실제 UpArrow 1회(10타) → `PlayerHitRule pass hit=1..10`, 몬스터 HP 100 → 90, 피격음 1줄. 사운드 hitplayer 1줄/HIT. 서버 로그 Warning은 의도한 스폰 거부 1건뿐, Error는 내 프로브 오타 1건(`mon.Parent.TransformComponent` nil, 제품 오류 아님) |
+
+#### 미실시·미확인 (PASS로 세지 않음)
+- approach·return 구간 실제 UpArrow 차단(입력 도구 호출이 지연돼 approach 안에 들어가지 못함, 선언 값 ApproachHittable false·ReturnHittable false는 코드 그대로), die F12 정지, 판정 결과 GUARD 40%·PARRY·HIT 재확인, 판정 전 취소 때 먼지 없음, 이펙트 눈빛·먼지의 화면·방향 육안, 사람 손 타이밍, 청취, 사용자 V11. 이 항목들의 코드 경로는 8428a05와 같다(제품 변경은 CSV 1파일, .mlua 변경 0).
+- 실제 접속(지연 있는 환경)의 위치 동기화는 측정하지 못했다.
+- 첫 Play 첫 측정의 이벤트 단일 도착 원인 미확인.
+
+#### 사용 종료
+- 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음. 시험용 프로브는 제품 파일에 남기지 않았다.
