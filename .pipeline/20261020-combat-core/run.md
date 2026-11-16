@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 D·D2 V11, 대상 e710907)
-- 다음 행동·대기 사유: WAITING_USER — 회차 D2 reviewer WAITING(새 결함 없음). 사용자 V11: 0.7배 체감, 도약 조절 항목 비교(EqualizeLeapFrames·EaseLeapMove·LeapJumpHeight), 1칸 점프음 후보 청취, 난이도, 회차 D 22.8 V11 1~9. 고른 값은 회차 종료 커밋. V11 수락 뒤 planner 회차 종료 정리(앞 리뷰 목록 + D2 리뷰 목록 1~7). 범위 밖: 원장 castleenemy 문구.
+- 현재 담당: 사용자 (1칸 player 점프음 청취 확인)
+- 다음 행동·대기 사유: 사용자 V11 결과(2026-11-16) — 1칸 점프음만 player 점프음으로 교체, 나머지 수락. coder CSV 1값 교체·기본 확인 → [code] 로컬 커밋 → 사용자 청취 확인 → planner 회차 종료 정리(앞 리뷰 목록 + D2 리뷰 목록) → [review] 회차 종료 커밋·push. 범위 밖: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -492,3 +492,9 @@
 - [code] 로컬 커밋 e710907(MM-14 2차). [ops] 87413bd skills-lock.json 형식 v2 자동 갱신(사용자 "내가 바꾼 거 아님", "[ops]로 따로 커밋"; 미검토 [code] 동반 공개를 피해 push는 회차 커밋 때).
 - tester QA14(2026-11-16, 대상 e710907, Bundle 1e468c15…21bc4 57/57 일치): 실행 기준 전부 PASS, FAIL·새 결함 0. MM-13 시각·이펙트·스폰 거부 1회, MM-15 점프음 [VRF], T1~T11 4조합(T8 (끔,끔) 슬로우 포함), 실입력 windup 피격·approach/return 차단, die F12, HIT·GUARD, PARRY(창 확대 시험 값), 취소 시 먼지 없음(논리 경로) PASS. 관찰: O-1 (끔,끔) 1사례 클라이언트 x 0.09초 멈춤(재현 0/28, 원인 미확인), O-2 T5 편차 >0.01 3건(샘플러 간격), O-3 프레임 이벤트 이중 도착. NOT_RUN: 화면 체감·육안·청취, 실접속·모바일, PARRY 정상 창 사람 손·JUST, 커밋 트리 직접 해시. maker_clear_logs 0회. Maker edit. msw-reviewer 호출.
 - reviewer(2026-11-16, 대상 e710907): WAITING. 요청 3건 승인 범위대로 반영, 22.17.10 정의와 코드 일치, QA14 한계(늘린 입력 시험 값·PARRY 창 확대·35ms 샘플·O-1~O-3)는 판정 비차단. Bundle 문자열의 커밋 트리 직접 재계산은 모델 파일 셸 가드로 미실시(바뀐 2파일 blob 해시 일치·작업 트리=커밋으로 대체). 87413bd 비밀값 없음. 관찰: 서버 OnUpdate SetPosition 연속 이동은 V11 뒤 끊김이 남을 때 다음 후보(새 결정); 87413bd 커밋이 tester Play 시작과 시각이 겹침(제품 무관, 앞으로 담당 종료 뒤 커밋).
+
+### 2026-11-16 회차 D·D2 사용자 V11 결과
+- 사용자 원문: "다른 건 다 좋은 데 1칸 점프음을 player가 사용하는 점프음으로 바꿔줘."
+- 해석: 회차 D·D2 V11의 나머지 항목(0.7배, 도약 조절 기본값 EqualizeLeapFrames·EaseLeapMove true·LeapJumpHeight 0, 난이도, 회차 D 22.8 V11 1~9)은 수락. 1칸 점프음(MM-15)만 V11 선택값으로 교체.
+- D-Q13 1칸 점프음: player 점프음 = 엔진 MaplePreferencesLogic.JumpSound 기본값 a49c4b3963e148f09b2eb9de98d42ef4(0.13초, effect). 프로젝트에서 덮어쓴 곳 없음(Grep 확인). 후보 3개(35ee15e5·64c83d14·09df8556)는 채택하지 않음. 리뷰 판단대로 V11 선택값은 CSV 값만 바꾸고 회차 종료 커밋에 넣는다(코드 변경 없음, 형식 검증 통과 대상).
+- coder(2026-11-16): DONE. CSV 1칸 두 행 AttackSound → a49c4b39…(그 밖 변경 0). 로드 [VRF] sound=a49c4b39, 1칸 강제 4회·자연 공격 sfx 1줄씩, 2·3칸 공격음 회귀 없음, 런타임 _MaplePreferencesLogic.JumpSound 서버·클라이언트 동일, 빌드 오류 0·제품 경고·오류 0. Bundle 57경로 28f833db…012a(f78bab5 대비 CSV 1경로). NOT_RUN 청취. maker_clear_logs 0회. Maker edit.

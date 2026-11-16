@@ -3083,3 +3083,29 @@
 
 #### 사용 종료
 - 마지막 maker_stop 성공 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인. commit·push 없음. 시험용 프로브는 제품 파일에 남기지 않았다. 다음 담당: tester(같은 버전, 22.17.7 + 22.17.10.6 T1~T11).
+
+### 2026-11-16 회차 D V11 선택값 — 1칸 점프음 (D-Q13, 사용자 "1칸 점프음을 player가 사용하는 점프음으로") coder
+
+#### 변경
+- 제품 1파일: `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv`의 `parry.any`·`special.random` 두 행 AttackSound를 `35ee15e50b17410093e768c33f7f76d6` → **`a49c4b3963e148f09b2eb9de98d42ef4`**. 다른 행·열·순서는 그대로, BOM(EF BB BF)과 줄 끝 CRLF를 유지했다(바이트 치환 2건, git diff는 두 행뿐).
+- 근거: 엔진 `MaplePreferencesLogic.JumpSound` 기본값(`Environment/NativeScripts/Logic/MaplePreferencesLogic.d.mlua` 14행). 프로젝트의 .mlua·.csv·.config·.userdataset에서 `JumpSound`를 덮어쓴 곳은 없다(Grep 결과 위 d.mlua 1건뿐). Play 중 런타임 값도 서버(server_main)·클라이언트 모두 `a49c4b3963e148f09b2eb9de98d42ef4`로 같았다.
+- 코드(.mlua)·모델·맵·UI 변경 0. 후보 3개(35ee15e5·64c83d14·09df8556)는 채택하지 않았다.
+
+#### 시작 기준·버전 지문
+- 시작: 원격과 같은 HEAD f78bab5, 작업 트리 변경은 메인의 run.md뿐. 57경로 Bundle을 같은 계산법(경로 UTF-8 바이트순, 경로 TAB sha256 LF, 확장자 9종, Global·RootDesk·map·ui)으로 계산해 `1e468c15dc603e46efe778637a3377e15779554c8bcb55e54f379d14d2f21bc4` 일치(57/57).
+- 변경 뒤(Stop 뒤) 57경로 Bundle SHA-256: **`28f833db19afaef1c69364bc2d88aad9615aeb7734d94cb054c91f067cbe012a`**. 시작 manifest와의 차이는 1경로뿐: `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv` f71c57a5…142e → **4d0525b2…6ebe**. 나머지 56경로는 같다(manifest 줄 diff 확인). 시험 중 Maker가 다른 제품 파일을 다시 저장하지 않았다(Stop 뒤 git status는 CSV와 run.md뿐).
+
+#### 기본 검증 (Maker MCP, Refresh 1회 + Play 1회, 서버 프로브는 Play 안 메모리에서만)
+- map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit 확인 후 시작. `maker_clear_logs` 호출 0회.
+- Refresh 뒤 build 로그 93건 전부 Info(LIA 노이즈, 앞 회차와 같은 건수), 오류 0. (Play 뒤 build 로그는 다시 읽지 않았다.)
+- 로드 [VRF]: `pattern row id=parry.any … sound=a49c4b39`, `id=special.random … sound=a49c4b39`(1칸 두 행), parry.left·right `sound=f135fc39`, parry.guard `sound=5da7bb48`. 카탈로그 ready patterns=5, 스폰 성공.
+- server_main 프로브(패턴 목록을 한 행으로 바꾸고 AttackInterval 9999, 플레이어 HP 보충, `ChangeState("ATTACK")`, 4초 간격): parry.any 2회·special.random 2회 모두 **`[VRF] sfx kind=attack ruid=a49c4b39 user=있음` 1줄씩**(공격 시작 틱, `clip set key=jump`와 같은 틱). parry.left·right 각 1회 `ruid=f135fc39`, parry.guard 1회 `ruid=5da7bb48`(`effect windup`·`effect dust` 정상). 프로브가 끝나며 패턴 목록·AttackInterval 원복(`restored=true`), 이후 자연 공격에서도 2칸 f135fc39·3칸 5da7bb48 확인. 이 Play에서 자연 1칸도 a49c4b39로 나왔다.
+- `_MaplePreferencesLogic.JumpSound`: 서버 프로브 `a49c4b3963e148f09b2eb9de98d42ef4`, 클라이언트 프로브 같은 값.
+- 로그 전체: normal 로그 526건 모두 Info, 제품 Warning·Error 0.
+
+#### 미실시·미확인 (PASS로 세지 않음)
+- 소리 자체의 청취(a49c4b39가 실제로 점프음으로 들리는지, 0.13초 길이)는 사용자 V11. 로그는 재생 요청 RUID만 보여 준다.
+- 이번 변경은 CSV 값 1종이라 2·3칸 시각·도약 조절·판정 등 나머지는 e710907 QA14 결과를 이어 쓰며 다시 하지 않았다. 실접속·모바일은 NOT_RUN.
+
+#### 사용 종료
+- 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료. 프로브는 제품 파일에 남기지 않았다. commit·push 없음. 다음 담당: tester(같은 버전, CSV 1경로 변경 확인) 또는 메인 판단.
