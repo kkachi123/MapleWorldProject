@@ -60,6 +60,97 @@
 
 ## QA 기록
 
+### 2026-11-16 독립 QA 14회차 — 회차 D2(대상 e710907)
+- 상태: **실행 완료.** 실행 기준 전부 PASS, FAIL·NEEDS_DECISION·새 결함 없음. 관찰 3건(아래 O-1~O-3)과 NOT_RUN은 PASS로 세지 않았다. 독립 reviewer 재검토 대기.
+- 담당: Claude Code msw-tester(coder·앞 QA와 별도 실행). 제품 코드·모델·맵·UI·DataSet·CSV 수정 없음, commit·push·run.md·Plan 수정 없음. coder 개발절의 PASS는 이번 실행으로 세지 않았다. 바꾼 파일은 이 QA 절뿐이다.
+- 대상 버전: 로컬 커밋 **e710907**(원격 HEAD 7cbf14e, push 전). D2 = 1b41f29(MM-13·MM-15, 패턴 CSV) + e710907(MM-14 2차, OrangeMushroomAttack.mlua). 7cbf14e 제품(8428a05) 대비 제품 경로 변경은 `MonsterAttackPatternData.csv`·`OrangeMushroomAttack.mlua` 2개뿐이다(`git diff 8428a05 e710907 --name-only`, 모델·맵·UI 변경 0). 1b41f29 대비 OrangeMushroomAttack 변경: 속성 2개, BeginWindup 인자 1개와 곡선 선택 고정, 새 메서드 EqualizeLeapBounds, OnUpdate x 곡선 분기, `[VRF]`. `JumpToLocalX`는 `self._T.easeActive = false` 1줄만 추가됐고 `PerformReturnMotion` 변경 0이다(diff를 직접 읽음).
+- **Bundle 57경로 SHA-256 `1e468c15dc603e46efe778637a3377e15779554c8bcb55e54f379d14d2f21bc4`: 시작 전 계산 일치(57/57), 시험을 마친 Stop 뒤에도 같다.** 계산 방식은 coder 절과 같다(경로 바이트순, `경로 TAB 파일 sha256 LF`, 확장자 9종, Global·RootDesk·map·ui, 경로 정렬은 UTF-8 바이트). 시작 때 `git status`는 `M skills-lock.json` 하나뿐(범위 밖, 건드리지 않음)이었으므로 제품 파일은 커밋 e710907과 같다. 끝 때 `git status --short`는 비어 있었다(skills-lock.json 변경이 사라진 것은 내 작업이 아니다). 커밋 트리를 따로 해시 계산하지는 않았다.
+- 환경: Maker map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit로 시작(worldId 970621b29ba945369d3dc8e90c301186 확인). build 로그(편집 모드·Play 중) 93건 전부 Info(LIA 노이즈), 오류 0 — 앞 회차와 같은 건수. Play 2회(첫 Play는 프로브 환경 확인, 본시험은 둘째 Play 09:25~09:43). `maker_clear_logs` **호출 0회.** 시작 때 normal 로그가 이미 2648건·약 1.65M자(coder 세션 로그)였고 끝 때 4770건·약 3.16M자였으며 기록은 끊기지 않았다(포화 없음). 이 도구는 큰 로그를 파일로 저장해 `[VRF]`·`[T16]`·`[X*]` 줄을 스크립트로 걸러 읽었다. 마지막 `maker_stop` 성공 뒤 `maker_get_current_map` = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, Stop 뒤 LEA-3051 없음.
+- 방법: **(A) 서버 프로브**(`maker_execute_script` server_main): 23+12+14개 사례를 한 사례씩 이어서 실행. 시험 값은 모두 Play 안 메모리에서만 바꿨다(`_CombatRuleCatalog.patterns["mushmom"]`을 한 행 복제본으로 교체, `EqualizeLeapFrames`·`EaseLeapMove`·`LeapJumpHeight`, 몬스터 `AttackInterval` 9999, 플레이어 HP, `ApplySlow`, 긴 시험 행). 사례마다 서버 샘플(약 35ms 간격: 서버 시계·액션 시계·x·y·구간·JumpActive·프레임 범위·PlayRate)을 모아 사례가 끝난 뒤 로그로 냈다. **(C) 클라이언트 프로브**(context client): 몬스터 `SpriteAnimPlayerChangeFrameEvent`와 클라이언트 WorldPosition·프레임 범위를 약 35ms 간격(timer 16ms 요청, 실제 약 2프레임)으로 기록. 두 쪽 모두 `ServerElapsedSeconds` 시계. **(B) 실제 키 입력**(`maker_keyboard_input`): UpArrow 탭·DownArrow 유지.
+- 프로브 한계(중요): `maker_keyboard_input`은 호출에서 실제 키 입력까지 지연이 1~13초 불규칙해(windup 첫 탭 4초, 접근 탭 8초 이상 늦음) 정상 길이(1.57초) 안에서 구간을 맞출 수 없다. 그래서 B 항목은 **긴 시험 행**(TelegraphLeadSec 24~80, MotionPlayRate 0.04~0.05)과 `OrangeMushroomAttack.JumpDuration` 2~8(복귀 길이)을 Play 안에서만 써서 구간을 길게 늘렸다. 이 값들은 Stop과 사례 끝 복원으로 정리했다(복원 값 확인: patterns 원본, ParryWindowSec 0.2, JumpDuration 0.5).
+
+**기준별 결과 (Plan 22.17.7 + 22.17.10.6)**
+
+| 기준 | 방식 | 이번 독립 실행 결과 | 판정 |
+| --- | --- | --- | --- |
+| 22.17.7-1 빌드·로드 | 편집 모드 build 로그, Play 부팅 `[VRF]` | build 93건 Info·오류 0. 로드: `pattern row parry.left/right/guard clip=attack1/attack1/skill1 rate=0.7 jumpFrame=1 lead=1.57143`, `parry.any/special.random rate=1 jumpFrame=0 lead=0.5 sound=35ee15e5`, 비율 20/20/25/15/20%, `MonsterSoundData id=mushmom` 1행, MonsterStatData default·mushmom, 스폰 성공·경고 0 | PASS |
+| 22.17.7-2 MM-13 시각(슬로우 없음) | A + C, 2칸 좌·우·3칸 | 아래 조합표. W(`frame set 1`) 1.143~1.159(기대 1.142857 ±0.05), 서버 f4 쓰기 = 판정 = 먼지 호출 1.572~1.589(기대 1.571429 ±0.05, f4 쓰기↔판정 차 −0.001~0), 클라이언트 f1 시작 W+0.005~+0.047(최대 +0.047, 한도 0.05 안 경계), 렌더러·이펙트 PlayRate 0.7. 3칸 이펙트: 1단계 `effect windup` x 3.000(머쉬맘 위치)·y 0.581·프레임 0-6·playRate 0.7·호출 시각 공격 시작 +0.000~0.001, 2단계 `effect dust` x 0.000(Pos2)·프레임 8-end·playRate 0.7·호출 시각 판정과 같음(10회). 착지 x: 2칸 좌 0.750·우 −0.750(영역 중앙), 3칸 0.000 전 사례 일치. 접근 전체 슬로우 시험(사례 18·22·23): 시각 2배, PlayRate 0.35 | PASS |
+| 22.17.7-3 MM-13 스폰 | A, `MonsterManager:DoSpawn()` | 현재 CSV로 스폰 성공·경고 0. 시험 행(Play 안 메모리)에서 parry.left TelegraphLeadSec 1.1 + MotionPlayRate 0.7(W 1.143 ≥ 1.1): `[VRF] spawn refused reason=windup not shorter than telegraph row=parry.left windup=1.143` + Warning **정확히 1회**(`[CombatRuleCatalog] windup not shorter than telegraph: mushmom parry.left`), 현재 몬스터 유지(`sameMonster=true`). 원본 복원 뒤 `DoSpawn` 성공, 새 몬스터로 교체(이전 몬스터 파괴) | PASS |
+| 22.17.7-5 D-Q6 유지 = T8 | A + C | 아래 T8 | PASS |
+| 22.17.7-6 MM-15 공격음 | A `[VRF]` + 카탈로그 함수 | parry.any·special.random 강제 실행 7회(사례 15·16·17·107~110)마다 `[VRF] sfx kind=attack ruid=35ee15e5` **정확히 1줄**, `telegraph` → `sfx` → `clip set key=jump`가 같은 `OnEnter` 호출 안의 인접 줄(같은 틱). 2칸 `f135fc39`·3칸 `5da7bb48` 공격음은 모든 2·3칸 실행에서 1줄씩 회귀 없음. 후보 2개: Play 안에서 `_CombatRuleCatalog:ParseOptionalRuid`에 넣음 — 기본값 `35ee15e5…`, 후보 `64c83d14…`·`09df8556…` 모두 원문 반환, 8자 줄임·비16진수는 nil, 빈 값은 빈 문자열. **소리 자체는 미청취** | PASS(청취는 NOT_RUN) |
+| 22.17.7-7 회귀: 1칸 | A | 사례 15·16·17·107~110: 접근 jump → stand 0.502~0.516초, 복귀 jump → stand 0.500~0.517초, y 최대 +0.798~+0.800, 진행률 직선 편차 ≤0.004(시간 지연 맞춤 0.016~0.018), 착지 x 0.000(any 2회·special.random 3회) / +1.500(special.random 3회) — 무작위 칸이라 사례마다 다름, 복귀 x 3.0 | PASS |
+| 22.17.7-7 회귀: windup 피격 | **B 실입력** | 긴 시험 행(lead 24 / rate 0.05): windup 중 UpArrow → `PlayerHitRule pass hit=1..10`, 몬스터 HP 100 → 90, 피격음 `sfx kind=damaged` 1줄. lead 80 시험(사례 X2)에서도 windup 끝 무렵 탭 → pass 10타 | PASS |
+| 22.17.7-7 회귀: approach 차단 | **B 실입력** | lead 80 / rate 0.04 시험 행: approach 도중(`seg=approach x=2.88`) UpArrow → `PlayerHitRule fail rule=targetHittableSegment hit=1`, `hit=2`, HP 변화 없음 | PASS |
+| 22.17.7-7 회귀: return 차단 | **B 실입력** | `JumpDuration` 8(Play 메모리)로 복귀를 8초로 늘린 시험: 복귀 시작(`clip set key=jump`) 뒤 UpArrow → `fail rule=targetHittableSegment hit=1..10` 10타 전부, HP 90 그대로 | PASS |
+| 22.17.7-7 회귀: die F12 | **B 실입력** + A | Hp 2 + windup 중 UpArrow 1회: `sfx kind=damaged`·`sfx kind=die` 각 1줄, `MonsterDie start frames=6 total=1.100 freezeAfter=0.800`, +0.8초 `MonsterDie freeze frame=5`, 이후 3초 동안 `SpriteRUID ec90f0b6…`·프레임 5-5·PlayRate 1·`DEAD` 유지 | PASS |
+| 22.17.7-7 회귀: 판정 결과 | **B 실입력** | **HIT**: 입력 없이 맞음 `defense kind=HIT rate=1`, HP 100 → 88(사례 X1, 자연 공격도 같음). **GUARD**: DownArrow `down` 유지 → `PlayerGuard start` → `PlayerHealth guard eval cellOk=true areaOk=true attr=PARRY` → `defense kind=GUARD rate=0.4`, HP 100 → 96, HUD `feedback=GUARD`, 먼지 이펙트 호출. **PARRY**: 정상 창 0.20초는 도구 지연 때문에 사람 손으로 맞출 수 없어 `_CombatRuleCatalog.rules["default"].ParryWindowSec`를 30으로 늘린 시험 값(Play 메모리, 사례 끝 복원 0.2)에서 DownArrow를 판정 24초 전에 눌러 유지 → `defense kind=PARRY rate=0`, HP 100 그대로, HUD `feedback=PARRY`, 복귀(2초) 뒤 `STUN`·`clip set key=hit`·`groggy applied`. JUST는 이번에 시험하지 않았다(요청 범위 밖) | PASS(PARRY는 창 확대 시험 값) |
+| 22.17.7-7 회귀: 판정 전 취소 때 먼지 없음 | A(**논리 경로**: 프로브가 `ChangeState("IDLE")`) | 3칸 시험 행(lead 3.0 / rate 0.3): windup 1.007초에 취소 → `effect windup`만 있고 `effect dust` 0, approach 2.881초(x 1.091)에 취소 → `effect windup`만 있고 `effect dust` 0. 취소 뒤 상태 IDLE, 구간 none | PASS(입력 아님) |
+| 22.17.7-7 회귀: 사운드 4종 | A `[VRF]` | `attack`(2칸 f135fc39·3칸 5da7bb48·1칸 35ee15e5), `hitplayer 7c8e5f1e`(HIT·GUARD 때 1줄씩), `damaged c611ae50`, `die d48ec1cc` 각 1줄 | PASS |
+| 22.17.7-7 회귀: 소스 | `git diff` | 1b41f29 대비 JumpToLocalX 1줄, PerformReturnMotion 0 | PASS |
+
+**조합표 (슬로우 없음, 서버 액션 시계 초, 클라이언트는 공격 시작 기준; 2칸 좌·우·3칸, 사례 번호는 본시험 순서)**
+
+| 조합 (균등화, 곡선) | 사례 수(번호) | W(f1) | 서버 f2 / f3 | f4 쓰기 = 판정 | `leap bounds` f1 / f2 / f3 / f4 | 클라이언트 f1 / f2 / f3 시작 | 클라이언트 표시 f1 / f2 | 이동 비·정지 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| (켬, 켬) | 15(1~6, 111, 112, 201·203·205·207·209·211·213) | 1.144~1.159 | 1.287~1.301 / 1.430~1.447 | 1.573~1.588 | 1.142857 / 1.285714 / 1.428571 / 1.571429 | 1.148~1.190 / 1.294~1.314 / 1.435~1.466(높이 0.5 사례 13은 f3 1.476) | 0.119~0.157 / 0.121~0.170 | 이동 비 0.54~1.06(k 1.5), 정지 0~0.019 |
+| (켬, 끔) | 2(7, 8) | 1.149~1.156 | 1.291~1.294 / 1.430~1.435 | 1.574~1.588 | 위와 같음 | 1.170~1.174 / 1.310~1.312 / 1.451 | 0.136~0.142 / 0.139~0.141 | 0.68~0.74(k 1), 0~0.017 |
+| (끔, 켬) | 2(9, 10) | 1.143~1.146 | 1.436~1.442 / 1.506~1.511 | 1.575~1.579 | 1.142857 / 1.428571 / 1.500000 / 1.571429 | 1.162~1.165 / 1.457 / 1.524~1.525 | 0.292~0.295 / 0.067~0.068 | 1.03~1.05(k 1.5), 0.017~0.018 |
+| (끔, 끔) | 15(11, 12, 101~106, 202·204·206·208·210·212·214) | 1.144~1.158 | 1.430~1.445 / 1.501~1.517 | 1.572~1.589(판정 최대 1.590) | (끔, 켬)과 같음 | 1.155~1.180 / 1.435~1.465 / 1.520~1.539 | 0.261~0.303 / 0.063~0.089 | 이동 비 0.68~0.74(k 1)**, 정지 0.017~0.019** |
+
+(** 사례 102 한 번만 예외 — 아래 O-1.)
+
+**T1~T11 (22.17.10.6, 대상 조합 포함)**
+
+| # | 판정 | 근거 |
+| --- | --- | --- |
+| T1 시각 불변 | PASS (4조합) | 위 조합표. W·f4·판정·먼지 ±0.05 안. 착지 x 2칸 좌 0.750·우 −0.750·3칸 0.000(복귀 구간 시작 `jsx`로 읽은 값, 소수 4자리 일치). LeapJumpHeight 0 사례의 approach y 변화 0.0000, 높이 0.5 사례(13)의 착지 직후 첫 복귀 샘플 y 0.581 = Home.y |
+| T2 프레임 경계 | PASS (4조합) | `leap bounds`가 표 값과 소수 6자리까지 일치(켬 1.285714·1.428571, 끔 1.428571·1.500000). 서버 `frame set` f2·f3은 기대 ±0.016 안. 클라이언트 f1·f2·f3 시작은 기대 +0.005~+0.047(최대 f1·f3 +0.047), 표시 시간은 켬 f1~f3 모두 0.119 이상(기준 0.071), 끔은 f2 0.063~0.089·f3 0.050 이상(B2 기준 0.035) |
+| T3 프레임 순서 | PASS (4조합) | 순서 0→1→2→3→(stand 0), 건너뜀 0, 되돌림 0, 0.011초 넘는 같은 프레임 재도착 0. 프레임마다 같은 ms에 2건 도착은 비교 대상 전 사례에서 그대로 관찰됨(22.17.10.5 중복 묶음, 기록만 — O-3) |
+| T4 위치 역행 | PASS (4조합) | 서버 역행 0(전 사례), 클라이언트 접근 구간 역행 0 |
+| T5 곡선 모양 | PASS(주의 O-2) | OnUpdate와 같은 틱에 묶기는 불가: 서버 `ElapsedSeconds`는 프레임 고정이 아니라 연속 시계이고, `OrangeMushroomAttack.OnUpdate`를 프로브에서 감싸려는 시도(`m.OnUpdate = function…`)는 `An error occurred while assigning a value to variable <OnUpdate>`로 거부됐다. 대신 샘플마다 "x 진행률에서 거꾸로 푼 시각과 샘플 액션 시각의 차(implied lag)"를 구했다. 곡선 켬(smoothstep)·끔(직선) 모두 사례 안에서 lag이 0.0150~0.0190 사이 ±0.002로 일정하고(서버 틱 이내) 최적 지연 맞춤 후 진행률 편차는 켬 0.0019~0.0068, 끔 0.0025~0.0046. 편차 > 0.01 사례 3건(12: 0.0115, 102: 0.0104, 208: 0.0211)은 모두 샘플러 타이머 간격이 어긋난 한 샘플이 만든 값이다(O-2). LeapJumpHeight 0 y 변화 ±0.01 이내(전부 0.0000~0.0064) |
+| T6 클라이언트 연속성 | PASS(주의 O-1) | 정지 최장 0~0.019초(기준 0.05, 곡선 켬 제외 0.1), 이동 비 켬 ≤1.06(k 1.5)·끔 ≤0.74(k 1), B4 착지 튐: 접근 종료 뒤 방향 전환 1회뿐, B5 windup 클라이언트 x 3.0000 고정·프레임 범위 0-0(f0만). 단 사례 102 한 건은 정지 0.09초·이동 비 2.18로 기준을 넘었다(재현 시험 14회에서 반복 안 됨) |
+| T7 높이 관계 | PASS | LeapJumpHeight 0.5: 사례 13 (켬, 켬) 2칸 우: 서버 y 편차 0.004(지연 0.017), 서버 y 최대 +0.497, 클라이언트 꼭대기 +0.500(점프 시작 +0.247초, 기대 J/2 0.214에 클라 지연 +0.033). 사례 14 (켬, 끔) 2칸 좌: 편차 0.0087, 서버 +0.500, 클라 +0.500(+0.249초, +0.035). 착지 y Home.y, x는 T5와 같은 곡선 |
+| T8 D-Q6 유지 | PASS | (켬, 켬) 5경우 + (끔, 끔) 1경우, 서버 실시간 기대 대비(슬로우 시작·끝을 `slow applied` 로그로 읽어 액션 시계를 거꾸로 푼 값): S1 2칸(0.4초 시작, 6초) f1 +0.001·f4 +0.007·판정 +0.007, 클라 f1 +0.020·착지 +0.043. S2 3칸(공격 전 시작한 1.0초가 windup 안에서 종료) f1 +0.015·f4 +0.007·판정 +0.008, 클라 +0.014·+0.007. S3a 2칸(approach 도중 1.2초에 0.3초) f1 +0.015·f4 +0.016, 클라 +0.019·+0.032. **S3 f2 안**(2칸 우, 슬로우 시작 1.334초·끝 1.434초 모두 균등화된 f2 구간 1.2857~1.4286 안) f1 +0.015·f4 +0.014, 클라 f2가 PlayRate 변경 시점 1.352·1.457초에 다시 도착(허용), 되돌림 0. S3b 3칸(0.95초 시작 6초) f1 +0.005·f4 0.000·판정 +0.018(서버 f4 쓰기↔판정 −0.018), 클라 +0.026·+0.022. **(끔, 끔) S1**(2칸 좌, 0.4초 6초) f1 +0.006·f4 +0.006, 클라 +0.031·+0.023. 클라이언트 프레임 되돌림 6경우 전부 0. 서버 렌더러 PlayRate = 0.7 × ActionRate(윈도우·approach 표본 불일치 0/75, 0/57, 0/45, 0/41, 0/59, 0/75), 착지 뒤 stand는 1 × ActionRate. 이펙트 PlayRate: 슬로우 중 시작한 눈빛 0.35·판정 때 슬로우 중이면 먼지 0.35 |
+| T9 1칸·복귀 불변 | PASS | 위 22.17.7-7 1칸 행. (끔, 끔) parry.any(사례 17)도 같다. `easeUsed` 진행률 직선(편차 ≤0.004), JumpToLocalX·PerformReturnMotion diff는 위 대상 버전 절 |
+| T10 기본값·로드 | PASS | 부팅 직후 프로브 읽기: `EqualizeLeapFrames`=true, `EaseLeapMove`=true, `LeapJumpHeight`=0.0, `[VRF] leap start … equalize=true ease=true`, 모델 파일 변경 0, build 오류 0 |
+| T11 (끔, 끔) = 지금 | PASS | W 1.144~1.158(기준선 1.144~1.152에 틱 오차), f4 1.572~1.589(1.574~1.588), 클라 표시 f1 0.276~0.303·f2 0.063~0.089(기준선 0.273~0.297·0.068~0.088), 정지 ≤0.019(0.035), 이동 비 ≤0.74(기준선 절대량 2칸 0.184·3칸 0.245와 같은 값 0.7 × 거리 × 0.05 ÷ J), 착지 x 같음 |
+
+**관찰 (판정에 쓰지 않음, reviewer·사용자 참고)**
+- **O-1 클라이언트 접근 끊김 1건(사례 102, (끔, 끔) 우):** 클라이언트 x가 접근 중간에 0.09초 멈췄다가 한 번에 이동(이동 비 2.18). 같은 순간 서버 샘플러에도 간격 이상(0.042 → 0.028초)이 있었고 서버 위치는 역행·정지 없음. 같은 (끔, 끔) 나머지 14건(사례 11·12·101·103~106·202·204·206·208·210·212·214)에서는 정지 ≤0.019·이동 비 ≤0.74로 반복되지 않았고, 재현을 노려 추가한 사례 201~214(우측 2칸 (켬, 켬)·(끔, 끔) 교대 12회 + 3칸 2회)도 같았다. 원인 미확인(Maker 프레임 정지, 서버→클라이언트 위치 동기화 지연이 한 번에 몰린 경우 등이 후보). 사용자가 "뚝 끊김"을 다시 보면 이 같은 간헐적 현상일 수 있다. Maker 로컬 Play라 실제 접속 지연은 대변하지 못한다.
+- **O-2 T5 편차 > 0.01 3건:** 모두 곡선 끔·(끔, 끔) 계열 또는 한 샘플이 늦게 찍힌 경우로, 샘플러 타이머 간격 이상(0.042초, 12·102) 또는 lag 0(208)이다. 이 표본을 빼면 편차 ≤0.0068이다. 제품 식 오류의 근거는 아니다.
+- **O-3 프레임 이벤트 이중 도착:** 접근 구동 프레임(f1·f2·f3)과 착지 f0이 프레임마다 같은 ms에 2건 도착(전 사례, 22.17.10.5 기록 항목). 눈에 보이는 되돌림·깜박임 없음.
+- 시험 오류(제품 오류 아님): 본시험 직전 첫 Play에서 반복 루프 20만 회짜리 프로브를 보냈으나 스크립트 실행이 느려(약 3천 회/초) 결과가 나오지 않았고 오류 로그도 없어 Stop → 재Play했다. PARRY 시험 첫 두 시도는 GUARD가 나왔다: ① `GetRules({})`가 복사본을 돌려줘 내 ParryWindowSec 변경이 판정에 닿지 않았고(`rules["default"]`를 직접 바꿔 해결), ② 이전 시험의 DownArrow 유지가 풀리지 않은 채 새 `down`을 보내 `PlayerGuard start`가 다시 안 찍혔다(`up` 뒤 새 `down`으로 해결). 세 번째 시도 PARRY. 몬스터를 교체(DoSpawn)한 뒤 내 클라이언트 프로브가 파괴된 개체의 `_T`를 읽어 `[LEA-2007] AttemptToIndex` Error 1건(09:32:19)을 냈다. 제품 Warning은 의도한 스폰 거부 1건뿐이고 제품 Error는 0이다.
+
+#### NOT_RUN (PASS로 세지 않음)
+1. 화면 체감("뚝 끊기는 느낌"이 줄었는지)·모션의 부드러움·이펙트 눈빛/먼지의 육안(방향·위치)·효과음 청취(1칸 점프음 3후보, 2·3칸 공격음): 사용자 V11.
+2. 실접속(서버–클라이언트 네트워크 지연)의 위치 동기화·모바일·실기기·다중 접속.
+3. PARRY의 정상 창(0.20초)을 사람 손으로 맞추는 시험, JUST 판정 결과, 접근 전에 정확히 맞춘 사람 손 타이밍.
+4. 커밋 트리(`git ls-tree`/`show`)를 직접 해시 계산한 Bundle 대조(작업 트리 해시와 `git status` 깨끗함으로 대신함).
+5. 곡선·균등화 속성을 Maker Inspector에서 바꾸는 사용자 절차와 모델 값 저장.
+6. OnUpdate와 같은 틱에 서버 샘플을 정확히 묶는 시험(도구 한계, T5 참고).
+
+#### 사용자 V11 직접 확인 항목
+- 2칸 좌·우·3칸 접근에서 기본 (켬, 켬)이 "점프 중 뚝 끊기는 느낌"을 줄였는지, (끔, 끔)·(켬, 끔)·(끔, 켬)과 LeapJumpHeight 0 → 0.3 → 0.5 비교 후 고를 값(Plan 22.17.10.8).
+- 위 O-1 같은 간헐적 멈춤이 보이는지.
+- 1칸 점프음 후보 3개(35ee15e5…·64c83d14…·09df8556…) 청취 후 선택, 2·3칸 공격음과 겹쳐 들리는지.
+- 반응 시간(약 1.57초)·제자리 반격 구간(약 1.14초) 난이도(22.17.8-1·4), 눈빛/먼지 이펙트 위치(22.8 V11).
+
+#### 재현 방법
+1. 시작: 57경로 Bundle 계산, `git status`·`git diff 8428a05 e710907 --name-only`·`git diff 1b41f29 e710907 -- OrangeMushroomAttack.mlua` 확인, map01 edit 확인, build 로그 확인, Play.
+2. 조합 측정: 서버 프로브로 `_CombatRuleCatalog.patterns["mushmom"] = { 행 복제본 }`, `OrangeMushroomAttack`의 세 속성을 사례별로 바꾸고 몬스터 `MonsterStateControl.AttackInterval = 9999`, `StateComponent:ChangeState("ATTACK")`로 강제 실행. 슬로우는 사례 안에서 `ctl:ApplySlow(지속, 0.5)`를 액션 시각 기준으로 호출. 클라이언트 프로브는 몬스터 `SpriteAnimPlayerChangeFrameEvent`와 WorldPosition을 기록.
+3. 실입력: 위 긴 시험 행으로 `maker_keyboard_input` UpArrow 탭(windup·approach·return 각각), DownArrow `down`(GUARD·PARRY)·`up`. PARRY는 `_CombatRuleCatalog.rules["default"].ParryWindowSec`를 Play 안에서 30으로 올려 시험하고 복원.
+4. 스폰: `MonsterManager:DoSpawn()`을 시험 행 목록(parry.left lead 1.1·rate 0.7)과 원본 목록으로 각각 호출.
+5. 정리: 프로브 중단 플래그, 원본 목록·ParryWindowSec·JumpDuration 복원, Stop, 편집 모드 확인.
+
+#### reviewer가 알아야 할 근거의 한계
+- 서버·클라이언트 샘플 간격이 약 35ms(2프레임)라 정지·이동 비 지표는 coder 기준선과 같은 해상도이며, 프레임 사이 순간의 끊김은 볼 수 없다.
+- T5는 같은 틱에 묶지 못해 implied lag의 일정함으로 모양을 판정했다. 곡선 식 자체는 소스(`t*t*(3-2*t)`)와 샘플 일치로 확인했고 편차 > 0.01은 O-2의 샘플 이상이다.
+- B 실입력 항목은 긴 시험 행과 JumpDuration 8(Play 메모리)로 구간을 늘렸다. 정상 길이의 입력 타이밍이 아니다.
+- PARRY는 창 확대 시험 값이다. 판정 규칙(셀·영역·창 포함)과 결과 종류·HUD·그로기 경로가 동작함을 보였지만 0.20초 창 자체는 이 시험으로 증명하지 않았다.
+- 취소 시 먼지 없음은 프로브가 상태를 바꾼 논리 경로다(플레이어 사망·맵 이탈 취소 경로는 시험하지 않음).
+- 앞 QA13이 PASS였던 55경로 영역(DataSet 외 매니저·카탈로그·플레이어·상태)은 이 버전에서도 바이트가 같다(제품 변경 2경로 외 변경 없음). 이번 실행에서 다시 행사된 경로는 접근·windup·approach·return·이펙트 호출·사운드·die·슬로우·판정 결과·스폰 검증이다.
+- 사용 종료: 마지막 maker_stop 성공(play_to_edit) 뒤 map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료. 시험 전·후 57/57 동일 Bundle(`1e468c15…1bc4`), 제품 파일 무수정, commit·push 하지 않음.
+
 ### 2026-11-09 독립 QA 13회차 — 회차 D REV-D-O1 수정(대상 8428a05)
 - 상태: **실행 완료.** 실행 기준 PASS, FAIL·NEEDS_DECISION·새 결함 없음. 독립 reviewer 재검토 대기. NOT_RUN은 아래 절.
 - 담당: Claude Code msw-tester(coder·앞 QA12와 별도 실행). 제품 코드·모델·맵·UI·DataSet·CSV 수정 없음, commit·push·run.md 수정 없음. coder 개발절의 PASS는 이번 실행으로 세지 않았다.
@@ -756,6 +847,119 @@
 - 최종 maker_stop 성공 후 maker_get_current_map map01/edit 확인, Maker 사용 종료. 시험 후 지문 52/52 동일. 독립 reviewer에게 QA-F01과 위 NOT_RUN을 포함해 인계한다. 제품 수정/기준 완화/3단계 진행·CF-F07 종결은 수행하지 않았다.
 
 ## 리뷰 기록
+
+### 2026-11-16 독립 리뷰 — 회차 D2 WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행).
+  - 하지 않은 것: Maker MCP 제어·Play·refresh·로그 비우기, 제품·Plan·run.md 수정, QA 판정 수정, commit·push.
+  - 런타임 사실은 coder 두 절("2026-11-10 회차 D2 — MM-13~15", "2026-11-10 회차 D2 MM-14 2차")과 QA14를 대조한 것이다. reviewer가 다시 실행한 결과가 아니다.
+- 검토 버전: 회차 D2 = **1b41f29**(MM-13·MM-15, 패턴 CSV) + **e710907**(MM-14 2차, OrangeMushroomAttack.mlua). 기준은 원격 HEAD 7cbf14e(제품 8428a05, 57경로 Bundle `8d5b6d1c…4eed`). QA14 대상 = coder 마지막 커밋 = 이 리뷰 대상이다. 함께 push될 87413bd([ops] skills-lock.json)는 회차 범위 밖이며 비밀값·경로만 봤다.
+- 요구 ID: CombatCore-MM-13·MM-14·MM-15(Plan §22.17).
+- 판정: **WAITING**. 고칠 제품·문서 결함은 없다(CHANGES_REQUIRED 없음, 새 결함 ID 없음). 남은 필수 일은 사용자 V11이다(0.7배 체감, 조절 항목 비교·선택, 1칸 점프음 청취·선택, 난이도). 이 판정은 사용자 수락이 아니다.
+
+#### reviewer가 직접 한 일
+- git 대조:
+  - `git log origin/main..HEAD`: push 전 1b41f29·e710907·87413bd 3개.
+  - `git diff --name-status 8428a05 e710907 -- RootDesk Global map ui`: 제품 변경은 패턴 CSV·OrangeMushroomAttack.mlua 2경로뿐(모델·맵·UI·.codeblock 0).
+  - `e710907..HEAD`, 작업 트리 대 HEAD의 같은 경로 diff: 0. 추적 안 된 파일 0(`git status --untracked-files=all`은 run.md·이 WorkRecord만).
+  - CSV diff 전문(7cbf14e→1b41f29), mlua diff 전문(1b41f29→e710907)을 읽었다.
+- 바이트 지문(커밋 트리에서 직접 계산): `git cat-file blob`의 SHA-256이 coder manifest 값과 모두 같다.
+  - e710907 CSV `f71c57a5…142e`(= 1b41f29 CSV), e710907 mlua `28a53a2b…d99a`.
+  - 바뀌기 전 값: 8428a05 CSV `f1ebd85e…58e4`, 1b41f29 mlua `dcc35351…147d`.
+- **57경로 Bundle 문자열 자체는 커밋 트리에서 다시 계산하지 않았다.** 전체 문자열에는 `.model` 파일 바이트가 들어가는데, 셸로 `.model`을 읽는 명령은 프로젝트 가드가 막는다. 가드를 피해 가는 방식은 쓰지 않았다(2026-11-08 C2 리뷰와 같은 처리). 대신 아래로 대신했다.
+  - 8428a05 커밋 트리 Bundle `8d5b6d1c…4eed`는 앞 리뷰가 커밋 트리에서 재계산했다.
+  - 8428a05→e710907 차이는 위 2경로뿐이고, 두 경로의 새 해시가 coder manifest의 줄과 같다.
+  - 작업 트리 = e710907(제품 경로)이다. 그래서 tester가 작업 트리로 계산한 `1e468c15…21bc4`(시험 전·후 57/57)가 커밋 트리 e710907에도 그대로 적용된다.
+- 소스 읽기: OrangeMushroomAttack 전문, MonsterAttackMotion 전문(StartDrivenClip·TickClip·GetClipTimeline·GetWindupSeconds·ApplyClipRate), CombatRuleCatalog의 ParseOptionalRuid 사용처.
+- 비밀값·경로 검사: push 전 3커밋 diff와 메시지, 작업 트리 문서 diff에 토큰·키·개인 이메일·로컬 사용자 경로가 없다. 작성자는 기존 GitHub noreply다. 87413bd는 `version` 1→2와 스킬 14개의 `computedHash`만 바뀌었다. 값은 공개 저장소 출처 이름·저장소 상대 경로·내용 해시라 비밀값이 아니다.
+
+#### 판단
+1. **사용자 요청 세 가지 반영과 범위:** 승인 범위대로다. 범위를 넘은 변경은 없다.
+   - 0.7배(D-Q8, MM-13): CSV 2·3칸 세 행만 `TelegraphLeadSec 1.571429`·`MotionPlayRate 0.7`이다. 다른 열·행·순서·BOM·줄 끝은 그대로다(diff 5줄 교체). 22.17.2 표와 같다.
+   - "점프 중 뚝 끊김"(D-Q11)을 조절 항목으로 비교(D-Q12, MM-14 2차): 속성 2개(기본 true/true)와 그 동작만 들어갔다. 22.17.10.4 밖 파일 변경 0, MonsterAttackMotion·Monster_Attack·MonsterStateControl·모델 변경 0이다.
+   - 1칸 점프음(D-Q10, MM-15): 1칸 두 행 AttackSound만 `35ee15e5…`로 바뀌었다. 재생 시점 코드는 바뀌지 않았다(22.17.4대로 공격 시작 = 점프 시작). 후보 2개는 CSV에 넣지 않았다(V11용).
+   - 바꾸지 않을 것(22.17 머리말)이 지켜졌다: 판정 창·피해·Weight, 1칸 0.5초, JumpDuration·JumpHeight, LeapJumpHeight 0, JumpStartFrame, 착지 x, 22.15, 22.16.4, D-Q6.
+2. **MM-14 1차 STOP → 2차 계약 흐름:** 계약대로다.
+   - 1차(1b41f29): 기준선에서 B2~B5가 통과했고, B1은 순서·건너뜀·되돌림이 통과했다. 22.17.3-3에 따라 코드를 고치지 않고 멈춰 메인에 돌려줬다. 분리 시험 코드는 제품에 남지 않았다(1b41f29 .mlua 변경 0).
+   - 그 뒤 순서: 메인이 사용자에게 순간을 다시 물음(D-Q11) → 사용자가 방향을 정함(D-Q12) → planner가 22.17.10 계약을 정함 → coder가 구현함. 22.17.3의 "사용자에게 다시 묻는다" 절차와 맞다.
+   - 남는 점: MM-14는 "원인 확정 후 수정"이 아니라 "사용자가 고르는 조절 항목"으로 끝났다. 측정상 원인은 여전히 확정되지 않았다. 해소 판단은 V11 체감뿐이다(Plan 22.17.10.6도 같은 뜻).
+3. **코드 ↔ 22.17.10 정의:** 일치한다.
+   - 경계 인덱스: `bounds[1]=0`, `bounds[i+1]` = f_i 시작(StartDrivenClip). 그래서 W = `bounds[j+1]`, L = `bounds[count]`(f4 시작)다. 루프 `bounds[j+1+i] = W + i·(L−W)/n`(i = 1…n−1)은 j=1·c=5에서 `bounds[3]`·`bounds[4]`(f2·f3 시작)만 바꾼다. 정의(n = c−1−j)와 같다.
+   - W·L 불변, 캐시 불변: bounds는 공격마다 새로 만드는 표다(`local bounds = { 0 }`). 캐시 `_T.timelines`의 delays는 건드리지 않는다. `GetWindupSeconds`·스폰 검증·`_T.leapStart`는 같은 캐시를 써서 변하지 않는다.
+   - 슬로우와의 관계: PlayRate 변경(ApplyClipRate)은 bounds를 다시 만들지 않는다. 그래서 균등화가 공격 끝까지 유지되고, 경계가 액션 시계라 D-Q6 동작도 그대로다.
+   - 적용 제외: j ≤ 0이거나 n ≤ 1이거나 구동이 없으면 "skip"이다. 1칸은 BeginWindup을 타지 않는다.
+   - smoothstep 적용 대상: `_T.easeActive`가 켜졌을 때 x 진행률만 `t·t·(3−2t)`다. y는 시간 t의 포물선 그대로다. `t ≥ 1`이면 먼저 CompleteMotion으로 빠지고, 착지 위치는 CompleteMotion이 맞춘다.
+   - 1칸·복귀 불변: JumpToLocalX에 `self._T.easeActive = false` 1줄만 더해졌고 PerformReturnMotion 변경은 0이다. 복귀는 JumpToLocalX를 거치므로 직선이다.
+   - 공격 시작 때 고정: EaseLeapMove는 BeginWindup에서 StartDrivenClip 성공 직후 `_T.easeActive`로, EqualizeLeapFrames는 같은 자리의 EqualizeLeapBounds에서 읽는다. 공격 도중 속성을 바꾸면 다음 공격부터 적용된다.
+   - 실패 경로: StartDrivenClip이 실패하면 CancelMotion 뒤 -1이다. 그때 이전 easeActive 값이 남지만 이동이 시작되지 않으므로 영향이 없다. 다음 이동은 BeginWindup이나 JumpToLocalX가 다시 정한다.
+   - ExecSpace는 새 메서드도 ServerOnly이고, [VRF]는 `IsMakerPlay` 안에만 있다.
+   - 사소한 점(결함 아님): EqualizeLeapBounds는 속성이 끔이면 n ≤ 1이어도 "false"를 돌려준다. [VRF] `leap bounds`는 f1~f4만 적는다(이 클립 5프레임 기준). 둘 다 로그 표시만의 차이다.
+4. **QA14 근거의 한계가 판정을 막는가:** 막지 않는다. 각 한계를 다음과 같이 본다.
+   - 시험 값으로 늘린 실입력 시험(lead 24~80, JumpDuration 8): 피격 가능 여부는 `Segment` 값으로 정해지고, 그 경로(Monster_Attack·PlayerHitRule·IsSegmentHittable)는 D2에서 바뀌지 않았다. 정상 길이의 구간 전환(windup → approach → return)은 A 프로브가 시각으로 따로 보였다. 정상 길이의 사람 손 타이밍은 V11 몫이다.
+   - PARRY 창 확대(30초): 판정 코드는 D2에서 바뀌지 않았다. 0.20초 창의 사람 손 성공은 회차 A V11에서 이미 수락됐다. 이번 시험은 결과 종류·HUD·그로기 경로가 이 버전에서 돈다는 확인으로 충분하다. JUST 미시험도 같은 이유로 막지 않는다.
+   - 35ms 샘플: 정지 기준(0.05초)과 표시 시간 기준(켬 0.071초 이상, 끔 0.035초 이상)보다 촘촘하다. coder는 약 16ms로 같은 결론을 냈다. 프레임 사이의 순간 끊김은 두 측정 모두 볼 수 없고, 그 부분은 V11 체감 몫이다.
+   - O-1(사례 102, (끔,끔) 클라이언트 0.09초 멈춤 1건, 재현 0/28): 서버 위치는 역행·정지가 없었다. 같은 순간 샘플러도 간격이 흔들렸다. 그리고 (끔,끔)은 1b41f29와 같은 이동식이다. 그래서 D2 코드가 만든 회귀로 볼 근거가 없다. 다만 사용자가 말한 "뚝 끊김"이 이런 간헐 현상일 가능성은 남는다(아래 V11 2번).
+   - O-2: 샘플 시각 문제로 설명된다. 식 자체는 소스와 맞는다.
+   - O-3: 22.17.10.5가 판정 대상에서 뺀 기록 항목이다.
+   - 경계값: 22.17.7-2 클라이언트 f1 최대 +0.047(한도 0.05)과 coder T8 S2 클라이언트 착지 +0.047은 클라이언트 이벤트 지연(1~2프레임)이다. 계약 문구(서버 f1↔W, 서버 f4↔판정)는 여유 있게 통과했다.
+   - 커밋 트리 해시 미실시(tester): 위 "reviewer가 직접 한 일"의 git 동일성으로 메웠다.
+5. **문서·기록:** 결함은 없다. 정리할 낡은 표기는 아래 planner 목록에 넣었다(22.17.9·22.17.10.10 상태 문구, coder 절 제목 날짜).
+6. **관찰(판정에 쓰지 않음):**
+   - 접근 이동이 서버 `OnUpdate`의 매 틱 `body:SetPosition`이다. msw-combat-system §1-6은 이 방식을 연속 이동에 쓰면 끊겨 보인다고 적는다. 22.17.10.3이 이번 2차에서는 이동 방식을 바꾸지 않기로 정했으므로 계약 위반은 아니다. V11에서 끊김이 남으면 다음 후보다(22.17.3 허용 해결의 "속도 기반 이동"). 이것은 T1·D-Q6 재증명이 필요한 새 결정이다.
+   - 87413bd 커밋 시각(09:25:27)이 tester 본시험 Play 시작(09:25)과 겹친다. 제품과 무관한 파일이고 판정에 영향이 없다. 다만 CLAUDE.md의 "Play 중 커밋하지 않음"을 문자 그대로 지키려면 담당 종료 뒤에 커밋하는 편이 맞다.
+
+#### 사용자 V11 재점검 (Plan 22.17.8 + 22.17.10.8, AI 결과로 대신하지 않음)
+1. **0.7배 속도:** 2칸 좌·우·3칸에서 눈빛 제자리 약 1.14초 → 도약 약 0.43초 → 착지 = 판정(약 1.57초)이 괜찮은지 본다.
+2. **"점프 중 뚝 끊김" 비교:** 머쉬맘 모델 → OrangeMushroomAttack 컴포넌트에서 값을 바꾸고 Play한다. Stop 상태에서 바꾸는 것을 권장한다. 공격 시작 때 읽으므로 도중 변경은 다음 공격부터 적용된다.
+   - 비교 순서: ① 기본 (켬,켬) → ② (끔,끔) = 이전 모습 → ③ (켬,끔)·(끔,켬)으로 어느 쪽이 효과인지 가른다 → ④ 마음에 드는 조합에서 LeapJumpHeight 0 → 0.3 → 0.5.
+   - 볼 것: 도약 자세가 고르게 바뀌는지, 출발·착지가 딱 멈추지 않는지, 판정 체감이 그대로인지.
+   - 여전히 끊기면 어느 순간(눈빛 정지, 도약 시작, 이동 중, 착지)인지, 그리고 가끔 한 번씩만 멈추는지(O-1 같은 간헐)를 알려 준다.
+3. **1칸 점프음:** 1칸 두 행 AttackSound에 기본 `35ee15e50b17410093e768c33f7f76d6`(0.29초)과 후보 `64c83d144b5d46ffa6d460ca61a66f1d`(0.86초)·`09df85566b984d72b97c7aa9860c4b18`(1.25초)을 넣어 듣는다. 절차는 CSV → Maker Refresh → Play다.
+   - 긴 후보는 착지(0.5초) 뒤에도 이어지고 슬로우에 늦춰지지 않는다.
+   - 두 행에 다른 소리를 둘 수 있다. 값은 소문자 32자를 그대로 복사한다. 형식이 틀리면 패턴 표가 거부되고 경고 1회 "invalid attack sound ruid"가 남는다.
+4. **난이도:** 2·3칸 반응 시간 약 1.57초와 제자리 반격 구간 약 1.14초가 괜찮은지 본다.
+5. **회차 D 나머지 V11은 그대로 남아 있다(22.8 V11 1~9, 22.16.9):** 모션·순서, f4 잘림, 3칸 판정, 효과음 4종, 눈빛·먼지 이펙트 위치·방향, 비율·Weight, 속도 값 설정.
+6. 고른 값(CSV AttackSound, 기본값과 다른 모델 속성 값)은 회차 종료 커밋에 들어간다.
+
+#### 속도 조절 표 (22.16.9 갱신본 기준, 절차: CSV 수정 → Maker Refresh → Play / 속성은 머쉬맘 모델의 OrangeMushroomAttack 값)
+
+| 항목 | 위치 | 지금 값 | 바꿀 때 알아둘 동작 |
+| --- | --- | --- | --- |
+| AttackInterval | MonsterStatData.csv(mushmom) | 3.0 | 공격 종료 뒤 대기. 크게 줄이면 슬로우가 다음 접근과 겹칠 수 있다(D-Q6 이어 재생으로 처리됨) |
+| TelegraphLeadSec | MonsterAttackPatternData.csv(행별) | 1.571429/1.571429/0.5/0.5/1.571429 | 2·3칸 = 1.1 ÷ MotionPlayRate. 참값 이상이 되게 여섯째 자리에서 **올려** 적는다(예: 0.6 → 1.833334, 0.8 → 1.375, 0.5 → 2.2). 제자리 W(= 0.8 ÷ MotionPlayRate) 이하로 줄이면 스폰 검증이 거부해 머쉬맘이 나오지 않는다(경고 1회). 1칸은 JumpDuration(0.5)보다 짧으면 그 행이 취소되고 경고 1회 |
+| MotionPlayRate | 같은 표(행별) | 0.7/0.7/1/1/0.7 | 2·3칸 클립·이펙트 재생 속도. 정렬식 1.1 ÷ TelegraphLeadSec을 지켜야 클립 착지 자세가 판정과 맞는다. 벗어나도 공격은 사라지지 않고 자세만 어긋난다 |
+| AttackSound(1칸 두 행) | 같은 표 | 35ee15e5…/35ee15e5… | 1칸 공격 시작(= 점프 시작) 소리. 후보 64c83d14…·09df8556…. 빈 값은 무음 |
+| JumpStartFrame | 같은 표 | 1/1/빈/빈/1 | 클립 프레임 수(5) 이상이면 스폰 거부 + 경고. 음수·소수·문자면 표 전체 거부 + 경고 |
+| EqualizeLeapFrames | OrangeMushroomAttack 속성 | true | 켬: 도약 f1·f2·f3 각 약 0.143초(0.7배). 끔: 원작 비율 0.286/0.071/0.071초. W·착지·판정 시각은 같다 |
+| EaseLeapMove | OrangeMushroomAttack 속성 | true | 켬: 2·3칸 수평 이동 smoothstep(천천히 출발·멈춤, 가운데 최대 1.5배 속도). 끔: 일정 속도. 착지 x·시각은 같다 |
+| LeapJumpHeight | OrangeMushroomAttack 속성 | 0 | 2·3칸 실제 점프 높이(시간 포물선, 곡선과 따로). 클립 자체 도약 약 0.88과 겹친다 |
+| JumpDuration·JumpHeight | OrangeMushroomAttack 속성 | 0.5·0.8 | 1칸 접근·복귀 점프. JumpDuration이 0 이하면 모든 공격 취소 + 경고 |
+| WindupHittable | OrangeMushroomAttack 속성 | true | 눈빛(제자리) 중 피격 여부 |
+
+- 공통: 값이 맞지 않으면 대신할 값 없이 거부·취소하고, Maker 로그에 `[CombatRuleCatalog]` 경고를 같은 원인당 한 번 남긴다.
+
+#### 회차 D 최종 V11 수락 뒤 planner 정리 목록 (앞 리뷰 목록 + D2 추가)
+- 앞 리뷰 목록 그대로:
+  - §22.14 상태, §22.2·§22.8 V11 1번 대체 표시, "클라이언트 f4" 문구, §22.16.9 속성 이름
+  - GameDesign(메인), AssetList, FileStructure §4, 로드맵 §5, WorkRecord 머리말·재개 지점, 원장 castleenemy(범위 밖)
+  - REV-D-O1 수정 완료(8428a05, QA13) 기록, §22.16.9 경고 동작 반영, QA13·coder 소절 날짜 표기
+- D2 추가:
+  1. §22.17.9·22.17.10.10 상태를 갱신한다. "로컬 미커밋", "tester 대기"를 커밋 1b41f29·e710907, QA14, 이 리뷰, V11 결과로 바꾼다.
+  2. MM-14 마감 문구를 한 줄로 남긴다. 측정상 원인은 확정되지 않았다(22.17.3-3 (라)). 사용자 선택 조절 항목(D-Q12)과 V11에서 고른 값으로 마감했다.
+  3. V11 선택값을 반영한다. 1칸 AttackSound 최종값(CSV)을 넣고, AssetList "사용 예정 (회차 D)"의 임시 3행을 채택값만 남겨 확정한다. 모델 속성이 기본값과 다르면 사용자 Maker 저장분을 회차 종료 커밋에 넣는다.
+  4. §22.16.9·22.17.2의 "여섯째 자리 반올림"을 "참값 이상이 되게 올림"으로 바로잡는다(0.7배 값은 반올림 = 올림이라 지금 값은 맞음).
+  5. §22.13 부채·관찰에 등록한다.
+     - O-1 간헐 클라이언트 멈춤(원인 미확인)
+     - O-3 프레임 이벤트 이중 도착(22.17.10.5)
+     - 서버 OnUpdate `SetPosition` 연속 이동(1칸·복귀 포함, msw-combat-system §1-6 비권장. V11에서 끊김이 남으면 후속 후보)
+     - 착지 순간 정지 0(coder 1차 관찰 3, 22.16.2 구조)
+  6. GameDesign(메인)에 반영한다: 2·3칸 반응 약 1.571초·제자리 반격 약 1.143초(22.17.2), 1칸 점프음, 도약 조절 항목과 고른 값.
+  7. coder MM-14 2차 절 제목(2026-11-10, 실제 2026-11-16)과 Plan 22.17.10 날짜 표기를 맞춘다.
+
+#### 다음 행동
+- 메인: 회차 커밋 `[CombatCore][review] WAITING`(QA14·이 리뷰 절·run)을 만든다. push 전에 비밀값 검사를 하고 1b41f29·e710907·87413bd와 함께 push한다. 그다음 사용자에게 위 V11과 속도 조절 표를 안내한다. 57경로 Bundle 문자열의 커밋 트리 직접 재계산이 꼭 필요하면 `.model` 가드 안에서 할 수 있는 방법을 사용자에게 물어야 한다. 지금 근거로는 판정에 필요하지 않다.
+- 사용자: V11 1~6.
+- planner: 회차 D 최종 V11 수락 뒤 위 정리 목록을 처리한다.
+- coder·tester: 이번 범위의 추가 작업은 없다. V11에서 끊김이 남거나 새 값이 나오면 그 결정에 따라 다시 돈다.
 
 ### 2026-11-09 독립 리뷰 — 회차 D REV-D-O1 수정 WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). 앞 리뷰("회차 D … WAITING", a5efe69)에서 REV-D-O1을 낸 같은 reviewer 역할이다. 이번에는 수정 회차만 다시 판단했다.
