@@ -1,89 +1,89 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
     "maplestory-skill-maker": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-content-skill/skills/maplestory-skill-maker/SKILL.md",
-      "computedHash": "d5c567ad774aea72547e11d42901a8561f41be5be161e56c2762165fcb9b331c"
+      "computedHash": "5cdd42c6e02702e729ada9979a349092f3c3db4df16eae717de5128f33e25068"
     },
     "msw-avatar": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-avatar/SKILL.md",
-      "computedHash": "9834e7b8091705c32af13523a92857178b543a738788dcffb196d5ec1a2677f1"
+      "computedHash": "65caf1301dfca71cea7ba7dabc24adc49389cac0d9edec2d9b984c286d497cbf"
     },
     "msw-behaviourtree": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-behaviourtree/SKILL.md",
-      "computedHash": "143dcad5e54b152e0c7ae7b29a10a6b9706468f8d029862072d4996d4b0ab9cb"
+      "computedHash": "a0392b68f6be3a9e1857764552b9fee371d3c5969404c73a70d073da772cc4b8"
     },
     "msw-combat-system": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-combat-system/SKILL.md",
-      "computedHash": "0052a62b5516541b5e8c62285668b2cb7e6855c93520c1b4e26e0a6a1a6b6050"
+      "computedHash": "9167cc928dfb2cb2a60f2e122a7aab893ab4218b25f2a77c8e8738186e15f3f4"
     },
     "msw-defaultplayer": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-defaultplayer/SKILL.md",
-      "computedHash": "9b7a1ece5c6cf3254b77988344eabc8c3b82665287ab8aa89d1fac776f3f493c"
+      "computedHash": "dcfabb0c25cf71aaa34633eea0dc9fca2a4577f289129b01649ea559c7ffeebf"
     },
     "msw-general": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-general/SKILL.md",
-      "computedHash": "b05b5d46095236e45c5e763c94e8d319e9d5fc6237c362d2f54ea1c8282a1b5a"
+      "computedHash": "6e328d6688c27674b703e2cd721c0ab85c25c8223e3de8660ea98836aef711ad"
     },
     "msw-packages": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-packages/SKILL.md",
-      "computedHash": "fff1bf1d72cf14cce2a6398bd7a0f29021382b9eb15ec4a8212953415feba321"
+      "computedHash": "d56bfd391575f94ad4b1c11be3093ef80be6a78d0f8ed4fc8b62c1b4b3c267bf"
     },
     "msw-painter": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-painter/SKILL.md",
-      "computedHash": "5708d0f0b7997f3d15789aa9ac55e301775611d900128da04fee7134c33814aa"
+      "computedHash": "bd0be82d1f608a0f200bdc47a1060cdfc3d48c6f789c5dd067b5f6e4c405988f"
     },
     "msw-planning": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-planning/SKILL.md",
-      "computedHash": "201d01684edec46e760c485ee6d04548f499d12e03537161a286c9cc23f65d2b"
+      "computedHash": "cbffa17c36b7fe2531e230011f298b3f5775e9f841075b8a709503201d0115c5"
     },
     "msw-scripting": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-scripting/SKILL.md",
-      "computedHash": "209c6f4f5e507030bca0f03649a127810cd3b996d37820385a695b1fd9b31b1c"
+      "computedHash": "685a09f2ba70cadf8795d3473f82001805fa4f8671388b0da26d590cd39a24b4"
     },
     "msw-search": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-search/SKILL.md",
-      "computedHash": "bcc58d891858279fe7fb5ec17936face2bf06b4837f2683f8bd3c5ab105dfd08"
+      "computedHash": "365c9595ef17fe16ad820d22eb02d7fe12429e19a3f9fe56a8dc13e7c340c180"
     },
     "msw-sprite-ruid": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-sprite-ruid/SKILL.md",
-      "computedHash": "218f5f6fdd23ae68704a22d66780c0a6a124aa186439f658634917bf89b41329"
+      "computedHash": "0815df092f4d4de5b440309f62efc96168881e61d97f12352cd34c3edd052ea4"
     },
     "msw-ui-kit": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-ui-kit/SKILL.md",
-      "computedHash": "4a481f759e2c693f7a7d7d8aeafbf27a2628c16d95d05aaa23c73f3e5370d7a6"
+      "computedHash": "b71b621e9ba6baa0ea1b277ead1393e39b522e7cf24d4f8374beec0c4e6c3a95"
     },
     "msw-ui-system": {
       "source": "MSW-Git/msw-ai-coding-plugins-official",
       "sourceType": "github",
       "skillPath": "plugins/msw-maker-base-skill/skills/msw-ui-system/SKILL.md",
-      "computedHash": "4b3a8bfa782f71cfb7364fcd5b167938853262266d6ab923395c7acb906ff33e"
+      "computedHash": "c868cfc882f8ac4bfd1182c268fbd405650a8558514d8de583a6b0d7504eef34"
     }
   }
 }
