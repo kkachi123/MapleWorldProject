@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: WAITING_USER
-- 갱신: 2026-11-10 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (MM-14 버벅임 순간 지목, 회차 D2 [code] 커밋 대상)
-- 다음 행동·대기 사유: WAITING_USER — MM-13·MM-15 구현·기본 검증 PASS, [code] 로컬 커밋 완료. MM-14는 coder 기준선 B2~B5 통과(측정되는 끊김 없음)로 계약 22.17.3에 따라 미수정 STOP. 사용자가 0.7배 버전을 보고 버벅이는 순간을 지목 → planner 계약 → coder → tester → reviewer. 범위 밖: 원장 castleenemy 문구.
+- 상태: TESTING
+- 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
+- 현재 담당: msw-tester (회차 D2 MM-13~15 전체, 대상 [code] 커밋)
+- 다음 행동·대기 사유: MM-14 D-Q11·D-Q12 반영 — planner 계약 갱신 → coder → [code] 로컬 커밋 → tester(MM-13~15 전체) → reviewer → [review] 커밋·push → 사용자 V11 재점검(새 조절 항목 비교 포함). 범위 밖: 원장 castleenemy 문구.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -482,3 +482,10 @@
 - planner(2026-11-10): 구현 승인 범위 확인, 막는 미결정 없음. Plan §22.17 신설(MM-13 0.7배: 2·3칸 TelegraphLeadSec 1.571429·MotionPlayRate 0.7 / MM-14 버벅임 측정·계약 안 수정, 기준 B1~B5, 멈춤 조건 22.17.3 / MM-15 1칸 AttackSound 35ee15e5, 코드 변경 없음), 22.1·22.4·22.8-2·22.12·22.16.9 취소선 대체, AssetList 임시 행. 리뷰의 회차 종료 정리 목록은 최종 V11 수락 뒤.
 - 메인 해석(D-Q7): 로그 비우기 허용은 사용자 원문상 "회차 D, coder·tester 각 1회"이고 이미 사용됐으므로 D2에 넓히지 않는다. coder·tester는 [VRF] 범위 읽기로 처리하고, 로그 포화로 측정이 막히면 지우지 말고 메인에 반환(메인이 사용자에게 질문).
 - coder(2026-11-10): MM-13·MM-15 DONE — 제품 변경 패턴 CSV 1파일(2·3칸 lead 1.571429·rate 0.7, 1칸 AttackSound 35ee15e5). W 1.144~1.152·판정=f4=먼지 1.574~1.588초, D-Q6 S1~S3 4경우 되돌림 0, 스폰 거부 경고 1회, 1칸 점프음 [VRF] 점프 시작 같은 틱. Bundle 57경로 1bd2447a…fd00(8428a05 대비 CSV 1경로). MM-14 STOP: 기준선 B2~B5 통과·(다) 관찰 0, B1 순서 정상이나 구동 프레임 이벤트가 같은 ms 2회 도착(Start·End 두 @Sync, 눈에 보이는 영향 미측정). 어색함 후보: 4자세 도약 + 수평 직선 미끄러짐, 제자리 정지 직후 도약·이동 동시 시작, 판정 틱에 착지 자세 없이 곧바로 복귀 점프(22.16.2 구조). 한계: Maker 로컬 Play는 지연 없음. NOT_RUN: approach·return 실입력 차단, die F12, GUARD/PARRY/HIT, 취소 시 먼지 없음, 육안·청취, 실접속. maker_clear_logs 미사용. Maker edit.
+- [code] 로컬 커밋 1b41f29(MM-13·MM-15, MM-14 미수정).
+- D-Q11 버벅임 순간(사용자 2026-11-10): "점프 중 뚝 끊기는 느낌".
+- 메인 판단: 측정상 프레임 건너뜀·위치 역행 없음 → 유력 원인은 클립 자체(도약 f1에서 몸이 0.88 한번에 솟아 약 0.29초 정지, f2·f3 각 약 0.07초에 급강하) + 일정 속도 수평 미끄러짐.
+- D-Q12 수정 방향: "조절 항목으로 넣고 비교" — 도약 프레임 시간 균등화(켬/끔), 수평 이동 가속·감속 곡선(켬/끔)을 속성으로 추가, 기본값 둘 다 켬. 기존 LeapJumpHeight(0)와 함께 사용자가 V11에서 직접 바꿔 비교. 점프 전체 시간·착지·판정 시각(약 1.571초)은 불변. 균등화를 켜면 원작 프레임 타이밍(D-Q3)은 도약 구간만 달라짐(사용자 승인).
+- planner MM-14 2차(2026-11-10): 구현 승인 범위 확인, 미결정 없음. Plan §22.17.10 신설 — OrangeMushroomAttack 속성 EqualizeLeapFrames·EaseLeapMove(boolean, 기본 true, 공격 시작 때 고정), 균등화 = f1~f3 경계를 W~L(클립 f4 경계) n등분(구동 bounds만), 곡선 = 2·3칸 approach x에 smoothstep(높이는 시간 포물선 유지), 1칸·복귀·CSV·모델·서버 구동·D-Q6 불변. B1은 같은 프레임 0.01초 안 이중 도착을 중복 1건으로 묶고 순서·건너뜀·되돌림만 판정(메인 제안 동의). 완료 기준 T1~T11(4조합). 22.17.6-1 D-Q7 해석을 메인 해석으로 정정.
+- 2026-11-16 사용자 "다시 시도해 주세요": 메인이 planner 결과 수신 뒤 coder 호출을 이어서 진행.
+- coder MM-14 2차(2026-11-16): DONE. 제품 변경 OrangeMushroomAttack.mlua 1파일(속성 EqualizeLeapFrames·EaseLeapMove 기본 true, EqualizeLeapBounds, x smoothstep 분기, JumpToLocalX 1줄, [VRF] leap bounds). Bundle 57경로 1e468c15…21bc4(1b41f29 대비 1경로). T1~T11 4조합 PASS(빌드 오류 0, 제품 경고·오류 0). NOT_RUN: 화면 체감, 실접속, 실입력 차단, die F12, GUARD/PARRY/HIT, 취소 시 먼지 없음, 육안·청취, (끔,끔) 슬로우, MM-13·15 나머지 22.17.7(1b41f29에서 확인). maker_clear_logs 미사용. Maker edit. 범위 밖 skills-lock.json 작업 트리 변경은 커밋 제외.

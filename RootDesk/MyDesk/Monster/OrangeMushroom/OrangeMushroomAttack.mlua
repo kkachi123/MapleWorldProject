@@ -5,6 +5,10 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	property number JumpDuration = 0.5
 	-- 2·3칸 접근(실제 점프)의 높이. 0이면 수평 이동만이고 높이는 클립이 그린 도약이 담당한다(D-Q5). 1칸 접근·복귀 점프는 JumpHeight를 쓴다.
 	property number LeapJumpHeight = 0
+	-- 2·3칸 구동 클립의 도약 프레임(JumpStartFrame ~ 마지막 프레임 바로 앞)을 같은 시간으로 나눈다. 기본 true. 끄면 원작 비율이다. 점프 시작·착지·판정 시각은 같다. 공격 시작 때 한 번 읽는다.
+	property boolean EqualizeLeapFrames = true
+	-- 2·3칸 접근의 수평 이동에 가속·감속 곡선(smoothstep)을 쓴다. 기본 true. 끄면 일정 속도 직선이다. 높이(LeapJumpHeight)는 이 값과 무관하게 시간 포물선이다. 공격 시작 때 한 번 읽는다.
+	property boolean EaseLeapMove = true
 	-- 구간별 피격 가능 선언: 제자리 기 모으기(windup)는 맞고, 접근·복귀 점프 중에는 플레이어의 타격이 막힌다.
 	property boolean WindupHittable = true
 	property boolean ApproachHittable = false
@@ -51,6 +55,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 		self.JumpStartTime = self._T.control:GetActionTime()
 		self._T.activeDuration = self.JumpDuration
 		self._T.activeHeight = self.JumpHeight
+		self._T.easeActive = false
 		self._T.windupPending = false
 		self.JumpActive = true
 		self:SetMotionClip(clip, motionRate)
@@ -58,7 +63,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	end
 
 	@ExecSpace("ServerOnly")
-	method number BeginWindup(number targetLocalX, string clip, number motionRate, number windupSec, number leadSec)
+	method number BeginWindup(number targetLocalX, string clip, number motionRate, number windupSec, number leadSec, number jumpStartFrame)
 		-- 2·3칸 접근: 클립 f0부터 제자리에서 기 모으기(windup)를 하고, 액션 시계로 windupSec가 지나면 실제 점프(approach)를 leadSec - windupSec 동안 한다. 착지 = 판정 = leadSec.
 		-- 접근 전체 시간은 계산해 다시 더하지 않고 leadSec를 그대로 돌려준다(부동소수 오차로 호출 쪽 "리드 < 접근 시간" 검사가 뒤집히지 않게, REV-D-O1).
 		local jumpSec = leadSec - windupSec
@@ -76,7 +81,36 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			self:CancelMotion()
 			return -1
 		end
+		-- 이 공격 동안 쓸 곡선 선택을 공격 시작 때 한 번 읽어 고정한다(22.17.10.1).
+		self._T.easeActive = self.EaseLeapMove
+		self._T.equalizeText = self:EqualizeLeapBounds(jumpStartFrame)
 		return leadSec
+	end
+
+	@ExecSpace("ServerOnly")
+	method string EqualizeLeapBounds(number jumpStartFrame)
+		-- 방금 시작한 구동의 경계 중 도약 프레임 f_j 시작(W) ~ 마지막 프레임 시작(L)을 n등분한다(n = 프레임 수 - 1 - j). W·L·앞뒤 경계·클립 Delay 캐시는 그대로이고 이 공격의 구동 경계표만 고친다(22.17.10.2). 결과를 "true"(적용)·"false"(끔)·"skip"(적용 대상 아님)로 돌려준다.
+		local drive = self._T.drive
+		if drive == nil then return "skip" end
+		local bounds = drive.bounds
+		local n = drive.count - 1 - jumpStartFrame
+		local result = "skip"
+		if not self.EqualizeLeapFrames then
+			result = "false"
+		elseif jumpStartFrame > 0 and n > 1 then
+			local w = bounds[jumpStartFrame + 1]
+			local leapSpan = bounds[drive.count] - w
+			for i = 1, n - 1 do bounds[jumpStartFrame + 1 + i] = w + i * leapSpan / n end
+			result = "true"
+		end
+		if Environment:IsMakerPlay() then
+			local text = "[VRF] leap bounds key=" .. drive.key
+			for frame = 1, 4 do
+				if bounds[frame + 1] ~= nil then text = text .. " f" .. tostring(frame) .. "=" .. string.format("%.6f", bounds[frame + 1]) end
+			end
+			log(text .. " clock=" .. self:ClockText())
+		end
+		return result
 	end
 
 	@ExecSpace("ServerOnly")
@@ -108,7 +142,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			_CombatRuleCatalog:WarnOnce("attack cancelled: windup " .. (windup ~= nil and string.format("%.3f", windup) or "nil") .. " is not shorter than telegraph " .. string.format("%.3f", leadSec) .. " (clip " .. clip .. ", JumpStartFrame " .. string.format("%g", jumpStartFrame) .. ")")
 			return -1
 		end
-		return self:BeginWindup(targetLocalX, clip, motionRate, windup, leadSec)
+		return self:BeginWindup(targetLocalX, clip, motionRate, windup, leadSec, jumpStartFrame)
 	end
 
 	@ExecSpace("ServerOnly")
@@ -172,14 +206,17 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			self._T.windupPending = false
 			self.JumpActive = true
 			self.Segment = "approach"
-			if Environment:IsMakerPlay() then log("[VRF] leap start x=" .. string.format("%.3f", self.Entity.TransformComponent.WorldPosition.x) .. " duration=" .. string.format("%.3f", self._T.activeDuration) .. " height=" .. string.format("%g", self._T.activeHeight) .. " clock=" .. self:ClockText()) end
+			if Environment:IsMakerPlay() then log("[VRF] leap start x=" .. string.format("%.3f", self.Entity.TransformComponent.WorldPosition.x) .. " duration=" .. string.format("%.3f", self._T.activeDuration) .. " height=" .. string.format("%g", self._T.activeHeight) .. " equalize=" .. tostring(self._T.equalizeText) .. " ease=" .. tostring(self._T.easeActive) .. " clock=" .. self:ClockText()) end
 		end
 		local t = math.max(0, (now - self.JumpStartTime) / self._T.activeDuration)
 		if t >= 1 then
 			self:CompleteMotion()
 			return
 		end
-		local x = self.JumpStartX + (self.JumpTargetX - self.JumpStartX) * t
+		-- 수평 진행률: 2·3칸 접근에서 곡선을 켰으면 smoothstep, 아니면 시간 비율 그대로(직선). 높이 y는 곡선과 무관하게 시간 t의 포물선이다(22.17.10.3).
+		local progress = t
+		if self._T.easeActive then progress = t * t * (3 - 2 * t) end
+		local x = self.JumpStartX + (self.JumpTargetX - self.JumpStartX) * progress
 		local y = self.Home.y + 4 * self._T.activeHeight * t * (1 - t)
 		body:SetPosition(Vector2(x, y))
 	end
