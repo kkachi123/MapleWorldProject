@@ -16,6 +16,20 @@ script PlayerGuardComponent extends Component
 			-- 시작 시각과 같은 순간 서버가 보는 위치를 함께 기록한다(패링 성공의 Pos2 칸 조건, V11-F13).
 			self._T.guardStartX = self.Entity.TransformComponent.WorldPosition.x
 			if Environment:IsMakerPlay() then log("[VRF] PlayerGuard start x=" .. string.format("%.3f", self._T.guardStartX) .. " t=" .. string.format("%.3f", self.guardStartTime)) end
+			-- 가드 시작 진입당 한 번만 이펙트와 소리를 낸다(회차 E). 표가 무효이거나 행이 없으면 연출만 건너뛰고 가드는 그대로다.
+			local fx = _CombatRuleCatalog:GetPlayerActionFx("guard")
+			if fx ~= nil then
+				if fx.EffectClip ~= "" then
+					local controller = self.Entity.PlayerControllerComponent
+					local direction = isvalid(controller) and controller.LookDirectionX or 1
+					if direction == 0 then direction = 1 end
+					_EffectService:PlayEffect(fx.EffectClip, self.Entity, self.Entity.TransformComponent.WorldPosition, 0, Vector3(-direction, 1, 1), false)
+				end
+				if Environment:IsMakerPlay() then log("[VRF] guard fx effect=" .. (fx.EffectClip ~= "" and string.sub(fx.EffectClip, 1, 8) or "-")) end
+				_CombatRuleCatalog:PlayMonsterSound("guard", fx.EffectSound, self.Entity)
+			elseif Environment:IsMakerPlay() then
+				log("[VRF] guard fx off")
+			end
 		end
 		self.isGuarding = isHeld
 	end

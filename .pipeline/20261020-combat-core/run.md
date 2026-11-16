@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: WAITING_USER
+- 상태: TESTING
 - 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (회차 E 시작 지시 대기)
-- 다음 행동·대기 사유: WAITING_USER — 회차 D·D2 완료(사용자 V11 수락 2026-11-16, 문서 정리 끝). 다음 후보는 §24 회차 E(조작 버튼 메이플 테마·가드 모션·이펙트), 사용자 시작 지시 뒤 planner가 범위 확인과 E-Q1(PlayerActionFxData) §24.10 반영. 남은 사용자 결정: 원장 castleenemy 문구 정리 시점, 2단계 완료·3단계 시작 여부, §22.13 부채·관찰 처리.
+- 현재 담당: msw-tester (회차 E UX-01·UX-02, 대상 [code] 로컬 커밋)
+- 다음 행동·대기 사유: 회차 E(Plan §24, CombatCore-UX-01·UX-02) — planner 범위 확인·E-Q1(PlayerActionFxData) §24.4·§24.7·§24.10 반영 → coder → [code] 로컬 커밋 → tester → reviewer → [review] 커밋·push → 사용자 V11(§24.8) → planner 회차 종료 정리. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -501,3 +501,11 @@
 - [code] 로컬 커밋 5ce65d6(1칸 player 점프음).
 - 사용자(2026-11-16): "점프음 확인 완료". 회차 D·D2 V11 수락 완료(나머지 항목은 앞 V11 결과 "다른 건 다 좋은 데"로 수락). 최종 값: 2·3칸 lead 1.571429·rate 0.7, EqualizeLeapFrames·EaseLeapMove true·LeapJumpHeight 0(모델 기본값, 모델 저장 변경 없음), 1칸 AttackSound a49c4b39…. planner 회차 종료 정리 호출.
 - planner 회차 종료 정리(2026-11-16): DONE. 문서 6개(Plan §22·§22.13·§22.14·§22.16.9·§22.17·§24.9 및 머리·§8·§9, GameDesign, AssetList, FileStructure §4, 로드맵 §5, WorkRecord 머리·재개 지점·절 제목 날짜). MM-07~11·MM-13~15 ✅, REV-D-O1 수정 완료, MM-14는 원인 미확정·조절 항목 기본값 수락으로 마감, §22.13에 O-1·O-3·SetPosition 연속 이동·착지 정지 0 등록. 규칙·수치 불변, 2단계 완료 판정 불변. 상태 WAITING_USER(회차 E 시작 지시).
+
+### 2026-11-16 회차 E 시작
+- 사용자: "회차 E 시작". 기준 원격 HEAD de6e6aa(회차 D·D2 종료). 범위는 Plan §24(2026-11-06 사용자 선택 확정 6개 + E-Q1 답 "새 표 PlayerActionFxData"). D-Q1 절차(DataSet 수동 작성, 회차 B 형식)는 PlayerActionFxData에도 적용.
+- 작업 트리 map/map01.map(attackareamark 위치 1.5,0.98 → 1.468,0.996, 2026-11-16 10:18 저장, 출처 불명)은 사용자 "그대로 둠" — 회차 E 커밋에 섞지 않음. 회차 E가 map01.map을 고쳐야 하면 메인이 먼저 사용자에게 알림.
+- maker_clear_logs: 회차 E 허용 없음(D-Q7은 회차 D 한정).
+- planner(2026-11-16): 구현 승인 범위 확인, 미결정 없음. §24.9 UX-01·UX-02 🟡 coder 대기. E-Q1 반영: RootDesk/MyDesk/DataSet/PlayerActionFxData(열 id·EffectClip·EffectSound, 행 guard 318a4662…·605da1fc…, serveronly, D-Q1 수동 작성), 로더 CombatRuleCatalog 안(별도 1회 시도 플래그, GetPlayerActionFx, 표 전체 검증, 원인당 경고 1회·연출만 끔), 사용처 PlayerGuardComponent.SetGuarding 시작 분기. §24.7 완료 기준 1~7 재작성(↓ 입력 kind=guard sfx 1건으로 정정), §24.11 coder 지시·중단 조건(map01.map, DataSet 미인식, UI RUID 미표시, 이펙트 미표시, 24.4 밖 변경, 버튼 UUID 변경). UI RUID 5개는 래퍼 get 404(ui-kit 데이터에만 있음) → coder Play에서 표시 첫 확인. AssetList 회차 E 행 갱신.
+- coder(2026-11-16): DONE. 변경: 새 DataSet PlayerActionFxData(userdataset·csv, 행 guard), CombatRuleCatalog(+53, ValidatePlayerFxRows·EnsurePlayerActionFx·GetPlayerActionFx), PlayerGuardComponent(+14, 가드 시작 시 이펙트 1회·kind=guard 효과음 1회), PlayerStateControl(GUARD sit→alert), ui/CombatScreen(UIBuilder로 버튼 배경 e314c09b… Sliced·흰색, Icon 자식 4개 추가, UUID 불변; 빌더 재직렬화로 줄 변경량 큼 — hook이 셸 확인을 막아 reviewer가 UIBuilder로 확인). 24.7 1~7 PASS, 오류 처리 탐침 PASS(열 누락 경고 줄은 직접 실행 안 함). NOT_RUN: Pos2 패리·저스트, 스파크·그로기 화면, 팝업 일시정지, 터치+키 동시 입력, 모바일. 관찰: 무기 미장착이면 ATTACK도 alert라 공격·가드 모습이 같음(V11 항목). Bundle map01 제외 58경로 1d70bc71…75dd. Maker map01·편집 모드 인계, clear_logs 미사용, map01.map 해시 불변.
+- 메인: [code] 로컬 커밋(map/map01.map 제외) 뒤 tester 호출.

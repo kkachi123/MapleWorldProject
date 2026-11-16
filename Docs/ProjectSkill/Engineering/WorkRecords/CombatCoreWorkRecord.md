@@ -3117,3 +3117,63 @@
 
 #### 사용 종료
 - 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료. 프로브는 제품 파일에 남기지 않았다. commit·push 없음. 다음 담당: tester(같은 버전, CSV 1경로 변경 확인) 또는 메인 판단.
+
+## 2026-11-16 coder 회차 E 구현·기본 검증 인계 (CombatCore-UX-01·UX-02)
+
+### 범위·기준
+- 담당: Claude Code msw-coder(독립 실행). 승인 범위는 Plan §24(UX-01 버튼 테마, UX-02 가드 모션·이펙트·소리, E-Q1 새 표 PlayerActionFxData)뿐이다. 판정 규칙·수치·입력 계약·회차 D 동작은 바꾸지 않았다. 기준 원격 HEAD de6e6aa(제품 파일은 회차 D·D2 최종 커밋 5ce65d6과 같음).
+- 시작 Maker: maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit, worldId 970621b29ba945369d3dc8e90c301186. **maker_clear_logs는 호출하지 않았다.** 로그는 저장 파일을 시각·`[VRF` 표지로 걸러 읽었다.
+- **map/map01.map**: 사용자 "그대로 둠" 변경(attackareamark 위치)이 작업 트리에 있다. 건드리지 않았다. 시작 전 SHA-256 `3e60c21d6bd2328e1119f9566beb55901b13da64a99400c3d3ce68a0be5c2094`, Refresh 1회·Play 1회·Stop 뒤 `3e60c21d6bd2328e1119f9566beb55901b13da64a99400c3d3ce68a0be5c2094`(**전후 동일, Maker 저장·Play가 이 파일을 다시 쓰지 않았다**). 커밋에 섞지 않을 것.
+
+### 변경 파일
+| 파일 | 변경 | ID |
+| --- | --- | --- |
+| RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset (새) | MonsterSoundData.userdataset과 같은 형식. EntryKey·`id` `userdataset://ecb9c840-2af3-42cb-aff3-758b01590b99`(node randomUUID), name `PlayerActionFxData`, serveronly true, UseService 1, CoreVersion 26.10.0.0. CRLF·끝 줄바꿈 없음(원본 형식 그대로) | UX-02 |
+| RootDesk/MyDesk/DataSet/PlayerActionFxData.csv (새) | UTF-8 BOM·CRLF. `id,EffectClip,EffectSound` / `guard,318a46627eca4ae5b9c5d1fb16244e3c,605da1fc42f34ef4a1468387004a6223` | UX-02 |
+| Combat/CombatRuleCatalog.mlua | 속성 `playerActionFx`·`fxReady`, `ValidatePlayerFxRows`(표 전체 검증, 빈 칸 = 그 연출만 없음), `EnsurePlayerActionFx`(별도 1회 시도 플래그 `_T.fxAttempted`, 로드 [VRF]), `GetPlayerActionFx(id)`(표 무효면 nil, 행 없으면 경고 1회 + nil), OnBeginPlay에서 EnsureInitialized 뒤 1회 시도, OnEndPlay에서 캐시·플래그 정리. EnsureInitialized·Ready·패턴·능력치·MonsterSoundData 코드는 한 줄도 바꾸지 않음(+53줄) | UX-02 |
+| Player/PlayerGuardComponent.mlua | SetGuarding 시작 분기(기존 시작 시각·위치 기록 뒤)에 `GetPlayerActionFx("guard")` → EffectClip이 비어 있지 않으면 서버 `_EffectService:PlayEffect` 1회, `[VRF] guard fx effect=앞8자\|-`(표 없음·행 없음은 `[VRF] guard fx off`), `PlayMonsterSound("guard", EffectSound, self.Entity)` 1회(+14줄) | UX-02 |
+| Player/@StateControl/PlayerStateControl.mlua | 16행 `SetActionSheet("GUARD", "sit")` → `"alert"` 한 단어 | UX-02 |
+| ui/CombatScreen.ui | UIBuilder(load → patchComponent/sprite/patch → write, ui_lint clean): 버튼 4개 SpriteGUIRenderer ImageRUID `e314c09b9b39486bb1c68d018b2abded`·Type 1·Color (1,1,1,1)만 패치(PreserveSprite 1·RaycastTarget 켬·ButtonComponent·크기·위치 그대로). 자식 `{버튼}/Icon` 4개 추가(middle-center·(0,0)·60×60·sprite_type 0·`#FFFFFF`·raycast 끔·PreserveSprite 1), display_order Icon 0·Highlight 1. 엔티티 새로 만들지 않음, bind·injectBindings 미사용 | UX-01 |
+
+- C-1(이펙트 방향): 기본 공격 선례와 같게 위치 = 플레이어 WorldPosition, 크기 `Vector3(-LookDirectionX, 1, 1)`, 반복 없음. LookDirectionX가 0이면 1. 클라이언트 화면에서 이펙트가 플레이어 오른쪽 위로 보였다(아래 확인). 방향·위치 어울림은 V11.
+- C-2: 계획대로 `sprite_type: 0` + PreserveSprite 1(비율 유지) 방식이 lint·validate를 통과해 기록 비율 상자 대안은 쓰지 않았다.
+- .ui 파일 diff가 큰 것(+3995/-3415줄)은 UIBuilder가 파일을 다시 직렬화한 형식 차이이며, 내용 변경은 위 표와 UIBuilder 읽기 비교(엔티티 19→23, 기존 버튼·Highlight UUID 7개 전후 동일)로 확인했다. 셸로 .ui를 읽는 것은 가드로 막혀 줄 단위 diff는 보지 않았다.
+
+### 버전·바이트 지문
+- 계산 방식은 앞 절과 같다(경로 `LC_ALL=C` 바이트순, `경로 TAB sha256 LF` 연결의 SHA-256, 확장자 .mlua·.model·.stateset·.userdataset·.csv·.map·.ui·.config·.collisiongroupset, Global·RootDesk·map·ui 아래). 새 스크립트로 계산했고 5ce65d6 커밋 트리에서 앞 절의 **28f833db19afaef1c69364bc2d88aad9615aeb7734d94cb054c91f067cbe012a(57경로)** 를 재현했다.
+- 시작 전 작업 트리 57경로: `82185c159b7960e49e9fd5fb80a4966ca194e50829d913aa64545f50b7fb9102`(= 5ce65d6 + 사용자 map01 변경 1경로).
+- **끝(Stop 뒤) 작업 트리 59경로 Bundle SHA-256: `7f6a703b237f07837ea642bf548c3bc749ac012785fbd76721af88e69a308940`**(새 2경로 포함, map01 사용자 변경 포함).
+- **map01.map을 뺀 58경로 Bundle(커밋 대상 제품 묶음): `1d70bc71a65ddd70d8f29c377065b4058e7e60d71f0690ffcab48618e23975dd`**(같은 방식으로 뺀 5ce65d6 56경로 값은 `12a6ca64a2ba8d194bb05fcc3702a3c05e441490b41dd9bb6ff8efa19babfd48`).
+- 5ce65d6 대비 manifest 차이(map01 제외): 변경 4경로 — `RootDesk/MyDesk/Combat/CombatRuleCatalog.mlua` a326f630…→4ac9bdeaf3ec4af38a36e53eb50afee81109ef31e61ae22dd3c919411a095a5b · `RootDesk/MyDesk/Player/PlayerGuardComponent.mlua` f8d0bd70…→92c85a450b5df5246454395acff1a240fb2a011ce795fbd095f4311f23867936 · `RootDesk/MyDesk/Player/@StateControl/PlayerStateControl.mlua` 1bf98ade…→95ad9015ce80ad9935930ee1c78988d0677f82d81765da767fb7af3f64db40b9 · `ui/CombatScreen.ui` f0b37dd5…→b420738c6d875e20b0b5bdc008df8b116ae95d2a6fd24fe2f72bfbe63e1c143e. 새 2경로 — `RootDesk/MyDesk/DataSet/PlayerActionFxData.csv` 75b8e8f0d7383ff313514ffe4114ea479b81a238261a5900872efa6722e8dc9b · `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset` f1be99ad3327d47d3419b3bbea7bac3123800f58ce5b643d26b884e5df4d432a. 나머지 52경로는 같다. map01.map은 사용자 변경(5ce65d6 커밋 값 02e41f3c… → 작업 트리 3e60c21d…)이라 이 차이에서 뺀다.
+- Maker Refresh·Play가 만든 다른 변경: 없음(git status는 위 변경 6경로 + 사용자 map01 + 메인·planner 문서뿐, .codeblock·.directory 변경 없음).
+
+### 실제 기본 검증 (Refresh 1회 + Play 1회, 시험 설정은 Play 내부에서만)
+- 빌드: refresh status ok, build 로그 93건 모두 Info(LIA 1114/1115 동적 참조 노이즈), 오류 0·경고 0. 런타임 normal 로그는 Info 외에 내가 의도한 Warning 4건뿐(아래 3번), 오류 0.
+- 방법 구분: (A) 서버·클라이언트 프로브 = maker_execute_script, (B) 실제 키 입력 = maker_keyboard_input, (C) 실제 마우스 = maker_mouse_input.
+
+| Plan §24.7 | 방식 | 실제 결과 | 판정 |
+| --- | --- | --- | --- |
+| 1 UI 정적(UX-01) | UIBuilder.load 스크립트(36개 검사) | 버튼 4 UUID·Highlight 3 UUID가 §24.1 표와 같음. 배경 ImageRUID e314c09b…·Type 1·Color 흰색·PreserveSprite 1·Raycast 켬. `{버튼}/Icon` 버튼마다 정확히 1개, RUID ↑3119d280…·↓a714a1ea…·←002ca90c…·→740aba24…, Color 흰색·Type 0·Raycast 꺼짐·PreserveSprite 1, 앵커 (0.5,0.5)·위치 (0,0)·60×60. Icon display_order 0 < Highlight 1(←·↓·→), ButtonComponent Transition 1·PressedColor 0.784·상태 스프라이트 4개 null, 크기 140×140·위치 (0,270)/(-170,110)/(0,110)/(170,110). write lint 오류 0(`ui_lint: clean`) | PASS |
+| 2 데이터 로드 | A(Play 시작 로그) | `[VRF] PlayerActionFxData id=guard effect=318a4662 sound=605da1fc` 1회. 같은 Play의 `catalog ready rules=1 patterns=5 monsterStats=2 monsterSounds=1`, 패턴 5행(parry.left·right·any·special.random·guard) Weight 4/4/5/3/4·모션·`jumpFrame`·`lead`·`sound`(f135fc39·a49c4b39·5da7bb48)·`effect=05113e9d`, MonsterSoundData mushmom 3개, MonsterStatData 100/12/3.0, 머쉬맘 스폰 `x=3.0`이 de6e6aa와 같은 값. Ready true. (de6e6aa 기준 패턴은 이미 5행이라 §24.7의 "4행" 표현은 낡았다) | PASS |
+| 3 오류 동작 | A(가짜 행으로 `ValidatePlayerFxRows` 직접 호출, `playerActionFx`·`fxReady`를 Play 안에서 바꿔 `SetGuarding(true/false)` 호출, 끝에 `_T.fxAttempted` 해제 + `EnsurePlayerActionFx`로 복원) | 빈 EffectClip: `guard fx effect=-` + `sfx kind=guard` 1, 경고 0. 빈 EffectSound: `guard fx effect=318a4662`, sfx 0. 형식 오류(대문자·31자·공백 끼움·16진 아님·소리 칸 오류) 5건 모두 REJECT, 경고 `PlayerActionFxData invalid ruid` **1회**(원인당 1회 중복 제거). 중복 id(공백 제거 뒤) REJECT·`duplicate id` 1회, 빈 id REJECT·`invalid id` 1회. 정상·빈 칸 둘·행 0개는 ACCEPT. 필수 열 누락 모사(`ReadRows`에 MonsterSoundData를 넘김) → nil(표 무효 경로, EnsurePlayerActionFx가 `missing or required columns missing` 경고를 내는 줄은 직접 실행하지 않음). 표 무효 상태에서 가드 시작: `guard fx off`·sfx 0. guard 행 없음: `[CombatRuleCatalog] player action fx row missing: guard` 경고 **1회**, 두 번째 가드 시작은 경고 없이 `guard fx off`. 모든 경우 `Ready=true`·`GetMonsterStats("mushmom")` 정상. 복원 뒤 로드 [VRF] 다시 1줄, 가드 시작 정상 연출 | PASS(표 파일 자체는 건드리지 않음) |
+| 4 입력 회귀(UX-01) | B·C + A | **실제 LeftArrow·RightArrow 탭**: `MovementInput phase=OUTBOUND`(±1.5, 0.12초)→`RETURNING`→`complete state=IDLE`, `PlayerEvade start`. **실제 UpArrow 탭 1회·실제 마우스 클릭(BtnAttack 위치 960,340) 1회**: 각각 IDLE→ATTACK·`CombatCore manual cast count=10`·HitRule pass 10(버튼 클릭 경로도 동작). **마우스 홀드(가드 버튼 960,180) 1.5초**: `IDLE→GUARD`·`PlayerGuard start`·가드 연출 1회, 떼면 `GUARD→IDLE`. 실제 DownArrow 홀드·탭도 같음. 가드 Highlight는 홀드 중 `Enable=true`로 확인(←·→ Highlight 토글은 따로 읽지 않음). `[VRF] sfx` 집계(방식 B·C 구간): ←·→ 입력에서 sfx **0건**, ↑ 입력에서 `kind=damaged` 1건씩(몬스터 피격음, 버튼 누름 소리 아님), ↓ 입력(마우스·키보드 모두)에서 `kind=guard` 정확히 1건씩. 버튼 누름 자체의 소리 없음 | PASS(출처 합산·반환 잠금은 이번 범위 밖이라 다시 시험하지 않음, 입력 코드·UUID 무변경) |
+| 4 화면 존재 | 스크린샷(입력 좌표 확인용) | 800×450 스크린샷에서 버튼 4개가 원형 배경 + 흰 아이콘(칼·왼쪽 화살표·아래 화살표·오른쪽 화살표)으로 보이고 아이콘이 배경 가운데에 있다. 존재 확인만, 어울림 판정은 V11 | PASS(존재) |
+| 5 가드 모션 | A(서버 시트 읽기 + 클라이언트 이벤트 리스너) | 서버 `StateToAvatarBodyActionSheet` GUARD=`alert`·ATTACK=`attack`·MOVE=`walk`·IDLE=`stand`. 실제 ↓ 입력: 클라이언트 `StateChange IDLE→GUARD`, `BodyActionStateChangeEvent Alert`, `ActionStateChangedEvent core=alert parts=alert`. 떼면 `GUARD→IDLE`·`Stand`·`stand1`. 패링 성공 찌르기 모션 호출 없음(코드에 없음) | PASS |
+| 6 이펙트·소리 | B·C + A + 스크린샷 | 가드 시작마다 `[VRF] guard fx effect=318a4662` 정확히 1줄 + `[VRF] sfx kind=guard ruid=605da1fc user=있음` 정확히 1줄. 홀드 유지 중 추가 없음(1.5초·6초 홀드), 떼었다가 다시 누르면 다시 1회, 실제 입력 가드 시작 6번(키 5·마우스 1) 모두 1:1. 클라이언트에서 실제로 보이는지: 클라이언트 시간 배율을 0.1로 늦춘 프로브에서 ↓ 입력 직후 스크린샷에 **금색 방패 이펙트가 플레이어 오른쪽 위에 표시됨**(배율은 프로브가 1로 복원). 서버 PlayEffect가 클라이언트에 보이므로 @Sync 대체 경로는 쓰지 않음. 같은 홀드에 출처가 합쳐질 때(터치+키 동시)의 추가 재생 없음은 코드 경로(같은 홀드 출처 합산은 서버 GUARD 진입을 다시 만들지 않음)로 판단했고 동시 입력 시험은 NOT_RUN | PASS(출처 합산 동시 입력만 NOT_RUN) |
+| 7 다른 회귀 | A + B | 가드 판정: 가드를 든 채 자연 공격(`interval 1.5`) 3회 → `defense kind=GUARD rate=0.4`(40%)·`sfx kind=hitplayer ruid=7c8e5f1e`·`HUD feedback=GUARD`. 가드 없이 맞은 경우 `kind=HIT rate=1`(parry.right 1회도 HIT). 1칸 점프음 `sfx kind=attack ruid=a49c4b39`(parry.any 자연 공격), 2칸 f135fc39, 3칸 5da7bb48. die F12: 몬스터 Hp 5에서 ↑ 공격 → `MonsterDie start frames=6 total=1.100 freezeAfter=0.800` 1회·`freeze frame=5` 1회, `sfx kind=die ruid=d48ec1cc`. 빌드 오류 0, 제품 경고·오류 0(오류 시험의 의도한 경고 4건 제외) | PASS(아래 NOT_RUN 제외) |
+
+### 시험 오류·한계 (제품 오류 아님)
+- 첫 확인 스크립트가 늦어 몬스터의 자연 공격 2회가 먼저 들어와 플레이어 Hp가 76까지 내려갔다. 이후 프로브가 몬스터 `AttackInterval`을 9999로 올리고 Hp를 100으로 되돌렸다.
+- 이펙트 엔티티 탐색 프로브(클라이언트에서 맵 하위·World 루트 4단계를 30~50ms 간격으로 스캔)는 이펙트 새 엔티티를 찾지 못했다. 이펙트는 엔티티 트리 밖의 엔진 렌더로 보이며, 존재 증거는 스크린샷이다. `PlayEffect` 반환 serial은 기록하지 않았다.
+- 스크린샷은 3장 찍었다: 입력 좌표 확인(1), 가드 홀드 중 확인(1), 시간 배율 0.1 프로브의 이펙트 확인(1). 계획의 허용은 입력 좌표용 1장이었으므로 나머지 2장은 이펙트 표시 확인 목적이다(가드 홀드 중 장면에는 이펙트가 이미 끝나 보이지 않았다).
+- 가드 판정 시험은 자연 공격이라 패턴이 무작위였다(parry.guard·parry.any·parry.right). Pos2 패링·저스트는 이번에 시험하지 않았다(코드 무변경).
+
+### 실패/미확인/미실시 (PASS로 세지 않음)
+- **버튼·아이콘·이펙트의 어울림, alert 모습, 소리 청취, 이펙트 크기·위치·방향(좌우 반전)은 AI가 판정하지 않는다(Plan §24.8, 사용자 V11).** 이펙트는 플레이어보다 오른쪽 위에 보였다.
+- 관찰: 무기 없는 계정이라 ATTACK(`attack`)도 `core=alert`로 재생돼 공격과 가드의 모습이 같다(Plan §24.5 위험으로 이미 기록). V11에서 확인할 것.
+- Pos2 패링·저스트 시험, 기존 패링 성공 스파크(SparkRadialExplosion)·그로기 별 육안, 팝업 정지·재개 중 가드(홀드 풀림·연출 미발생), 터치+키 동시 출처 합산에서 추가 재생 없음, 필수 열 누락의 `EnsurePlayerActionFx` 경고 줄 직접 실행, 실기기·모바일·다중 접속은 실행하지 않았다.
+- 제품 코드·모델·맵·CSV는 시험 때문에 바꾸지 않았다(시험 값은 Play 내부 캐시·속성뿐, Stop으로 폐기).
+
+### 사용 종료·다음 담당
+- 마지막 maker_stop 성공(play_to_edit) 뒤 maker_get_current_map = map01 / 0a0972ef-ad23-4e24-af63-afbd53120c1d / edit. Maker 사용 종료. commit·push는 하지 않았다.
+- tester가 확인할 것: Plan §24.7 1~7을 같은 방식으로 독립 재현(특히 3의 오류 시험은 CSV를 고치지 말고 Play 프로브로, 4의 sfx 집계는 몬스터 공격 구간과 분리, 6의 이펙트 표시 1회 확인, 5의 alert 전환·복귀, 7의 Pos2 패링·저스트·그로기 별·팝업 정지). maker_clear_logs는 호출하지 말고 로그는 저장 파일을 시각·`[VRF` 표지로 거를 것. map01.map은 사용자 변경이라 커밋 대상이 아니며 Bundle은 map01 제외 58경로 `1d70bc71…75dd`를 우선 쓸 것.

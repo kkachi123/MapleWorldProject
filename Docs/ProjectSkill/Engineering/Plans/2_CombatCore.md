@@ -1,6 +1,7 @@
 # 2단계 — 전투 핵심 개발 계획 (CombatCore)
 
-> 갱신: 2026-11-16(회차 D·D2 사용자 V11 수락, 회차 종료 정리). 사용자는 "다른 건 다 좋은 데 1칸 점프음을 player가 사용하는 점프음으로 바꿔줘."라고 답했고, 교체 뒤 "점프음 확인 완료"로 회차 D(§22, CombatCore-MM-07~11)와 D2(§22.17, MM-13~15)를 수락했다(run "2026-11-16 회차 D·D2 사용자 V11 결과"). 그래서 §22.14·§22.17.9·§22.17.10.10을 ✅로 바꿨다. 최종 값은 다음과 같다. 2·3칸 세 행 TelegraphLeadSec 1.571429·MotionPlayRate 0.7이다. 도약 조절 항목은 EqualizeLeapFrames true·EaseLeapMove true·LeapJumpHeight 0으로 스크립트 기본값 그대로이며 모델 저장 변경은 없다. 1칸 두 행 AttackSound는 a49c4b3963e148f09b2eb9de98d42ef4(D-Q13, player 점프음 = 엔진 MaplePreferencesLogic.JumpSound 기본값)이고, 후보 3개(35ee15e5·64c83d14·09df8556)는 채택하지 않았다. 마지막 제품 커밋은 5ce65d6이다. 리뷰 두 절(2026-11-09·2026-11-16)이 남긴 회차 종료 정리 목록을 처리했다. 처리한 것은 낡은 "대기·미커밋·2.2배" 문구의 대체 표시, "클라이언트 f4" 해석 정리, §22.16.9 속성 이름·경고 동작·최종값, "여섯째 자리 반올림" → "참값 이상이 되게 올림", REV-D-O1 수정 완료(8428a05·QA13) 기록, MM-14 마감 문구, §22.13 부채·관찰 4건, 날짜 표기다. 규칙·수치는 바꾸지 않고 이미 정해진 최종값만 적었다. 다음 후보는 §24 회차 E이며 사용자 시작 지시가 있어야 시작한다(E-Q1 답 반영은 회차 E 시작 때). P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 갱신: 2026-11-16(회차 E 시작 범위 확인). 사용자 "회차 E 시작"(기준 de6e6aa)으로 §24의 CombatCore-UX-01·UX-02를 구현 승인 범위(🟡)로 바꿨다. E-Q1 답(새 표 PlayerActionFxData, 오류 처리 추천안)을 §24.3·24.4·24.7·24.10에 반영했다. 표는 `RootDesk/MyDesk/DataSet/PlayerActionFxData`(id·EffectClip·EffectSound, 행 guard 318a4662…·605da1fc…, serveronly true, D-Q1 수동 작성)이고, 로더는 CombatRuleCatalog 안 별도 1회 시도(Ready·스폰과 무관)다. 빈 칸은 그 연출만 없음, 형식 오류·행 없음은 경고 1회 뒤 가드 연출만 끄고 전투는 진행한다. 현재 소스로 §24.1을 다시 읽었다. 버튼·Highlight 전체 UUID·RUID, GUARD→sit 위치(PlayerStateControl 16행), 기본 공격 PlayEffect(PlayerCombatComponent 166행), SetGuarding 시작 분기는 2026-11-06과 같다. 이펙트 318a4662…(animationclip·skill·124×147·13프레임)와 소리 605da1fc…(effect·skill·1.152초)는 msw-search 래퍼로 다시 확인했고 둘 다 skill/5100.img/skill/51001006 팩 소속이다. UI RUID 5개는 래퍼 색인에 없어(404) ui-kit 데이터로만 확인된다. coder 결정 C-2·C-3은 닫았고 C-1·C-4는 유효하다. coder 순서·중단 조건(map01.map 수정 필요 시 멈춤, maker_clear_logs 사용 안 함)은 §24.11이다. 규칙·수치·입력 계약·GameDesign 변경 없음. 남은 사용자 결정 없음. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+> 이전 갱신: 2026-11-16(회차 D·D2 사용자 V11 수락, 회차 종료 정리). 사용자는 "다른 건 다 좋은 데 1칸 점프음을 player가 사용하는 점프음으로 바꿔줘."라고 답했고, 교체 뒤 "점프음 확인 완료"로 회차 D(§22, CombatCore-MM-07~11)와 D2(§22.17, MM-13~15)를 수락했다(run "2026-11-16 회차 D·D2 사용자 V11 결과"). 그래서 §22.14·§22.17.9·§22.17.10.10을 ✅로 바꿨다. 최종 값은 다음과 같다. 2·3칸 세 행 TelegraphLeadSec 1.571429·MotionPlayRate 0.7이다. 도약 조절 항목은 EqualizeLeapFrames true·EaseLeapMove true·LeapJumpHeight 0으로 스크립트 기본값 그대로이며 모델 저장 변경은 없다. 1칸 두 행 AttackSound는 a49c4b3963e148f09b2eb9de98d42ef4(D-Q13, player 점프음 = 엔진 MaplePreferencesLogic.JumpSound 기본값)이고, 후보 3개(35ee15e5·64c83d14·09df8556)는 채택하지 않았다. 마지막 제품 커밋은 5ce65d6이다. 리뷰 두 절(2026-11-09·2026-11-16)이 남긴 회차 종료 정리 목록을 처리했다. 처리한 것은 낡은 "대기·미커밋·2.2배" 문구의 대체 표시, "클라이언트 f4" 해석 정리, §22.16.9 속성 이름·경고 동작·최종값, "여섯째 자리 반올림" → "참값 이상이 되게 올림", REV-D-O1 수정 완료(8428a05·QA13) 기록, MM-14 마감 문구, §22.13 부채·관찰 4건, 날짜 표기다. 규칙·수치는 바꾸지 않고 이미 정해진 최종값만 적었다. 다음 후보는 §24 회차 E이며 사용자 시작 지시가 있어야 시작한다(E-Q1 답 반영은 회차 E 시작 때). P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-10(회차 D2 MM-14 2차 계약). coder 기준선(1b41f29)에서 B2~B5가 통과해 MM-14는 고치지 않고 멈췄다. 사용자는 "점프 중 뚝 끊기는 느낌"(D-Q11)을 지목했고 "조절 항목으로 넣고 비교"(D-Q12)를 골랐다. 그래서 §22.17.10을 추가했다. OrangeMushroomAttack에 boolean 속성 두 개를 둔다. `EqualizeLeapFrames`(기본 true)는 도약 프레임 f1~f3을 W~f4 경계 사이에서 J/3씩 같게 나눈다. `EaseLeapMove`(기본 true)는 2·3칸 approach 수평 이동에 smoothstep 3t²−2t³을 쓴다. 둘 다 2·3칸 접근에만 적용하고, 1칸 접근·복귀 경로와 W·J·착지·판정·먼지 시각, 착지 x, 피격 구간, 22.15 원칙, D-Q6 결과는 그대로다. B1은 "같은 프레임이 0.01초 안에 다시 오면 중복 1건"으로 읽는다(메인 제안 동의). 켬/끔 4조합 확인 기준과 V11 비교 안내를 넣었다(22.17.7-4·22.17.8·22.16.9). D-Q7 로그 비우기는 메인 해석(D2에 넓히지 않음)으로 바로잡았다. 다음은 coder(22.17.10.7) → tester → reviewer → 사용자 V11이다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-10(회차 D V11 피드백 D2). 회차 D V11 중 사용자 피드백("2칸·전범위 공격 모션이 버벅이는 것처럼 보이고 빠름", "1칸 공격에 jump 사운드")과 결정 D-Q8~D-Q10으로 §22.17을 추가했다. CombatCore-MM-13은 2·3칸 세 행 0.7배다(MotionPlayRate 0.7, TelegraphLeadSec 1.1 → 1.571429, 사용자 승인 수치). MM-14는 접근 버벅임의 원인을 coder가 Maker에서 측정해 확정하고, 계약 안이면 수정한다. 판단 기준은 B1~B5이며, 규칙·수치·D-Q6 결과를 바꿔야 하면 멈추고 질문한다. MM-15는 1칸 두 행 AttackSound 점프음이다(기본 35ee15e5…, V11 후보 2개, 머쉬맘 팩 밖 임시 자산). 22.1·22.4·22.8-2·22.12·22.16.9에는 대체 표시만 달았다. 판정 창·피해·Weight·D01~D04는 그대로다. 난이도 변화(2·3칸 반응 시간 약 1.57초)는 회차 종료 때 GameDesign에 반영한다. 다음은 coder(22.17.6) → tester → reviewer → 사용자 V11(22.17.8)이다. 리뷰가 남긴 회차 종료 정리 목록은 회차 D 최종 V11 수락 뒤에 처리한다. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
 > 이전 갱신: 2026-11-08(회차 C2 사용자 V11 수락). 사용자가 §23.4 V11(Maker 작업 공간에 주황버섯 모델이 OrangeMushroom 하나로만 보임, 플레이 화면은 회차 C와 같음)을 "V11 확인 완료"로 수락해 §23 CombatCore-MM-12를 완료로 표시했다(회차 종료 커밋 7a796aa). 파일 이름과 모델 Name은 사용자가 Maker에서 바꿨고(Maker가 Name까지 변경), coder는 모델을 다시 쓰지 않았다. 키 orangemushroom은 그대로다. §22 회차 D의 기준 버전을 7a796aa로 정했다. 원장(`.maplestory-skill-maker-ledger.md`)의 낡은 castleenemy 문구는 범위 밖 남은 사항이며 정리 시점은 사용자가 정한다. 다음은 §22 회차 D(사용자 시작 지시 대기) → §24 회차 E다. 규칙·수치·범위·입력 계약 변경 없음. P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
@@ -212,6 +213,7 @@ Foundation 전체와 MapleTile 참조를 먼저 갖춘다. 작업에 해당하�
 | 2026-11-06 | 사용자 회차 E 선택(run "2026-11-06 회차 E 사용자 선택", §24.6 질문 6개 모두 추천안): simplefantasy, ↑ 칼·↓ 아래 화살표·←→ 화살표, 눌림 ColorTint 유지, 가드 alert·패링 성공 찌르기 없음, 로얄 가드 effect 가드 시작 1회(기존 패링 성공 이펙트 유지), 가드 시작 때 로얄 가드 _audio/Use만·버튼 소리 없음 | §24 머리말·24.2~24.10 확정(24.10 남은 결정: 사용자 확인 E-Q1, coder 결정 C-1~C-4), UX-01·UX-02 범위 확정(구현 승인 아님, 회차 D 뒤 사용자 시작 지시). AssetList 사용 예정(회차 E), 로드맵·WorkRecord 재개 지점 한 줄. 규칙·수치·입력 계약 불변, 화면 적합성 미확인 |
 | 2026-11-08 | 사용자 회차 C2 V11 "V11 확인 완료"(run "2026-11-08 회차 C2 사용자 V11 수락", §23.4 두 항목) | §23.6 미결정 해소 표시·§23.7 완료(회차 종료 커밋 7a796aa), §21 남은 일, §22 머리말 기준 7a796aa·22.14 상태, §8 재개 문단. FileStructure §5·§7, AssetList 보관 행, GameDesign §4.2·§5 완료형, 로드맵 재개 지점, WorkRecord 머리말·재개 지점. 원장 castleenemy 문구는 범위 밖 남은 사항(정리 시점 사용자 결정). 규칙·수치·범위·입력 계약 불변. §24는 회차 E 시작 때 E-Q1 답을 반영하므로 이번에 바꾸지 않음 |
 | 2026-11-08~11-16 | 회차 D 사용자 결정(run 2026-11-08~11-16 절): D-Q1 MonsterSoundData "AI 수동 작성", D-Q2 2.2배 → D-Q3 원작 속도 1배(판정 1.1초), D-Q4 제자리 피격 가능, D-Q5 수평 이동만, D-Q6 접근 클립 이어 재생 "지금 고침", D-Q7 회차 D 한정 로그 비우기, REV-D-O1 "먼저 고침", D-Q8 2·3칸 0.7배, D-Q9 버벅임 조사 → D-Q11 "점프 중 뚝 끊기는 느낌"·D-Q12 조절 항목으로 비교, D-Q10 1칸 점프음 → D-Q13 player 점프음. 2026-11-16 V11 "다른 건 다 좋은 데 …"·"점프음 확인 완료"로 수락 | §22 완료(22.14·22.17.9·22.17.10.10 ✅), §22.16·22.17 신설 내용 그대로. 최종값: 2·3칸 TelegraphLeadSec 1.571429·MotionPlayRate 0.7, EqualizeLeapFrames·EaseLeapMove true·LeapJumpHeight 0(기본값), 1칸 AttackSound a49c4b39…. GameDesign §4.2·§5·§8, AssetList, FileStructure §4, 로드맵 재개 지점, WorkRecord 머리말·재개 지점 동기화. D01~D04·판정 창·피해·Weight 불변. 2·3칸 반응 시간·제자리 피격 구간은 사용자 결정 수치(22.12) |
+| 2026-11-16 | 사용자 "회차 E 시작"(run "2026-11-16 회차 E 시작") + 2026-11-06 E-Q1 답(새 표 PlayerActionFxData, 오류 처리 추천안) + D-Q1 수동 작성 절차 적용 | §24 머리말·24.1(현재 소스 재확인)·24.3·24.4·24.5·24.7·24.8·24.9·24.10(E-Q1 계약, C-2·C-3 닫음)·24.11(coder 순서·중단 조건·maker_clear_logs 미사용) 갱신. UX-01·UX-02 구현 승인 범위. 규칙·수치·입력 계약·GameDesign 불변 |
 
 ## 10. 독립 QA 상태 (2026-10-25)
 
@@ -2436,22 +2438,25 @@ planner 제안 기준이다. 최종 판단은 사용자 V11 체감이다. 측정
 ## 24. 회차 E — 조작 버튼 메이플 테마·가드 모션/이펙트 (2026-11-06 설계, 같은 날 사용자 선택 확정)
 
 > 근거: run "2026-11-06 회차 C 사용자 V11 결과·추가 요청"의 추가 요청 1(방향·공격·패링 버튼 이미지를 MSW 메이플 테마 버튼으로)·2(가드 모션 sit이 어색함, 모션·스킬 이펙트 후보)와 같은 날 메인 조사.
-> 상태: **사용자 선택 확정(2026-11-06, run "2026-11-06 회차 E 사용자 선택", 24.6 질문 6개 모두 추천안). 회차 시작은 사용자 지시.** 이 확정은 구현 시작 승인이 아니다. 시작은 회차 C2 → 회차 D 뒤 사용자 시작 지시로 하며, 그 전에 24.10의 사용자 확인 1건(E-Q1 가드 이펙트·소리 RUID 저장 위치)에 답을 받아야 coder가 시작할 수 있다.
-> 화면 적합성: 이 절의 후보와 확정안은 하나도 Maker 화면으로 보지 않았다(미확인, 회차 E 사용자 V11 24.8). RUID는 msw-ui-kit 데이터와 msw-search 래퍼 응답에서 옮겼다.
+> 상태: **구현 승인 범위 확정(2026-11-16).** 사용자 "회차 E 시작"(run "2026-11-16 회차 E 시작"), 기준 원격 HEAD de6e6aa(회차 D·D2 종료). 범위는 2026-11-06 선택 6개(24.6)와 E-Q1 답(새 표 PlayerActionFxData, 오류 처리 추천안, run "2026-11-06 회차 E E-Q1 사용자 답")이며 24.4·24.7·24.10·24.11에 반영했다. 남은 사용자 결정 없음. 다음은 coder(24.11) → 같은 버전 tester → reviewer → 사용자 V11(24.8).
+> ~~상태: 사용자 선택 확정(2026-11-06 …). 그 전에 24.10의 사용자 확인 1건(E-Q1)에 답을 받아야 coder가 시작할 수 있다.~~ → E-Q1은 2026-11-06 답함, 회차 시작은 2026-11-16 사용자 지시.
+> 화면 적합성: 이 절의 후보와 확정안은 하나도 Maker 화면으로 보지 않았다(미확인, 회차 E 사용자 V11 24.8). 이펙트·소리 RUID는 2026-11-16 msw-search 래퍼로 다시 확인했다(24.1). UI RUID 5개는 래퍼 색인에 없어(get 404, 2026-11-06 batch도 0건) msw-ui-kit 데이터로만 확인된다. 실제 표시는 coder Play에서 처음 확인한다(24.7).
 > 바꾸지 않는 것: 입력 계약(↑ 공격·↓ 가드·← 뒤·→ 앞, GameDesign §7.1·§7.4 배치, 터치 88px 이상·간격 16px 이상), 판정 규칙·수치, 가드·패링 판정, 기존 패링 성공 이펙트(MonsterStunComponent의 SparkRadialExplosion, 사용자가 마음에 들어 함)와 그로기 별.
 
-### 24.1 현재 상태 (2026-11-06 읽기)
+### 24.1 현재 상태 (2026-11-06 읽기, 2026-11-16 de6e6aa 작업 트리에서 다시 읽음)
+
+2026-11-16 재확인(planner, 제품 무수정): 회차 C2·D·D2 뒤에도 아래 버튼 표·애니메이션 연결은 그대로다. UIBuilder.load로 엔티티 19개, 버튼 4개·Highlight 3개의 전체 UUID·크기·위치·RUID·ButtonComponent 값이 표와 같다. PlayerStateControl 16행은 아직 `SetActionSheet("GUARD", "sit")`, PlayerCombatComponent 166행이 서버 `_EffectService:PlayEffect(effectRuid, self.Entity, position, 0, Vector3(-direction, 1, 1), false)`, PlayerGuardComponent.SetGuarding(ServerOnly)의 시작 분기 `isHeld and not self.isGuarding`(12행)도 같다. 회차 D가 바꾼 것 중 이 절과 닿는 것은 CombatRuleCatalog뿐이다. 이 파일은 지금 MonsterSoundData(`RootDesk/MyDesk/DataSet/`, serveronly true)를 EnsureInitialized 안에서 함께 읽는다. 사운드 표가 무효이면 그 표만 거부한다(Ready는 유지, 그 몬스터 스폰만 거부). 같은 파일에 `ParseOptionalRuid`(빈 칸 = "", 소문자 16진 32자만 허용, 그 밖은 nil)·`WarnOnce`·`ReadRows`(열 누락이면 nil)·`PlayMonsterSound(kind, ruid, player)`(서버, 빈 RUID면 무호출, `[VRF] sfx kind=… ruid=앞 8자`, 결투 플레이어 UserId에만 1.0)가 있다. 24.10 E-Q1 계약은 이 함수들을 재사용한다.
 
 **버튼 (ui/CombatScreen.ui, UIBuilder로 읽음)**
 
-| 엔티티(UUID 앞 8자) | 크기·위치(앵커 아래 가운데) | 현재 이미지 RUID | 하이라이트 |
+| 엔티티(전체 UUID) | 크기·위치(앵커 아래 가운데) | 현재 이미지 RUID | 하이라이트 |
 | --- | --- | --- | --- |
-| BtnAttack ↑ (c004ea3c) | 140×140, (0, 270) | fa75318d112040f9a941da89ad5d2e53 | 없음 |
-| BtnBack ← (6327b6bf) | 140×140, (-170, 110) | b5c63f01645645c095611f64b34078df | Highlight(93225eff) |
-| BtnGuard ↓ (3ad5d628) | 140×140, (0, 110) | 9eff8b12dcde45ca989e9cd5a95e441c | Highlight(f486d930) |
-| BtnForward → (ae5fcd10) | 140×140, (170, 110) | 83feab30f7744c629ecc1344e1c4e49b | Highlight(c7d65fee) |
+| BtnAttack ↑ (c004ea3c-df66-4b82-bed1-d743972d22ff) | 140×140, (0, 270) | fa75318d112040f9a941da89ad5d2e53 | 없음 |
+| BtnBack ← (6327b6bf-3978-4fad-a3d4-9212db316e32) | 140×140, (-170, 110) | b5c63f01645645c095611f64b34078df | Highlight(93225eff-c809-4bc2-9766-ceaae2f22248) |
+| BtnGuard ↓ (3ad5d628-2a6b-4df1-bde4-72ace7fbd0af) | 140×140, (0, 110) | 9eff8b12dcde45ca989e9cd5a95e441c | Highlight(f486d930-102c-4a8d-b6c7-610838f049de) |
+| BtnForward → (ae5fcd10-999a-4b08-bc7c-d27a5887e5dc) | 140×140, (170, 110) | 83feab30f7744c629ecc1344e1c4e49b | Highlight(c7d65fee-2b24-4ed1-9fad-8198438ece0b) |
 
-- 공통: SpriteGUIRenderer는 Simple·흰색·PreserveSprite다. ButtonComponent는 ColorTint(눌림 0.78)이고 상태 스프라이트가 없다. TextGUI는 빈 문자열이다.
+- 공통: SpriteGUIRenderer는 Type 0(Simple)·흰색(1,1,1,1)·PreserveSprite 1(AspectOnly)·RaycastTarget 켬이다. ButtonComponent는 Transition 1(ColorTint), PressedColor 0.784(=눌림 0.78), 상태 스프라이트 4개 모두 null이다. TextGUI는 빈 문자열이다.
 - Highlight: 부모에 맞춰 늘어나고, RUID 2860136c06ab075439721c027de365af·Sliced·노란색(파일의 알파는 0)이며 raycast는 꺼져 있다. CombatInputController(56~58행)가 LEFT·GUARD·RIGHT 입력에 따라 Enable을 켜고 끈다.
 - 이미지 출처: Docs/UIimg의 free-icon 4장(sword·defence·left/right arrow)으로 보이지만, RUID와 파일의 대응을 적은 문서가 없어 추정이다.
 - 바인딩: CombatInputController는 ButtonComponent 4개와 Highlight 3개를 엔티티 UUID로 묶는다. 엔티티를 새로 만들지 않고 값만 바꾸면 바인딩은 그대로다.
@@ -2531,23 +2536,27 @@ planner 제안 기준이다. 최종 판단은 사용자 V11 체감이다. 측정
 
 - 회차 E의 소리는 플레이어 쪽(가드) 소리다. 회차 D의 MonsterSoundData(몬스터 키별 DamagedSound·HitPlayerSound·DieSound)와 패턴 표 AttackSound에는 넣지 않는다. 몬스터 소리는 모두 회차 D에 남긴다.
 - 확정(2026-11-06 Q6): 가드 시작 때 로얄 가드 _audio/Use `605da1fc42f34ef4a1468387004a6223`만 낸다. 버튼 누름 소리는 없다(고르지 않은 안: UI 기본 클릭음, 소리 없음).
-- 저장 위치: 플레이어 기본 공격 이펙트 RUID가 AttackSkillData에서 오는 선례가 있다. 그래서 회차 E 확정 때 planner가 AttackSkillData 열 구성을 읽고 정한다(가드 행·열 추가 또는 새 작은 표). 지금은 정하지 않는다. 코드 상수가 아니라 데이터에 두는 쪽이 GameDesign §4.2 "효과음은 데이터" 원칙(몬스터 기준)과 같은 방향이다. → 2026-11-06 planner가 열 구성을 읽었다. 결과를 바꾸는 데이터 구조라 24.10 E-Q1(사용자 확인 필요)로 넘긴다. 가드 이펙트 RUID도 같은 위치에 둔다.
-- 재생: `_SoundService:PlaySound(ruid, 1.0, 결투 플레이어 UserId)`로 서버에서 그 클라이언트에만 보낸다(22.6과 같은 방식). 빈 값이면 재생하지 않는다.
+- 저장 위치: **새 표 PlayerActionFxData `guard` 행(2026-11-06 사용자 E-Q1 답).** 가드 이펙트 RUID도 같은 행에 둔다. 표·로더·오류 계약은 24.10 "E-Q1 계약"이다. (이전 서술: AttackSkillData 열 구성을 읽고 정한다 → 24.10 E-Q1로 넘김 → 답으로 닫힘.)
+- 재생: `_SoundService:PlaySound(ruid, 1.0, 결투 플레이어 UserId)`로 서버에서 그 클라이언트에만 보낸다(22.6과 같은 방식). 빈 값이면 재생하지 않는다. 구현은 CombatRuleCatalog.PlayMonsterSound를 kind `guard`로 재사용한다(24.10).
 - 겹침: 회차 D의 HitPlayerSound는 GUARD 결과(가드 성공 40% 피해)에도 난다. 가드 시작음과 시점은 다르지만, 가드 직후 맞으면 두 소리가 잇달아 난다(V11 확인).
 
-### 24.4 대상 파일 (2026-11-06 선택 확정, 데이터 행만 E-Q1 답에 따름)
+### 24.4 대상 파일 (2026-11-06 선택 확정, 2026-11-16 E-Q1 답 반영·현재 소스로 재확인)
+
+경로는 모두 `RootDesk/MyDesk/` 아래(ui 제외).
 
 | 파일 | 변경 | 관련 선택 |
 | --- | --- | --- |
-| ui/CombatScreen.ui | UIBuilder: 버튼 4개의 ImageRUID(`e314c09b…`)·Type(Sliced)·Color(`#FFFFFF`) 패치, 아이콘 자식 `Icon` 4개 추가(Highlight 앞 순서). 눌림 방식(ColorTint 0.78)은 바꾸지 않음 | Q1 a·Q2 안 2·Q3 a |
-| Player/@StateControl/PlayerStateControl.mlua | `SetActionSheet("GUARD", "alert")` 한 줄(지금 `"sit"`, 16행) | Q4 a |
-| Player/PlayerGuardComponent.mlua | 가드 시작 분기(`isHeld and not self.isGuarding`)에 PlayEffect·PlaySound·[VRF] | Q5 a·Q6 |
-| 가드 이펙트·소리 데이터와 그 로더 | E-Q1 답에 따라: (a) 새 표 1개와 로더 / (b) AttackSkillData 열·행과 기존 로더 / (c) 데이터 없이 컴포넌트 속성 | Q5 a·Q6 |
+| ui/CombatScreen.ui | UIBuilder: 버튼 4개의 SpriteGUIRenderer ImageRUID(`e314c09b…`)·Type 1(Sliced)·Color `#FFFFFF`만 patchComponent. 아이콘 자식 `{버튼}/Icon` 4개 추가(24.10 C-2 확정값). Highlight가 있는 버튼은 형제 display_order를 Icon 0·Highlight 1로 둘 다 맞춘다. 눌림 방식(ColorTint 0.78)·크기·위치·PreserveSprite는 바꾸지 않음 | Q1 a·Q2 안 2·Q3 a |
+| Player/@StateControl/PlayerStateControl.mlua | 16행 `SetActionSheet("GUARD", "sit")` → `"alert"` 한 단어 | Q4 a |
+| Player/PlayerGuardComponent.mlua | 가드 시작 분기(12행 `isHeld and not self.isGuarding`, 기존 시작 시각·위치 기록 뒤)에 `_CombatRuleCatalog:GetPlayerActionFx("guard")` → PlayEffect 1회·PlayMonsterSound("guard", …) 1회·[VRF]. 행이 nil이면 둘 다 건너뛰고 가드는 그대로 | Q5 a·Q6 |
+| Combat/CombatRuleCatalog.mlua | PlayerActionFxData 로드·검증·조회(24.10 E-Q1 계약). 기존 EnsureInitialized·Ready·패턴·능력치·MonsterSoundData 동작은 바꾸지 않음 | E-Q1 |
+| **새** DataSet/PlayerActionFxData.userdataset + PlayerActionFxData.csv | 수동 작성(D-Q1 "AI 수동 작성" 절차, 24.10) | E-Q1 |
 | ~~MonsterAttackComponent 또는 플레이어 방어 경로~~ | 제외. 패링 성공 찌르기 모션(Q4 추가)과 패링 성공 이펙트(Q5 e)를 고르지 않았다 | — |
 
-- 바꾸지 않는 파일: CombatInputController, MonsterAttackComponent, MonsterStunComponent(기존 패링 성공 스파크), Player_Guard.
-- §22.7과의 관계: 고른 범위의 파일(CombatScreen.ui·PlayerStateControl·PlayerGuardComponent·데이터)은 22.7과 겹치지 않는다. 다만 사용자와 정한 순서가 C2 → D → E이므로 회차 E coder는 회차 D 회차 종료 커밋을 기준으로 시작한다.
-- 새 제품 파일은 E-Q1 (a)를 고를 때만 생긴다(위치는 FileStructure §4: DataSet/, 회차 D MonsterSoundData와 같은 폴더).
+- 바꾸지 않는 파일: CombatInputController, MonsterAttackComponent, MonsterStunComponent(기존 패링 성공 스파크), Player_Guard, PlayerCombatComponent, PlayerSkillEffectTable·AttackSkillData, MonsterManager, MonsterSoundData, 모델·**map/map01.map**.
+- §22.7과의 관계(2026-11-16 재확인): 회차 D는 끝났다(최종 제품 커밋 5ce65d6, 회차 종료 de6e6aa). 겹치는 파일은 CombatRuleCatalog 하나이며, 회차 D 동작을 바꾸지 않는 추가만 한다(24.7 회귀). 나머지(CombatScreen.ui·PlayerStateControl·PlayerGuardComponent·새 DataSet)는 22.7에 없다. coder 기준 버전은 de6e6aa다.
+- 새 제품 파일: DataSet 1쌍. 위치는 FileStructure §4 `DataSet/`(회차 D MonsterSoundData와 같은 `RootDesk/MyDesk/DataSet/`). 새 .mlua·새 폴더는 없다.
+- 작업 트리 `map/map01.map`의 기존 변경(attackareamark 위치, 출처 불명)은 사용자 "그대로 둠"이다. 회차 E는 이 파일을 고치지 않고 커밋에 섞지 않는다(24.11 중단 조건).
 
 ### 24.5 위험
 
@@ -2560,6 +2569,9 @@ planner 제안 기준이다. 최종 판단은 사용자 V11 체감이다. 측정
 | 엔티티를 다시 만들어 UUID가 바뀜 | 새로 만들지 않고 패치만 함. read로 UUID 비교 |
 | 서버 PlayEffect가 클라이언트에 안 보임 | 기본 공격 선례로는 보인다. 안 보이면 MonsterStunComponent 방식(@Sync → 클라이언트 재생)으로 바꾼다 |
 | alert가 대기(stand)와 비슷해 가드로 안 보임 | V11. 그러면 이펙트로 보완하거나 다른 안을 고른다 |
+| 계정 코스튬에 무기가 없으면 ATTACK(`attack`)도 alert로 보여 공격과 가드 모습이 같다(msw-avatar 해석표: Attack은 무기 없을 때 alert) | 규칙 변경 없음. V11에서 확인(24.8), 문제면 그때 다른 안을 묻는다 |
+| CombatRuleCatalog 추가가 회차 D 로드(패턴·능력치·MonsterSoundData·Ready·스폰 거부)를 바꿈 | 새 표는 별도 시도 플래그로 읽고 EnsureInitialized의 반환값·Ready·기존 캐시를 건드리지 않는다. 24.7 회귀로 확인 |
+| UI RUID 5개가 래퍼 색인에 없어(404) 실제 표시 여부를 사전에 확인할 수 없음 | coder Play에서 처음 확인. 보이지 않으면 24.11 중단 조건 |
 
 ### 24.6 사용자 질문과 답 (2026-11-06 답, 6개 모두 추천안. run "2026-11-06 회차 E 사용자 선택")
 
@@ -2592,47 +2604,63 @@ planner 제안 기준이다. 최종 판단은 사용자 V11 체감이다. 측정
    - 가드 시작 때 고른 스킬의 소리(_audio/Use)를 낸다 — 추천 **[선택]**: 로얄 가드 _audio/Use 605da1fc만. 다른 안은 소리 없음.
    - 버튼 누름 소리: 없음 — 추천 **[선택]**(전투 입력이 잦고 공격·가드 소리와 겹친다). 다른 안은 UI 기본 클릭음.
 
-### 24.7 완료 기준 (AI, 2026-11-06 선택 확정으로 다듬음)
+### 24.7 완료 기준 (AI, 2026-11-06 선택 확정으로 다듬음, 2026-11-16 E-Q1 답·현재 소스로 확정)
 
-- UIBuilder.read 확인 (UX-01):
-  - 버튼 4개의 엔티티 UUID(c004ea3c·6327b6bf·3ad5d628·ae5fcd10)가 그대로다.
-  - 4개 모두 ImageRUID `e314c09b9b39486bb1c68d018b2abded`·Type Sliced·Color `#FFFFFF`다.
-  - 아이콘 자식 `Icon`이 버튼마다 1개 있고 RUID가 24.2 확정안과 같다(↑ 3119d280…, ↓ a714a1ea…, ← 002ca90c…, → 740aba24…). Color `#FFFFFF`, raycast 꺼짐, 가운데 고정, Highlight보다 앞 순서다(BtnAttack은 Highlight가 없으므로 순서 조건 없음).
-  - ButtonComponent는 ColorTint(눌림 0.78)이고 상태 스프라이트가 없다(지금과 같음).
-  - 크기 140·위치가 그대로다. lint를 통과한다.
-- Play 입력 회귀:
-  - 4버튼 각 입력의 [VRF] 입력 로그·상태 전환이 회차 A·V10 입력 계약(출처 합산·반환 잠금)과 같다.
-  - Highlight Enable 토글도 같다.
-  - 버튼을 눌러도 효과음 재생([VRF] sfx)이 없다.
-- 가드 모션 (UX-02):
-  - 서버 AvatarStateAnimationComponent의 GUARD 값이 `alert`다.
-  - 가드에 들어가면 아바타 상태가 alert로 바뀌고, 가드를 벗어나면 지금과 같은 상태로 돌아간다(프로브).
-  - 패링 성공 때 찌르기 같은 순간 모션을 보내지 않는다.
-- 이펙트·소리 (UX-02):
-  - 서버 가드 시작(SetGuarding의 시작 분기) 1회마다 PlayEffect가 정확히 1회 나고, [VRF](RUID 앞 8자 318a4662)로 남는다. 홀드를 유지하는 동안 더 나지 않는다. 떼었다가 다시 누르면 새 가드 시작이므로 다시 1회다.
-  - 같은 시점에 소리 605da1fc가 결투 플레이어에게만 1회 나고 `[VRF] sfx`(RUID 앞 8자)로 남는다.
-  - 데이터 로드·검증과 오류 때 동작은 E-Q1 답(함께 묻는 오류 처리 포함)에 따른다. 어느 경우에도 가드 판정 규칙·수치는 바꾸지 않는다.
-- 다른 회귀:
-  - 가드 판정(40%)·Pos2 패링·저스트, 기존 패링 성공 스파크(SparkRadialExplosion)·그로기 별이 바뀌지 않는다.
-  - 팝업 정지·재개 때 가드가 풀리는 동작이 같다.
-  - build 오류 0.
-- 화면 적합성은 AI가 판정하지 않는다(24.8).
+같은 버전에서 coder 기본 검증 뒤 tester가 독립으로 다시 확인한다. 런타임 주장은 Maker MCP 근거가 있어야 한다. `maker_clear_logs`는 쓰지 않는다(24.11).
+
+1. UIBuilder.load 확인 (UX-01, 정적):
+   - 버튼 4개의 엔티티 UUID가 24.1 표의 전체 UUID와 같고, Highlight 3개 UUID도 같다(CombatInputController 8~10행 바인딩 그대로).
+   - 4개 모두 SpriteGUIRenderer ImageRUID `e314c09b9b39486bb1c68d018b2abded`·Type 1(Sliced)·Color (1,1,1,1)이다. PreserveSprite 1·RaycastTarget 켬은 그대로다.
+   - `{버튼}/Icon`이 버튼마다 정확히 1개다. RUID ↑ `3119d2807ea7466e8e9056d0590a35cc`, ↓ `a714a1eaa4aa46098c0c265110ee91c0`, ← `002ca90cd5794836b1e44da160de287a`, → `740aba24726c4c6580cf054b0e1e1fd5`. 각각 Color (1,1,1,1), Type 0(Simple), RaycastTarget 꺼짐, 앵커 middle-center·위치 (0,0)·크기 24.10 C-2 값이다.
+   - BtnBack·BtnGuard·BtnForward는 Icon display_order < Highlight display_order다(BtnAttack은 Highlight가 없어 조건 없음).
+   - ButtonComponent는 바뀌지 않았다(Transition 1, PressedColor 0.784, 상태 스프라이트 4개 null).
+   - 버튼 크기 140×140·위치(0,270)/(-170,110)/(0,110)/(170,110)가 그대로다. write lint 오류 0.
+2. 데이터 로드 (UX-02, E-Q1):
+   - Refresh 뒤 Play 시작 때 서버 [VRF]에 `PlayerActionFxData` guard 행이 effect `318a4662`·sound `605da1fc`로 한 번 찍힌다(인식 확인, D-Q1 절차).
+   - 같은 Play에서 기존 `[VRF] CombatCore catalog ready …`·패턴 행·MonsterSoundData·MonsterStatData 로그가 de6e6aa와 같은 값이다. Ready true, 머쉬맘 스폰 정상.
+3. 오류 동작 (UX-02, E-Q1 오류 처리 답). 제품 CSV를 고치지 않고, Play 안 프로브로 검증 함수에 가짜 행을 넣거나 캐시를 무효 상태로 바꿔 확인한다(Stop으로 정리):
+   - 빈 칸: EffectClip 빈 칸이면 PlayEffect 0회·소리만 1회. EffectSound 빈 칸이면 소리 0회(`[VRF] sfx` 없음)·이펙트만 1회. 경고 없음.
+   - 형식 오류(대문자 포함·31자·공백 끼움·16진 아닌 문자)·중복 id·필수 열 누락 → 표 전체 무효, `[CombatRuleCatalog] PlayerActionFxData …` 경고가 원인당 1회. 가드 시작 때 이펙트·소리 0회.
+   - guard 행 없음 → 경고 1회(`player action fx row missing: guard`), 가드 시작 때 이펙트·소리 0회. 두 번째 가드 시작에서 경고가 다시 나지 않는다.
+   - 위 모든 경우 Ready·스폰·가드 상태 진입·가드 판정(40%)·Pos2 패링·저스트가 정상 경우와 같다(전투가 멈추거나 스폰이 거부되지 않는다).
+4. Play 입력 회귀 (UX-01):
+   - 4버튼(터치·마우스 입력)과 키보드 각 입력의 [VRF] 입력 로그·상태 전환이 회차 A·V10 입력 계약(출처 합산·반환 잠금)과 같다. Highlight Enable 토글도 같다.
+   - 버튼 누름 자체의 소리는 없다: ←·→·↑ 입력에서 `[VRF] sfx` 0건, ↓ 입력에서 `[VRF] sfx kind=guard` 1건만(가드 시작음). 몬스터 공격과 겹치지 않는 구간에서 센다.
+   - 버튼 터치 입력 좌표를 잡으려고 찍는 스크린샷(입력 좌표 확인용으로 허용된 범위, 따로 더 찍지 않음)에서 버튼 배경·아이콘이 보이는지 함께 본다. 존재 확인만 하고 어울림 판정은 24.8이다. 보이지 않으면 24.11 중단 조건.
+5. 가드 모션 (UX-02):
+   - 서버 AvatarStateAnimationComponent StateToAvatarBodyActionSheet["GUARD"]의 AvatarBodyActionStateName이 `alert`다. ATTACK `attack`·MOVE `walk`는 그대로다.
+   - 가드에 들어가면 아바타 상태가 alert로 바뀌고, 가드를 벗어나면 지금과 같은 상태(IDLE stand)로 돌아간다(프로브).
+   - 패링 성공 때 찌르기 같은 순간 모션을 보내지 않는다.
+6. 이펙트·소리 (UX-02):
+   - 서버 가드 시작(SetGuarding의 시작 분기) 1회마다 PlayEffect가 정확히 1회 나고, [VRF](RUID 앞 8자 318a4662)로 남는다. 홀드를 유지하는 동안 더 나지 않는다. 떼었다가 다시 누르면 새 가드 시작이므로 다시 1회다. 같은 홀드에 출처가 합쳐질 때(터치+키)도 추가로 나지 않는다.
+   - 같은 시점에 소리 605da1fc가 결투 플레이어에게만 1회 나고 `[VRF] sfx kind=guard ruid=605da1fc user=있음`으로 남는다.
+   - 클라이언트에서 이펙트가 실제로 나타나는지 1회 확인한다(24.5 "서버 PlayEffect가 클라이언트에 안 보임" 대응 판단 근거).
+   - 어느 경우에도 가드 판정 규칙·수치는 바꾸지 않는다.
+7. 다른 회귀:
+   - 가드 판정(40%)·Pos2 패링·저스트, 기존 패링 성공 스파크(SparkRadialExplosion)·그로기 별이 바뀌지 않는다.
+   - GUARD 결과 때 회차 D HitPlayerSound가 그대로 난다(kind=hitplayer).
+   - 팝업 정지·재개 때 가드가 풀리는 동작이 같다. 정지 중 가드 시작이 생기지 않으므로 이펙트·소리도 나지 않는다.
+   - 회차 D 대표 회귀: 머쉬맘 스폰·패턴 4행 로드 값·1칸 점프음 a49c4b39·die F12 1회 정지.
+   - build 오류 0, 제품 경고·오류 0(오류 시험의 의도한 경고 제외).
+- 화면 적합성(버튼 어울림, alert 모습, 이펙트 크기·방향, 소리)은 AI가 판정하지 않는다(24.8).
 
 ### 24.8 사용자 V11 (회차 E 뒤)
 
 - 버튼 모양·아이콘이 메이플 분위기와 맞는지, 눌림 표시, 모바일 터치, 노란 Highlight와 어울리는지. ↓ 아이콘이 ←·→·↑와 어울리는지(24.5).
 - 흰 아이콘이 원형 배경 위에서 잘 보이는지(안 보이면 테마 문자색 계열로 바꾸는 것을 그때 정한다).
-- 가드 모습(alert가 대기 stand와 구분되는지), 이펙트 크기·위치·방향(좌우 반전이 필요한지), 소리 크기, 팝업 정지 중 모습.
+- 가드 모습(alert가 대기 stand와 구분되는지, 무기 없는 계정이면 공격 모습과도 구분되는지 24.5), 이펙트 크기·위치·방향(좌우 반전이 필요한지), 소리 크기, 팝업 정지 중 모습.
+- (선택) 연출 표 직접 수정: `RootDesk/MyDesk/DataSet/PlayerActionFxData.csv`의 guard 행 칸을 비우면 그 연출만 없어진다. 절차는 CSV 수정 → Maker Refresh → Play(회차 D 속도 조절 안내와 같음).
 
 ### 24.9 상태
 
 | ID | 상태 |
 | --- | --- |
-| CombatCore-UX-01 | ⬜ 범위 확정(2026-11-06 사용자 Q1 a·Q2 안 2·Q3 a). 남은 사용자 확인 없음. 회차 D 뒤 사용자 시작 지시 대기, 구현 승인 아님 |
-| CombatCore-UX-02 | ⬜ 범위 확정(2026-11-06 사용자 Q4 a·찌르기 없음·Q5 a·Q6). 24.10 E-Q1 답과 회차 D 뒤 사용자 시작 지시 대기, 구현 승인 아님 |
+| CombatCore-UX-01 | 🟡 구현 승인 범위(2026-11-16 사용자 "회차 E 시작", 선택 Q1 a·Q2 안 2·Q3 a). 남은 사용자 결정 없음. coder 대기(24.11) |
+| CombatCore-UX-02 | 🟡 구현 승인 범위(2026-11-16 사용자 "회차 E 시작", 선택 Q4 a·찌르기 없음·Q5 a·Q6, E-Q1 새 표 PlayerActionFxData·오류 처리 추천안). 남은 사용자 결정 없음. coder 대기(24.11) |
 
-다음 흐름: 메인이 24.10 E-Q1을 사용자에게 묻는다(시점은 메인 판단, 회차 C2·D 진행과 무관) → planner가 답을 24.4·24.7에 반영 → 회차 C2 → 회차 D 종료 뒤 사용자 시작 지시 → coder → 같은 버전 tester → reviewer → 사용자 V11(24.8).
-2026-11-16 갱신: 회차 C2(7a796aa)와 회차 D·D2(사용자 V11 수락 2026-11-16)는 끝났다. E-Q1은 run "2026-11-06 회차 E E-Q1 사용자 답"에 답이 있으며(새 표 PlayerActionFxData, 추천안), 24.10(과 그에 따른 24.4·24.7) 반영은 회차 E를 시작할 때 planner 범위 확인에서 한다(이번 정리에서는 하지 않음). 회차 E는 사용자 시작 지시가 있어야 시작한다. 시작 때 기준 버전은 회차 D 종료 커밋(메인이 만듦)이며, 22.7과 이 절 대상 파일의 겹침을 planner가 다시 확인한다.
+2026-11-16 회차 E 시작 범위 확인(planner): E-Q1 답을 24.3·24.4·24.7·24.10에 반영했고 coder 순서·중단 조건은 24.11이다. 현재 소스(de6e6aa 작업 트리)로 24.1을 다시 읽었고 이펙트·소리 RUID를 래퍼로 다시 확인했다. 규칙·수치·입력 계약·GameDesign은 바꾸지 않았다. 다음은 coder → 같은 버전 tester → reviewer → 사용자 V11(24.8). P01b~P06 🟡 유지, 2단계 완료·3단계 시작 아님.
+
+~~다음 흐름: E-Q1 질문 → 반영 → 회차 C2 → 회차 D 종료 뒤 사용자 시작 지시 → coder …~~ → E-Q1 답(2026-11-06), 회차 C2(7a796aa)·D·D2(de6e6aa) 종료, 사용자 시작 지시(2026-11-16)까지 끝났다. 22.7 겹침 재확인은 24.4.
 
 ### 24.10 남은 결정 (2026-11-06 선택 확정 뒤 planner 정리)
 
@@ -2649,21 +2677,61 @@ planner 제안 기준이다. 최종 판단은 사용자 V11 체감이다. 측정
 | MonsterAttackComponent 수정 여부(24.4) | 수정 없음. 회차 D 22.7과 파일이 겹치지 않음 |
 | ↓ 아이콘 RUID | 닫음. a714a1eaa4aa46098c0c265110ee91c0은 ui-kit 데이터(simplefantasy.ruids.json)에서 이름 Icon_Arrow_Down 하나, 분류 Tint, `tint: true`, kind C(core 팔레트 전용), 기록 60×60, Simple이다. ←·→·↑·칼도 모두 `tint: true`라 같은 처리(색 `#FFFFFF` 명시)를 한다. 같은 테마에서 이름이 아래 방향인 다른 항목은 Icon_Triangle_Down `0c2db2ad2c694210ba492d0ab060b5e7`(삼각형, 기록 20×20, 틴트)과 Scroll_Down 겸용 Icon_Arrow `bd1198d411cd40fa9fad30ec3143452c`(44×32, 틴트 아님, 위·아래 겸용)뿐이다. 사용자는 "아래 화살표"를 골랐고 화살표 계열의 아래 방향은 Icon_Arrow_Down뿐이므로 이 RUID로 확정한다. 화면 위험은 24.5·24.8 |
 
-**사용자 확인 필요** (결과를 바꾸는 데이터 구조)
+**사용자 확인 — 답함** (2026-11-06, run "2026-11-06 회차 E E-Q1 사용자 답": (a) 새 표 PlayerActionFxData, 오류 처리 추천안. 원래 선택지는 아래에 보존)
 
 - **E-Q1. 가드 이펙트·소리 RUID를 어디에 둘까?** (planner가 2026-11-06 AttackSkillData.csv·PlayerSkillEffectTable·PlayerCombatComponent를 읽고 정리)
-  - (a) **새 작은 표 — 추천.** 이름 설계안 `PlayerActionFxData`(규칙 `{대상}Data`). 열 `id`·`EffectClip`·`EffectSound`(RUID, 빈 값 = 없음). 행 `guard` 1개(318a4662… · 605da1fc…). serveronly true(서버가 이펙트·소리를 낸다). 위치·생성 절차는 회차 D MonsterSoundData와 같다(Maker UI 생성 우선, 막히면 coder가 멈추고 메인에 돌려준다).
+  - (a) **새 작은 표 — 추천 [선택].** 이름 설계안 `PlayerActionFxData`(규칙 `{대상}Data`). 열 `id`·`EffectClip`·`EffectSound`(RUID, 빈 값 = 없음). 행 `guard` 1개(318a4662… · 605da1fc…). serveronly true(서버가 이펙트·소리를 낸다). 위치·생성 절차는 회차 D MonsterSoundData와 같다(Maker UI 생성 우선, 막히면 coder가 멈추고 메인에 돌려준다).
     - 이유 1: 지금 AttackSkillData 로더(PlayerSkillEffectTable.GetSkillData)는 모든 행에 `ruid` 필수·Damage 0 이상·AttackCount 1 이상 정수·FrameCount 0 초과를 요구한다. 가드 행을 넣으려면 뜻 없는 피해·타수 값을 채우거나 로더 검증을 행마다 나눠야 한다.
     - 이유 2: 공격 표에 공격이 아닌 행이 섞이지 않는다. 나중에 다른 플레이어 동작 연출(예: 5단계 스킬 외 동작)을 행으로 더할 수 있다.
     - 이유 3: 회차 D의 열 이름(EffectClip·AttackSound)과 같은 방식이고, GameDesign §4.2 "모션 키·효과음은 데이터" 방향과 같다.
     - 비용: 새 DataSet 파일 1쌍과 작은 로더(기존 정적 로더 경계 안)가 생긴다.
   - (b) AttackSkillData에 소리 열 1개 추가 + `player.guard` 행. 새 파일은 없다. 하지만 위 이유 1의 뜻 없는 값 또는 로더 검증 분리가 필요하고, `player.basic` 행에도 빈 소리 칸이 생긴다.
   - (c) PlayerGuardComponent 속성(모델·컴포넌트 값)에 RUID 두 개. 가장 작다. 하지만 사용자가 표에서 바꿀 수 없고 데이터 방향(GameDesign §4.2)과 다르다.
-  - 함께 정할 오류 처리 (a·b일 때): 빈 칸은 그 연출만 없음(회차 D "빈 값 = 무음"과 같음). 형식이 틀린 RUID·행 없음은 경고 1회 뒤 가드 연출만 끄고 전투와 가드 판정은 그대로 진행 — 추천(연출 데이터라 전투를 막을 이유가 없다). 다른 안은 이 Plan 데이터 계약·회차 D처럼 시작 거부(전투 상대 스폰 거부).
+  - 함께 정할 오류 처리 (a·b일 때): 빈 칸은 그 연출만 없음(회차 D "빈 값 = 무음"과 같음). 형식이 틀린 RUID·행 없음은 경고 1회 뒤 가드 연출만 끄고 전투와 가드 판정은 그대로 진행 — 추천 **[선택]**(연출 데이터라 전투를 막을 이유가 없다). 다른 안은 이 Plan 데이터 계약·회차 D처럼 시작 거부(전투 상대 스폰 거부).
 
-**coder 결정** (승인 범위 안의 구현 세부, 결과는 WorkRecord 개발절에 남긴다)
+**E-Q1 계약 (2026-11-16 planner 확정, 사용자 답 범위 안의 구현 경계)**
 
-- C-1. 이펙트 재생 경로·위치·방향: 서버 `_EffectService:PlayEffect`를 쓰는 기본 공격 선례(PlayerCombatComponent 166행)를 따른다. 위치는 플레이어, 반복 없음. 방향(바라보는 방향에 맞춰 뒤집을지)은 선례 방식에서 고르고 V11에서 확인한다. 클라이언트에 안 보이면 24.5대로 @Sync → 클라이언트 재생으로 바꾼다.
-- C-2. 아이콘 크기 표시: ui-kit 기록 크기가 서로 다르고(24.2) msw-search 래퍼 batch는 이 UI RUID 10개(배경·눌림·아이콘 후보)를 하나도 돌려주지 않아 실제 크기를 확인할 수 없었다. 그래서 가운데 60×60 상자에 SpriteGUIRenderer `PreserveSprite = AspectOnly(1)`(비율 유지 맞춤)을 권장한다. UIBuilder로 이 값을 넣을 수 없으면 기록 비율로 높이 60 상자(칼 48×60, ←·→ 40×60, ↓ 60×60)를 쓴다. 어느 쪽을 썼는지 개발절에 적는다.
-- C-3. 가드 연출 로드 위치: E-Q1 답의 표를 기존 정적 로더 경계(PlayerSkillEffectTable 또는 Combat/의 전투 규칙 로더, 이 Plan 데이터 계약 위 표) 안에서 읽는다. 어느 파일에 둘지는 coder가 정한다.
-- C-4. [VRF] 로그 문구 형식(24.7의 RUID 앞 8자만 지킨다).
+PlayerActionFxData 표:
+
+| 열 | 뜻 | 빈 값 |
+| --- | --- | --- |
+| `id` | 플레이어 동작 키. 지금은 `guard` 하나 | 허용 안 함(표 무효) |
+| `EffectClip` | 그 동작 시작 때 1회 재생할 이펙트 animationclip RUID | 그 이펙트 없음 |
+| `EffectSound` | 같은 시점 1회 재생할 효과음(effect) RUID | 그 소리 없음 |
+
+- 행: `guard,318a46627eca4ae5b9c5d1fb16244e3c,605da1fc42f34ef4a1468387004a6223` 1개. default 행은 없다. `#`로 시작하는 메모 열은 둘 수 있다(로더가 읽지 않음).
+- 파일·생성: `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset` + `PlayerActionFxData.csv`(UTF-8, 첫 줄 헤더). D-Q1 "AI 수동 작성"(2026-11-08 사용자 답, 회차 E에도 적용) 절차를 따른다. 형식은 같은 폴더 MonsterSoundData.userdataset과 같다. EntryKey `userdataset://{새 UUID}`와 `ContentProto.Json.id`는 같은 새 UUID(`node -e "console.log(require('node:crypto').randomUUID())"`)로 하고, `name` "PlayerActionFxData", `serveronly` true, `UseService` 1, `CoreVersion`은 Environment/config 값(현재 26.10.0.0)이다. Refresh 뒤 로드 [VRF]로 인식을 확인하고, 인식에 실패할 때만 멈춘다(24.11).
+- serveronly true인 이유: 이펙트·소리를 서버가 낸다(SetGuarding이 ServerOnly). 클라이언트 GetTable은 nil이므로 클라이언트에서 읽지 않는다.
+- 로더 위치(C-3 닫음): **Combat/CombatRuleCatalog.mlua**(새 Catalog 파일을 만들지 않는다, 22.5 MonsterSoundData 선례). 이유: 서버 정적 로더이고 `ReadRows`·`ParseOptionalRuid`·`WarnOnce`·`PlayMonsterSound`가 이미 있다. PlayerSkillEffectTable은 ServerOnly 경계가 아니고 행마다 ruid 필수 검증이라 맞지 않는다.
+- 로드 시점·독립성: EnsureInitialized와 별개의 1회 시도 플래그(`_T`)로 읽는다. 서버 OnBeginPlay에서 기존 EnsureInitialized 뒤에 1회 시도하고, 조회 함수가 먼저 불리면 그때 시도한다. 결과는 EnsureInitialized의 반환값·`Ready`·rules/patterns/monsterStats/monsterSounds·스폰 판단에 영향을 주지 않는다. OnEndPlay에서 캐시·시도 플래그를 지운다(다음 Play·Refresh 뒤 CSV 변경 반영).
+- 검증(표 전체 단위, MonsterSoundData `ValidateSoundRows`와 같은 방식의 별도 검증 함수): 필수 열(`id`·`EffectClip`·`EffectSound`) 누락이면 ReadRows nil → 표 무효. 행마다 id 빈 값·중복(앞뒤 공백 제거 뒤) → 표 무효. EffectClip·EffectSound는 `ParseOptionalRuid` → nil이면 표 무효. 행 0개는 유효(조회 때 행 없음). RUID 종류(animationclip·effect)는 런타임에서 검사하지 않는다.
+- 조회: 서버 전용 `GetPlayerActionFx(id)`가 `{ EffectClip, EffectSound }` 또는 nil을 돌려준다. 표 무효면 nil(로드 때 경고 1회 외 추가 경고 없음), 행 없음이면 nil + `player action fx row missing: {id}` 경고 1회.
+- 오류 동작(E-Q1 답): 빈 칸 → 그 연출만 없음, 경고 없음. 형식 오류·중복·열 누락·표 없음 → `[CombatRuleCatalog] PlayerActionFxData …` 경고 원인당 1회, 가드 연출 전부 끔. 행 없음 → 경고 1회, 가드 연출 끔. 어떤 경우에도 Ready·몬스터 스폰·가드 상태·가드 판정·패링·저스트는 정상 진행한다.
+- 사용(PlayerGuardComponent.SetGuarding 시작 분기, 기존 기록 뒤): 조회 결과가 있을 때만, EffectClip이 빈 값이 아니면 PlayEffect 1회(C-1), EffectSound는 `_CombatRuleCatalog:PlayMonsterSound("guard", ruid, self.Entity)`로 1회(빈 값이면 함수가 무호출). 함수 이름은 바꾸지 않는다(회차 D 파일 동작 보존). 이 분기는 가드 진입당 1회만 지나므로 홀드 유지·출처 합산에서 추가 재생이 없다.
+- [VRF](C-4 범위): 로드 때 `[VRF] PlayerActionFxData id=guard effect=318a4662 sound=605da1fc`(빈 값은 `-`, 무효면 경고만), 가드 시작 때 `[VRF] guard fx effect=…`(RUID 앞 8자 또는 `-`/`off`). 소리는 기존 `[VRF] sfx kind=guard …`를 쓴다. 모두 `Environment:IsMakerPlay()` 조건(기존 방식).
+
+**coder 결정** (승인 범위 안의 구현 세부, 결과는 WorkRecord 개발절에 남긴다). 2026-11-16 현재 소스로 다시 확인한 상태:
+
+- C-1 (유효). 이펙트 재생 경로·위치·방향: 서버 `_EffectService:PlayEffect`를 쓰는 기본 공격 선례(PlayerCombatComponent 166행, 2026-11-16 같은 행 확인)를 따른다. 위치는 플레이어 WorldPosition, 반복 없음(isLoop false). 방향(선례처럼 `Vector3(-LookDirectionX, 1, 1)` 크기로 뒤집을지, 뒤집지 않을지)은 coder가 고르고 개발절에 적으며 V11에서 확인한다. 클라이언트에 안 보이면 24.5대로 @Sync → 클라이언트 재생으로 바꾼다(MonsterStunComponent 선례, 같은 파일 안).
+- C-2 (닫음, 값 확정). 아이콘: 2026-11-16 확인 결과 UIBuilder `patchComponent`로 SpriteGUIRenderer `PreserveSprite`를 넣을 수 있고, 기존 버튼도 이미 PreserveSprite 1을 쓴다. 그래서 `sprite("{버튼}/Icon", { anchor: "middle-center", pos: [0, 0], rect_size: [60, 60], image_ruid, color: "#FFFFFF", sprite_type: 0, raycast: false })` 뒤 `patchComponent(…, { PreserveSprite: 1 })`로 한다. sprite_type 0을 꼭 넘긴다(빌더 기본값이 Sliced 1이고 아이콘은 표면이 아니다, msw-ui-kit ALWAYS 2). 이 방식이 lint·validate에서 막힐 때만 기록 비율 상자(칼 48×60, ←·→ 40×60, ↓ 60×60, PreserveSprite 0)를 쓰고 개발절에 적는다. 래퍼는 이 UI RUID를 돌려주지 않아(404) 실제 그림 크기는 여전히 미확인이다.
+- C-3 (닫음). 위 E-Q1 계약의 CombatRuleCatalog.
+- C-4 (유효, 범위 좁힘). [VRF] 문구는 위 계약의 접두어·RUID 앞 8자를 지키는 범위에서 coder가 정한다.
+
+### 24.11 coder 인계 순서·중단 조건 (2026-11-16)
+
+기준 de6e6aa. 시작 전 Maker가 이 월드·map01·편집 모드인지 확인한다. 한 실행 주기에서 24.7을 모두 모은다.
+
+1. DataSet 1쌍 수동 작성(24.10 E-Q1 계약) → CombatRuleCatalog 로드·검증·조회 추가 → PlayerGuardComponent 시작 분기 연출 → PlayerStateControl 16행 `alert`.
+2. CombatScreen.ui UIBuilder 패치(24.4·24.10 C-2). 바인딩 대상 엔티티를 새로 만들지 않으므로 `bind`·injectBindings는 쓰지 않는다. CombatInputController는 고치지 않는다.
+3. Maker Refresh 1회 → build 로그 → Play → 24.7 1~7 → Stop(시험 값 정리) → 편집 모드로 인계.
+
+로그 계약: **`maker_clear_logs`는 회차 E에서 쓰지 않는다**(D-Q7 허용은 회차 D 한정, run "2026-11-16 회차 E 시작"). coder·tester는 [VRF] 접두어로 범위를 좁혀 읽는다. 로그가 차서 측정이 막히면 지우지 말고 멈춰 메인에 돌려준다(메인이 사용자에게 묻는다).
+
+중단 조건(대안 구현 없이 멈추고 선택지를 메인에 돌려줌):
+
+- `map/map01.map`을 고쳐야 하거나, 작업 중 이 파일 내용이 (Maker 저장 등으로) 다시 바뀐 경우. 메인이 사용자에게 먼저 알린다. 기존 작업 트리 변경은 커밋에 섞지 않는다.
+- 수동 작성한 PlayerActionFxData가 Refresh 뒤 인식되지 않음(GetTable nil, 로드 [VRF] 없음).
+- UI RUID(배경 e314c09b… 또는 아이콘 4종)가 Play 화면에 보이지 않거나 로드 오류가 남. 다른 RUID로 바꾸지 않는다(같은 테마 대안은 사용자 선택 사항, 24.5).
+- 이펙트 318a4662…가 서버 PlayEffect·클라이언트 재생 두 경로 모두에서 보이지 않음.
+- 24.4에 없는 파일(MonsterAttackComponent·MonsterStunComponent·CombatInputController·Player_Guard·모델 등)을 고쳐야 하거나, 규칙·수치·입력 계약·회차 D 동작을 바꿔야 함.
+- 버튼 엔티티 UUID나 Highlight UUID가 바뀌어야 하는 경우.

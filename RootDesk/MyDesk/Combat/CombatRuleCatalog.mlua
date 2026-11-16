@@ -6,6 +6,8 @@ script CombatRuleCatalog extends Logic
 	property table monsterStats = {}
 	property table monsterSounds = {}
 	property boolean soundsReady = false
+	property table playerActionFx = {}
+	property boolean fxReady = false
 	property table warned = {}
 	property boolean Ready = false
 
@@ -146,6 +148,24 @@ script CombatRuleCatalog extends Logic
 		return byId
 	end
 
+	method any ValidatePlayerFxRows(table rows)
+		-- 플레이어 동작 연출 표(회차 E). 빈 칸은 그 연출만 없음이고 하나라도 무효면 표 전체를 거부한다.
+		local byId = {}
+		for _, row in ipairs(rows) do
+			if not self:HasText(row.id) then self:WarnOnce("PlayerActionFxData invalid id"); return nil end
+			local id = string.match(row.id, "^%s*(.-)%s*$")
+			if byId[id] ~= nil then self:WarnOnce("PlayerActionFxData duplicate id"); return nil end
+			local entry = { id = id }
+			for _, key in ipairs({"EffectClip", "EffectSound"}) do
+				local ruid = self:ParseOptionalRuid(row[key])
+				if ruid == nil then self:WarnOnce("PlayerActionFxData invalid ruid"); return nil end
+				entry[key] = ruid
+			end
+			byId[id] = entry
+		end
+		return byId
+	end
+
 	method boolean IsValidStat(any value, string kind)
 		-- 열 종류별 허용 범위: posint=유한한 양의 정수, pos=유한한 양수, nonneg=유한한 0 이상.
 		if not self:IsFinite(value) then return false end
@@ -253,6 +273,35 @@ script CombatRuleCatalog extends Logic
 	end
 
 	@ExecSpace("ServerOnly")
+	method void EnsurePlayerActionFx()
+		-- 연출 표는 EnsureInitialized와 별개로 한 번만 읽고, 실패해도 Ready·몬스터 스폰·가드 판정에 영향을 주지 않는다.
+		if self._T.fxAttempted then return end
+		self._T.fxAttempted = true
+		local fxRows = self:ReadRows(_DataService:GetTable("PlayerActionFxData"), {"id", "EffectClip", "EffectSound"})
+		if fxRows == nil then self:WarnOnce("PlayerActionFxData missing or required columns missing"); return end
+		local fx = self:ValidatePlayerFxRows(fxRows)
+		if fx == nil then return end
+		self.playerActionFx = fx
+		self.fxReady = true
+		if Environment:IsMakerPlay() then
+			for _, row in ipairs(fxRows) do
+				local entry = fx[string.match(row.id, "^%s*(.-)%s*$")]
+				log("[VRF] PlayerActionFxData id=" .. entry.id .. " effect=" .. (entry.EffectClip ~= "" and string.sub(entry.EffectClip, 1, 8) or "-") .. " sound=" .. (entry.EffectSound ~= "" and string.sub(entry.EffectSound, 1, 8) or "-"))
+			end
+		end
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetPlayerActionFx(string id)
+		-- 플레이어 동작의 연출 행을 돌려준다. 표가 무효이면 로드 때의 경고만 남고 nil, 행이 없으면 경고 한 번과 nil이다(연출만 끄고 전투는 그대로).
+		self:EnsurePlayerActionFx()
+		if not self.fxReady then return nil end
+		local row = self.playerActionFx[id]
+		if row == nil then self:WarnOnce("player action fx row missing: " .. id); return nil end
+		return row
+	end
+
+	@ExecSpace("ServerOnly")
 	method any GetMonsterStats(string modelKey)
 		-- 스폰할 몬스터의 행을 돌려준다. 행이 없거나 예약 행(default)이면 default 값으로 대신하지 않는다.
 		if not self:EnsureInitialized() then return nil end
@@ -315,6 +364,7 @@ script CombatRuleCatalog extends Logic
 	method void OnBeginPlay()
 		-- 컴포넌트 시작 순서와 무관하게 정상 로드도 초기화 시 수행한다.
 		self:EnsureInitialized()
+		self:EnsurePlayerActionFx()
 	end
 
 	method void OnEndPlay()
@@ -324,9 +374,12 @@ script CombatRuleCatalog extends Logic
 		self.monsterStats = {}
 		self.monsterSounds = {}
 		self.soundsReady = false
+		self.playerActionFx = {}
+		self.fxReady = false
 		self.warned = {}
 		self.Ready = false
 		self._T.attempted = nil
+		self._T.fxAttempted = nil
 	end
 
 end

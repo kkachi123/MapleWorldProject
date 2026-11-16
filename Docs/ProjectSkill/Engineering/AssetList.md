@@ -30,7 +30,7 @@
 
 ~~회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.~~ → 2026-11-16 옮겼다. 고르지 않은 1칸 점프음 후보 3개는 아래 "후보"에 있다.
 
-## 사용 예정 (회차 E, [Plan §24](Plans/2_CombatCore.md), 2026-11-06 사용자 선택 확정. 시작은 ~~회차 D 뒤~~ 사용자 지시. 회차 D는 2026-11-16 완료)
+## 사용 예정 (회차 E, [Plan §24](Plans/2_CombatCore.md), 2026-11-06 사용자 선택 확정. 2026-11-16 사용자 "회차 E 시작", 구현 전)
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
@@ -39,8 +39,10 @@
 | ↓ 가드 버튼 아이콘 | simplefantasy Icon_Arrow_Down(틴트, core 팔레트 전용) | a714a1eaa4aa46098c0c265110ee91c0(기록 60×60, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
 | ← 뒤 버튼 아이콘 | simplefantasy Icon_Arrow_L(틴트) | 002ca90cd5794836b1e44da160de287a(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
 | → 앞 버튼 아이콘 | simplefantasy Icon_Arrow_R(틴트) | 740aba24726c4c6580cf054b0e1e1fd5(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
-| 가드 시작 이펙트(1회) | 로얄 가드 skill/5100.img/skill/51001006 effect | 318a46627eca4ae5b9c5d1fb16244e3c(animationclip, 124×147, 13프레임, 2026-11-06 래퍼 재확인). 저장 위치는 Plan §24.10 E-Q1 | 모습·크기·방향 미확인 | 위와 같음 |
-| 가드 시작 효과음(1회) | 로얄 가드 skill/5100.img/skill/51001006 _audio/Use | 605da1fc42f34ef4a1468387004a6223(effect=소리, 2026-11-06 래퍼 재확인). 저장 위치는 Plan §24.10 E-Q1 | 실청취 미확인 | 위와 같음 |
+| 가드 시작 이펙트(1회) | 로얄 가드 skill/5100.img/skill/51001006 effect | 318a46627eca4ae5b9c5d1fb16244e3c(animationclip, skill, 124×147, 13프레임, 2026-11-16 래퍼 재확인·팩 소속 확인) → 새 표 PlayerActionFxData `guard` 행 EffectClip(E-Q1 답, Plan §24.10) | 모습·크기·방향 미확인 | 위와 같음 |
+| 가드 시작 효과음(1회) | 로얄 가드 skill/5100.img/skill/51001006 _audio/Use | 605da1fc42f34ef4a1468387004a6223(effect=소리, skill, 1.152초, 2026-11-16 래퍼 재확인·팩 소속 확인) → 같은 행 EffectSound | 실청취 미확인 | 위와 같음 |
+
+UI RUID 5개(배경·아이콘 4종)는 msw-search 래퍼 색인에 없다(2026-11-16 get 404). 그래서 msw-ui-kit simplefantasy 데이터로만 확인된다. 실제 표시는 회차 E coder Play에서 처음 확인한다.
 
 회차 E 구현이 끝나면 이 표의 행을 "사용 중"으로 옮기고, 아래 후보의 "회차 E가 바꿀 현재 조작 버튼 이미지" 행은 교체 기록으로 정리한다.
 

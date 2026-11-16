@@ -13,7 +13,7 @@ script PlayerStateControl extends Component
 		if self:IsServer() then
 			local animation = self.Entity.AvatarStateAnimationComponent
 			if isvalid(animation) then
-				animation:SetActionSheet("GUARD", "sit")
+				animation:SetActionSheet("GUARD", "alert")
 				animation:SetActionSheet("ATTACK", "attack")
 				animation:SetActionSheet("MOVE", "walk")
 			end
