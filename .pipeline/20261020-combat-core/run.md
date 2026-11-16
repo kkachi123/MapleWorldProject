@@ -2,10 +2,10 @@
 
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
-- 상태: TESTING
+- 상태: WAITING_USER
 - 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
-- 현재 담당: msw-tester (회차 E UX-01·UX-02, 대상 [code] 로컬 커밋)
-- 다음 행동·대기 사유: 회차 E(Plan §24, CombatCore-UX-01·UX-02) — planner 범위 확인·E-Q1(PlayerActionFxData) §24.4·§24.7·§24.10 반영 → coder → [code] 로컬 커밋 → tester → reviewer → [review] 커밋·push → 사용자 V11(§24.8) → planner 회차 종료 정리. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
+- 현재 담당: 없음(사용자 일시정지, 다음 담당 msw-reviewer, 회차 E 대상 3e29a35)
+- 다음 행동·대기 사유: 사용자 일시정지 요청(2026-11-16). 재개 지시가 오면 msw-reviewer부터 회차 E(대상 3e29a35, Bundle map01 제외 58경로 1d70bc71…75dd) 판정 → [review] 커밋·push → 사용자 V11(§24.8) → planner 회차 종료 정리. 3e29a35는 리뷰 전이라 push 보류. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -508,4 +508,6 @@
 - maker_clear_logs: 회차 E 허용 없음(D-Q7은 회차 D 한정).
 - planner(2026-11-16): 구현 승인 범위 확인, 미결정 없음. §24.9 UX-01·UX-02 🟡 coder 대기. E-Q1 반영: RootDesk/MyDesk/DataSet/PlayerActionFxData(열 id·EffectClip·EffectSound, 행 guard 318a4662…·605da1fc…, serveronly, D-Q1 수동 작성), 로더 CombatRuleCatalog 안(별도 1회 시도 플래그, GetPlayerActionFx, 표 전체 검증, 원인당 경고 1회·연출만 끔), 사용처 PlayerGuardComponent.SetGuarding 시작 분기. §24.7 완료 기준 1~7 재작성(↓ 입력 kind=guard sfx 1건으로 정정), §24.11 coder 지시·중단 조건(map01.map, DataSet 미인식, UI RUID 미표시, 이펙트 미표시, 24.4 밖 변경, 버튼 UUID 변경). UI RUID 5개는 래퍼 get 404(ui-kit 데이터에만 있음) → coder Play에서 표시 첫 확인. AssetList 회차 E 행 갱신.
 - coder(2026-11-16): DONE. 변경: 새 DataSet PlayerActionFxData(userdataset·csv, 행 guard), CombatRuleCatalog(+53, ValidatePlayerFxRows·EnsurePlayerActionFx·GetPlayerActionFx), PlayerGuardComponent(+14, 가드 시작 시 이펙트 1회·kind=guard 효과음 1회), PlayerStateControl(GUARD sit→alert), ui/CombatScreen(UIBuilder로 버튼 배경 e314c09b… Sliced·흰색, Icon 자식 4개 추가, UUID 불변; 빌더 재직렬화로 줄 변경량 큼 — hook이 셸 확인을 막아 reviewer가 UIBuilder로 확인). 24.7 1~7 PASS, 오류 처리 탐침 PASS(열 누락 경고 줄은 직접 실행 안 함). NOT_RUN: Pos2 패리·저스트, 스파크·그로기 화면, 팝업 일시정지, 터치+키 동시 입력, 모바일. 관찰: 무기 미장착이면 ATTACK도 alert라 공격·가드 모습이 같음(V11 항목). Bundle map01 제외 58경로 1d70bc71…75dd. Maker map01·편집 모드 인계, clear_logs 미사용, map01.map 해시 불변.
-- 메인: [code] 로컬 커밋(map/map01.map 제외) 뒤 tester 호출.
+- 메인: [code] 로컬 커밋 3e29a35(map/map01.map 제외).
+- tester(2026-11-16, QA 15회차): DONE. §24.7 1~7 PASS, FAIL·NEEDS_DECISION·새 결함 없음. UIBuilder 깊은 비교(de6e6aa 대비): 19→23개, 삭제 0, 추가 Icon 4, 변경 7(버튼 4개 ImageRUID·Type, Highlight 3개 displayOrder)뿐. Bundle 58경로 1d70bc71…75dd 일치, map01.map 해시 불변, build 로그 오류 0. 회귀(가드 0.4·패리·JUST 확대 창·팝업 정지·패턴 5종·1칸 점프음) PASS. NOT_RUN: 모바일·실기기, JUST 정상 창 수동 입력, 열 누락 경고 줄 직접 실행(ReadRows 교체 거부). 관찰 O-1 무기 없으면 공격·가드 같은 모습, O-2 형식 오류 경고 문구 합쳐짐, O-3 이펙트 첫 프레임 흰 세로선, O-5 팝업 중 입력 차단 원인 미구분, O-6 Plan §24.7-2 "패턴 4행" 낡은 표현. Maker map01·편집 모드, clear_logs 미사용.
+- 메인: tester 결과 확인 뒤 reviewer 호출 직후 사용자 "reviwer시작 전이면 작업 일시정지해줘." → reviewer를 즉시 중지(WorkRecord 리뷰 절 기록 없음 확인). 상태 WAITING_USER(사용자 일시정지). WorkRecord QA 15회차 절과 run.md를 [ops] 로컬 커밋, push는 리뷰 전 [code] 커밋 3e29a35가 섞이므로 보류.
