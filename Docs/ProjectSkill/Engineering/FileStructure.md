@@ -62,6 +62,8 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 
 회차 C에서 생기는 새 파일: `RootDesk/MyDesk/Models/Monsters/Mushmom.model` 하나다(다른 새 제품 파일 없음). 에셋 목록은 문서 `Docs/ProjectSkill/Engineering/AssetList.md`다.
 
+회차 D([Plan §22](Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset`·`MonsterSoundData.csv` 짝 하나다(위 2번 규칙대로 DataSet/). 이 회차에서 최상위 `RootDesk/MyDesk/DataSet/` 폴더가 처음 생겼고, 폴더 메타데이터 `RootDesk/MyDesk/DataSet.directory`는 Maker Refresh가 만들었다(직접 쓰지 않음). 기존 DataSet 6종은 아직 `@Assist/DataSet/`에 있으며 §5 이동 회차까지 그대로 둔다. 그래서 지금은 DataSet 폴더가 두 곳에 있다(새 표 = DataSet/, 기존 표 = @Assist/DataSet/).
+
 ## 5. 기존 파일 → 새 위치 대응표 (이동은 회차 C 뒤 별도 회차)
 
 | 기존 | 새 위치 | 비고 |

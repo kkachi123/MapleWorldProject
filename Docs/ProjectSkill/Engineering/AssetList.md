@@ -12,23 +12,25 @@
 
 연결(stand·move·jump·hit1·die1, move는 기본값 유지)은 2026-11-05 사용자가 확인했다(Plan §21).
 
-## 사용 예정 (회차 D, Plan §22, 사용자 시작 지시 뒤. 회차 C 사용자 V11 수락은 2026-11-06 충족)
+### 회차 D 에셋 ([Plan §22](Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락으로 "사용 예정"에서 옮김)
+
+회차 D·D2 사용자 V11 수락(2026-11-16, 위치·크기·시점·음량 기본안 포함)으로 "사용 중"이 됐다. 그래도 아래는 모두 **임시**이며, 6단계 헤네시스 견본 아트·사운드 확정 때 사용자가 확정한다. 패턴 표는 `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv`, 소리 표는 `RootDesk/MyDesk/DataSet/MonsterSoundData.csv`다.
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
-| 머쉬맘 2칸 공격 모션 | mob/6130101.img | attack1 → 90c5456e2a8a45478df02500797a9afd(ActionSheet 키 `attack1`) | 임시 | 회차 D 사용자 V11 수락과 6단계 견본 아트 확정 |
-| 머쉬맘 3칸 공격 모션 | mob/6130101.img | skill1 → b9345875a8134c7c9a1b6aed8551d808(ActionSheet 키 `skill1`) | 임시 | 위와 같음 |
-| 머쉬맘 3칸 공격 이펙트 | mob/6130101.img attack1/info/effect | 05113e9dc86448cb8581731824106d75(패턴 표 EffectClip) | 임시. 위치·크기는 기본안(사용자 V11 확인) | 위와 같음 |
-| 2칸 공격 효과음 | mob/6130101.img _audio/Attack1 | f135fc39ffe94be18ef9c0f82d3669c5(패턴 표 AttackSound) | 임시 | 위와 같음 |
-| 3칸 공격 효과음 | mob/6130101.img _audio/Skill1 | 5da7bb48092947f395e9f76f601323ca(패턴 표 AttackSound) | 임시 | 위와 같음 |
-| 머쉬맘 피격음 | mob/6130101.img _audio/Damage | c611ae50c5d84814a6d2ccfad8a472c5(MonsterSoundData DamagedSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
-| 플레이어 피격음(머쉬맘 공격) | mob/6130101.img _audio/CharDam1 | 7c8e5f1ef0b549c59aec820909458d4f(MonsterSoundData HitPlayerSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
-| 머쉬맘 사망음 | mob/6130101.img _audio/Die | d48ec1cc57a247028f390041fc89c97f(MonsterSoundData DieSound) | 임시. 시점은 기본안(사용자 V11 확인) | 위와 같음 |
-| 1칸 공격 효과음(점프음, 2026-11-10 사용자 D-Q10, [Plan §22.17.4](Plans/2_CombatCore.md)) | **머쉬맘 팩 밖**(팩에 점프 소리 없음). 원본 이름 없음(래퍼 응답 names 없음, 메인 확인 dname audioclip-*). 2026-11-10 msw-search 래퍼 `getResourcesBatch`로 확인 | 기본값 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, "캐릭터가 점프할 때 발생하는 짧고 간결한 효과음") → 패턴 표 parry.any·special.random AttackSound. V11 후보: 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초, "가볍게 점프할 때"), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초, "짧고 경쾌한") | **임시**. 사용자가 V11에서 들어 보고 고름(실청취 미확인) | 회차 D 사용자 V11 선택·수락. 고르지 않은 후보는 "후보"로 옮긴다. 6단계 견본 아트·사운드 확정 때 다시 본다 |
+| 머쉬맘 2칸 공격 모션 | mob/6130101.img | attack1 → 90c5456e2a8a45478df02500797a9afd(ActionSheet 키 `attack1`, 재생 0.7배) | 임시. 회차 D V11 수락(2026-11-16) | 6단계 견본 아트 확정 |
+| 머쉬맘 3칸 공격 모션 | mob/6130101.img | skill1 → b9345875a8134c7c9a1b6aed8551d808(ActionSheet 키 `skill1`, 재생 0.7배) | 임시. 회차 D V11 수락 | 위와 같음 |
+| 머쉬맘 3칸 공격 이펙트 | mob/6130101.img attack1/info/effect | 05113e9dc86448cb8581731824106d75(패턴 표 EffectClip). 두 단계 분할: 눈빛 프레임 0~6은 머쉬맘 위치·예고 시작 때, 먼지 프레임 8~끝은 착지 지점(Pos2)·판정 때, 1배 | 임시. 위치·크기는 회차 D V11 수락 | 위와 같음 |
+| 2칸 공격 효과음 | mob/6130101.img _audio/Attack1 | f135fc39ffe94be18ef9c0f82d3669c5(패턴 표 AttackSound) | 임시. 회차 D V11 수락 | 위와 같음 |
+| 3칸 공격 효과음 | mob/6130101.img _audio/Skill1 | 5da7bb48092947f395e9f76f601323ca(패턴 표 AttackSound) | 임시. 회차 D V11 수락 | 위와 같음 |
+| 머쉬맘 피격음 | mob/6130101.img _audio/Damage | c611ae50c5d84814a6d2ccfad8a472c5(MonsterSoundData DamagedSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
+| 플레이어 피격음(머쉬맘 공격) | mob/6130101.img _audio/CharDam1 | 7c8e5f1ef0b549c59aec820909458d4f(MonsterSoundData HitPlayerSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
+| 머쉬맘 사망음 | mob/6130101.img _audio/Die | d48ec1cc57a247028f390041fc89c97f(MonsterSoundData DieSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
+| 1칸 공격 효과음(player 점프음, 2026-11-16 사용자 D-Q13, [Plan §22.17.4](Plans/2_CombatCore.md)) | **엔진 `MaplePreferencesLogic.JumpSound` 기본값**(`Environment/NativeScripts/Logic/MaplePreferencesLogic.d.mlua`). 프로젝트에서 덮어쓴 곳 없음(coder Grep), Play 중 서버·클라이언트 값 같음. 머쉬맘 팩 밖 | a49c4b3963e148f09b2eb9de98d42ef4(effect, 0.13초) → 패턴 표 parry.any·special.random AttackSound(5ce65d6) | 임시. 사용자 청취 확인(2026-11-16 "점프음 확인 완료") | 6단계 견본 아트·사운드 확정 때 다시 본다 |
 
-회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.
+~~회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.~~ → 2026-11-16 옮겼다. 고르지 않은 1칸 점프음 후보 3개는 아래 "후보"에 있다.
 
-## 사용 예정 (회차 E, [Plan §24](Plans/2_CombatCore.md), 2026-11-06 사용자 선택 확정. 시작은 회차 D 뒤 사용자 지시)
+## 사용 예정 (회차 E, [Plan §24](Plans/2_CombatCore.md), 2026-11-06 사용자 선택 확정. 시작은 ~~회차 D 뒤~~ 사용자 지시. 회차 D는 2026-11-16 완료)
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
@@ -52,7 +54,8 @@
 
 | 출처 | 내용 |
 | --- | --- |
-| mob/6130101.img(머쉬맘) 나머지 | attack1·skill1·attack1 이펙트·효과음 5종은 2026-11-05 사용자 지시로 "사용 예정"(회차 D)으로 옮겼다 |
+| mob/6130101.img(머쉬맘) 나머지 | attack1·skill1·attack1 이펙트·효과음 5종은 2026-11-05 사용자 지시로 "사용 예정"(회차 D)으로 옮겼고, 2026-11-16 회차 D V11 수락으로 "사용 중"(회차 D 에셋)이 됐다 |
+| 1칸 공격 점프음 후보(2026-11-10 D-Q10, 2026-11-16 D-Q13으로 쓰지 않음, [Plan §22.17.4](Plans/2_CombatCore.md)) | 머쉬맘 팩 밖, 원본 이름 없음(2026-11-10 msw-search 래퍼 `getResourcesBatch` 확인). 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, 1b41f29~f78bab5 동안 기본값으로 들어 있었음), 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초). 사용자가 player 점프음(a49c4b39…)을 골라 셋 모두 쓰지 않는다 |
 | 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
 | 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |
 | 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit)에서 고르지 않은 부품, [Plan §24](Plans/2_CombatCore.md) | 2026-11-06 사용자 선택으로 배경 e314c09b…·Icon_Sword·Icon_Arrow_Down·Icon_Arrow_L·Icon_Arrow_R는 위 "사용 예정 (회차 E)"로 옮겼다. 남은 후보: 눌림 스프라이트 4eed2985436c4007890c3314c4d42dc0(SpriteSwap 안, 고르지 않음), Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54(아이콘 안 1, 고르지 않음), ↓ 대안 Icon_Triangle_Down 0c2db2ad2c694210ba492d0ab060b5e7(틴트, 기록 20×20, V11에서 ↓가 어울리지 않을 때만 묻는다). 화면 적합성 미확인 |

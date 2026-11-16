@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (1칸 player 점프음 청취 확인)
-- 다음 행동·대기 사유: 사용자 V11 결과(2026-11-16) — 1칸 점프음만 player 점프음으로 교체, 나머지 수락. coder CSV 1값 교체·기본 확인 → [code] 로컬 커밋 → 사용자 청취 확인 → planner 회차 종료 정리(앞 리뷰 목록 + D2 리뷰 목록) → [review] 회차 종료 커밋·push. 범위 밖: 원장 castleenemy 문구.
+- 현재 담당: 사용자 (회차 E 시작 지시 대기)
+- 다음 행동·대기 사유: WAITING_USER — 회차 D·D2 완료(사용자 V11 수락 2026-11-16, 문서 정리 끝). 다음 후보는 §24 회차 E(조작 버튼 메이플 테마·가드 모션·이펙트), 사용자 시작 지시 뒤 planner가 범위 확인과 E-Q1(PlayerActionFxData) §24.10 반영. 남은 사용자 결정: 원장 castleenemy 문구 정리 시점, 2단계 완료·3단계 시작 여부, §22.13 부채·관찰 처리.
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -498,3 +498,6 @@
 - 해석: 회차 D·D2 V11의 나머지 항목(0.7배, 도약 조절 기본값 EqualizeLeapFrames·EaseLeapMove true·LeapJumpHeight 0, 난이도, 회차 D 22.8 V11 1~9)은 수락. 1칸 점프음(MM-15)만 V11 선택값으로 교체.
 - D-Q13 1칸 점프음: player 점프음 = 엔진 MaplePreferencesLogic.JumpSound 기본값 a49c4b3963e148f09b2eb9de98d42ef4(0.13초, effect). 프로젝트에서 덮어쓴 곳 없음(Grep 확인). 후보 3개(35ee15e5·64c83d14·09df8556)는 채택하지 않음. 리뷰 판단대로 V11 선택값은 CSV 값만 바꾸고 회차 종료 커밋에 넣는다(코드 변경 없음, 형식 검증 통과 대상).
 - coder(2026-11-16): DONE. CSV 1칸 두 행 AttackSound → a49c4b39…(그 밖 변경 0). 로드 [VRF] sound=a49c4b39, 1칸 강제 4회·자연 공격 sfx 1줄씩, 2·3칸 공격음 회귀 없음, 런타임 _MaplePreferencesLogic.JumpSound 서버·클라이언트 동일, 빌드 오류 0·제품 경고·오류 0. Bundle 57경로 28f833db…012a(f78bab5 대비 CSV 1경로). NOT_RUN 청취. maker_clear_logs 0회. Maker edit.
+- [code] 로컬 커밋 5ce65d6(1칸 player 점프음).
+- 사용자(2026-11-16): "점프음 확인 완료". 회차 D·D2 V11 수락 완료(나머지 항목은 앞 V11 결과 "다른 건 다 좋은 데"로 수락). 최종 값: 2·3칸 lead 1.571429·rate 0.7, EqualizeLeapFrames·EaseLeapMove true·LeapJumpHeight 0(모델 기본값, 모델 저장 변경 없음), 1칸 AttackSound a49c4b39…. planner 회차 종료 정리 호출.
+- planner 회차 종료 정리(2026-11-16): DONE. 문서 6개(Plan §22·§22.13·§22.14·§22.16.9·§22.17·§24.9 및 머리·§8·§9, GameDesign, AssetList, FileStructure §4, 로드맵 §5, WorkRecord 머리·재개 지점·절 제목 날짜). MM-07~11·MM-13~15 ✅, REV-D-O1 수정 완료, MM-14는 원인 미확정·조절 항목 기본값 수락으로 마감, §22.13에 O-1·O-3·SetPosition 연속 이동·착지 정지 0 등록. 규칙·수치 불변, 2단계 완료 판정 불변. 상태 WAITING_USER(회차 E 시작 지시).
