@@ -925,6 +925,100 @@
 
 ## 리뷰 기록
 
+### 2026-11-19 독립 리뷰 — 회차 E(CombatCore-UX-01·UX-02) WAITING
+- 담당: Claude Code msw-reviewer(coder·tester와 별도 실행). Maker 미사용, 제품·Plan·run.md 무수정, commit·push 없음. 바꾼 파일은 이 리뷰 절뿐이다.
+- 판정: **WAITING** — AI 측 필수 근거(Plan §24.7 1~7)는 같은 버전으로 충족했고 고칠 결함·범위 밖 변경은 없다. 남은 것은 사용자 V11(§24.8) 직접 확인이다. 이 판정은 사용자 수락·출시 승인이 아니다.
+- 검토 버전: 로컬 커밋 **3e29a35**(기준 de6e6aa, push 전). 334a934는 run.md·QA 절만 담은 [ops] 커밋이라 제품 판정 대상이 아니다.
+- 관련 ID: CombatCore-UX-01(버튼 테마), CombatCore-UX-02(가드 alert·이펙트·효과음, E-Q1 PlayerActionFxData). 새 결함 ID 없음.
+
+#### reviewer가 직접 한 일 (읽기·계산만)
+- `git diff de6e6aa 3e29a35` 전체를 읽고 §24.4 대상 파일과 맞췄다. 제품 변경은 CombatRuleCatalog·PlayerGuardComponent·PlayerStateControl·새 DataSet 1쌍·ui/CombatScreen 6경로뿐이고, 문서는 Plan·WorkRecord·AssetList·run.md다. .codeblock·.directory·모델·맵·GameDesign 변경 없음. §24.4 "바꾸지 않는 파일"(CombatInputController·MonsterAttackComponent·MonsterStunComponent·Player_Guard·PlayerCombatComponent·MonsterSoundData 등) 무변경.
+- **커밋 트리 Bundle 계산**(node 스크립트, `git show`로 체크아웃 없이 같은 방식): 3e29a35의 map01.map 제외 58경로 = `1d70bc71a65ddd70d8f29c377065b4058e7e60d71f0690ffcab48618e23975dd`, 5ce65d6 57경로 = `28f833db…012a`. coder·tester의 작업 트리 값과 같다 → 두 담당 근거가 3e29a35와 같은 제품 묶음이다(QA15 NOT_RUN 6 해소).
+- **UIBuilder 비교**(scratchpad에 `git show`로 저장한 de6e6aa·3e29a35 판 + 현재 작업 트리 판을 `UIBuilder.load().build()`로 읽어 id 기준 깊은 비교, 셸로 .ui를 읽지 않음):
+  - de6e6aa → 3e29a35: 최상위 필드 차이 0(EntryKey·CoreVersion 26.10.0.0 등 같음), 엔티티 19 → 23, 삭제 0, 추가 4(`{버튼}/Icon` c208d754·4a770505·8f4dd28a·2f1c31a3), 기존 엔티티 변경 7개(버튼 4개 ImageRUID → e314c09b…·Type 0→1, Highlight 3개 displayOrder 0→1)뿐이다. QA15 기록과 정확히 같다.
+  - 3e29a35 → 현재 작업 트리(2026-11-16~19 일시정지 중 Maker 재저장): 최상위 차이 0(파일 안 CoreVersion도 26.10.0.0 그대로), 엔티티 23개·UUID·이름·컴포넌트 구성·RUID·색·크기·앵커·anchoredPosition·displayOrder 모두 같다. 차이는 (1) Icon 4개를 부모 바로 뒤로 옮긴 엔티티 배열 순서(그리는 순서는 displayOrder라 의미 없음), (2) Icon 4개 UITransform의 엔진 관리값 `Position` (0,0,0) → (0,70,0)(같은 버튼의 Highlight가 이미 가진 값과 같음), (3) Icon 4개에 기본값 `Rotation (0,0,0)`·`ZRotation 0` 추가(기존 엔티티는 이미 가진 필드)뿐이다. **의미 있는 변경 없음 — 빌더가 비워 둔 엔진 관리 필드를 Maker가 채운 형식 재저장이다.**
+- 소스 읽기: CombatRuleCatalog 전체, PlayerGuardComponent 전체, PlayerStateControl 전체, 새 DataSet 2파일 바이트 형식, `Environment/NativeScripts` EffectService.PlayEffect 정의(고정 위치·instigator 의미 확인).
+
+#### 1. 요청·Plan §24.4 ↔ 실제 변경 (빠짐·초과 없음)
+| §24.4 항목 | 3e29a35 실제 | 결과 |
+| --- | --- | --- |
+| CombatScreen.ui: 버튼 4개 ImageRUID·Type 1·Color 흰색만, Icon 4개 추가, Icon 0·Highlight 1 | 위 UIBuilder 비교와 같음. Color는 원래 (1,1,1,1)이라 값 차이 없음. ButtonComponent·크기·위치·PreserveSprite 무변경 | 일치 |
+| PlayerStateControl 16행 sit → alert | 한 단어만 변경 | 일치 |
+| PlayerGuardComponent 시작 분기에 연출 1회 | 기존 시작 시각·위치 기록 뒤, `isHeld and not self.isGuarding` 분기 안 | 일치 |
+| CombatRuleCatalog 로드·검증·조회 | +53줄 추가뿐, EnsureInitialized·Ready·패턴·능력치·MonsterSoundData 코드 무변경 | 일치 |
+| 새 DataSet 1쌍(D-Q1 수동 작성) | 아래 3-5 | 일치 |
+- 규칙·수치·입력 계약·판정 코드 변경 없음. 사용자 선택 6개(§24.6)와 E-Q1 답 밖의 기능 추가 없음.
+
+#### 2. 같은 버전 근거와 §24.7 1~7
+- coder(2026-11-16)와 tester QA15는 모두 map01 제외 58경로 `1d70bc71…75dd` 작업 트리에서 실행했고, 위 계산으로 이 값이 3e29a35 커밋 트리와 같다. map01.map(사용자 변경)은 두 실행 전후 해시 `3e60c21d…2094` 불변이며 커밋에 없다. `maker_clear_logs` 미사용 기록 일치.
+- §24.7 근거 판단(tester 독립 실행 기준, coder PASS는 다시 세지 않음):
+  1. UI 정적 — tester UIBuilder 검사 + reviewer 재비교 일치. 화면 존재는 스크린샷(어울림은 V11). 충족.
+  2. 데이터 로드 — 부팅 [VRF] guard 행 1회, 회차 D 로드 값 동일. 충족.
+  3. 오류 동작 — 빈 칸·형식 오류·중복·빈 id·표 무효·행 없음(경고 1회, 두 번째 없음)·Ready·스폰 유지 모두 런타임 근거. 필수 열 누락의 **경고 줄 자체**만 NOT_RUN이다. 그 결과 경로(ReadRows nil → fxReady false → `guard fx off`, 전투 정상)는 런타임으로 확인됐고, 남은 것은 같은 분기의 `WarnOnce` 한 줄이라 소스 읽기로 판단한다(아래 3-3). 충족으로 본다.
+  4. 입력 회귀 — 실제 키·마우스, 터치(마우스)+키 동시 출처 합산 PASS, ←·→·↑에서 sfx 0·↓에서 kind=guard 1. 모바일·실기기는 V11. 충족.
+  5. 가드 모션 — 서버 시트 GUARD=alert, 클라이언트 Alert·복귀 stand. 충족.
+  6. 이펙트·소리 — 가드 시작당 정확히 1회, 홀드 중 추가 없음, 클라이언트 표시 확인(@Sync 대체 불필요). 충족.
+  7. 다른 회귀 — 가드 0.4·hitplayer 소리·PARRY(정상 창, 서버 타이머 논리 경로)·JUST(확대 창)·팝업 정지 중 연출 0·회차 D 대표 회귀·build 오류 0. JUST 정상 0.2초 창의 사람 손 입력은 NOT_RUN이지만, 회차 E는 회피·판정 코드를 바꾸지 않았고(diff 확인) 사람 손 0.20초 타이밍은 회차 A 사용자 V11에서 이미 확인됐다. 충족으로 본다.
+
+#### 3. 새 코드 정확성 (소스 읽기, 런타임 근거와 구분)
+1. **ExecSpace**: `EnsurePlayerActionFx`·`GetPlayerActionFx`는 ServerOnly이고, 호출자는 ServerOnly인 `CombatRuleCatalog.OnBeginPlay`와 `PlayerGuardComponent.SetGuarding`뿐이다. `ValidatePlayerFxRows`는 지정 없음(순수 함수). 표는 serveronly true라 클라이언트가 읽지 않는다. `PlayEffect`(서버, 맵 고정 위치·instigator)와 `PlayMonsterSound`(서버 → 결투 플레이어 UserId)는 기존 선례(PlayerCombatComponent 166행·회차 D)와 같은 경로다. 문제 없음.
+2. **1회 시도 플래그**: `_T.fxAttempted`는 `_T.attempted`와 별개이고 읽기 전에 세운다. OnBeginPlay에서 EnsureInitialized가 실패해 false를 돌려도 EnsurePlayerActionFx는 이어서 실행되고, 반대로 연출 표 실패는 `Ready`·rules/patterns/monsterStats/monsterSounds를 건드리지 않는다. OnEndPlay에서 캐시·`fxReady`·플래그·`warned`를 함께 지운다. §24.10 계약과 같다.
+3. **경고 1회 규칙**: 모든 경고가 `WarnOnce`(세션 키 중복 제거)를 거친다. 열 누락·표 없음은 `ReadRows`가 nil → `WarnOnce("PlayerActionFxData missing or required columns missing")` 후 return이며, 이 줄은 회차 D의 `MonsterSoundData missing …`과 같은 형태다. 로드는 세션당 1회이고 검증은 첫 오류에서 멈추므로 실제 세션에서 표 경고는 최대 1건이다. 표 무효 때 조회는 추가 경고 없이 nil, 행 없음은 키 `player action fx row missing: guard`로 1회. 계약과 같다.
+4. **실패하면 연출만 끔**: 조회가 nil이면 PlayEffect·PlayMonsterSound를 모두 건너뛰고 `self.isGuarding = isHeld`까지 그대로 진행한다. 가드 시작 시각·위치 기록은 연출 코드보다 앞이라 판정 입력이 바뀌지 않는다. 빈 EffectClip은 PlayEffect만, 빈 EffectSound는 PlayMonsterSound 안에서 무호출. 계약과 같다.
+5. **DataSet 형식(D-Q1)**: `PlayerActionFxData.userdataset`은 같은 폴더 MonsterSoundData.userdataset(회차 D)과 EntryKey·`id`·`name`만 다르고 바이트 형식(CRLF·끝 줄바꿈 없음·필드 순서)이 같다. EntryKey와 `ContentProto.Json.id`가 같은 새 UUID `ecb9c840-…`이고 저장소 안에서 중복 없음. serveronly true·UseService 1·CoreVersion 26.10.0.0(작성 당시 Environment/config 값). 회차 B 파일(PlayerBaseStatData)과의 차이는 UseService·serveronly 값뿐이며 이는 §24.10 지정값이다. CSV는 UTF-8 BOM·CRLF·끝 줄바꿈으로 기존 CSV들과 같다. 일치.
+6. **PlayerStateControl**: `alert`는 MapleAvatarBodyActionState 값이고, 서버 OnBeginPlay의 기존 SetActionSheet 경로를 그대로 쓴다(PlayRate 1은 이전 sit와 같음). 문제 없음.
+- 비차단 메모(수정 요구 아님): SetGuarding에서 연출 호출이 `self.isGuarding = isHeld`보다 앞에 있어, 만약 PlayEffect·PlaySound가 예외를 내면 가드 상태 기록이 빠질 수 있다. 검증된 RUID와 유효한 엔티티만 넘기고 기존 공격 이펙트 선례도 같은 호출이라 현실 위험은 낮다. 이후 회차에서 이 함수를 고칠 일이 있으면 연출을 상태 기록 뒤로 옮기는 것을 고려할 수 있다.
+
+#### 4. CombatScreen.ui 재직렬화 의견
+- (a) de6e6aa → 3e29a35 근거: tester의 UIBuilder 깊은 비교(build 정규화 값)에 reviewer의 독립 재비교(최상위 필드 포함)가 정확히 일치하고, coder·tester Play에서 UI가 표시되고 build 오류 0이며 CombatInputController 바인딩 12개가 새 파일 엔티티로 풀렸다. 의미 변경 확인 근거로 충분하다. 빌더가 흡수하는 필드는 구분하지 못한다는 한계는 남지만, Maker 26.11이 이 파일을 다시 저장하고도 의미 차이가 없었다는 점(아래 b)이 Maker 인식 쪽 근거를 보탠다.
+- 위험: `.gitattributes * -text`라 바이트가 보존되고, 빌더 출력은 Maker가 읽고 다시 썼으므로 인식 위험은 없다고 본다. 남는 위험은 검토성뿐이다(줄 diff가 수천 줄이라 사람이 git diff로 의미를 볼 수 없음). 그래서 이 파일의 이후 변경 검토는 계속 UIBuilder 비교로 하고, Maker 저장마다 형식 변경이 생길 수 있음을 전제로 한다.
+- (b) 3e29a35 ↔ 작업 트리: 위 "직접 한 일"대로 형식 재저장(배열 순서·엔진 관리 Position·기본 Rotation 필드)이며 의미 변경 없음. 회차 E 커밋에 섞지 않는 것이 맞고, 처리(그대로 둠·별도 [ops] 커밋·되돌림)는 메인이 사용자에게 알리고 정한다. 되돌려도 다음 Maker 저장 때 같은 형식으로 다시 바뀔 가능성이 크다.
+
+#### 5. CoreVersion 26.11 영향 (의견, 환경 판단은 메인·사용자)
+- 판정 대상 3e29a35의 근거는 2026-11-16 Maker(당시 Environment/config 26.10.0.0)에서 나왔다. 이 판정은 그 버전 기준이며 26.11 런타임은 AI가 확인하지 않았다.
+- 정적 영향은 작다고 본다: 26.11 동기화로 바뀐 `.d.mlua` 23개·새 파일들 가운데 이 회차가 쓰는 API(EffectService.PlayEffect, SoundService, DataService, AvatarStateAnimationComponent.SetActionSheet, StateComponent, PlayerControllerComponent)는 바뀌지 않았고, 바뀐 멤버(MapComponent.InstanceMap 정의 위치·ScrollBar 속성·UserEnter/LeaveEvent 생성자·Tweener·ApplicationService 등)를 RootDesk 스크립트가 쓰지 않는다(Grep 0건). Maker 26.11이 CombatScreen을 다시 저장했지만 의미 차이는 없다.
+- 사용자 V11은 지금 Maker(26.11)에서 하게 되므로 V11 자체가 26.11 실행 확인을 겸한다. 다만 V11 전에 AI가 짧게 확인하고 싶다면 tester 1회 연기 시험을 권한다: Refresh → build 로그 오류 0 → Play 부팅 [VRF](`catalog ready`·`PlayerActionFxData id=guard`) → ↓ 가드 시작 1회(`guard fx`·`sfx kind=guard` 각 1줄, alert) → Stop. 결과가 다르면 26.11 회귀로 따로 다룬다. 필수 여부는 메인이 사용자에게 묻는다.
+- 참고: 이후 손으로 만드는 DataSet 래퍼는 `CoreVersion`을 그때의 Environment/config 값(현재 26.11.0.0)으로 쓴다(platform.md §16). 이미 있는 PlayerActionFxData의 26.10.0.0은 작성 당시 값이라 고칠 필요 없다.
+
+#### 6. tester NOT_RUN·관찰 반영
+| 항목 | 판정 반영 | 넘길 곳 |
+| --- | --- | --- |
+| NOT_RUN 열 누락 경고 줄 직접 실행 | 비차단. 결과 경로는 런타임, 경고 한 줄은 소스 판단(3-3) | 없음(PASS로 세지 않음, 기록만) |
+| NOT_RUN JUST 정상 창 사람 손 입력 | 비차단. 판정 코드 무변경, 회차 A V11에서 사람 손 0.20초 확인됨 | 원하면 사용자 V11에서 함께 |
+| NOT_RUN 모바일·실기기 터치 | 비차단(기존 V11 미확인 항목) | 사용자 V11(§24.8 "모바일 터치") |
+| NOT_RUN 커밋 트리 Bundle | reviewer 계산으로 해소 | 없음 |
+| NOT_RUN .ui 줄 diff | 셸 가드 대상이라 UIBuilder 비교로 대체(위 4) | 없음 |
+| O-1 무기 없으면 공격·가드 같은 모습 | 결함 아님(§24.5 기록된 위험, 규칙 변경 없음) | 사용자 V11 |
+| O-2 형식 오류 경고 문구 하나 | 결함 아님. 실제 세션은 첫 오류에서 검증이 멈춰 경고 1건이며 회차 D MonsterSoundData와 같은 방식. 칸·값을 경고에 넣는 것은 새 요구 | 문서 정리(§24.7-3 "원인당 1회" = 문구 키 단위라고 적기) |
+| O-3 이펙트 첫 프레임 흰 세로선·오른쪽 위 방패 | 결함 아님(클립 자체 모습, 화면 판단) | 사용자 V11(이펙트 모습·위치·좌우 반전) |
+| O-5 팝업 중 입력 차단 원인 미구분 | 결과는 §24.7-7 충족. 소스상 클라이언트 `PlayerStateControl.CanAcceptInput`가 `_UIPopup.isOpen`·InputBlocked에서 새 입력을 먼저 막는다(서버 정지 규칙 이전 단계) | 문서 정리(근거 한 줄) |
+| O-6 §24.7-2 "패턴 4행" | 낡은 표현(실제 5행) | 문서 정리 |
+| 스크린샷 사용(coder 3장·tester 10장 남짓) | §24.7-4는 좌표용만 허용했지만 §24.7-6이 클라이언트 표시 1회 확인을 요구해 Plan 안에서 충돌. 제품 판정에는 영향 없음 | 문서 정리(다음 Plan에서 이펙트 표시 확인용 스크린샷 허용 범위를 명시) |
+
+#### 사용자 V11 (§24.8 그대로 + 관찰 연결, AI 결과로 대신하지 않음)
+1. 버튼 4개 원형 배경·아이콘이 메이플 분위기와 맞는지, 눌림 표시(어둡게), 노란 Highlight와 어울림, ↓ 아이콘이 ←·→·↑(칼)와 어울리는지.
+2. 흰 아이콘이 원형 배경 위에서 잘 보이는지(아니면 테마 문자색 계열로 바꿀지 그때 결정).
+3. 가드 모습 alert가 대기 stand와 구분되는지, 무기 없는 계정에서 공격과 같은 모습인 점이 괜찮은지(O-1).
+4. 가드 이펙트 크기·위치·방향(좌우 반전 필요 여부), 첫 프레임 흰 선(O-3), 소리 크기, 가드 직후 맞을 때 가드음·피격음 연속.
+5. 팝업 정지 중 모습, 모바일 터치(해 보셨다면).
+6. (선택) PlayerActionFxData.csv guard 행 칸을 비워 그 연출만 끄기(CSV 수정 → Refresh → Play).
+- CoreVersion 26.11에서 V11을 하게 되므로, 이상이 보이면 26.11 차이일 수 있음을 함께 알려 달라고 안내한다.
+
+#### 회차 종료 planner 정리 목록 (사용자 V11 뒤)
+- Plan §24.7-2 "패턴 4행" → 5행(O-6). §24.7-3 "원인당 1회"는 경고 문구 키 단위임을 한 줄로(O-2). O-5 근거(클라이언트 입력 게이트) 한 줄.
+- §24.7-4·6 스크린샷 허용 범위 충돌을 다음 Plan 작성 원칙에 반영할지 판단.
+- §24.9 UX-01·UX-02 상태, AssetList "사용 예정(회차 E)" → "사용 중" 이동과 교체된 기존 버튼 이미지 4개 기록(§24 AssetList 문구), GameDesign·로드맵·WorkRecord 재개 지점은 V11 결과대로.
+- 작업 트리의 일시정지 중 변경(Environment/config 26.11, 스킬·NativeScripts·AGENTS.md·skills-lock 동기화, CombatScreen 형식 재저장)은 회차 E 문서가 아니라 메인의 [ops] 판단 대상이다.
+
+#### 검사하지 않은 범위
+- Maker 실행(26.10·26.11 모두), 화면 육안, 소리 청취, 모바일·실기기, 다중 접속. `.ui` 원본 JSON 줄 단위 내용(UIBuilder 정규화 값으로만 비교).
+
+#### 다음 행동
+- 메인: 회차 E [review] 커밋·push(3e29a35·334a934 포함, map/map01.map과 일시정지 중 작업 트리 변경은 제외) → 사용자에게 작업 트리 변경(CoreVersion 26.11·CombatScreen 형식 재저장 등) 알림과 26.11 연기 시험 여부 질문 → 사용자 V11(§24.8).
+- tester: 사용자가 원할 때만 위 5의 26.11 연기 시험 1회.
+- coder: 할 일 없음.
+- planner: 사용자 V11 수락 뒤 위 정리 목록. V11에서 새 요구·결함이 나오면 해당 ID만 다시 돈다.
+
 ### 2026-11-16 독립 리뷰 — 회차 D2 WAITING
 - 담당: Claude Code msw-reviewer(coder·tester와 별도 실행).
   - 하지 않은 것: Maker MCP 제어·Play·refresh·로그 비우기, 제품·Plan·run.md 수정, QA 판정 수정, commit·push.

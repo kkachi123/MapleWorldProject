@@ -3,9 +3,9 @@
 - 요청·승인: 2026-10-20 사용자가 "v08 확인완료. 다음 단계 진행해줘."라고 보고. 1단계 V08 수락을 반영하고 로드맵 2단계를 진행한다. 결과를 바꾸는 미확정 규칙·수치는 사용자 결정 후 구현한다. 2026-11-02 사용자가 일시정지 해제·REV-F01 수정 회차 재개를 승인(아래 절).
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
-- 갱신: 2026-11-16 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음(사용자 일시정지, 다음 담당 msw-reviewer, 회차 E 대상 3e29a35)
-- 다음 행동·대기 사유: 사용자 일시정지 요청(2026-11-16). 재개 지시가 오면 msw-reviewer부터 회차 E(대상 3e29a35, Bundle map01 제외 58경로 1d70bc71…75dd) 판정 → [review] 커밋·push → 사용자 V11(§24.8) → planner 회차 종료 정리. 3e29a35는 리뷰 전이라 push 보류. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
+- 갱신: 2026-11-19 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 V11 (회차 E UX-01·UX-02, 대상 3e29a35, reviewer WAITING)
+- 다음 행동·대기 사유: 회차 E reviewer WAITING(결함 없음, 사용자 V11 §24.8 대기). 사용자 결정 대기: ① 26.11 tester 연기 시험 여부 ② 일시정지 중 작업 트리 변경(CoreVersion 26.11, 스킬·NativeScripts·AGENTS.md·skills-lock 동기화, ui/CombatScreen 형식 재저장) 처리 ③ V11 결과. V11 뒤 planner 회차 종료 정리. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -511,3 +511,9 @@
 - 메인: [code] 로컬 커밋 3e29a35(map/map01.map 제외).
 - tester(2026-11-16, QA 15회차): DONE. §24.7 1~7 PASS, FAIL·NEEDS_DECISION·새 결함 없음. UIBuilder 깊은 비교(de6e6aa 대비): 19→23개, 삭제 0, 추가 Icon 4, 변경 7(버튼 4개 ImageRUID·Type, Highlight 3개 displayOrder)뿐. Bundle 58경로 1d70bc71…75dd 일치, map01.map 해시 불변, build 로그 오류 0. 회귀(가드 0.4·패리·JUST 확대 창·팝업 정지·패턴 5종·1칸 점프음) PASS. NOT_RUN: 모바일·실기기, JUST 정상 창 수동 입력, 열 누락 경고 줄 직접 실행(ReadRows 교체 거부). 관찰 O-1 무기 없으면 공격·가드 같은 모습, O-2 형식 오류 경고 문구 합쳐짐, O-3 이펙트 첫 프레임 흰 세로선, O-5 팝업 중 입력 차단 원인 미구분, O-6 Plan §24.7-2 "패턴 4행" 낡은 표현. Maker map01·편집 모드, clear_logs 미사용.
 - 메인: tester 결과 확인 뒤 reviewer 호출 직후 사용자 "reviwer시작 전이면 작업 일시정지해줘." → reviewer를 즉시 중지(WorkRecord 리뷰 절 기록 없음 확인). 상태 WAITING_USER(사용자 일시정지). WorkRecord QA 15회차 절과 run.md를 [ops] 로컬 커밋, push는 리뷰 전 [code] 커밋 3e29a35가 섞이므로 보류.
+
+### 2026-11-19 회차 E 재개
+- 사용자: "reviewer부터 재개". HEAD 334a934, origin/main de6e6aa(3e29a35·334a934 push 전). map01.map 해시 3e60c21d… 그대로.
+- 일시정지 중 작업 트리 변경(메인·담당이 만든 것 아님): Environment/config CoreVersion 26.10.0.0→26.11.0.0, .agents·.claude 스킬 다수 변경·추가, Environment/NativeScripts 정의 변경·추가, AGENTS.md(+22 줄 안팎), skills-lock.json, ui/CombatScreen(줄 변경 +4056/-4019, Maker 26.11 재저장 추정·내용 미확인). 작업 트리 Bundle은 3e29a35와 다름. reviewer는 고정 커밋 3e29a35를 판정하고, 작업 트리 CombatScreen과 3e29a35 판의 UIBuilder 비교 의견을 함께 반환.
+- reviewer(2026-11-19): WAITING(사용자 V11 대기). §24.7 1~7 같은 버전 근거로 충족, 결함·범위 밖 변경 없음, 지적 사항 없음. 3e29a35 커밋 트리 Bundle 직접 계산 1d70bc71…75dd 일치(QA15 NOT_RUN 6 해소). 코드: ExecSpace ServerOnly, fxAttempted 별도 플래그, WarnOnce 경고 최대 1건, 실패 시 연출만 건너뜀, DataSet 형식 D-Q1 일치. 비차단 메모: SetGuarding 연출 호출이 isGuarding 기록보다 앞(낮은 위험). CombatScreen de6e6aa→3e29a35 UIBuilder 비교 tester와 일치. 작업 트리 CombatScreen은 3e29a35와 의미 차이 없음(Icon 배열 위치·엔진 관리 Position·기본 Rotation 필드만, Maker 형식 재저장). CoreVersion 26.11: 이번 회차 API 정의 불변, 바뀐 멤버 RootDesk 사용 0건 → 영향 작다고 봄, V11이 26.11 확인을 겸함, 원하면 tester 연기 시험 1회. 문서 정리(planner, V11 뒤): O-6 패턴 5행, O-2 경고 키 단위 명시, O-5 근거 한 줄, §24.7-4·6 스크린샷 허용 충돌, §24.9·AssetList·로드맵·재개 지점.
+- 메인: [review] 커밋(3e29a35·334a934 포함, map01.map·일시정지 중 작업 트리 변경 제외)·push.
