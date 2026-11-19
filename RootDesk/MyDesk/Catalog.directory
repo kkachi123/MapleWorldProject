@@ -1,20 +1,20 @@
 {
   "Id": "",
   "GameId": "",
-  "EntryKey": "directory://8f99aee9447b47619ee6081a0b707821",
+  "EntryKey": "directory://f915f2232ada4ce9af86f8874cecabbb",
   "ContentType": "x-mod/directory",
   "Content": "",
   "Usage": 0,
   "UsePublish": 1,
   "UseService": 0,
-  "CoreVersion": "26.7.0.0",
+  "CoreVersion": "26.11.0.0",
   "StudioVersion": "0.1.0.0",
   "DynamicLoading": 0,
   "ContentProto": {
     "Use": "Json",
     "Json": {
-      "entry_id": "directory://8f99aee9447b47619ee6081a0b707821",
-      "name": "@Assist",
+      "entry_id": "directory://f915f2232ada4ce9af86f8874cecabbb",
+      "name": "Catalog",
       "lock": false,
       "folding": false,
       "nameEditable": true
