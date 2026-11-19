@@ -23,6 +23,7 @@
 - 파일을 만들거나 고치거나 지운 뒤에는 항상 refresh. Play 중에는 편집·refresh를 하지 않는다(Stop 먼저).
 - 참조는 경로가 아니라 이름·키로 이어진다(스크립트 `script.이름`, 모델 `model://키`, DataSet `_DataService:GetTable(이름)`). 그래서 이동은 원칙상 참조를 깨지 않는다. 다만 Maker가 이동을 "같은 항목"으로 인식하는지는 참조 문서에 절차가 없다. 이동 회차에서 시험 이동 1건으로 먼저 확인한다(§5).
 - .model·.ui는 셸로 읽거나 복사하지 않는다(빌더 전용 훅). 파일 단위 이동·삭제는 `node -e "require('fs')..."` 후 refresh로 한다.
+- 손으로 만드는 DataSet 래퍼(.userdataset)의 `CoreVersion`은 만드는 그때의 `Environment/config` 값을 쓴다(msw-general platform.md §16). 2026-11-19 현재 26.11.0.0이다([ops] d0d095b). 이미 만든 파일(예: PlayerActionFxData 26.10.0.0)은 작성 당시 값이라 고치지 않는다(2026-11-19 회차 E 리뷰 메모). 빌더 출력은 버전을 따로 다루지 않는다.
 
 ## 3. 폴더별 용도와 이름 규칙
 
@@ -63,6 +64,8 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 회차 C에서 생기는 새 파일: `RootDesk/MyDesk/Models/Monsters/Mushmom.model` 하나다(다른 새 제품 파일 없음). 에셋 목록은 문서 `Docs/ProjectSkill/Engineering/AssetList.md`다.
 
 회차 D([Plan §22](Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset`·`MonsterSoundData.csv` 짝 하나다(위 2번 규칙대로 DataSet/). 이 회차에서 최상위 `RootDesk/MyDesk/DataSet/` 폴더가 처음 생겼고, 폴더 메타데이터 `RootDesk/MyDesk/DataSet.directory`는 Maker Refresh가 만들었다(직접 쓰지 않음). 기존 DataSet 6종은 아직 `@Assist/DataSet/`에 있으며 §5 이동 회차까지 그대로 둔다. 그래서 지금은 DataSet 폴더가 두 곳에 있다(새 표 = DataSet/, 기존 표 = @Assist/DataSet/).
+
+회차 E([Plan §24](Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset`·`PlayerActionFxData.csv` 짝 하나다(위 2번 규칙, 이름 규칙 `{대상}Data`). 로더는 새 Catalog 파일을 만들지 않고 기존 `Combat/CombatRuleCatalog.mlua` 안에 두었다(Plan §24.10, MonsterSoundData 선례). 새 .mlua·새 폴더는 없다. 이 표도 이미 `DataSet/`에 있어 §5 이동 대상이 아니다. 회차 E가 바꾼 나머지 파일(CombatScreen.ui, PlayerStateControl, PlayerGuardComponent, CombatRuleCatalog)은 제자리에서 고쳤다.
 
 ## 5. 기존 파일 → 새 위치 대응표 (이동은 회차 C 뒤 별도 회차)
 

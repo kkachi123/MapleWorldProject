@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-19 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 V11 (회차 E UX-01·UX-02, 대상 3e29a35, reviewer WAITING)
-- 다음 행동·대기 사유: 회차 E reviewer WAITING(결함 없음, 사용자 V11 §24.8 대기). 사용자 결정 대기: ① 26.11 tester 연기 시험 여부 ② 일시정지 중 작업 트리 변경(CoreVersion 26.11, 스킬·NativeScripts·AGENTS.md·skills-lock 동기화, ui/CombatScreen 형식 재저장) 처리 ③ V11 결과. V11 뒤 planner 회차 종료 정리. 범위 밖: 원장 castleenemy 문구, 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
+- 현재 담당: 없음(회차 E 종료, 사용자 다음 결정 대기)
+- 다음 행동·대기 사유: 회차 E 종료(V11 수락 2026-11-19, planner 정리 DONE). 사용자 결정 대기: 2단계 완료 판정(P01b~P06 🟡)·3단계 시작, V12 실제 외부 환경, CF-F07 연출 평가, Features 이관 시점, 원장 castleenemy 문구, DataSet 6종 이관 회차, §22.13 부채·§24.12 남은 과제. 범위 밖: 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -517,3 +517,7 @@
 - 일시정지 중 작업 트리 변경(메인·담당이 만든 것 아님): Environment/config CoreVersion 26.10.0.0→26.11.0.0, .agents·.claude 스킬 다수 변경·추가, Environment/NativeScripts 정의 변경·추가, AGENTS.md(+22 줄 안팎), skills-lock.json, ui/CombatScreen(줄 변경 +4056/-4019, Maker 26.11 재저장 추정·내용 미확인). 작업 트리 Bundle은 3e29a35와 다름. reviewer는 고정 커밋 3e29a35를 판정하고, 작업 트리 CombatScreen과 3e29a35 판의 UIBuilder 비교 의견을 함께 반환.
 - reviewer(2026-11-19): WAITING(사용자 V11 대기). §24.7 1~7 같은 버전 근거로 충족, 결함·범위 밖 변경 없음, 지적 사항 없음. 3e29a35 커밋 트리 Bundle 직접 계산 1d70bc71…75dd 일치(QA15 NOT_RUN 6 해소). 코드: ExecSpace ServerOnly, fxAttempted 별도 플래그, WarnOnce 경고 최대 1건, 실패 시 연출만 건너뜀, DataSet 형식 D-Q1 일치. 비차단 메모: SetGuarding 연출 호출이 isGuarding 기록보다 앞(낮은 위험). CombatScreen de6e6aa→3e29a35 UIBuilder 비교 tester와 일치. 작업 트리 CombatScreen은 3e29a35와 의미 차이 없음(Icon 배열 위치·엔진 관리 Position·기본 Rotation 필드만, Maker 형식 재저장). CoreVersion 26.11: 이번 회차 API 정의 불변, 바뀐 멤버 RootDesk 사용 0건 → 영향 작다고 봄, V11이 26.11 확인을 겸함, 원하면 tester 연기 시험 1회. 문서 정리(planner, V11 뒤): O-6 패턴 5행, O-2 경고 키 단위 명시, O-5 근거 한 줄, §24.7-4·6 스크린샷 허용 충돌, §24.9·AssetList·로드맵·재개 지점.
 - 메인: [review] 커밋(3e29a35·334a934 포함, map01.map·일시정지 중 작업 트리 변경 제외)·push.
+- 사용자(2026-11-19): "바로 V11 확인" — 26.11 tester 연기 시험 없이 V11로 진행(V11이 26.11 실행 확인을 겸함). 메인이 V11 안내.
+- 사용자(2026-11-19) V11: "다른 건 다 좋음" — §24.8 항목 전부 수락(Maker 26.11에서 확인, 바꿀 점 없음). 작업 트리 변경은 "[ops]로 커밋" → [ops] d0d095b(CoreVersion 26.11, 스킬·NativeScripts·AGENTS.md·skills-lock, CombatScreen 형식 재저장) push. map01.map 계속 제외.
+- 메인: planner 회차 종료 정리 호출.
+- planner 회차 종료 정리(2026-11-19): DONE. 문서 6개(Plan §24 머리·§24.5·§24.7-3·4·6·7·§24.8~24.11·새 §24.12 남은 과제, 머리·§6·§8·§9·§22.13 행; AssetList 회차 E 사용 중·교체됨; FileStructure §2 CoreVersion 메모·§4 PlayerActionFxData; GameDesign §7.4·§8; 로드맵 재개 지점; WorkRecord 머리·재개 지점). UX-01·UX-02 ✅. O-6은 §24.7-7에서 정정. 규칙·수치 불변, 2단계 완료 판정 불변. 상태 WAITING_USER.

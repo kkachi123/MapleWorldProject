@@ -30,21 +30,31 @@
 
 ~~회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.~~ → 2026-11-16 옮겼다. 고르지 않은 1칸 점프음 후보 3개는 아래 "후보"에 있다.
 
-## 사용 예정 (회차 E, [Plan §24](Plans/2_CombatCore.md), 2026-11-06 사용자 선택 확정. 2026-11-16 사용자 "회차 E 시작", 구현 전)
+### 회차 E 에셋 ([Plan §24](Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락으로 "사용 예정"에서 옮김)
+
+2026-11-06 사용자 선택, 2026-11-16 구현(coder 3e29a35), 2026-11-19 사용자 V11 수락("다른 건 다 좋음", Maker 26.11, 바꿀 점 없음)으로 "사용 중"이 됐다. 버튼은 `ui/CombatScreen.ui`, 가드 연출 표는 `RootDesk/MyDesk/DataSet/PlayerActionFxData.csv`다. 출시용 확정 여부(임시인지)는 정하지 않았다. UI 아트 스타일이 미정(GameDesign §8 "UI 상세")이므로 그때 사용자가 정한다.
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |
-| 조작 버튼 4개 배경(BtnAttack·BtnGuard·BtnBack·BtnForward) | simplefantasy(메이플슬래시, msw-ui-kit) Slot_03/Btn_Attack | e314c09b9b39486bb1c68d018b2abded(기록 120×120 Sliced, 140×140으로 키움, 색 #FFFFFF). 눌림은 ColorTint 유지 | 화면 적합성 미확인 | 회차 E 사용자 V11 수락 |
-| ↑ 공격 버튼 아이콘 | simplefantasy Icon_Sword(틴트) | 3119d2807ea7466e8e9056d0590a35cc(기록 20×25, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
-| ↓ 가드 버튼 아이콘 | simplefantasy Icon_Arrow_Down(틴트, core 팔레트 전용) | a714a1eaa4aa46098c0c265110ee91c0(기록 60×60, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
-| ← 뒤 버튼 아이콘 | simplefantasy Icon_Arrow_L(틴트) | 002ca90cd5794836b1e44da160de287a(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
-| → 앞 버튼 아이콘 | simplefantasy Icon_Arrow_R(틴트) | 740aba24726c4c6580cf054b0e1e1fd5(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
-| 가드 시작 이펙트(1회) | 로얄 가드 skill/5100.img/skill/51001006 effect | 318a46627eca4ae5b9c5d1fb16244e3c(animationclip, skill, 124×147, 13프레임, 2026-11-16 래퍼 재확인·팩 소속 확인) → 새 표 PlayerActionFxData `guard` 행 EffectClip(E-Q1 답, Plan §24.10) | 모습·크기·방향 미확인 | 위와 같음 |
-| 가드 시작 효과음(1회) | 로얄 가드 skill/5100.img/skill/51001006 _audio/Use | 605da1fc42f34ef4a1468387004a6223(effect=소리, skill, 1.152초, 2026-11-16 래퍼 재확인·팩 소속 확인) → 같은 행 EffectSound | 실청취 미확인 | 위와 같음 |
+| 조작 버튼 4개 배경(BtnAttack·BtnGuard·BtnBack·BtnForward) | simplefantasy(메이플슬래시, msw-ui-kit) Slot_03/Btn_Attack | e314c09b9b39486bb1c68d018b2abded(기록 120×120 Sliced, 140×140으로 키움, 색 #FFFFFF). 눌림은 ColorTint 0.78 유지 | 회차 E V11 수락(2026-11-19). 출시용 확정은 미정 | UI 아트 스타일 결정 때 사용자(9단계 전 임시 0 기준) |
+| ↑ 공격 버튼 아이콘(자식 `BtnAttack/Icon`) | simplefantasy Icon_Sword(틴트) | 3119d2807ea7466e8e9056d0590a35cc(기록 20×25, 60×60 상자·비율 유지, 색 #FFFFFF) | 위와 같음. GameDesign §7.4의 액티브 스킬 아이콘 연결은 Plan §24.12 | 위와 같음 |
+| ↓ 가드 버튼 아이콘(`BtnGuard/Icon`) | simplefantasy Icon_Arrow_Down(틴트, core 팔레트 전용) | a714a1eaa4aa46098c0c265110ee91c0(기록 60×60, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
+| ← 뒤 버튼 아이콘(`BtnBack/Icon`) | simplefantasy Icon_Arrow_L(틴트) | 002ca90cd5794836b1e44da160de287a(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
+| → 앞 버튼 아이콘(`BtnForward/Icon`) | simplefantasy Icon_Arrow_R(틴트) | 740aba24726c4c6580cf054b0e1e1fd5(기록 24×36, 색 #FFFFFF) | 위와 같음 | 위와 같음 |
+| 버튼 입력 Highlight(BtnBack·BtnGuard·BtnForward, 회차 E 전부터 사용, 바꾸지 않음) | 출처 문서 없음(테마 밖) | 2860136c06ab075439721c027de365af(Sliced, 노란색) | V11에서 새 버튼과 함께 수락. 출시용 확정은 미정 | 위와 같음 |
+| 가드 시작 이펙트(1회) | 로얄 가드 skill/5100.img/skill/51001006 effect | 318a46627eca4ae5b9c5d1fb16244e3c(animationclip, skill, 124×147, 13프레임) → PlayerActionFxData `guard` 행 EffectClip(E-Q1 답, Plan §24.10) | 회차 E V11 수락(크기·위치·방향, 첫 프레임 흰 세로선 O-3 포함). 출시용 확정은 미정 | 9단계 전 사용자 확정(임시 0 기준) |
+| 가드 시작 효과음(1회) | 로얄 가드 skill/5100.img/skill/51001006 _audio/Use | 605da1fc42f34ef4a1468387004a6223(effect=소리, skill, 1.152초) → 같은 행 EffectSound | 회차 E V11 수락(소리 크기). 출시용 확정은 미정 | 위와 같음 |
 
-UI RUID 5개(배경·아이콘 4종)는 msw-search 래퍼 색인에 없다(2026-11-16 get 404). 그래서 msw-ui-kit simplefantasy 데이터로만 확인된다. 실제 표시는 회차 E coder Play에서 처음 확인한다.
+UI RUID 5개(배경·아이콘 4종)는 msw-search 래퍼 색인에 없다(2026-11-16 get 404). msw-ui-kit simplefantasy 데이터로 골랐고, 2026-11-16 coder·QA15 Play와 2026-11-19 사용자 V11에서 화면에 보이는 것을 확인했다.
 
-회차 E 구현이 끝나면 이 표의 행을 "사용 중"으로 옮기고, 아래 후보의 "회차 E가 바꿀 현재 조작 버튼 이미지" 행은 교체 기록으로 정리한다.
+~~회차 E 구현이 끝나면 이 표의 행을 "사용 중"으로 옮기고, 아래 후보의 "회차 E가 바꿀 현재 조작 버튼 이미지" 행은 교체 기록으로 정리한다.~~ → 2026-11-19 옮겼고, 교체된 버튼 이미지 4개는 아래 "교체됨"에 적었다.
+
+## 교체됨 (쓰지 않음, 기록만)
+
+| 용도(교체 전) | 교체 | 이전 RUID | 비고 |
+| --- | --- | --- | --- |
+| 조작 버튼 4개 이미지(ui/CombatScreen.ui, 회차 E 전) | 회차 E coder 3e29a35(2026-11-16)에서 위 simplefantasy 배경 e314c09b…와 Icon 자식으로 바꿈. 2026-11-19 사용자 V11 수락 | BtnAttack fa75318d112040f9a941da89ad5d2e53, BtnBack b5c63f01645645c095611f64b34078df, BtnGuard 9eff8b12dcde45ca989e9cd5a95e441c, BtnForward 83feab30f7744c629ecc1344e1c4e49b | 원본이 Docs/UIimg의 free-icon 이미지(sword·defence·left/right arrow)라는 것은 추정이다(RUID와 파일 대응 문서 없음). 버튼 엔티티 UUID·크기·위치·ButtonComponent는 바꾸지 않았다 |
+| 가드 모션 sit(PlayerStateControl GUARD 시트) | 회차 E에서 alert로 바꿈(사용자 Q4 a, V11 수락) | 아바타 기본 동작이라 RUID 없음 | 기록만 |
 
 ## 보관 (지금 스폰하지 않음)
 
@@ -60,6 +70,6 @@ UI RUID 5개(배경·아이콘 4종)는 msw-search 래퍼 색인에 없다(2026-
 | 1칸 공격 점프음 후보(2026-11-10 D-Q10, 2026-11-16 D-Q13으로 쓰지 않음, [Plan §22.17.4](Plans/2_CombatCore.md)) | 머쉬맘 팩 밖, 원본 이름 없음(2026-11-10 msw-search 래퍼 `getResourcesBatch` 확인). 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, 1b41f29~f78bab5 동안 기본값으로 들어 있었음), 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초). 사용자가 player 점프음(a49c4b39…)을 골라 셋 모두 쓰지 않는다 |
 | 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
 | 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |
-| 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit)에서 고르지 않은 부품, [Plan §24](Plans/2_CombatCore.md) | 2026-11-06 사용자 선택으로 배경 e314c09b…·Icon_Sword·Icon_Arrow_Down·Icon_Arrow_L·Icon_Arrow_R는 위 "사용 예정 (회차 E)"로 옮겼다. 남은 후보: 눌림 스프라이트 4eed2985436c4007890c3314c4d42dc0(SpriteSwap 안, 고르지 않음), Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54(아이콘 안 1, 고르지 않음), ↓ 대안 Icon_Triangle_Down 0c2db2ad2c694210ba492d0ab060b5e7(틴트, 기록 20×20, V11에서 ↓가 어울리지 않을 때만 묻는다). 화면 적합성 미확인 |
-| 회차 E가 바꿀 현재 조작 버튼 이미지(지금 사용 중, ui/CombatScreen.ui) | BtnAttack fa75318d112040f9a941da89ad5d2e53, BtnBack b5c63f01645645c095611f64b34078df, BtnGuard 9eff8b12dcde45ca989e9cd5a95e441c, BtnForward 83feab30f7744c629ecc1344e1c4e49b. Highlight 2860136c06ab075439721c027de365af는 유지 예정. 원본이 Docs/UIimg의 free-icon 이미지라는 것은 추정이다 |
-| 회차 E 가드 이펙트·소리 후보(스킬 팩, 2026-11-06 msw-search 재확인) | 로얄 가드 skill/5100.img/skill/51001006의 effect 318a4662…·소리 605da1fc…는 2026-11-06 사용자 선택으로 위 "사용 예정 (회차 E)"로 옮겼다. 남은 후보(고르지 않음): 로얄 가드 강화 skill/40000.img/skill/400004230: effect a6c32468ecc14665baf9c056cfabae0c(138×156, 8프레임), effect_ple pre 0f93a8d6560547ddab87b8a0eb387e19·loop 12c03f6ac9374b5a91d993f09384c113·end f75c5a210fd24430b9e4a1122b6f82c8, 소리 6416b7d7c92148bfa05835e6b7aee9b0. 파워 가드 skill/800033.img/skill/80003317: effect af4e6abe766e4970a0e90aca58c6cc1c(64×85, 12프레임), effect0 a15d331295524094a9b1096df300022c, affected 1838b57cb0314900bc00b690580f8f36. 모습·크기 미확인 |
+| 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit)에서 고르지 않은 부품, [Plan §24](Plans/2_CombatCore.md) | 2026-11-06 사용자 선택으로 배경 e314c09b…·Icon_Sword·Icon_Arrow_Down·Icon_Arrow_L·Icon_Arrow_R는 위 "회차 E 에셋"(사용 중, 2026-11-19 V11 수락)으로 옮겼다. 남은 후보: 눌림 스프라이트 4eed2985436c4007890c3314c4d42dc0(SpriteSwap 안, 고르지 않음), Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54(아이콘 안 1, 고르지 않음), ↓ 대안 Icon_Triangle_Down 0c2db2ad2c694210ba492d0ab060b5e7(틴트, 기록 20×20). 사용자가 V11에서 ↓ Icon_Arrow_Down을 수락해 ↓ 대안은 묻지 않았다. 화면 적합성 미확인 |
+| ~~회차 E가 바꿀 현재 조작 버튼 이미지~~ | → 2026-11-19 위 "교체됨"으로 옮겼다 |
+| 회차 E 가드 이펙트·소리 후보(스킬 팩, 2026-11-06 msw-search 재확인) | 로얄 가드 skill/5100.img/skill/51001006의 effect 318a4662…·소리 605da1fc…는 2026-11-06 사용자 선택으로 "사용 예정 (회차 E)"로 옮겼고 2026-11-19 V11 수락으로 위 "회차 E 에셋"(사용 중)이 됐다. 남은 후보(고르지 않음): 로얄 가드 강화 skill/40000.img/skill/400004230: effect a6c32468ecc14665baf9c056cfabae0c(138×156, 8프레임), effect_ple pre 0f93a8d6560547ddab87b8a0eb387e19·loop 12c03f6ac9374b5a91d993f09384c113·end f75c5a210fd24430b9e4a1122b6f82c8, 소리 6416b7d7c92148bfa05835e6b7aee9b0. 파워 가드 skill/800033.img/skill/80003317: effect af4e6abe766e4970a0e90aca58c6cc1c(64×85, 12프레임), effect0 a15d331295524094a9b1096df300022c, affected 1838b57cb0314900bc00b690580f8f36. 모습·크기 미확인 |
