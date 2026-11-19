@@ -7,7 +7,7 @@
 한계:
 
 - V11의 모바일·실기기 터치 부분과 V12의 실제 외부 환경(비전투 몬스터·다른 플레이어) 부분은 사용자가 하지 않기로 했다. **NOT_RUN**이며 통과로 세지 않는다.
-- [CombatFoundation-F07](../Plans/CombatFoundation.md)의 실제 연출 평가는 사용자 확인 대기다.
+- [CombatFoundation-F07](../Plans/CombatFoundation.md)(피해·표시 일치)은 2026-11-19 사용자 결정으로 닫았다. **PC Maker 기준**이며, 모바일·실기기 연출은 V11 모바일 부분(NOT_RUN)으로 남는다.
 - 승패·정산은 3단계, 암전·Stage 전환은 4단계 범위다. 3단계는 사용자 시작 지시 대기다.
 - 남은 확인·부채는 [2단계 후속 계획](../Plans/CombatCore.md)에서 추적한다.
 
@@ -117,6 +117,7 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 **2단계 완료 (2026-11-19)**
 
 - 모바일·다중 환경 시험 없이 2단계 완료를 결정했다.
+- CombatFoundation-F07 실제 연출 평가(피해 숫자 가시성·피격·die 연출)를 "기존 수락으로 닫기"로 정했다. 회차 C V11 8번(모바일·터치·사운드·CF-F07) "이상 없음"(2026-11-06)과 회차 D·E의 PC 수락을 F07 완료로 인정했다. 평가 기준은 PC Maker이고, 모바일·실기기는 V11 모바일 부분 NOT_RUN으로 추적한다.
 
 **이 문서에 없는 평가**
 
@@ -133,7 +134,7 @@ AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder
 | 검증 ID | 결과 |
 | --- | --- |
 | V01 예고·대응 | PASS. QA1 유효 행 전수 이후 패턴 변경마다 회귀. 현재 머쉬맘 5행 |
-| V02 방어·피해 단일 적용 | QA1 FAIL(QA-F01, 치명 피해에서 숫자 불일치)를 수정한 뒤 QA2·QA3 PASS. HP 감소 = HitEvent 합 = 피해 숫자(DEFENSE 150 포함) |
+| V02 방어·피해 단일 적용 | QA1 FAIL(QA-F01, 치명 피해에서 숫자 불일치)를 수정한 뒤 QA2·QA3 PASS. HP 감소 = HitEvent 합 = 피해 숫자(DEFENSE 150 포함). CombatFoundation-F07의 수치 근거 |
 | V03 타이밍·방향 경계 | PASS(실행 조건). 회차 A의 Pos2 조건은 QA8. 사람 손 0.20초 입력은 회차 A V11에서 사용자 확인. 모든 네트워크 도착 순서는 NOT_RUN |
 | V04~V07 반격·슬로우·그로기·팝업 | PASS(실행 조건, QA1·QA2 외 회차별 회귀) |
 | V08 사망·Stop·재진입 | PASS(실행 조건). 실제 다른 맵 전환은 NOT_RUN |
@@ -154,13 +155,13 @@ AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder
   - 지연 있는 실접속에서의 위치 동기화.
   - 맵 이동 뒤 복귀·재접속 때 플레이어 최대 HP.
 - **추적 위치**:
-  - 위 NOT_RUN과 CF-F07: [후속 계획](../Plans/CombatCore.md).
+  - 위 NOT_RUN과 V11 모바일 부분(CF-F07의 모바일 연출 포함): [후속 계획](../Plans/CombatCore.md).
   - 실제 맵 전환: [CombatFoundation-F03](../Plans/CombatFoundation.md)·[CombatPause-F01](../Plans/CombatPause.md).
   - 기기 전반 UI·음향: [CombatFoundation-F04](../Plans/CombatFoundation.md)·[CombatPause-F02](../Plans/CombatPause.md).
 - 이 결과는 경사·다른 Body 모드·다중 상대·성능 개선을 입증하지 않는다.
 
 ## 역할
 
-- 본인: 전투 규칙 D01~D04와 회차별 변경 결정, 머쉬맘·버튼·연출 선택, 플레이어 기본 수치 직접 변경, Maker 모델 이름 변경, V11 직접 플레이·수락, 2단계 완료 결정.
+- 본인: 전투 규칙 D01~D04와 회차별 변경 결정, 머쉬맘·버튼·연출 선택, 플레이어 기본 수치 직접 변경, Maker 모델 이름 변경, V11 직접 플레이·수락, 2단계 완료 결정, CF-F07 닫기 결정.
 - AI: 계획·구현·원인 조사·Maker 자동 검증·독립 QA·리뷰·문서 이관.
 - 엔진·외부 자료: 네이티브 공격·피격·HP·FSM·동기화, MSW 리소스(머쉬맘·효과음·이펙트·UI 테마, 모두 임시 에셋).

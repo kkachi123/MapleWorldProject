@@ -4,8 +4,8 @@
 - 모드: 승인된 2단계 V11 피드백 회차(F05 원인 확인 + F01~F04 구현·검증·재검토)
 - 상태: WAITING_USER
 - 갱신: 2026-11-19 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 없음(2단계 완료·Features 이관 완료, 사용자 확인 대기)
-- 다음 행동·대기 사유: 2단계 완료·Features 이관 완료(2026-11-19). 사용자 확인 대기: CombatFoundation-F07 실제 연출 평가를 회차 C V11 8번 "이상 없음"·D·E PC 수락으로 닫을지, 나중(예: 7단계 실기기)에 따로 확인할지. CF-F07 처리 뒤 2_CombatCore Plan·WorkRecord·run 삭제 여부와 링크 정리(커밋 해시 기준)는 메인이 사용자와 정함. 3단계는 사용자 시작 지시 대기. 그 밖의 대기: FU-23 원장 castleenemy, FU-24 DataSet 6종 이관, FU-04~22 부채·남은 과제. 범위 밖: 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
+- 현재 담당: 없음(2단계 완료, 사용자 결정 대기)
+- 다음 행동·대기 사유: CF-F07 닫힘(2026-11-19, PC Maker 기준, 모바일은 CombatCore-V11 NOT_RUN). 사용자 결정 대기: 2단계 Plan·WorkRecord·run 삭제 여부(삭제 조건 충족, 삭제 전 12개 문서의 링크를 커밋 해시 기준으로 정리 필요 — 원장은 FU-23과 묶을지 판단). 3단계는 사용자 시작 지시 대기. 그 밖의 대기: FU-23 원장 castleenemy, FU-24 DataSet 6종 이관, FU-04~22. 범위 밖: 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
 - 환경 가이드: 없음
 ## 원본 연결
 - 상위: [GameDesign](../../Docs/ProjectSkill/Engineering/GameDesign.md) · [로드맵](../../Docs/ProjectSkill/Engineering/DevelopmentRoadmap.md)
@@ -526,3 +526,5 @@
 - 사용자: "모바일연결이나 멀티환경 테스트는 하지는 않음. 그래도 2단계 완료는 해도 될것 같음." → 2단계(CombatCore) 완료 결정. 모바일·실기기 터치(V11 모바일 부분)와 V12 실제 외부 환경(비전투 몬스터·다른 플레이어)은 하지 않음 = NOT_RUN으로 남기고 해당 ID 유지. 3단계 시작 지시는 아님.
 - 메인: planner에 2단계 완료 정리·Features 이관 호출.
 - planner 2단계 완료 정리(2026-11-19): DONE. P01b~P06 ✅(P06 단서: V11 모바일·실기기, V12 실제 외부 환경 NOT_RUN 사용자가 하지 않기로 함, CF-F07 사용자 확인 대기). V01~V10 PASS(실행 조건 안), V11 Maker(PC) 수락, V12 AI 부분 PASS. 새 문서 Features/2_CombatCore.md(2단계 Feature), Plans/CombatCore.md(2단계 후속 계획, 미실시·부채·사용자 결정 항목에 추적 ID CombatCore-FU-01~25, 외부 ID 연결). 갱신: Plan 2_CombatCore(P표·§7·§8·§9·후속 ID 연결), CombatFoundation(F07 사용자 확인 대기), CombatCoreWorkRecord, WorkRecords README, 로드맵(2단계 완료, 3단계 사용자 지시 대기), GameDesign 88행 포인터, ChatRoles README 37행. 이동·삭제 없음. 규칙·수치 불변. CF-F07이 남아 2단계 Plan·WorkRecord·run은 유지(planner 제안). 범위 밖 참고: 2_CombatCore.md의 기존 (skills-lock.json) 상대 링크 1건 깨짐(HEAD부터).
+- 사용자(2026-11-19): CF-F07 "기존 수락으로 닫기" — 회차 C V11 8번 "이상 없음"과 회차 D·E PC 수락을 CombatFoundation-F07 실제 연출 평가 완료로 인정(PC Maker 기준). 모바일·실기기는 CombatCore-V11 NOT_RUN으로 계속 추적. 메인: planner에 문서 반영 호출.
+- planner CF-F07 반영(2026-11-19): DONE. 문서 8개(CombatFoundation F07 완료·PC 기준 단서, Feature·후속 계획·Plan·로드맵·WorkRecord·WorkRecords README·ChatRoles README). 규칙·수치·다른 ID 상태 불변. 2단계 Plan·WorkRecord·run 삭제 조건 충족 판단, 삭제 전 링크 정리 대상: Features/2_CombatCore·1_MovementInput, Plans/CombatCore·CombatFoundation, 로드맵, GameDesign, FileStructure, AssetList, WorkRecords README, ChatRoles README·ClaudeSetup, 원장(FU-23). 삭제는 실행하지 않음.
