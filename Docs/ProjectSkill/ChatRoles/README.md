@@ -34,7 +34,7 @@
 
 공통 지침은 해당 작업에서만 참조한다: [구현 원칙](../AGENTS.md), [Plan 작성 원칙](../Plan_Writing_Guide.md), [바이브 코딩 포트폴리오 원칙](../Vibe_Coding_Portfolio_Guide.md). 프로젝트 역할·경로·현재 상태를 이 지침에 넣지 않는다.
 
-단계별 Plan·Feature는 {단계번호}_{FeatureKey}.md, 후속 계획은 {FeatureKey}.md다. 단기 수정 계획은 기존 방침대로 Engineering/{TaskName}Plan.md를 사용한다. 현재 연결 대상은 [2단계 Plan](../Engineering/Plans/2_CombatCore.md)이며, 완료한 1단계는 [Feature](../Engineering/Features/1_MovementInput.md)에 정리했다. 2단계 진행 근거는 [CombatCore WorkRecord](../Engineering/WorkRecords/CombatCoreWorkRecord.md)에 있으며 최신 상태는 Plan과 해당 WorkRecord에서 확인한다.
+단계별 Plan·Feature는 {단계번호}_{FeatureKey}.md, 후속 계획은 {FeatureKey}.md다. 단기 수정 계획은 기존 방침대로 Engineering/{TaskName}Plan.md를 사용한다. 완료한 1단계는 [1단계 Feature](../Engineering/Features/1_MovementInput.md), 2026-11-19 완료한 2단계는 [2단계 Feature](../Engineering/Features/2_CombatCore.md)에 정리했다. 2단계의 남은 확인·부채는 [2단계 후속 계획](../Engineering/Plans/CombatCore.md)에서 추적하고, 근거 원문인 [2단계 Plan](../Engineering/Plans/2_CombatCore.md)·[CombatCore WorkRecord](../Engineering/WorkRecords/CombatCoreWorkRecord.md)는 CombatFoundation-F07 확인이 남아 유지한다. 3단계는 사용자 시작 지시 대기이며 시작하면 3단계 Plan이 현재 연결 대상이 된다.
 
 ## 실행과 권한
 
