@@ -14,7 +14,7 @@
 
 - **구현 승인이 아니다.** 각 항목은 표의 시점이 오고 사용자가 지시하거나 승인할 때 시작한다.
 - 이 계획은 규칙·수치·입력 계약을 바꾸지 않는다.
-- 항목의 원문·당시 근거는 [2단계 Plan](2_CombatCore.md)과 [CombatCore WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)에 있다. CombatFoundation-F07은 2026-11-19 닫혔으므로 두 문서의 삭제 여부는 사용자가 정한다. 삭제할 때는 이 표의 원문 링크를 Feature나 커밋 기준으로 바꾼다.
+- 항목의 원문·당시 근거는 [2단계 Plan](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)과 [CombatCore WorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)에 있다. 두 문서와 run(20261020-combat-core)은 2026-11-19 사용자 결정("링크 정리 후 삭제")으로 삭제했으며, 위 링크와 이 표의 원문 링크는 기준 커밋 5efe005를 가리킨다.
 
 상태: **NOT_RUN** = 하지 않음(통과 아님) / **대기** = 조건·사용자 결정 대기.
 
@@ -22,17 +22,17 @@
 
 | ID | 상태 | 실행 시점·확인 기준 |
 | --- | --- | --- |
-| CombatCore-V11(모바일·실기기 부분) | NOT_RUN(2026-11-19 사용자가 하지 않기로 함) | **시점**: 모바일 실기기 연결 때. 늦어도 7단계 헤네시스 기준 PC·모바일 검증. **기준**: [Plan §7](2_CombatCore.md) V11의 남은 부분. 예고 방향·속성 구별, 0.20초 타이밍·반격 체감, 실제 터치와 키·터치 혼합 조작, 버튼 크기·화면 잘림, HP·피해 숫자 가독성, 피격·die 연출, 음향. PC(Maker) 부분은 회차별로 수락됐다. CombatFoundation-F07의 모바일 연출도 이 행에서만 추적하며 F07은 다시 열지 않는다 |
+| CombatCore-V11(모바일·실기기 부분) | NOT_RUN(2026-11-19 사용자가 하지 않기로 함) | **시점**: 모바일 실기기 연결 때. 늦어도 7단계 헤네시스 기준 PC·모바일 검증. **기준**: [Plan §7](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) V11의 남은 부분. 예고 방향·속성 구별, 0.20초 타이밍·반격 체감, 실제 터치와 키·터치 혼합 조작, 버튼 크기·화면 잘림, HP·피해 숫자 가독성, 피격·die 연출, 음향. PC(Maker) 부분은 회차별로 수락됐다. CombatFoundation-F07의 모바일 연출도 이 행에서만 추적하며 F07은 다시 열지 않는다 |
 | CombatCore-V12(실제 외부 환경 부분) | NOT_RUN(2026-11-19 사용자가 하지 않기로 함) | **시점**: 비전투 몬스터나 다른 플레이어가 같은 맵에 있는 환경이 생길 때. 4단계 Run 격리 또는 다중 접속 확인 회차. **기준**: 현재 상대 외 개체에 공격·슬로우·그로기·UI가 퍼지지 않는다. 단일 참조·교체·사망 뒤 무효 부분은 AI PASS(QA1). 검증을 위해 다중 전투 체계를 새로 만들지 않는다 |
-| CombatCore-FU-01 | NOT_RUN | **시점**: 지연 있는 실접속·모바일 확인 회차. **기준**: 실접속 지연에서 Pos2 경계(±0.75, 이동 속도 12에서 약 0.0625초에 지남)의 저스트·패링 판정 위치가 화면과 맞다. 출처는 [Plan §21](2_CombatCore.md) 위험과 §22.14 NOT_RUN |
-| CombatCore-FU-02 | NOT_RUN | **시점**: 맵이 늘어나는 단계(4단계). **기준**: 맵 이동 뒤 복귀·재접속 때 플레이어 최대 HP가 PlayerBaseStatData 값과 같다. 출처는 회차 B NOT_RUN([Plan §20](2_CombatCore.md)) |
-| CombatCore-FU-03 | NOT_RUN | **시점**: DataSet 로더를 다시 고치는 회차. **기준**: 필수 열 누락 경고 한 줄을 실제로 실행해 확인한다. 지금은 결과 경로만 런타임으로 확인했고 경고 줄은 소스로 판단했다. 출처는 [Plan §24.9](2_CombatCore.md) |
+| CombatCore-FU-01 | NOT_RUN | **시점**: 지연 있는 실접속·모바일 확인 회차. **기준**: 실접속 지연에서 Pos2 경계(±0.75, 이동 속도 12에서 약 0.0625초에 지남)의 저스트·패링 판정 위치가 화면과 맞다. 출처는 [Plan §21](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) 위험과 §22.14 NOT_RUN |
+| CombatCore-FU-02 | NOT_RUN | **시점**: 맵이 늘어나는 단계(4단계). **기준**: 맵 이동 뒤 복귀·재접속 때 플레이어 최대 HP가 PlayerBaseStatData 값과 같다. 출처는 회차 B NOT_RUN([Plan §20](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)) |
+| CombatCore-FU-03 | NOT_RUN | **시점**: DataSet 로더를 다시 고치는 회차. **기준**: 필수 열 누락 경고 한 줄을 실제로 실행해 확인한다. 지금은 결과 경로만 런타임으로 확인했고 경고 줄은 소스로 판단했다. 출처는 [Plan §24.9](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) |
 
 CombatFoundation-F07은 2026-11-19 사용자 "기존 수락으로 닫기"로 완료해 이 표에서 뺐다(PC Maker 기준). 상태와 근거는 [CombatFoundation](CombatFoundation.md)에서만 관리하고, 모바일·실기기 연출은 위 CombatCore-V11 행이 맡는다.
 
 ## 부채·남은 과제 (구현 승인 아님)
 
-원문은 [Plan §21 부채](2_CombatCore.md)·§22.13·§24.12다. 다시 볼 조건이 오면 사용자 승인으로 새 회차 범위를 정한다.
+원문은 [Plan §21 부채](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)·§22.13·§24.12다. 다시 볼 조건이 오면 사용자 승인으로 새 회차 범위를 정한다.
 
 **스크립트·데이터 구조**
 
@@ -78,9 +78,9 @@ CombatFoundation-F07은 2026-11-19 사용자 "기존 수락으로 닫기"로 완
 | 항목 | 내용 | 원문 |
 | --- | --- | --- |
 | 3단계 시작 | 2단계 완료 뒤 다음 로드맵 단계. 사용자 시작 지시 대기 | [로드맵](../DevelopmentRoadmap.md) |
-| CombatCore-FU-23 원장 문구 | `.maplestory-skill-maker-ledger.md`의 낡은 castleenemy 문구를 정리할 시점 | [Plan §23.6](2_CombatCore.md) |
+| CombatCore-FU-23 원장 문구 | `.maplestory-skill-maker-ledger.md`의 낡은 castleenemy 문구를 정리할 시점 | [Plan §23.6](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) |
 | CombatCore-FU-24 기존 파일 이동 | 기존 DataSet 6종을 `@Assist/DataSet/`에서 `DataSet/`으로 옮길 회차와, 그 밖의 기존 파일 이동 | [FileStructure §5](../FileStructure.md) |
-| CombatCore-FU-25 머쉬맘 수치 | 머쉬맘 수치 조절. 사용자가 CSV에서 직접 조절하며 AI 작업이 아니다 | [Plan §21 부채](2_CombatCore.md) |
+| CombatCore-FU-25 머쉬맘 수치 | 머쉬맘 수치 조절. 사용자가 CSV에서 직접 조절하며 AI 작업이 아니다 | [Plan §21 부채](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) |
 | 부채 처리 시점 | 위 FU-04~FU-22를 언제 다룰지 | 이 문서 |
 
 에셋 목록의 최종 위치(8단계 전 결정)는 [로드맵 8단계 시작 전 결정 사항](../DevelopmentRoadmap.md#8-콘텐츠-데이터-제작)에서 관리한다.

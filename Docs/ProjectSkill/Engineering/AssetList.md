@@ -1,6 +1,6 @@
 # 에셋 목록 (AssetList, 잠정)
 
-> 작성: 2026-11-05(planner, 회차 C [Plan §21](Plans/2_CombatCore.md)). [로드맵 §1 에셋 목록](DevelopmentRoadmap.md#1-개발-기준)의 제안 위치에 잠정으로 만들었다. 최종 위치는 [8단계 시작 전 결정 사항](DevelopmentRoadmap.md#8-콘텐츠-데이터-제작)에서 정한다.
+> 작성: 2026-11-05(planner, 회차 C [Plan §21](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)). [로드맵 §1 에셋 목록](DevelopmentRoadmap.md#1-개발-기준)의 제안 위치에 잠정으로 만들었다. 최종 위치는 [8단계 시작 전 결정 사항](DevelopmentRoadmap.md#8-콘텐츠-데이터-제작)에서 정한다.
 > 목적: 임시·대체 에셋을 추적한다. 9단계(출시 검증) 전에 출시 범위의 임시 에셋은 0이어야 한다. RUID는 msw-search 래퍼 응답에서 옮겼고 추측한 값이 없다.
 > 아직 목록에 올리지 않은 기존 에셋(플레이어 기본 공격 이펙트, UI 이미지, 그로기 별 파티클 등)은 해당 시스템을 다룰 때 추가한다.
 
@@ -12,7 +12,7 @@
 
 연결(stand·move·jump·hit1·die1, move는 기본값 유지)은 2026-11-05 사용자가 확인했다(Plan §21).
 
-### 회차 D 에셋 ([Plan §22](Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락으로 "사용 예정"에서 옮김)
+### 회차 D 에셋 ([Plan §22](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락으로 "사용 예정"에서 옮김)
 
 회차 D·D2 사용자 V11 수락(2026-11-16, 위치·크기·시점·음량 기본안 포함)으로 "사용 중"이 됐다. 그래도 아래는 모두 **임시**이며, 6단계 헤네시스 견본 아트·사운드 확정 때 사용자가 확정한다. 패턴 표는 `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv`, 소리 표는 `RootDesk/MyDesk/DataSet/MonsterSoundData.csv`다.
 
@@ -26,11 +26,11 @@
 | 머쉬맘 피격음 | mob/6130101.img _audio/Damage | c611ae50c5d84814a6d2ccfad8a472c5(MonsterSoundData DamagedSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
 | 플레이어 피격음(머쉬맘 공격) | mob/6130101.img _audio/CharDam1 | 7c8e5f1ef0b549c59aec820909458d4f(MonsterSoundData HitPlayerSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
 | 머쉬맘 사망음 | mob/6130101.img _audio/Die | d48ec1cc57a247028f390041fc89c97f(MonsterSoundData DieSound) | 임시. 시점 기본안 회차 D V11 수락 | 위와 같음 |
-| 1칸 공격 효과음(player 점프음, 2026-11-16 사용자 D-Q13, [Plan §22.17.4](Plans/2_CombatCore.md)) | **엔진 `MaplePreferencesLogic.JumpSound` 기본값**(`Environment/NativeScripts/Logic/MaplePreferencesLogic.d.mlua`). 프로젝트에서 덮어쓴 곳 없음(coder Grep), Play 중 서버·클라이언트 값 같음. 머쉬맘 팩 밖 | a49c4b3963e148f09b2eb9de98d42ef4(effect, 0.13초) → 패턴 표 parry.any·special.random AttackSound(5ce65d6) | 임시. 사용자 청취 확인(2026-11-16 "점프음 확인 완료") | 6단계 견본 아트·사운드 확정 때 다시 본다 |
+| 1칸 공격 효과음(player 점프음, 2026-11-16 사용자 D-Q13, [Plan §22.17.4](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)) | **엔진 `MaplePreferencesLogic.JumpSound` 기본값**(`Environment/NativeScripts/Logic/MaplePreferencesLogic.d.mlua`). 프로젝트에서 덮어쓴 곳 없음(coder Grep), Play 중 서버·클라이언트 값 같음. 머쉬맘 팩 밖 | a49c4b3963e148f09b2eb9de98d42ef4(effect, 0.13초) → 패턴 표 parry.any·special.random AttackSound(5ce65d6) | 임시. 사용자 청취 확인(2026-11-16 "점프음 확인 완료") | 6단계 견본 아트·사운드 확정 때 다시 본다 |
 
 ~~회차 D 구현이 끝나면 이 표의 행을 "사용 중"으로 옮긴다.~~ → 2026-11-16 옮겼다. 고르지 않은 1칸 점프음 후보 3개는 아래 "후보"에 있다.
 
-### 회차 E 에셋 ([Plan §24](Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락으로 "사용 예정"에서 옮김)
+### 회차 E 에셋 ([Plan §24](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락으로 "사용 예정"에서 옮김)
 
 2026-11-06 사용자 선택, 2026-11-16 구현(coder 3e29a35), 2026-11-19 사용자 V11 수락("다른 건 다 좋음", Maker 26.11, 바꿀 점 없음)으로 "사용 중"이 됐다. 버튼은 `ui/CombatScreen.ui`, 가드 연출 표는 `RootDesk/MyDesk/DataSet/PlayerActionFxData.csv`다. 출시용 확정 여부(임시인지)는 정하지 않았다. UI 아트 스타일이 미정(GameDesign §8 "UI 상세")이므로 그때 사용자가 정한다.
 
@@ -67,9 +67,9 @@ UI RUID 5개(배경·아이콘 4종)는 msw-search 래퍼 색인에 없다(2026-
 | 출처 | 내용 |
 | --- | --- |
 | mob/6130101.img(머쉬맘) 나머지 | attack1·skill1·attack1 이펙트·효과음 5종은 2026-11-05 사용자 지시로 "사용 예정"(회차 D)으로 옮겼고, 2026-11-16 회차 D V11 수락으로 "사용 중"(회차 D 에셋)이 됐다 |
-| 1칸 공격 점프음 후보(2026-11-10 D-Q10, 2026-11-16 D-Q13으로 쓰지 않음, [Plan §22.17.4](Plans/2_CombatCore.md)) | 머쉬맘 팩 밖, 원본 이름 없음(2026-11-10 msw-search 래퍼 `getResourcesBatch` 확인). 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, 1b41f29~f78bab5 동안 기본값으로 들어 있었음), 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초). 사용자가 player 점프음(a49c4b39…)을 골라 셋 모두 쓰지 않는다 |
+| 1칸 공격 점프음 후보(2026-11-10 D-Q10, 2026-11-16 D-Q13으로 쓰지 않음, [Plan §22.17.4](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)) | 머쉬맘 팩 밖, 원본 이름 없음(2026-11-10 msw-search 래퍼 `getResourcesBatch` 확인). 35ee15e50b17410093e768c33f7f76d6(effect, mob, 0.287초, 1b41f29~f78bab5 동안 기본값으로 들어 있었음), 64c83d144b5d46ffa6d460ca61a66f1d(effect, etc, 0.862초), 09df85566b984d72b97c7aa9860c4b18(effect, etc, 1.254초). 사용자가 player 점프음(a49c4b39…)을 골라 셋 모두 쓰지 않는다 |
 | 좀비 머쉬맘 mob/6300005.img·mob/2400572.img, 블루 머쉬맘 mob/8645261.img·mob/8220007.img | 다른 보스 후보로만 기록 |
 | 주황버섯 팩 mob/1210102.img | stand a95cfed2c8fe4d2cb64cbb62db051f92, move 8257566e41aa4234929e81c6c2dab2e4, jump 6df12df0c9ce4caea61385606a4d40d3, hit1 5ebbdaf503964f3e87de155d16650805, die1 dddbe2f162184ec89add7440da56eb75 |
-| 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit)에서 고르지 않은 부품, [Plan §24](Plans/2_CombatCore.md) | 2026-11-06 사용자 선택으로 배경 e314c09b…·Icon_Sword·Icon_Arrow_Down·Icon_Arrow_L·Icon_Arrow_R는 위 "회차 E 에셋"(사용 중, 2026-11-19 V11 수락)으로 옮겼다. 남은 후보: 눌림 스프라이트 4eed2985436c4007890c3314c4d42dc0(SpriteSwap 안, 고르지 않음), Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54(아이콘 안 1, 고르지 않음), ↓ 대안 Icon_Triangle_Down 0c2db2ad2c694210ba492d0ab060b5e7(틴트, 기록 20×20). 사용자가 V11에서 ↓ Icon_Arrow_Down을 수락해 ↓ 대안은 묻지 않았다. 화면 적합성 미확인 |
+| 회차 E 조작 버튼 테마 simplefantasy(메이플슬래시, msw-ui-kit)에서 고르지 않은 부품, [Plan §24](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) | 2026-11-06 사용자 선택으로 배경 e314c09b…·Icon_Sword·Icon_Arrow_Down·Icon_Arrow_L·Icon_Arrow_R는 위 "회차 E 에셋"(사용 중, 2026-11-19 V11 수락)으로 옮겼다. 남은 후보: 눌림 스프라이트 4eed2985436c4007890c3314c4d42dc0(SpriteSwap 안, 고르지 않음), Icon_Arrow_Up 21a4739b4d654e51810c638f273d9c54(아이콘 안 1, 고르지 않음), ↓ 대안 Icon_Triangle_Down 0c2db2ad2c694210ba492d0ab060b5e7(틴트, 기록 20×20). 사용자가 V11에서 ↓ Icon_Arrow_Down을 수락해 ↓ 대안은 묻지 않았다. 화면 적합성 미확인 |
 | ~~회차 E가 바꿀 현재 조작 버튼 이미지~~ | → 2026-11-19 위 "교체됨"으로 옮겼다 |
 | 회차 E 가드 이펙트·소리 후보(스킬 팩, 2026-11-06 msw-search 재확인) | 로얄 가드 skill/5100.img/skill/51001006의 effect 318a4662…·소리 605da1fc…는 2026-11-06 사용자 선택으로 "사용 예정 (회차 E)"로 옮겼고 2026-11-19 V11 수락으로 위 "회차 E 에셋"(사용 중)이 됐다. 남은 후보(고르지 않음): 로얄 가드 강화 skill/40000.img/skill/400004230: effect a6c32468ecc14665baf9c056cfabae0c(138×156, 8프레임), effect_ple pre 0f93a8d6560547ddab87b8a0eb387e19·loop 12c03f6ac9374b5a91d993f09384c113·end f75c5a210fd24430b9e4a1122b6f82c8, 소리 6416b7d7c92148bfa05835e6b7aee9b0. 파워 가드 skill/800033.img/skill/80003317: effect af4e6abe766e4970a0e90aca58c6cc1c(64×85, 12프레임), effect0 a15d331295524094a9b1096df300022c, affected 1838b57cb0314900bc00b690580f8f36. 모습·크기 미확인 |

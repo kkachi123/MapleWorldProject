@@ -60,7 +60,7 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 - **PlayerActionFxData**: 빈 칸은 그 연출만 없다. 형식 오류나 행 없음이면 경고 1회 뒤 가드 연출만 끄고 전투는 계속한다.
 - **Weight**: 상대값이다. 한 패턴의 확률은 그 Weight ÷ 같은 몬스터 Weight 합이다. 현재 4·4·5·3·4이고, 로드 로그에 비율을 %로 표시한다.
 - **AttackInterval**: 공격이 끝난 뒤 다음 공격까지의 대기 시간이다. 공격 시작부터 다음 공격 시작까지는 약 4.0초다.
-- **열 의미·검증 규칙**: 상세는 [Plan §5](../Plans/2_CombatCore.md)와 회차별 절(§20·§21·§22·§24)이다.
+- **열 의미·검증 규칙**: 상세는 [Plan §5](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)와 회차별 절(§20·§21·§22·§24)이다.
 
 ### 최종 값이 있는 곳
 
@@ -71,7 +71,7 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 - **도약 조절 항목**: 데이터가 아니라 스크립트 속성 기본값이다.
   - OrangeMushroomAttack: JumpDuration 0.5, JumpHeight 0.8, LeapJumpHeight 0, EqualizeLeapFrames·EaseLeapMove·WindupHittable true.
   - MonsterAttackMotion: EffectWindupLastFrame 6·EffectDustFirstFrame 8.
-  - 확정 표는 [Plan §22.16.9](../Plans/2_CombatCore.md)다.
+  - 확정 표는 [Plan §22.16.9](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)다.
 - **BattlePos1/2/3**: map01 엔티티 위치(X -1.5/0/1.5)다. Pos2 경계 ±0.75와 기준점 간격은 DataSet이 아니다. 이동 시점은 [로드맵 §3](../DevelopmentRoadmap.md)의 "2:" 절을 따른다.
 - **에셋**: 모든 RUID는 임시·출시 미확정이다. 목록은 [AssetList](../AssetList.md), 파일 위치 기준은 [FileStructure](../FileStructure.md)다.
 - **기존 모델**: 주황버섯 모델(`orangemushroom`)은 패턴·스폰 없이 남아 있다. 6단계에서 다룬다.
@@ -129,7 +129,7 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 
 ## 반영 결과·확인 범위
 
-AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder 기본 검증 뒤 같은 버전으로 독립 QA 1~15회차와 독립 리뷰를 거쳤다. 최종 리뷰 판정은 2026-11-19 WAITING이며 결함은 없다. 실행 조건이 붙은 PASS는 그 조건에서만 유효하다. 상세는 [WorkRecord QA 기록](../WorkRecords/CombatCoreWorkRecord.md#qa-기록)·[리뷰 기록](../WorkRecords/CombatCoreWorkRecord.md#리뷰-기록)과 [Plan §7](../Plans/2_CombatCore.md)이다.
+AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder 기본 검증 뒤 같은 버전으로 독립 QA 1~15회차와 독립 리뷰를 거쳤다. 최종 리뷰 판정은 2026-11-19 WAITING이며 결함은 없다. 실행 조건이 붙은 PASS는 그 조건에서만 유효하다. 상세는 [WorkRecord QA 기록](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#qa-기록)·[리뷰 기록](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#리뷰-기록)과 [Plan §7](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)이다.
 
 | 검증 ID | 결과 |
 | --- | --- |

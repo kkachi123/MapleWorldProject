@@ -2,7 +2,7 @@
 
 ## 현재 결과
 
-2026-10-20 사용자 보고 **“v08 확인완료. 다음 단계 진행해줘.”**를 반영해 1단계를 완료했다. 근거는 2026-10-19의 구현·낙하 수정 AI Maker 확인과 사용자의 MovementInput-V08 확인 완료 보고다. 다음 단계는 [2단계 전투 핵심 계획](../Plans/2_CombatCore.md)이다.
+2026-10-20 사용자 보고 **“v08 확인완료. 다음 단계 진행해줘.”**를 반영해 1단계를 완료했다. 근거는 2026-10-19의 구현·낙하 수정 AI Maker 확인과 사용자의 MovementInput-V08 확인 완료 보고다. 다음 단계는 [2단계 전투 핵심 계획](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)이다.
 
 ## 사용·조절 방법
 
