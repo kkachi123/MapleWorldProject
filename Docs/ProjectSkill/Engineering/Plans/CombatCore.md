@@ -82,7 +82,7 @@ CombatFoundation-F07은 2026-11-19 사용자 "기존 수락으로 닫기"로 완
 | --- | --- | --- |
 | CombatCore-FU-14 | 관찰 O-1(2단계 QA14). 간헐적으로 클라이언트 접근이 멈춘다. QA14 재현 0/28. **→ 2026-11-20 FU-16에 합침(planner 판단).** FU-26 진단에서 이 "가끔 멈춤"은 FU-16의 정지 1프레임(정지 뒤 다음 프레임 약 2배 이동)과 같은 현상일 가능성이 높다고 봤다. QA14가 0/28이었던 것은 당시 기준이 "정지 0.05초 이하 PASS"여서 약 0.017초 정지를 잡지 못했기 때문이다. 원인 확정은 아니다 | 따로 추적하지 않고 FU-16 행의 다시 볼 조건을 따른다. 다시 볼 조건·수정안(이동 방식)이 같아 두 행으로 둘 이유가 없다. FU-16을 처리할 때 "가끔 멈춤"이 함께 사라졌는지 확인하고, 사라지지 않으면 이 ID를 다시 연다 |
 | CombatCore-FU-15 | 관찰 O-3(2단계). 구동 프레임 이벤트가 같은 ms에 2건 도착한다. 2026-11-19~20 FU-26 진단: 2·3칸 18회 모두 f1·f2·f3 이벤트가 2건씩 왔지만 화면 되돌림·Start≠End 표본은 0이었다. **FU-26의 원인으로 지지되지 않는다.** 1-A 뒤 2·3칸 도약 구간에는 서버 프레임 구동이 없다(windup f0만 구동) | 유지. 프레임 이벤트에 기대는 새 기능을 만들 때, 또는 화면 문제로 확인될 때. 2026-11-19 (C). 구동 방식 변경은 사용자 승인 대상이다 |
-| CombatCore-FU-16 | 접근·복귀 이동을 서버 `OnUpdate`에서 매 틱 `SetPosition`으로 처리한다. FU-14를 합쳤다. **측정(2026-11-19~20 FU-26 진단, Maker 26.11 로컬 Play)**: 클라이언트에서 "정지 1프레임 + 다음 프레임 약 2배 이동"이 접근 0.43초 안에 2·3칸 18회 중 13회(72%), 1칸 6회 중 4회(67%) 나왔다. 2·3칸은 정지 뒤 한 프레임 이동이 최대 0.44단위다. 같은 시험에서 엔진 물리 이동(`Rigidbody.MoveVelocity`)은 0회, 틱 위치 쓰기는 `SetPosition`·`SetWorldPosition`·`MovementComponent:SetPosition` 모두 같은 정지가 났다. 2026-11-16 기록에도 같은 값이 있어 Maker 26.10/26.11과 무관하다. 속도 기반 이동은 `WalkSpeed`·`InputSpeed`를 스크립트에서 올리면 필요한 속도(2·3칸 평균 5.2~8.7단위/초)에 닿고 고속에서도 정지 0이었지만, 가속에 약 0.15초가 들고 착지 x(±0.01)·판정 시각(±0.05초) 정밀도는 시험하지 않았다(수정안 A). **1-A로 다루지 않은 사유**: 진단에서 사용자 체감("도중이 뚝 끊기는 느낌")의 주원인은 클립 공중 높이 계단으로 보고 이 정지 프레임은 부원인("가끔")으로 봤다. 사용자는 이동 방식 변경안(A~D)을 고르지 않고 클립 쪽 1-A를 골랐다. 이동 방식 변경은 Plan의 사용자 승인 대상이고, 1-A는 수평 이동·위치 쓰기를 바꾸지 않았으므로 이 정지 프레임은 그대로 남아 있다(1-A 뒤 클라이언트 표본 4회 0건은 표본이 적어 개선 근거로 쓰지 않음) | (C) 유지. 다시 볼 조건: (1) 1-A 뒤에도 사용자가 "가끔 툭 건너뜀/멈춤"을 보고할 때(2026-11-20 V11에서는 "모두 괜찮음"으로 보고 없음), (2) 지연 있는 실접속·모바일 회차(늦어도 7단계), (3) 6단계 몬스터 동작 일반화로 이동 구조를 다시 정할 때. 앞당기려면 (B)로 바꿔 사용자가 이동 방식을 정한다. 수정안·위험은 [WorkRecord FU-26 진단 7절](../WorkRecords/CombatCoreWorkRecord.md)이 원문이다 |
+| CombatCore-FU-16 | 접근·복귀 이동을 서버 `OnUpdate`에서 매 틱 `SetPosition`으로 처리한다. FU-14를 합쳤다. **측정(2026-11-19~20 FU-26 진단, Maker 26.11 로컬 Play)**: 클라이언트에서 "정지 1프레임 + 다음 프레임 약 2배 이동"이 접근 0.43초 안에 2·3칸 18회 중 13회(72%), 1칸 6회 중 4회(67%) 나왔다. 2·3칸은 정지 뒤 한 프레임 이동이 최대 0.44단위다. 같은 시험에서 엔진 물리 이동(`Rigidbody.MoveVelocity`)은 0회, 틱 위치 쓰기는 `SetPosition`·`SetWorldPosition`·`MovementComponent:SetPosition` 모두 같은 정지가 났다. 2026-11-16 기록에도 같은 값이 있어 Maker 26.10/26.11과 무관하다. 속도 기반 이동은 `WalkSpeed`·`InputSpeed`를 스크립트에서 올리면 필요한 속도(2·3칸 평균 5.2~8.7단위/초)에 닿고 고속에서도 정지 0이었지만, 가속에 약 0.15초가 들고 착지 x(±0.01)·판정 시각(±0.05초) 정밀도는 시험하지 않았다(수정안 A). **1-A로 다루지 않은 사유**: 진단에서 사용자 체감("도중이 뚝 끊기는 느낌")의 주원인은 클립 공중 높이 계단으로 보고 이 정지 프레임은 부원인("가끔")으로 봤다. 사용자는 이동 방식 변경안(A~D)을 고르지 않고 클립 쪽 1-A를 골랐다. 이동 방식 변경은 Plan의 사용자 승인 대상이고, 1-A는 수평 이동·위치 쓰기를 바꾸지 않았으므로 이 정지 프레임은 그대로 남아 있다(1-A 뒤 클라이언트 표본 4회 0건은 표본이 적어 개선 근거로 쓰지 않음) | (C) 유지. 다시 볼 조건: (1) 1-A 뒤에도 사용자가 "가끔 툭 건너뜀/멈춤"을 보고할 때(2026-11-20 V11에서는 "모두 괜찮음"으로 보고 없음), (2) 지연 있는 실접속·모바일 회차(늦어도 7단계), (3) 6단계 몬스터 동작 일반화로 이동 구조를 다시 정할 때. 앞당기려면 (B)로 바꿔 사용자가 이동 방식을 정한다. 수정안·위험은 [WorkRecord FU-26 진단 7절](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#7-수정안-선택지전부-수정-전-사용자-승인-대상)(삭제됨, 기준 커밋 a9863ca)이 원문이다 |
 | CombatCore-FU-28 | 전투 중단·공격 취소 뒤 몬스터 표시·위치 정리. **관찰 O-1(2026-11-20 tester, a18b251)**: 접근(jump)·windup 중 공격이 취소되면 클립을 stand로 되돌리는 경로가 없어 jump(또는 attack1·skill1) 클립이 남고, 몬스터는 집으로 돌아가지 않고 그 자리에 선다. `CancelMotion`은 HIT·DEAD 위에 stand를 쓰지 않으려는 의도로 클립을 건드리지 않는 기존 구조다(c6422cd에서도 attack1이 남음, 1-A로 바뀐 것은 남는 그림뿐). 실제 플레이에서는 플레이어 사망·정지 중단(`AbortCombat`)·맵 이탈 때만 생긴다. **관찰 O-3(같은 시험, 원인 미확정)**: 플레이어 HP를 보충하지 않은 자연 공격 중 1칸 공격이 0.52초에 ATTACK → IDLE로 끝나며 x 0.000에 남았고 5초 뒤 x 3.000·IDLE·플레이어 HP 100/100으로 돌아와 있었다. 플레이어 사망 → `AbortCombat` → `CancelPendingAttack` → `CancelMotion` 경로(O-1과 같은 구조)로 보이나 로그로 확정하지 못했다. 결함 아님(reviewer 판단 3). **관찰(2026-11-20 회차 2 tester O-3, d8c61db)**: 공격이 취소돼도 이미 재생을 시작한 눈빛·먼지 이펙트는 화면에서 끝까지 나온다. `ClearEffects`는 추적만 끊는다. FQ-3 (가) "기존 이펙트 유지"와 같은 기존 동작이며 결함이 아니다(회차 2 reviewer 판단 4) | 2026-11-20 (C) 추적 등록. **작업 승인 아님.** 다시 볼 조건: 사용자가 플레이어 사망·정지 중단 뒤 몬스터 모습·위치가 어색하다고 보고할 때, 또는 3단계 이후 전투 종료·재시작 흐름을 만들 때(3단계 Plan 작성 때 후보 검토). O-3 재현 조건(tester): 자연 공격 중 플레이어 HP를 보충하지 않고, 플레이어 사망·부활 시각, 몬스터 상태·구간·x, `[VRF] CombatPause abort`를 같은 시계로 기록한다 |
 | CombatCore-FU-30 | 이펙트 클립 첫 동기 로드(2026-11-20 reviewer 회차 2 관찰 R-1, 결함 아님·낮음). 몬스터 엔티티별 첫 눈빛 때 `MonsterAttackMotion`의 `TrackEffect` → `GetRuidTimeline` → `LoadAnimationClipAndWait`가 서버에서 동기로 돈다. 접근 클립은 스폰 때 `MonsterManager`(138행)가 미리 읽지만 이펙트 클립은 미리 읽지 않아 `GetClipTimeline` 주석("진행 중에는 읽지 않는다")과 다르다. `Monster_Attack` 58·59행 순서상 로드 시간만큼 `attackDue`(판정)와 추적 시작이 늦어질 수 있다. 측정된 눈빛→먼지 1.576·1.588초(예고 1.571초)는 ±0.05 안이지만 그 표본이 첫 공격인지는 확인하지 않았다. 고치려면 회차 2 범위 밖인 `MonsterManager`(이펙트 클립 미리 읽기)를 바꿔야 한다 | 2026-11-20 (C) 추적 등록. **작업 승인 아님.** 다시 볼 조건: (1) Play 시작 뒤 첫 3칸 공격의 눈빛→먼지 전투 시계 차가 예고 1.571초보다 눈에 띄게 길 때, (2) 사용자가 첫 공격 지연을 보고할 때, (3) 늦어도 6단계 몬스터 동작 일반화(FU-04·FU-29와 함께, 리뷰 제안). 확인 방법: Play 시작 뒤 첫 3칸 공격의 눈빛·먼지 `clock` 차를 기록한다 |
 
@@ -108,7 +108,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 
 ## 후속 회차 1에서 닫은 항목(2026-11-20)
 
-근거 흐름: coder → 메인 `[code]` 로컬 커밋 → 같은 버전 tester → reviewer → 사용자 V11. 상세는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md), 현재 결과는 [2단계 Feature](../Features/2_CombatCore.md)다. 대상 버전 c6422cd(FU-24·03·23)·a18b251(FU-26), 둘 다 회차 종료 커밋 `[CombatCore][review]` b071b5c와 함께 2026-11-20 push했다.
+근거 흐름: coder → 메인 `[code]` 로컬 커밋 → 같은 버전 tester → reviewer → 사용자 V11. 상세는 [WorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)(삭제됨, 기준 커밋 a9863ca), 현재 결과는 [2단계 Feature](../Features/2_CombatCore.md)다. 대상 버전 c6422cd(FU-24·03·23)·a18b251(FU-26), 둘 다 회차 종료 커밋 `[CombatCore][review]` b071b5c와 함께 2026-11-20 push했다.
 
 | ID | 결과 | 남은 것·추적 |
 | --- | --- | --- |
@@ -121,7 +121,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 
 ## 후속 회차 2에서 닫은 항목(2026-11-20)
 
-근거 흐름: coder → 메인 `[code]` d8c61db → 같은 버전 tester(FAIL 0) → reviewer WAITING(AI 1~5 충족, 새 코드 잠재 결함 O-1 지적) → 사용자 결정(O-1 이번에 고침, FU-12 화면은 "시연 보고 확인") → coder O-1 수정 → 메인 `[code]` eaeb032 → 같은 버전 tester O-1 회귀(FAIL 0)·사용자 시연 → reviewer READY → 사용자 V11 수락. 상세는 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md), 현재 결과는 [2단계 Feature](../Features/2_CombatCore.md)다.
+근거 흐름: coder → 메인 `[code]` d8c61db → 같은 버전 tester(FAIL 0) → reviewer WAITING(AI 1~5 충족, 새 코드 잠재 결함 O-1 지적) → 사용자 결정(O-1 이번에 고침, FU-12 화면은 "시연 보고 확인") → coder O-1 수정 → 메인 `[code]` eaeb032 → 같은 버전 tester O-1 회귀(FAIL 0)·사용자 시연 → reviewer READY → 사용자 V11 수락. 상세는 [WorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)(삭제됨, 기준 커밋 a9863ca), 현재 결과는 [2단계 Feature](../Features/2_CombatCore.md)다.
 
 - 대상 버전: d8c61db(트리 `3940b24f378ecf9e1fdcd9bb99e9463ef46edd17`, 제품 `.mlua` 4개) + O-1 수정 eaeb032(`eaeb03230019fe929fb5423cb8cbc8b3dc857bbd`, 트리 `fe15c8744a1c91931a89d272b1f3bfa895825a75`, `MonsterAttackMotion.mlua` blob `8d22ddda9183c257053c1fce14bcc740f3a0a4d9`). 둘 다 회차 종료 `[CombatCore][review]` 커밋과 함께 push한다. 커밋 제외: `map/map01.map`(SHA-256 `22b6acbf…987e`, 범위 밖 사용자 변경).
 - 사용자 V11(2026-11-20): 자연 플레이(기본 공격 10타 피해 숫자와 HP 감소, 가드 시작 이펙트·소리 1회, 패링·반격 체감 동일) "모두 괜찮음". FU-12 화면은 Play 메모리 프로브 시연 6회(정지 n=1·3·5, 슬로우 n=2·4·6, 눈빛·먼지 × 정지·슬로우 각 1회 이상) "모두 괜찮음"(끊김·처음부터 재시작·겹침 없음). n=7·8 재시연은 "필요 없음". 시연 중 Play 종료는 사용자 Stop이었다("내가 Stop함", 제품 결함 아님).
@@ -157,8 +157,9 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
     - **2026-11-20 완료.** FU-17·FU-19·FU-12 모두 tester FAIL 0, reviewer READY, 사용자 V11 수락(자연 플레이 + FU-12 프로브 시연)으로 닫았다([후속 회차 2에서 닫은 항목](#후속-회차-2에서-닫은-항목2026-11-20)). 이로써 이 후속 처리의 회차는 모두 끝났다.
   - 후속 회차 3: 회차 1에 합쳤다(FQ-2).
   - 후속 회차 4: 열지 않는다(FQ-4·FQ-5·FQ-6 모두 (가)).
-- run: `.pipeline/20261119-combatcore-followup/run.md`. 기준 버전 16d70b3(회차 1), a593e2b(회차 2).
-- WorkRecord: [CombatCoreWorkRecord](../WorkRecords/CombatCoreWorkRecord.md). 후속 처리 회차 기록이며 2단계 원본(기준 커밋 5efe005)과 다른 새 기록이다.
+- run: `.pipeline/20261119-combatcore-followup/run.md`(삭제됨, 기준 커밋 a9863ca의 [run](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/.pipeline/20261119-combatcore-followup/run.md)). 기준 버전 16d70b3(회차 1), a593e2b(회차 2).
+- WorkRecord: [CombatCoreWorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)(삭제됨, 기준 커밋 a9863ca). 후속 처리 회차 기록이며 2단계 원본(기준 커밋 5efe005)과 다른 새 기록이다.
+- 삭제(2026-11-20 마감 B): 사용자 결정 "링크 정리 후 삭제"로 위 run과 WorkRecord를 지웠다. 이 계획에서 "WorkRecord 개발 절", "run 기록" 같이 링크 없이 쓴 언급은 기준 커밋 a9863ca의 위 두 파일을 가리킨다.
 - 대상 맵은 map01이고 `TileMapMode` 0(MapleTile)이다(근거: [2단계 Feature](../Features/2_CombatCore.md), 2단계 WorkRecord의 MapBuilder 조회). 이 처리는 맵·Body·규칙·수치·입력 계약을 바꾸지 않는다.
 - 작업 트리의 `map/map01.map` 변경은 범위 밖이다. 사용자가 "그대로 둠"으로 정했고, 어느 회차 커밋에도 섞지 않는다.
   - 해시 기준: 회차 시작 `3e60c21d…c2094`. 2026-11-19 2차 동기화 때 Maker 26.11이 CoreVersion 1줄을 다시 저장해 바뀌었고, 사용자 결정으로 새 기준은 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`다(run 2026-11-19 기록). 이후 회차 1의 모든 단계(FU-26 포함)는 이 값을 기준으로 본다.
@@ -482,7 +483,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
   - 높이: `LeapJumpHeight` 0 → 0.8(1칸 `JumpHeight`와 같은 값). 엔티티 y가 시간 포물선으로 Home.y + 0.8까지 올랐다 내려온다.
   - 그대로인 것: 수평 이동(매 틱 `SetPosition`·smoothstep), W·판정 시각, 착지 x·y, 판정 영역, 피격 구간, 복귀, 1칸 경로, 패턴 표·모델·이펙트·효과음.
   - 바뀐 파일: `Monster/OrangeMushroom/OrangeMushroomAttack.mlua` 1개(+10/−7, a18b251). 모델·CSV·`.codeblock` 변경 0.
-  - 애니메이션 규칙: 새 클립이 아니라 머쉬맘 ActionSheet의 기존 키 `jump`(5ecbcc40…, 1칸 공격과 같은 클립)다. ActionSheet 7개 키·RUID 목록은 WorkRecord 진단 1절에 있다.
+  - 애니메이션 규칙: 새 클립이 아니라 머쉬맘 ActionSheet의 기존 키 `jump`(5ecbcc40…, 1칸 공격과 같은 클립)다. ActionSheet 7개 키·RUID 목록은 [WorkRecord 진단 1절](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#1-값-확인modelbuilder-읽기소스패턴-표)(삭제됨, 기준 커밋 a9863ca)에 있다.
 - 관찰 버전·환경: c6422cd(이 회차는 위치만 바뀜), Maker 26.11.
 - 변경 이력(planner git log 확인):
   - 머쉬맘 공격 스크립트(`RootDesk/MyDesk/Monster/` 아래)와 `Models/` 아래 모델은 e710907(회차 D2 MM-14 2차, 2026-11-16 V11 수락 기준) 뒤 커밋 변경이 없다.
@@ -496,7 +497,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 - 1칸(parry.any·special.random, jump)은 괜찮다(사용자).
 - FQ-8 답(2026-11-19): 가끔 보임, (나) 뜬 직후 공중, 시기는 "최근 아니다 계속 봄"(11-16 수락 이전부터). 2026-11-20 체감: "보간된 포물선 느낌이 아닌 도중이 뚝 끊기는 느낌".
 
-**진단 결과(2026-11-19~20 coder, 제품 변경 0)** — 원문은 [WorkRecord FU-26 진단](../WorkRecords/CombatCoreWorkRecord.md) 1~10절.
+**진단 결과(2026-11-19~20 coder, 제품 변경 0)** — 원문은 [WorkRecord FU-26 진단](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#2026-11-19-coder--fu-26-진단머쉬맘-23칸-점프-초반-공중-끊김-진단만제품-변경-0)(삭제됨, 기준 커밋 a9863ca) 1~10절.
 
 - **주원인(항상, 체감 "뚝 끊김")**: attack1·skill1 클립 공중 부분의 계단식 높이. 그림 높이가 0 → +0.88 → +0.70 → +0.08 → 0이고 프레임 사이 보간이 없다. W에 +0.88을 한 번에 올리고 W+0.286초에 −0.62를 한 번에 내린다. 클립 안 수평 이동은 없고, 수평은 스크립트 smoothstep이라 "높이는 계단, 수평은 곡선"이 겹쳐 보였다. 1칸은 jump 정지 자세 + 스크립트 포물선이라 높이가 연속이다.
 - **부원인(가끔)**: FU-16 정지 1프레임(서버 매 틱 `SetPosition`이 클라이언트에서 정지 1프레임 + 다음 프레임 약 2배 이동으로 도착). 2·3칸 18회 중 13회, 1칸 6회 중 4회. 결과는 [FU-16 행](#부채남은-과제-구현-승인-아님).
@@ -656,10 +657,10 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
      - 커밋 해시와 트리 id(`git rev-parse <커밋>^{tree}`);
      - 바뀐 제품 파일은 `git diff --stat <부모> <커밋>`과 `git ls-tree -r <커밋> -- <경로>`의 blob id;
      - 작업 트리 미커밋 변경은 `git status --porcelain`, 커밋에서 뺀 범위 밖 파일(`map/map01.map`)은 SHA-256.
-  3. 충족. 회차 2 기준 버전 = a593e2b(`origin/main`과 같음), 트리 id `d7ab128dc93ff5b8120882a8fcfd72a905a15f08`. `git status --porcelain` 결과 제품 변경은 ` M map/map01.map`(SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`, 커밋 제외)뿐이고, 나머지는 메인이 관리하는 ` M .pipeline/20261119-combatcore-followup/run.md`다. `RootDesk/` 미커밋 변경 0.
+  3. 충족. 회차 2 기준 버전 = a593e2b(`origin/main`과 같음), 트리 id `d7ab128dc93ff5b8120882a8fcfd72a905a15f08`. `git status --porcelain` 결과 제품 변경은 ` M map/map01.map`(SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`, 커밋 제외)뿐이고, 나머지는 메인이 관리하는 ` M .pipeline/20261119-combatcore-followup/run.md`(2026-11-20 삭제됨, 기준 커밋 a9863ca)다. `RootDesk/` 미커밋 변경 0.
   4. 충족. planner는 범위 확인만 했다. 새 사용자 결정은 없다(FQ-3 (가)·원래 순서로 확정). 구현 승인은 사용자 "회차 2 시작"(2026-11-20)이다.
 - **진행 상태(2026-11-20): 완료.** coder → `[code]` d8c61db(트리 `3940b24f…`) → tester FAIL 0 → reviewer WAITING(AI 1~5 충족, O-1 지적, 사용자 판단 4건) → 사용자 결정 → coder O-1 수정 → `[code]` eaeb032(트리 `fe15c874…`, `MonsterAttackMotion.mlua` blob `8d22ddd…`) → tester O-1 회귀 FAIL 0·사용자 프로브 시연 → reviewer READY → 사용자 V11 수락. 결과는 [후속 회차 2에서 닫은 항목](#후속-회차-2에서-닫은-항목2026-11-20). 남은 것은 메인의 회차 종료 `[CombatCore][review]` 커밋·push와 planner 마감 B(아래 "회차 종료 때 문서 정리")다.
-- 구현 상태(2026-11-20 coder, d8c61db로 커밋됨): FU-17·FU-19·FU-12 (가) 구현·기본 검증 완료. 변경은 `PlayerCombatComponent`·`PlayerGuardComponent`·`MonsterAttackMotion`·`MonsterStateControl` 4개이고 `CombatPauseComponent`는 바꾸지 않았다(정지·재개는 클라이언트 시간 배율 0이 이미 이펙트를 멈춘 프레임으로 두고 이어 재생함을 측정으로 확인, 슬로우 추종만 몬스터 이펙트에 구현). 근거·미실시는 WorkRecord 개발 절 "후속 회차 2". 이후 QA·리뷰·사용자 V11 전까지 이전 판정은 이 변경에 적용되지 않는다.
+- 구현 상태(2026-11-20 coder, d8c61db로 커밋됨): FU-17·FU-19·FU-12 (가) 구현·기본 검증 완료. 변경은 `PlayerCombatComponent`·`PlayerGuardComponent`·`MonsterAttackMotion`·`MonsterStateControl` 4개이고 `CombatPauseComponent`는 바꾸지 않았다(정지·재개는 클라이언트 시간 배율 0이 이미 이펙트를 멈춘 프레임으로 두고 이어 재생함을 측정으로 확인, 슬로우 추종만 몬스터 이펙트에 구현). 근거·미실시는 [WorkRecord 개발 절](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md#개발-기록)(삭제됨, 기준 커밋 a9863ca) "후속 회차 2". 이후 QA·리뷰·사용자 V11 전까지 이전 판정은 이 변경에 적용되지 않는다.
 - O-1 수정(2026-11-20 coder, eaeb032로 커밋됨): `GetEffectFrame`의 경과 시간에 클립 PlayRate(`fx.timeline.rate`)를 곱했다(+1/−1). 같은 파일의 `GetWindupSeconds`·`StartDrivenClip`·`PlayDieOnce`와 같은 관계다. 지금 클립은 PlayRate 1.0이라 결과 값은 같고(회귀 프레임 일치), 효과 자체는 소스 대조만 했다(O1-T7 NOT_RUN).
 - FU-29(도약 균등화 코드 정리)는 `OrangeMushroomAttack.mlua`라 회차 2 범위가 아니다. 사용자가 따로 승인해야만 들어간다.
 
@@ -747,7 +748,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 **회차 종료 때 문서 정리(planner)**
 
 - 마감 A(2026-11-20, 완료): 이 계획의 목표·상태·미실시 표·부채 표(FU-12·17·19를 닫은 항목으로 옮김, FU-28에 회차 2 O-3, FU-30 등록, FU-27에 회차 2 내용)·사용자 결정 대기·분류 표, 이 절의 진행 상태·V11 정리, [2단계 Feature](../Features/2_CombatCore.md), [로드맵](../DevelopmentRoadmap.md) 재개 지점, [WorkRecords README](../WorkRecords/README.md) 상태 문구. GameDesign은 규칙·수치 변경이 없어 고치지 않았다.
-- 마감 B(메인 `[CombatCore][review]` 커밋·push 뒤): 사용자 결정 "링크 정리 후 삭제"(2026-11-20)에 따라 WorkRecord·run을 가리키는 링크를 그 커밋의 GitHub 고정 링크로 바꾸고 `WorkRecords/CombatCoreWorkRecord.md`와 `.pipeline/20261119-combatcore-followup/`을 지운다(2026-11-19 5efe005 선례). 끝나면 메인이 `[CombatCore][plan]` 커밋·push.
+- 마감 B(2026-11-20, 완료): 메인 `[CombatCore][review]` 커밋 a9863ca가 push된 뒤, 사용자 결정 "링크 정리 후 삭제"(2026-11-20)에 따라 WorkRecord·run을 가리키는 링크를 기준 커밋 a9863ca의 GitHub 고정 링크로 바꾸고 `WorkRecords/CombatCoreWorkRecord.md`와 `.pipeline/20261119-combatcore-followup/`을 지웠다(삭제됨, 2026-11-19 5efe005 선례). 메인이 `[CombatCore][plan]` 커밋·push로 마무리한다.
 
 **중단 조건**
 
@@ -819,7 +820,7 @@ FQ-4·FQ-5·FQ-6이 모두 (가)여서 FU-08~11·FU-13·FU-20은 하지 않고 �
 
 ### 5. 기록·종료
 
-- **WorkRecord**: 2026-11-19 후속 회차 1을 시작하며 planner가 만들었다: [CombatCoreWorkRecord](../WorkRecords/CombatCoreWorkRecord.md).
+- **WorkRecord**: 2026-11-19 후속 회차 1을 시작하며 planner가 만들었다: [CombatCoreWorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md). 2026-11-20 마감 B에서 삭제했으며(삭제됨) 링크는 기준 커밋 a9863ca를 가리킨다.
   - 2단계 원본 WorkRecord는 기준 커밋 5efe005에만 있다. 그래서 첫 줄에서 "2단계 후속 처리(FU) 회차 기록"이라고 구분한다.
   - 회차마다 개발·QA·리뷰 절을 순서대로 둔다.
 - **회차 종료**: 결과를 [2단계 Feature](../Features/2_CombatCore.md)에 짧게 반영하고 위 부채 표의 행을 정리한다(아래 "진행·종료").

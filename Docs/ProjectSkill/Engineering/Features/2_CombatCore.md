@@ -173,7 +173,7 @@ AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder
   - 회차 E 종료 문서 정리 daf7c42.
   - 후속 회차 1: 파일 이동·FU-03·원장 c6422cd, 머쉬맘 도약 1-A a18b251.
   - 후속 회차 2: 공격·가드 코드 정리·FU-12 d8c61db, O-1 수정 eaeb032.
-- **후속 회차 1 결과(2026-11-20)**: AI / map01·MapleTile / Maker 26.11 PC. 두 버전 모두 coder 기본 검증 → 같은 버전 tester(FAIL 0) → reviewer WAITING(결함 0) → 사용자 V11 수락이다. 파일 이동(22파일, 바이트 그대로)·FU-03·원장 정리와 머쉬맘 2·3칸 도약(jump 자세, 정점 Home.y + 0.8, W·판정·착지 위치·피격 구간·1칸 경로 그대로)을 확인했다. 상세는 [후속 계획](../Plans/CombatCore.md)과 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)다.
+- **후속 회차 1 결과(2026-11-20)**: AI / map01·MapleTile / Maker 26.11 PC. 두 버전 모두 coder 기본 검증 → 같은 버전 tester(FAIL 0) → reviewer WAITING(결함 0) → 사용자 V11 수락이다. 파일 이동(22파일, 바이트 그대로)·FU-03·원장 정리와 머쉬맘 2·3칸 도약(jump 자세, 정점 Home.y + 0.8, W·판정·착지 위치·피격 구간·1칸 경로 그대로)을 확인했다. 상세는 [후속 계획](../Plans/CombatCore.md)과 [WorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/a9863cae5d93ff1abc467775d2a7ec36ca2588c5/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)(삭제됨, 기준 커밋 a9863ca)다.
 - **후속 회차 2 결과(2026-11-20)**: AI / map01·MapleTile / Maker 26.11 PC. coder 기본 검증 → 같은 버전 tester(FAIL 0) → reviewer(O-1 지적 뒤 같은 승인 범위에서 수정, 재리뷰 READY) → 사용자 V11 수락이다.
   - FU-17(쓰기 전용 필드 1줄 삭제)·FU-19(가드 상태 기록 순서): 동작은 같다. V02 회귀(HitEvent 합 = HP 감소, ×2.2 반격 1회)와 가드 시작·연출·효과음 각 1회, 잔여 40%, 패링을 확인했다.
   - FU-12: 정지 중 멈춘 프레임 유지·재개 뒤 이어 재생(측정), 슬로우 이어 재생 프레임이 계산값과 일치, 끝난 이펙트 다시 안 냄, 사망·대결 종료·Stop 정리를 확인했다. 화면은 사용자 프로브 시연으로 수락했다.
