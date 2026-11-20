@@ -5,7 +5,7 @@
 - 상태: WAITING_USER
 - 갱신: 2026-11-20 / 메인 조율 채팅(Claude Code)
 - 현재 담당: 사용자 (후속 회차 2 시작 지시 대기)
-- 다음 행동·대기 사유: 후속 회차 1 종료(FU-24·03·23·26, [code] c6422cd·a18b251, [review] 커밋·push). 다음: 버전 지문 git 해시 방식 [ops] 반영(사용자 승인 2026-11-20) → 사용자 지시 시 후속 회차 2(FU-17·FU-19·FU-12 (가)), planner 범위 확인부터. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
+- 다음 행동·대기 사유: 후속 회차 1 종료(b071b5c push). 버전 지문 git 해시 방식 [ops] 반영. 다음: 사용자 지시 시 후속 회차 2(FU-17·FU-19·FU-12 (가)), planner 범위 확인부터. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
 - 환경 가이드: 없음
 
 ## 원본 연결
@@ -56,3 +56,4 @@
 - 2026-11-20 reviewer 판정 WAITING(FU-26, a18b251): AI 1~7 충족, 결함 0, 기준 교체(jump 전환 1회) 정당. 남은 것: 사용자 V11(2·3칸 초반 / 1칸 회귀 / 반응 시간·맞는 구간 체감)과 O-2 확인, userdataset 재저장 처리((가) 별도 [ops] 권장), 가드 문구 통일, Bundle→git tree·blob id 운영 변경, 후보 FU-28(취소 뒤 표시·위치 정리, O-1·O-3)·FU-29(Equalize 잔존 정리) 등록. O-2는 FU-13 관찰로. 종료 정리 planner: Plan FU-26 절·GameDesign §4.2 옛 문구, FU-14·15·16 행.
 - 2026-11-20 사용자 답: V11 점프 ①2·3칸 초반 ②1칸 회귀 없음 ③반응 시간·맞는 구간 동일 ④착지 stand 1프레임 "모두 괜찮음"(O-2 안 보임). PlayerActionFxData.userdataset 재저장분은 "회차 커밋에 포함". 가드 문구 "통일". 버전 지문 "git 해시로 변경"([ops] 별도). planner 회차 1 종료 정리 호출.
 - 2026-11-20 planner 회차 1 종료 정리 완료(Plan·GameDesign §4.2·Feature·FileStructure·로드맵·WorkRecord README·링크 3곳, 가드 문구 5곳 통일, FU-14→FU-16 병합, FU-28·FU-29 (C) 추적 등록, run은 회차 2까지 유지 권고). 메인 [review] 회차 종료 커밋(PlayerActionFxData.userdataset 포함, map01 제외)·push.
+- 2026-11-20 [review] b071b5c push(c6422cd·a18b251 포함, 비밀값 검사 통과). [ops] CLAUDE.md "버전 고정"을 git 트리·blob id 방식으로 변경, .pipeline/README 대상 버전 칸 갱신(사용자 승인 "git 해시로 변경").

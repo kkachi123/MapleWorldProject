@@ -42,7 +42,11 @@ ship 스킬은 네 담당을 아래 프로젝트 에이전트(`.claude/agents/`)
   | 회차 종료(reviewer 판정 확인 후) | QA·리뷰 절, Plan·GameDesign·로드맵, run.md 등 회차의 나머지 문서 | `[{FeatureKey}][review] {판정}` | 회차 커밋 전체를 한 번에 |
 
 - **따로 커밋하는 경우만 `[ops]`:** EnvGuides·에이전트 정의·설정·CLAUDE.md 같은 운영 규칙 변경, 사용자의 일시정지·중단 요청, `WAITING_ENV` 전환. run.md만 바뀐 상태 갱신은 따로 커밋하지 않고 회차 커밋에 넣는다. 회차 밖 planner 단독 문서 작업은 끝날 때 `[{FeatureKey}][plan]` 한 커밋으로 한다.
-- **버전 고정:** coder 로컬 커밋 해시를 tester·reviewer의 대상 버전으로 쓰고, WorkRecord와 run에 기존 바이트 지문과 함께 적는다.
+- **버전 고정:** coder 로컬 커밋 해시를 tester·reviewer의 대상 버전으로 쓰고 WorkRecord와 run에 적는다. 같은 버전인지는 git으로만 확인한다(2026-11-20 사용자 결정):
+  - 커밋 트리 id `git rev-parse <커밋>^{tree}`를 함께 적는다.
+  - 바뀐 제품 파일은 `git diff --stat <부모> <커밋>`과 `git ls-tree -r <커밋> -- <경로>`의 blob id로 대조한다.
+  - 작업 트리의 미커밋 변경은 `git status --porcelain`으로 적는다. 커밋에서 뺀 범위 밖 파일(예: 사용자 변경 `map/map01.map`)은 SHA-256을 함께 적는다.
+  - 확장자별 파일 묶음 지문(Bundle)은 쓰지 않는다. 구현마다 값이 달라 대조가 안 되고 `.model`·`.ui`를 셸로 읽어야 하기 때문이다.
 - **커밋하지 않는 상태:** Play 중, 편집이 반쯤 된 상태, `WAITING_ENV` 중의 미완성 제품 변경. run에만 기록하고 다음 정상 종료 시점에 커밋한다. 사용자가 직접 바꾼 파일은 해당 범위가 아니면 커밋에 섞지 않고 알린다.
 - **메시지 본문:** run-id, 요구/결함 ID, 실제 실행한 검증과 미실시를 짧게 적고 마지막 줄에 Co-Authored-By 서명을 붙인다.
 - **push:** 회차 종료 커밋과 `[ops]`·`[plan]` 커밋 때 `origin main`에 push한다. 공개 저장소이므로 push 전마다 아직 push하지 않은 커밋 전체에서 토큰·키·개인정보(이메일·로컬 사용자 경로)를 검사하고, 하나라도 걸리면 push하지 않고 멈춘다. 강제 push·이력 재작성·다른 브랜치 push는 사용자 요청 없이 하지 않는다.
