@@ -2,9 +2,9 @@
 
 - 요청·승인: 사용자(2026-11-19) "castleenemy 문구 정리(FU-23), DataSet 6종 이관(FU-24), 부채 처리(FU-04~22먼저 하고, 이후 3단계 진행하자". 2단계 후속 항목을 3단계보다 먼저 처리하는 순서 승인. 항목별 구현 범위·값은 planner 분류 뒤 사용자 확인. 3단계는 이 run이 끝난 뒤 별도 지시로 시작.
 - 모드: 계획 → 구현·검증
-- 상태: TESTING
+- 상태: DONE
 - 갱신: 2026-11-20 / 메인 조율 채팅(Claude Code)
-- 현재 담당: msw-tester (회차 2 O-1 회귀·사용자 시연)
+- 현재 담당: 메인 ([review] 커밋·push 후 planner 마감 B)
 - 다음 행동·대기 사유: 후속 회차 2(FU-17·FU-19·FU-12 (가)): planner 범위 확인 → coder → [code] 커밋 → tester → reviewer → 사용자 V11 → 회차 종료. 기준 a593e2b. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
 - 환경 가이드: 없음
 
@@ -18,7 +18,7 @@
 - 리뷰 결과: WorkRecord 리뷰 절(2026-11-19 WAITING, 2026-11-20 FU-26 WAITING → 사용자 V11 수락으로 종료)
 
 ## 실행·인계
-- 대상 버전: 회차 2 기준 a593e2b(origin/main); 회차 1은 c6422cd·a18b251·b071b5c
+- 대상 버전: 회차 2 = d8c61db(트리 3940b24f) + O-1 수정 eaeb032(트리 fe15c874, 미커밋 map/map01.map 제외·SHA-256 기준값 동일); 회차 1은 c6422cd·a18b251·b071b5c
 - 실행 주체: 메인 조율(Opus 5.5) / msw-planner·msw-coder·msw-tester·msw-reviewer 서브 에이전트(독립 실행)
 - Maker: 마지막 관찰 map01·편집 모드(2026-11-20 tester 인계, 사용 종료)
 - 전달·완료: 후속 회차 1 결과 확인 완료. 회차 2 미요청
@@ -65,3 +65,11 @@
 - 2026-11-20 reviewer 회차 2 판정 WAITING(d8c61db): AI 1~5 충족, 범위 준수, 85줄 검토 문제 없음. O-1 GetEffectFrame 클립 PlayRate 미반영 = 새 코드 잠재 결함(낮음, 1곳). O-2 설계대로, O-3 FU-28 관찰, O-4 FU-22. R-1 첫 눈빛 이펙트 클립 동기 읽기(추적 후보), R-2 현재 게임에 슬로우·정지와 이펙트가 겹치는 경로 없음 → V11 문구 FU-27 규칙과 불일치. 사용자 질문 대기, [review] 보류.
 - 2026-11-20 사용자 답변: ① 이펙트 정지·슬로우 = 시연 보고 확인(tester 프로브 시연, 제품 무변경·AI 스크린샷 없음) ② O-1 = 이번에 고침(같은 승인 범위, coder→tester→reviewer) ③ 자연 플레이 V11(10타 피해·가드 시작 1회·패링/반격 체감) = 모두 괜찮음 ④ 회차 종료 뒤 run·WorkRecord = 링크 정리 후 삭제. 상태 CODING.
 - 2026-11-20 coder O-1 수정 완료: GetEffectFrame elapsed에 fx.timeline.rate 곱함(+1/−1, blob 8d22ddd). refresh·빌드 오류 0, Play 회귀 1회([O1R]) 슬로우 이어 재생 프레임 4·6·9·12가 Delay 계산과 일치, rate=1이라 값 불변. 스크린샷 0·clear_logs 0. Maker map01 편집 모드 반환. map01 SHA-256 기준값 동일. 메인 [code] 로컬 커밋 후 TESTING.
+- 2026-11-20 메인 [code] 로컬 커밋 eaeb03230019fe929fb5423cb8cbc8b3dc857bbd (트리 fe15c8744a1c91931a89d272b1f3bfa895825a75, 부모 d8c61db). 제품 변경: MonsterAttackMotion.mlua blob 8d22ddda9183c257053c1fce14bcc740f3a0a4d9. 미커밋: map/map01.map(범위 밖, SHA-256 22b6acbf…4987e 기준값 동일). tester 호출.
+- 2026-11-20 tester O-1 회귀 1단계 PASS(eaeb032): O1-T1~T6 PASS, T7 NOT_RUN(PlayRate≠1 클립 없음), T8 NEEDS_DECISION(사용자 시연). 슬로우 이어 재생 6건 Delay 계산 일치, 클라이언트 정지 중 추적 이상 없음, 새 LEA/LWA 0, 스크린샷 0. 시연 스크립트 준비(서버 정지 2·슬로우 2 × 눈빛/먼지, 약 1분 30초~2분, 미실행). Maker map01 편집 모드 반환. 사용자 시청 준비 대기.
+- 2026-11-20 사용자 "시연 시작" → tester에 시연 실행 전달.
+- 2026-11-20 사용자 시연 판정: "모두 괜찮음"(눈빛·먼지 이펙트 정지·슬로우 중 끊김·재시작·겹침 없음). tester 시연 종료 보고 대기 후 reviewer.
+- 2026-11-20 tester 시연 보고: 8회 중 6회 실행(정지 n=1·3·5 = 11.1/10.7/5.0초, 슬로우 n=2·4·6), 네 종류(눈빛·먼지 × 정지·슬로우) 모두 1회 이상 실행. n=7 먼지 정지 2초 뒤 20:36:24 Play 종료(tester Stop 아님) — CombatPauseComponent.OnUpdate→AbortCombat 정지 해제, 프로브 타이머 LEA-3051 2건(시험 흔적). n=8 미실행. 값은 Play 메모리만 변경·Stop으로 폐기, map01 SHA-256 불변, Maker map01 편집 모드. 종료 주체 사용자 확인 필요.
+- 2026-11-20 사용자 답변: Play 종료는 "내가 Stop함"(제품 결함 아님, AbortCombat은 Stop으로 플레이어가 빠진 정리 경로). n=7·8 재시연 "필요 없음" — 실행된 6회로 O1-T8 사용자 판정 "모두 괜찮음". reviewer 호출.
+- 2026-11-20 reviewer 회차 2 O-1 재판정 READY(eaeb032, 트리 fe15c874): O-1 해소, 범위 밖 변경 없음, 같은 버전 근거, O1-T8 사용자 수락(프로브 시연 6회), 20:36:24 종료는 사용자 Stop·AbortCombat 설계 경로·LEA-3051은 프로브 흔적. 마감 이관 항목 1~7. 순서: planner 마감 A → [review] 커밋·push → planner 마감 B(링크를 [review] 커밋으로 교체 후 run·WorkRecord 삭제) → [plan] 커밋·push.
+- 2026-11-20 planner 마감 A 완료: Plan(회차 2 닫은 항목·FU-28 O-3 관찰·FU-30 신규(R-1, C)·R-2 프로브 시연 수락 명시·남은 미실시 표), Feature 2_CombatCore(FU-12 표시 계약), 로드맵 재개 지점, WorkRecords README. 메인 WorkRecord 머리 상태 갱신. [review] 커밋.

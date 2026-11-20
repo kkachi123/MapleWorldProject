@@ -3,14 +3,14 @@
 - 구분: 이 파일은 2026-11-19 시작한 2단계 후속 처리 회차의 새 기록이다. 같은 이름의 2단계 원본 기록은 [기준 커밋 5efe005의 CombatCoreWorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)에만 있으며, 여기에 옮기거나 고쳐 쓰지 않는다.
 - 연결 Plan: [2단계 후속 계획 "후속 처리 계획(2026-11-19)"](../Plans/CombatCore.md#후속-처리-계획2026-11-19)
 - run: `.pipeline/20261119-combatcore-followup/run.md`
-- 상태·갱신일: 후속 회차 1 종료(FU-24·03·23·26, c6422cd·a18b251, 사용자 V11 수락, [review] b071b5c). 후속 회차 2(FU-17·19·12) planner 범위 확인 READY_FOR_CODE, 기준 a593e2b / 2026-11-20 planner
+- 상태·갱신일: 후속 회차 1 종료([review] b071b5c). 후속 회차 2(FU-17·19·12, O-1 포함) 종료 — d8c61db·eaeb032, reviewer READY, 사용자 V11 수락 / 2026-11-20 메인
 - 삭제 조건: 후속 회차 1·2가 끝나고(사용자 V11 포함) 결과를 [2단계 Feature](../Features/2_CombatCore.md)와 후속 계획 표에 반영하고 링크를 정리한 뒤.
 
 ## 현재 재개 지점
 
-- 마지막 상태(2026-11-20 planner): **후속 회차 2 범위 확인 완료, READY_FOR_CODE.** 회차 1은 `[review]` b071b5c push로 끝났고, 버전 확인 방식은 `[ops]` a593e2b로 git 트리·blob id 방식이 됐다(Bundle 폐지). 사용자 "회차 2 시작"(2026-11-20)이 구현 승인이다.
-- 다음 행동: coder 회차 2(FU-17·FU-19·FU-12 (가)) → 메인 `[code]` → tester → reviewer → 사용자 V11. 범위·절차·완료 기준은 [후속 계획 회차 2 절](../Plans/CombatCore.md#후속-회차-2--플레이어-공격가드-코드-정리--fu-12-이펙트-정지슬로우-추종가-방식)의 "범위 확인"·"coder 절차"다.
-- 차단 조건: 없음. 시작 때 작업 트리의 제품 변경은 `map/map01.map`(`22b6acbf…987e`, 커밋 제외)뿐이어야 한다(2026-11-20 planner 확인 시 그랬다).
+- 마지막 상태(2026-11-20 메인): **후속 회차 1·2 모두 종료.** 회차 2는 d8c61db + O-1 수정 eaeb032, reviewer READY, 사용자 V11(자연 플레이·프로브 시연) "모두 괜찮음". 결과는 Plan 후속 계획 표와 Feature에 반영됐다(planner 마감 A).
+- 다음 행동: 메인 [review] 커밋·push → planner 마감 B(링크를 [review] 커밋으로 교체, 이 파일과 run 삭제) → [plan] 커밋·push. 3단계는 사용자 지시 대기.
+- 차단 조건: 없음. `map/map01.map`(`22b6acbf…987e`, 사용자 변경)은 계속 커밋 제외.
 
 ## 역할 간 인계
 
@@ -670,6 +670,87 @@
 - 패링·반격 입력은 입력 수락 지점 호출(논리 경로)이며 실제 키가 아니다.
 - Maker 최종: Stop 확인(`maker_run_command stop` status ok), `maker_get_current_map` map01·edit, 사용 종료.
 
+### 2026-11-20 tester — 회차 2 O-1 회귀 QA (위 절들과 별개, 기존 절은 그대로)
+
+- **대상 버전**: 로컬 커밋 eaeb032(`eaeb03230019fe929fb5423cb8cbc8b3dc857bbd`), 트리 `fe15c8744a1c91931a89d272b1f3bfa895825a75`, 부모 d8c61db, push 전. 시작·종료 모두 `git rev-parse HEAD`·`HEAD^{tree}`가 같다.
+  - `git ls-tree -r HEAD -- RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua` blob `8d22ddda9183c257053c1fce14bcc740f3a0a4d9`. 작업 트리 `git hash-object`도 같다(Refresh 뒤 재확인).
+  - `git diff --stat HEAD~1 HEAD -- RootDesk`: `MonsterAttackMotion.mlua` 1개 +1/−1.
+  - `git status --porcelain`(시작·종료 같음): ` M .pipeline/20261119-combatcore-followup/run.md`(메인), ` M map/map01.map`(사용자 변경, 범위 밖). `map/map01.map` SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`(시작·종료 같음). 제품 파일 변경 0.
+- **주체·환경**: msw-tester(독립 실행, 한도로 끊긴 앞 작업을 이어서 처음부터 다시 진행). Maker `map01`(0a0972ef…), 시작·종료 edit(끊긴 뒤 시작 확인: Play 아님). Play 1회(20:19 시작 ~ Stop). 스크린샷 0장, `maker_clear_logs` 0회. 읽은 지침: tester·팀 계약, EnvGuides, msw-general·msw-ui-system·msw-scripting, Foundation 참조 4개, platform-maple(map01 TileMapMode 0), verify-checklist. 로그 지문 `[O1T]`는 이 시험의 프로브 줄이다. Play 시작 때 로그가 비어 있어 이번 Play의 줄만 읽었다.
+- **시험 방법**: Play 메모리 프로브만(`maker_execute_script`). 서버 프로브가 패턴 표 Weight를 parry.guard만 남기고 `AttackInterval` 1.0으로 바꿔 3칸(skill1) 공격을 연속으로 내고, 눈빛·먼지 추적 항목(`motion._T.fx`)을 보다가 정해진 시각에 `ApplySlow(duration, 0.5)`를 걸고 플레이어 `Hp`를 보충했다. 클라이언트 프로브는 `AttackSequence` 변화 뒤 `_UtilLogic:SetClientTimeScale(0)`을 걸었다. 끝에 Weight 5행·`AttackInterval` 3.0 원값 복원을 로그로 확인(`[O1T] cleanup done … parry.left=4 parry.right=4 parry.any=5 special.random=3 parry.guard=4 interval=3.0`)하고 Stop했다.
+
+**기준별 판정**
+
+| ID | 기준 | 판정 |
+| --- | --- | --- |
+| O1-T1 | 코드 대조: 바뀐 줄이 `GetWindupSeconds`·`StartDrivenClip`의 `timeline.rate * motionRate` 패턴과 맞음 | PASS(소스 대조) |
+| O1-T2 | Refresh 후 build 로그 `LEA-`·`LWA-`·`Error` 0 | PASS(한계 있음) |
+| O1-T3 | 슬로우 시작·끝 프레임·serial·playRate가 Delay 표 계산과 일치, 이전 [VRF]와 같은 형태 | PASS(로그 근거) |
+| O1-T4 | 클라이언트 정지(`SetClientTimeScale(0)`) 짧게 걸었다 풀어도 서버 이펙트 추적이 깨지지 않음(새 serial 남발·오류 없음) | PASS(로그 근거, 조건은 아래) |
+| O1-T5 | Play 중 새 `LEA-`·`LWA-` 줄 없음 | PASS |
+| O1-T6 | Stop·Maker map01 편집 모드 인계, map01 SHA-256 불변 | PASS |
+| O1-T7 | PlayRate≠1 클립에서의 효과 자체 | NOT_RUN(그런 클립이 없음. 소스 대조로만 판단) |
+| O1-T8 | 슬로우·정지 중 이펙트의 화면 모양(끊김·처음부터 재시작·겹침) | NEEDS_DECISION(사용자 시연 대기) |
+
+**O1-T1 코드 대조(PASS)**: 변경은 `GetEffectFrame`의 `local elapsed = math.max(0, now - fx.startAction) * fx.motionRate * fx.timeline.rate`뿐이다. 같은 파일 `GetWindupSeconds`(94행) `sum / (timeline.rate * motionRate)`와 `StartDrivenClip`(108행) `divisor = timeline.rate * motionRate`는 "프레임 Delay 합 ÷ (클립 PlayRate × 배율) = 시간"이다. 그 역으로 "시간 × 클립 PlayRate × 배율 = Delay 누적과 비교할 클립초"가 되므로 새 식은 같은 패턴이다. `fx.timeline`은 `GetRuidTimeline`이 만든 표(`rate`는 유한·양수 보정)이고 `TrackEffect`가 기록한 값이라 `nil`이 될 수 없다. 이 줄 하나뿐인 변경이라 다른 함수의 흐름은 같다. 이것은 소스 대조이며 PlayRate≠1에서의 동작은 Play로 보지 않았다(O1-T7).
+
+**O1-T2 build(PASS, 한계)**: `maker_refresh_workspace` status ok → `maker_build_logs`: `LEA-`·`LWA-`·`Error` 검색 각 0건. 한계: 로그 시각이 coder의 마지막 Refresh와 같아 내 Refresh가 새로 컴파일했는지는 구분되지 않는다(이전 QA와 같은 한계).
+
+**O1-T3 슬로우 시작·끝(PASS)**: 클립 `05113e9d`의 프레임 Delay는 f0~f5 각 0.1, f6 0.2, f7 0.3, f8~f12 각 0.1, f13 0.2, f14 0.05(coder 15프레임 표와 같다)이고 `timeline.rate`는 1.0(프로브 `tlRate=1.0`), `motionRate` 0.7이다. 추적 시작 액션 시계와 슬로우 시각 액션 시계를 Delay 표로 직접 계산해 [VRF] `frame`과 대조했다.
+
+| 공격 | 구간 | 시점 | 시작 액션 → 지금 액션 | 계산(경과 × 0.7) | 계산 프레임 | [VRF] frame | playRate·serial |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| a1 | 눈빛 | 슬로우 시작 | 73.887 → 74.233 | 0.346×0.7=0.242 | f2(0.2~0.3) | `frame=2 range=2-6` | `0.7->0.35` `…656->…657` |
+| a1 | 눈빛 | 슬로우 끝 | 74.233 → 74.739 | 0.506×0.7=0.354, f2 시작 | f5 | `frame=5 range=5-6` | `0.35->0.7` `…657->…658` |
+| a2 | 먼지 | 슬로우 시작 | 78.552 → 78.759 | 0.207×0.7=0.145 | f9(f8 0.1 지남) | `frame=9 range=9-end` | `0.7->0.35` `…661->…662` |
+| a2 | 먼지 | 슬로우 끝 | 78.759 → 79.164 | 0.405×0.7=0.284, f9 시작 | f11 | `frame=11 range=11-end` | `0.35->0.7` `…662->…663` |
+| a3 | 눈빛 | 슬로우 시작 | 80.061 → 80.593 | 0.532×0.7=0.372 | f3 | `frame=3 range=3-6` | `0.7->0.35` `…664->…665` |
+| a3 | 눈빛 | 슬로우 끝 | 80.593 → 81.099 | 0.506×0.7=0.354, f3 시작 | f6(f3~f5 0.3 지남) | `frame=6 range=6-6` | `0.35->0.7` `…665->…666` |
+
+6건 모두 계산 프레임과 같다. 프로브의 슬로우 직전 계산값도 로그와 같다(`pre-slow expectFrame=2`·`9`·`3`). 슬로우 직후 추적 항목은 새 serial·`startFrame`·`playRate 0.35`로 바뀌고(`post-slow`), 끝난 뒤 `ActionRate=1.0`·`fxPlayRate=0.7`로 돌아온다(`after-slow`). 끝 프레임 옵션(눈빛 `6`, 먼지 `end`)은 유지됐다. 이전 [VRF](coder `frame=3 range=3-6`·`frame=8 range=8-end`, tester `frame=2`, coder O-1 `frame=4`·`9`)와 줄 형태(`effect rate <label> frame= range= playRate=a->b serial=x->y action=`)가 같다. 클립 `rate=1`이라 변경 전후 값이 같아야 하며 줄 단위 전후 비교는 입력이 달라 하지 않았다.
+
+**O1-T4 클라이언트 정지(PASS, 조건)**: 서버 정지 없이 클라이언트만 `SetClientTimeScale(0)`을 두 번 걸었다. 두 번 다 클라이언트 시간이 멈춰 클라이언트 타이머 호출이 멎었고(`ticksDuring=1`) 클라이언트 쪽 `ElapsedSeconds`도 정지 중 멈췄다. 그래서 내가 클라이언트 호출로 `SetClientTimeScale(1)`을 직접 풀었다(정지 1: 20:21:05~14 약 9초, 정지 2: 20:21:14~25 약 11초, 의도한 1초보다 길다). 그 사이 서버는 정지되지 않아 공격 a9~a16이 계속 진행됐다. 서버 로그: 정지 구간의 공격마다 `new fx`가 눈빛 1 + 먼지 1개뿐이고 serial이 678→679→680→…→693으로 연속이며, `[VRF] effect rate` 줄은 정지 구간(20:21:05 이후)에 한 줄도 없다(전체 6건은 모두 위 슬로우 시험 20:20:38~47). `effect clear`·새 `LEA-`·`LWA-` 줄도 없다. 즉 클라이언트 정지·해제는 서버 추적에 영향을 주지 않았다.
+  - 한계: 서버 정지(팝업 정지 경로)와 클라이언트 정지를 함께 건 조합은 이번 회귀에서 하지 않았다(그 조합은 아래 시연 항목). 정지 중·후 화면에 보이는 이펙트 모양은 보지 않았다.
+  - **시험 방법 부산물(알아 둘 사실)**: 클라이언트 `_UtilLogic:SetClientTimeScale(0)`이 걸리면 `_TimerService`로 만든 클라이언트 타이머와 `_UtilLogic.ElapsedSeconds`가 함께 멈춘다. 그래서 "클라이언트 타이머로 N초 뒤 해제"는 동작하지 않고 `maker_execute_script` 직접 호출로 풀어야 한다. 제품의 `UIPopup.OnUpdate`는 Logic 갱신이 계속 오는 것을 이용한다(주석 근거). 제품 결함이 아니다.
+
+**O1-T5 새 오류 줄(PASS)**: Play 중 서버·클라이언트 `maker_console_logs`를 `LEA-`·`LWA-`로 전체 검색해 각 0건(Play 시작 때 로그가 비어 있어 이전 흔적 없음). 시험 중 `[O1T]` 프로브 실패 줄도 없었다.
+
+**시험 부산물·프로브 정리**: 제품 파일 변경 0. Play 메모리에서만 바꾼 값(패턴 Weight 4행→0, `AttackInterval` 3.0→1.0, 플레이어 `Hp` 보충, 클라이언트 시간 배율)은 모두 복원했다(Weight·간격은 로그 확인, 시간 배율은 마지막 호출 `scale=1`). 서버 프로브 타이머는 `ClearTimer`했고 클라이언트 프로브 타이머는 스스로 정리했다(`client probe timer cleared`). Stop 뒤 `maker_get_current_map` map01·edit.
+
+**사용자 시연 항목 — NEEDS_DECISION(사용자 시연 대기)**: 사용자가 Maker 화면으로 직접 본다(사용자 결정 "시연 보고 확인", 사용자 관찰 = 수락 근거, 내가 PASS로 세지 않는다).
+  1. 일시정지 중 머쉬맘 3칸 공격의 눈빛·먼지 이펙트가 멈추고 해제하면 이어지는지.
+  2. 저스트 회피 슬로우(ActionRate 0.5, 2초) 중 같은 이펙트가 느려지고 풀리면 끊김·처음부터 재시작·겹침 없이 이어지는지.
+  - 준비 상태: 시연 스크립트 5개를 스크래치(`…\scratchpad\demo\`)에 두었다. 실행하지 않았고, 스크립트 전체를 미리 돌려 보지도 않았다(시연은 메인의 "시연 실행" 신호 뒤에 실행). 이번 회귀에서 검증한 부분(서버 프로브 구조·`ApplySlow`·클라이언트 감시 타이머)만 재사용했고, 서버 정지의 `pause._T.owner` 지정은 앞 tester(TR7)가 쓴 방식이다.
+
+**한계·reviewer 참고**
+- 이번 PASS는 서버 로그 근거다. 화면 모양은 보지 않았다(스크린샷 상한 소진, 사용자 시연 항목).
+- 같은 입력의 변경 전·후 줄 비교는 하지 않았다. 대신 Delay 표 직접 계산과 일치를 확인했다. 클립 `rate=1`이므로 O-1 변경은 현재 데이터에서 값이 달라지지 않는 것이 정상이다(O1-T7).
+- 프로브 표본 오차: 서버 프로브 타이머 간격 0.03초, 슬로우 시각은 추적 시작 뒤 지정 지연(0.3초·0.15초) 이후 첫 틱이다.
+- 서버–클라이언트 같은 프로세스(Maker 로컬 Play). 지연 있는 실접속·모바일 NOT_RUN.
+- Maker 최종: Stop 확인(`maker_run_command stop` status ok), `maker_get_current_map` map01(0a0972ef-ad23-4e24-af63-afbd53120c1d)·edit, 사용 종료.
+
+**사용자 시연 실행 기록 (2026-11-20, 같은 대상 버전 eaeb032, 제품 파일 변경 0, 스크린샷 0장, `maker_clear_logs` 0회)**
+- 실행: 메인의 "시연 실행"(사용자 "시연 시작") 신호 뒤 Play 1회(20:35:1x 시작). 스크립트는 준비해 둔 5개를 그대로 썼다(`…\scratchpad\demo\`). 시작 로그: `[DEMO] server driver start playerX=0.000 pos2X=0.000 monsterX=3.000`(플레이어가 이미 Pos2에 있어 이동하지 않음). 방식: 서버 정지는 `pause._T.owner=플레이어` + `SetServerPaused(true)`, 클라이언트 정지는 감시 타이머가 `IsPaused` @Sync를 따라 `SetPresentationPaused(true)`, 해제는 내가 서버·클라이언트 해제를 한 응답 블록에서 호출. 슬로우는 `ApplySlow(2.0, 0.5)`(`ActionRate=0.5`, 로그 확인).
+- **[DEMO] 줄 시각표** (로그는 초 단위, `<<< 슬로우 끝`은 시작 후 실시간 약 2.3초에 찍힌다)
+
+| n | 종류 | 시작 | 해제·끝 | 비고 |
+| --- | --- | --- | --- | --- |
+| 1 | 눈빛 중 정지 | 20:35:24 | 20:35:35(서버 로그 정지 11.1초), 클라이언트 해제 20:35:36 | 3초 이상 확인 뒤 해제 조건은 충족, 도구 호출 지연으로 길어짐 |
+| 2 | 눈빛 중 슬로우 | 20:35:39 | 20:35:42 | `ActionRate=0.5` → `1.0` |
+| 3 | 먼지 중 정지 | 20:35:46 | 20:35:57(정지 10.7초), 클라이언트 해제 20:35:57 | 위와 같음 |
+| 4 | 먼지 중 슬로우 | 20:36:01 | 20:36:03 | `ActionRate=0.5` → `1.0` |
+| 5 | 눈빛 중 정지 | 20:36:04 | 20:36:09(정지 5.0초), 클라이언트 해제 20:36:10 | |
+| 6 | 눈빛 중 슬로우 | 20:36:13 | 20:36:16 | `ActionRate=0.5` → `1.0` |
+| 7 | 먼지 중 정지 | 20:36:22 | **해제 없음** | 시작 직후 Play가 끝났다(아래) |
+| 8 | 먼지 중 슬로우 | — | — | 실행 못 함 |
+
+- **7번째 회차에서 Play가 내가 Stop하지 않았는데 끝났다.** 20:36:22 "서버 정지 시작 n=7"과 "클라이언트 정지 시작"이 찍힌 직후 해제 호출을 보냈더니 두 호출 모두 `unavailable: Not in play mode`였고 `maker_get_current_map`은 map01·edit였다. 로그에 `[LEA-3051]`(20:36:24)이 나온 것은 Stop 시점으로 보이며, 원인(사용자가 Maker에서 Stop을 눌렀는지)은 로그로 확정하지 못했다. 그래서 n=7(먼지 중 정지)의 해제 모습과 n=8(먼지 중 슬로우 2회차)은 보여 주지 못했다. 8회 끝 자동 복원(`finish`)도 실행되지 않았지만 Play 메모리(패턴 Weight·`AttackInterval`·시간 배율)는 Stop으로 폐기되고 다음 Play는 데이터 파일에서 새로 읽는다(파일 변경 0 확인).
+- 정지가 길어진 이유: 내 해제 호출이 도구 호출 순서(로그 확인→해제)를 따라 가서 정지가 5~11초 이어졌다(의도 3~5초보다 김). 사용자에게는 "정지 중 5~11초 동안 이펙트가 멈춰 있었는지"를 묻는다.
+- 새 오류 줄: `[LEA-3051] MemoryLeak 'MakerScript' 30번째 줄(서버)·5번째 줄(클라이언트) 타이머 제거되지 않음`(20:36:24) 2건. 시험 프로브 타이머가 Stop 전에 정리되지 않아 생긴 시험 흔적이다(앞 QA의 프로브 `[LEA-3051]`과 같은 종류, 제품 코드 줄 아님). 그 밖의 `LEA-`·`LWA-`·`rror` 줄 없음.
+- 정지 중 서버 로그 근거(참고): `[VRF] CombatPause server paused=true/false`가 n=1·3·5에서 20:35:24/35, 20:35:46/57, 20:36:04/09로 짝을 이뤘고 정지 중 전투 시계가 같은 값이었다(11.661→11.661, 22.295→22.295, 29.955→29.955). n=7은 20:36:22 `paused=true clock=42.162` 뒤 20:36:24에 `CombatPauseComponent.OnUpdate`→`AbortCombat`→`SetServerPaused(false)`로 풀렸다(정지 소유자 검사에 걸린 정리 경로이며 내 해제 호출이 아님. Play가 끝나는 때 소유자 플레이어가 무효가 되는 것으로 보이나 확정하지 못함). 화면 모양은 보지 않았다.
+- **O1-T8: 사용자 판정 대기.** 사용자에게 물을 것: 눈빛 중 정지(n=1·5)·먼지 중 정지(n=3)에서 이펙트가 멈췄다 이어졌는지, 눈빛 중 슬로우(n=2·6)·먼지 중 슬로우(n=4)에서 느려졌다가 끊김·처음부터 재시작·겹침 없이 이어졌는지. n=7·8은 보지 못했다.
+- Maker 최종: Stop 상태(내가 Stop하지 않음), `maker_get_current_map` map01(0a0972ef-ad23-4e24-af63-afbd53120c1d)·edit. `git status --porcelain` 변경 3건(run.md·이 WorkRecord·`map/map01.map`), `map/map01.map` SHA-256 `22b6acbf…987e` 불변, HEAD `eaeb032` 그대로.
+
 ## 리뷰 기록
 
 ### 2026-11-19 reviewer — 후속 회차 1 (CombatCore-FU-24·FU-03·FU-23)
@@ -981,6 +1062,106 @@
 5. (기록용, 지금 결정 불필요) R-1(이펙트 클립 미리 읽기)을 추적 행으로 등록할 시기. 6단계 몬스터 동작 일반화와 함께 보는 것을 제안한다.
 
 **검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), `PlayEffect` PlayRate 옵션과 클립 PlayRate의 실제 곱 관계, 이어 재생의 클라이언트 화면, R-1 로드 시간, `.model`(`AttackInterval`은 DataSet 3.0이 런타임에 적용됨을 `MonsterManager` 163행으로 확인했고 모델 값은 읽지 않음), 실접속·모바일.
+
+### 2026-11-20 reviewer — 회차 2 O-1 재리뷰 (위 절들과 별개, 기존 절은 그대로)
+
+- **판정: READY** — 요구 ID CombatCore-FU-17·FU-19·FU-12(+ 직전 리뷰 지적 O-1). 회차 2 완료 기준 AI 1~5의 필수 근거는 충족했고 O-1은 해소됐다. 사용자 판단 사항(직전 리뷰 1~4)에는 모두 답이 왔고 남은 필수 사용자 확인은 없다. 이 판정은 사용자 수락·출시·배포 승인이 아니다.
+- **검토 버전(리뷰에서 git으로 직접 확인)**:
+  - `git rev-parse HEAD` = `eaeb03230019fe929fb5423cb8cbc8b3dc857bbd`, `HEAD^{tree}` = `fe15c8744a1c91931a89d272b1f3bfa895825a75`. `d8c61db^{tree}` = `3940b24f378ecf9e1fdcd9bb99e9463ef46edd17`. 둘 다 메인이 넘긴 값과 같다. push 전.
+  - `git diff --stat d8c61db eaeb032`: 제품은 `RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua` +1/−1 하나다. 나머지는 run.md(+6/−3)·이 WorkRecord(+246, 삭제 0)다. `.codeblock`·`.model`·`.map`·`.ui`·DataSet 변경은 0이다.
+  - `git ls-tree -r`: `MonsterAttackMotion.mlua`는 eaeb032 `8d22ddda9183c257053c1fce14bcc740f3a0a4d9`, d8c61db `da93aea6cfac8ed8e10f20dba342421a0f98082a`다. coder 개발 절·tester QA 절의 값과 같다.
+  - `git status --porcelain`: ` M .pipeline/20261119-combatcore-followup/run.md`, ` M Docs/…/CombatCoreWorkRecord.md`(삭제 0, QA O-1 절·시연 기록 추가분 +81), ` M map/map01.map`. RootDesk 미커밋 변경은 0이다. `map/map01.map` SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`로 기준과 같다(범위 밖, 사용자 변경).
+- **같은 버전 여부**: coder O-1 수정은 커밋 전 작업 트리에서 했고, 커밋 blob이 coder가 적은 변경 후 blob과 같다. tester O-1 회귀 QA와 사용자 시연은 HEAD eaeb032·트리 `fe15c874…`·blob `8d22ddd…`에서 했다(시작·종료·시연 끝 확인 기록). 리뷰 시점 HEAD·트리·blob도 같다. 세 근거 모두 같은 버전이다.
+- **주체·방법**: msw-reviewer(독립 실행). Maker는 쓰지 않았고 시험을 반복하지 않았다. 제품 파일은 고치지 않았다. 읽은 지침: reviewer·팀 계약, 구현 원칙, msw-general·msw-ui-system, Foundation 참조 4개, platform-maple(map01 `TileMapMode` 0은 Grep으로 확인), msw-scripting·verify-checklist, msw-combat-system. 확인한 자료: 위 git 명령, diff 전문, `MonsterAttackMotion.mlua` 전체, `CombatPauseComponent`(`AbortCombat`·`OnUpdate`·`OnEndPlay` 부분), Plan 회차 2 절·부채 표, 이 WorkRecord의 회차 2 개발·QA·리뷰 절과 O-1 개발·회귀 QA·시연 기록, run.md 미커밋 diff.
+
+**O-1 해소 확인**
+
+| 확인 | 판단 | 근거 |
+| --- | --- | --- |
+| 수정 내용 | 해소 | `GetEffectFrame` 211행이 `elapsed = max(0, now − startAction) × motionRate × timeline.rate`가 됐다. 같은 파일 `GetWindupSeconds`(94행 `sum / (timeline.rate × motionRate)`)·`StartDrivenClip`(108행 `divisor = timeline.rate × motionRate`)·`PlayDieOnce`(309행 `renderer.PlayRate × clip.PlayRate`)와 같은 "Delay ÷ (클립 PlayRate × 배율)" 관계다. 액션 시계에는 ActionRate가 이미 들어 있어 이중 반영이 없다 |
+| 영향 범위 | 의도대로 | `GetEffectFrame`을 부르는 곳은 `TrackEffect`(끝난 항목 걷기)와 `SyncEffectRates`(이어 재생 프레임) 둘이다. 둘 다 같은 식으로 바뀌어 직전 리뷰가 적은 위험("배율 >1이면 끝난 이펙트를 다시 낼 수 있음")이 없어진다. `PlayEffect` 옵션 `PlayRate`(motionRate × ActionRate)는 클립 PlayRate를 넣지 않는데, 엔진이 클립 PlayRate를 따로 곱한다는 이 파일 전체의 가정과 같다 |
+| null·범위 | 문제 없음 | `fx.timeline`은 `TrackEffect`가 `timeline == nil`이면 기록하지 않으므로 nil이 아니다. `rate`는 `GetRuidTimeline`이 유한·양수로 보정한다 |
+| 범위 밖 변경 | 없음 | 제품 변경은 이 1줄뿐이다. 다른 함수·수치·파일·`.codeblock`은 그대로다 |
+| 회귀 | 충족(로그 근거) | coder 1회(프레임 4·6·9·12)와 tester O1-T3 6건(2·5·9·11·3·6)이 Delay 표 직접 계산과 모두 맞다. 클립 `05113e9d`의 `rate`는 1.0이라 값이 바뀌지 않는 것이 정상이다. build 로그 `LEA-`·`LWA-`·`Error` 0(O1-T2), Play 중 새 `LEA-`·`LWA-` 0(O1-T5) |
+| 효과 자체 | NOT_RUN | PlayRate≠1 이펙트 클립이 없어 Play로 보지 못했다(O1-T7). 소스 대조로만 판단한다 |
+
+**시연 중 20:36:24 Play 종료 — 시험 흔적이며 제품 결함이 아니다**
+
+- 사용자 답 "내가 Stop함"(2026-11-20)으로 종료 주체가 확정됐다. tester의 Stop이 아니고 제품의 비정상 종료도 아니다.
+- `AbortCombat`: tester 기록상 호출 경로는 `CombatPauseComponent.OnUpdate`→`AbortCombat`→`SetServerPaused(false)`다. `OnUpdate`(157~164행)는 정지 중에 정지 소유자가 무효이거나 다른 맵에 있거나 HP 0·사망이면 `AbortCombat`을 부른다(주석 "정지 소유자의 이탈·사망을 감지", `AbortCombat` 주석 "사망·맵 이탈은 재개보다 우선"). n=7에서 서버 정지가 걸린 상태(20:36:22 `paused=true`)로 사용자가 Stop해 플레이어 엔티티가 빠졌으니 이 경로가 도는 것이 설계대로다. `OnEndPlay`(166~169행)도 정지 중이면 같은 `AbortCombat`을 부른다. 정지가 풀린 채 끝났으므로 정리가 맞게 된 것이다. 어느 분기(소유자 무효·HP)였는지는 로그로 가르지 못하지만 두 분기 모두 설계된 정리 경로다.
+- `[LEA-3051] MemoryLeak 'MakerScript'` 2건(서버 30번째 줄·클라이언트 5번째 줄): 이름이 `MakerScript`라 `maker_execute_script`로 올린 시연 프로브의 반복 타이머다. 제품 `.mlua`라면 그 스크립트 이름이 찍힌다. 사용자 Stop이 시연 마지막 정리(`finish`)보다 먼저 와서 타이머가 남았다. 앞 QA의 프로브 `[LEA-3051]`(12:40·14:39)과 같은 종류다. 같은 버전의 O-1 회귀 Play(O1-T5)에서는 `LEA-`·`LWA-` 0건이었다.
+- 영향: Play 메모리 변경(패턴 Weight·`AttackInterval`·시간 배율)은 Stop으로 버려졌다. 파일 변경은 0이고 `map/map01.map` SHA-256도 그대로다(tester 시연 기록과 리뷰 확인).
+
+**O1-T8 사용자 판정 근거**
+
+- tester는 O1-T8을 NEEDS_DECISION(사용자 시연 대기)으로 남겼다. 이를 닫는 근거는 **사용자 판정**이다. AI의 PASS가 아니다.
+- 사용자 결정 1(2026-11-20, 메인이 사용자에게 직접 받음):
+  - 확인 방법은 "시연 보고 확인"이다.
+  - 시연은 같은 버전 eaeb032에서 했다. 8회 중 6회를 실행했다: 정지 n=1(눈빛)·3(먼지)·5(눈빛), 슬로우 n=2(눈빛)·4(먼지)·6(눈빛). 눈빛·먼지 × 정지·슬로우 네 가지가 모두 1회 이상 나왔다.
+  - 사용자 판정은 "모두 괜찮음"이다(끊김·처음부터 재시작·겹침 없음).
+  - n=7(먼지 중 정지의 해제)·n=8(먼지 중 슬로우 2회차)을 다시 볼지에는 "필요 없음"이라고 답했다. 먼지 정지·먼지 슬로우는 n=3·n=4로 이미 한 번씩 봤다.
+- 그래서 O1-T8은 **사용자 수락**으로 닫는다. 이 시연은 Play 메모리 프로브(서버 `SetServerPaused`, 클라이언트 `SetPresentationPaused`, `ApplySlow(2.0, 0.5)`)로 연 경로다. 실제 `_UIPopup:Open` 경로도 자연 슬로우 겹침도 아니다(아래 R-2).
+
+**회차 2 종합(AI 1~5, V11)**
+
+| 기준 | 판단 | 근거 |
+| --- | --- | --- |
+| 범위 | 충족 | d8c61db 제품 4개와 eaeb032 제품 1개 모두 편집 허용 5개 안이다(직전 리뷰와 위 git 확인). 새 모델·규칙·수치는 없다 |
+| AI 1 FU-17 | 충족 | 직전 리뷰. O-1 수정은 이 경로와 무관하다 |
+| AI 2 V02 회귀 | 충족 | 직전 리뷰의 HitEvent 합 = HP 감소, ×2.2 1회. 화면 피해 숫자는 사용자 V11("10타 피해 숫자와 HP 감소 일치" 모두 괜찮음)으로 보완했다 |
+| AI 3 가드 | 충족 | 직전 리뷰. 사용자 V11(가드 시작 이펙트·소리 1회, 패링·반격 체감 동일)도 "모두 괜찮음"이다 |
+| AI 4 FU-12 | 충족 | 직전 리뷰 근거에 O-1 회귀(O1-T3·T4)를 더했다. 시각은 사용자 시연 수락(O1-T8)으로 보완했다 |
+| AI 5 build·git | 충족 | O1-T2·T5와 위 버전 확인 |
+| 사용자 V11 | 수락 | 자연 플레이 V11 "모두 괜찮음"(사용자 결정 4), FU-12 시연 "모두 괜찮음"(사용자 결정 1) |
+
+- QA 표기: tester는 PASS·NOT_RUN·NEEDS_DECISION을 나눠 적었고, 프로브(Play 메모리) 경로와 시험 부산물(클라이언트 시간 배율 0이면 클라이언트 타이머도 멈춤, 시연 중단, 프로브 LEA-3051)을 공개했다. 직접 보지 않은 화면을 PASS로 세지 않았다. 스크린샷은 회차 한도 12장 안이고 O-1 회귀·시연에서는 0장이다.
+- AI 작업과 사용자 기여: 정지·슬로우 화면 판단과 V11은 사용자 관찰이다. 구현·로그 대조는 AI 근거다. 문서에 섞이지 않았다.
+- 참고(경미, 조치 불필요): eaeb032에도 run.md·WorkRecord가 함께 들어갔다. CLAUDE.md `[code]` 시점 규칙("그 시점까지의 Plan·WorkRecord 변경")과 같은 사례이고 push 전이라 결과는 같다.
+
+**planner 마감 때 Plan·Feature에 옮길 항목**
+
+1. Plan 회차 2 절·표 정리
+   - 626행 "구현 상태 … 미커밋, `[code]` 커밋 전"을 d8c61db(트리 `3940b24f…`) + O-1 eaeb032(트리 `fe15c874…`, blob `8d22ddd…`) 기준으로 고친다.
+   - FU-17·FU-19·FU-12를 "후속 회차 2에서 닫은 항목" 표(회차 1 표와 같은 형식)로 옮기고 부채 표 47·57·70행을 정리한다. 결과 문구: tester FAIL 0, reviewer READY, 사용자 V11 "모두 괜찮음"(자연 플레이 + FU-12 시연), O-1은 같은 승인 범위에서 고쳤다.
+   - `사용자 결정 대기`의 "부채 처리 시점" 행과 `목표·상태`를 "후속 회차 2 종료(이 run의 후속 처리 완료), 3단계 시작 지시 대기"로 고친다.
+2. 직전 리뷰 O-3 → FU-28 관찰 추가
+   - FU-28 행에 한 줄을 붙인다: "관찰(2026-11-20 회차 2 tester O-3): 공격이 취소돼도 이미 재생을 시작한 눈빛·먼지 이펙트는 화면에서 끝까지 나온다. `ClearEffects`는 추적만 끊는다. FQ-3 (가) '기존 이펙트 유지'와 같은 기존 동작이며 결함이 아니다."
+   - 새 ID는 만들지 않는다. 다시 볼 조건은 FU-28과 같다.
+3. R-1 추적 후보(이펙트 클립 첫 동기 로드)
+   - 내용: 몬스터 엔티티별 첫 눈빛 때 `TrackEffect`→`GetRuidTimeline`→`LoadAnimationClipAndWait`가 서버에서 동기로 돈다. 접근 클립은 스폰 때 `MonsterManager`(138행)가 미리 읽지만 이펙트 클립은 미리 읽지 않는다. `GetClipTimeline` 주석("진행 중에는 읽지 않는다")과 다르다.
+   - 처리: (C) 추적 행으로 등록하는 것을 권한다(새 FU 번호는 planner가 정한다). 고치려면 범위 밖인 `MonsterManager`를 바꿔야 한다.
+   - 다시 볼 조건: Play 시작 뒤 첫 3칸 공격의 눈빛→먼지 전투 시계 차가 예고 1.571초보다 눈에 띄게 길 때, 사용자가 첫 공격 지연을 보고할 때, 늦어도 6단계 몬스터 동작 일반화(FU-04·FU-29와 함께).
+   - 측정: 이번 회차에서는 하지 않았다(필수 아님).
+4. R-2 V11 문구와 FU-27 불일치 정리
+   - 불일치: Plan 회차 2 "사용자 V11"(702행 "팝업 정지 중 이펙트 모습과 슬로우 중 눈빛 속도")은 게임 안에서 볼 경로가 없는 항목이다. FU-27 규칙("팝업을 실제로 여는 경로가 생기기 전에는 V11 목록에 넣지 않는다")과 어긋난다.
+   - 실제 처리: 사용자가 "시연 보고 확인"을 골라 Play 메모리 프로브 시연으로 봤고 "모두 괜찮음"으로 수락했다.
+   - Plan에 적을 것: 이 V11은 프로브 시연 수락이며 실제 `_UIPopup:Open` 경로가 아니다. 실제 팝업 경로의 이펙트 정지 화면은 FU-27(그 경로가 생기는 회차 V11)로 남긴다. 자연 플레이의 슬로우·이펙트 겹침은 지금 데이터에 경로가 없다(이펙트는 `parry.guard`뿐이고 가드형은 JUST를 만들지 않음, 슬로우 2.0초는 다음 공격과 겹치지 않음). 다시 볼 조건: JUST가 나는 공격에 `EffectClip`을 넣을 때, `AttackInterval`·`SlowDurationSec`를 크게 바꿀 때, 6단계에서 몬스터가 늘 때. 앞으로 Plan의 V11에는 자연 경로가 없는 항목을 넣지 않거나 "프로브 시연"으로 명시한다(FU-18처럼 Plan 작성 규칙에 붙일지는 planner 판단).
+5. 남은 미실시(NOT_RUN, PASS로 세지 않음) — Plan "미실시 확인" 또는 Feature 확인 범위에 짧게 남긴다
+   - PlayRate≠1 이펙트 클립에서 O-1 수정의 효과(O1-T7). 소스 대조만 했다. `PlayEffect` 옵션 `PlayRate`가 클립 PlayRate와 곱해진다는 전제도 검증하지 않았다. 다시 볼 조건: `EffectClip`을 PlayRate≠1 클립으로 바꾸거나 이펙트를 새로 더할 때.
+   - 시연 n=7(먼지 중 정지의 해제)·n=8(먼지 중 슬로우 2회차). 사용자가 "필요 없음"이라 했다.
+   - 정지 중 플레이어 공격·가드 이펙트의 화면. 시연 대상은 눈빛·먼지였고, 공격 이펙트는 coder 측정, 가드는 같은 경로라는 판단뿐이다.
+   - 실제 `_UIPopup:Open` 경로의 정지(FU-27). 서버 정지와 클라이언트 정지를 실제 지연을 두고 함께 거는 조합.
+   - 맵 이탈 단독 정리(TR11). Stop 경로와 같은 함수를 지난다는 것은 소스로 확인했다.
+   - 표 무효 상태 가드 Play(TR14, Plan이 소스 대조 허용). 실제 키 패링(자연 플레이 V11 체감으로 수락).
+   - R-1 첫 공격 로드 시각.
+   - 지연 있는 실접속·모바일(CombatCore-V11 모바일·V12·FU-01 행).
+6. Feature(2_CombatCore) 짧은 반영
+   - FU-12: 정지는 엔진의 클라이언트 시간 배율 0이 이펙트를 멈춘 프레임으로 두고 재개 때 이어 재생한다(추가 코드 없음). 슬로우는 몬스터 이펙트(눈빛·먼지)를 지금 프레임부터 새 배율로 다시 낸다(프레임 계산은 클립 PlayRate 포함, O-1). 한계: 프레임 단위 이어 재생이고, 지금 데이터에서는 자연 발생 경로가 없다. 화면은 사용자 프로브 시연으로 수락했다.
+   - FU-17·FU-19: 동작은 같다(정리만).
+7. WorkRecord·run 정리(사용자 결정 5 "링크 정리 후 삭제")
+   - 2026-11-19 선례(5efe005 내용 커밋 → 16d70b3 링크 정리·삭제)처럼 순서를 둔다. 먼저 메인이 이 리뷰 절을 포함한 `[CombatCore][review]` 회차 종료 커밋을 만들고 push한다. 그다음 planner가 Plan·Feature·README의 링크를 그 커밋 해시로 바꾸고 WorkRecord·run을 지운다.
+   - 이 WorkRecord 머리의 "상태·갱신일"·"현재 재개 지점"은 회차 2 범위 확인 시점 그대로라 오래됐다. 삭제 전 기준 커밋에 남는 사본이므로, 고칠지 그대로 둘지는 planner가 정한다.
+   - `GameDesign`은 규칙·수치 변경이 없어 고칠 것이 없다. 로드맵 재개 지점은 3단계 시작 지시 대기로 둔다.
+
+**담당별 다음 행동**
+
+- 메인: 이 판정을 사용자에게 알린다. `[CombatCore][review] 후속 회차 2 종료 — READY(사용자 V11 수락)` 회차 종료 커밋과 push를 한다(run·이 WorkRecord 등 회차 문서, `map/map01.map`은 계속 뺀다, push 전 비밀값·개인정보 검사). 그 뒤 planner 마감을 부른다.
+- planner: 위 "planner 마감 때 옮길 항목" 1~7을 처리한다.
+- coder·tester: 이 회차에서 더 할 일은 없다.
+
+**사용자 판단 사항**: 이 회차를 닫는 데 필요한 것은 없다(직전 리뷰 판단 1~4는 2026-11-20에 모두 답이 왔다). 기록용: R-1 추적 행 등록 시기(6단계와 함께 보기를 제안)는 planner 마감 때 Plan에 적고, 3단계 시작은 사용자 별도 지시를 기다린다.
+
+**검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), `PlayEffect` PlayRate 옵션과 클립 PlayRate의 실제 곱 관계, PlayRate≠1 클립 동작, 시연 화면 자체(사용자 관찰만 근거), 20:36:24 `AbortCombat`이 소유자 무효·HP 분기 중 어느 쪽이었는지(둘 다 설계 경로), 시연 프로브 스크립트 원문(`MakerScript` 30·5번째 줄의 내용), 실접속·모바일.
 
 ## 완료 시 이관할 내용
 

@@ -56,7 +56,7 @@ Maker 담당 기록은 자동 잠금 장치가 아니다. 과거 모드를 현�
 
 - MovementInput: 2026-10-20 V08 수락으로 완료·이관해 임시 기록을 정리했다. 현재 결과는 [1단계 Feature](../Features/1_MovementInput.md).
 - CombatCore(2단계 원본): 2026-11-19 사용자 결정으로 2단계 완료, "링크 정리 후 삭제"로 임시 기록을 정리했다(정리됨). 원문은 기준 커밋 5efe005의 [CombatCoreWorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)·[2단계 Plan](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md). 현재 결과는 [2단계 Feature](../Features/2_CombatCore.md), 남은 추적은 [2단계 후속 계획](../Plans/CombatCore.md).
-- [CombatCore 후속 처리](CombatCoreWorkRecord.md): 2026-11-19 시작한 2단계 후속 처리(FU) 회차 기록. 상태: 후속 회차 1 종료(2026-11-20), 회차 2 대기. 파일 이름은 같지만 위 2단계 원본(5efe005)과 다른 새 기록이다. 연결 Plan은 [2단계 후속 계획](../Plans/CombatCore.md)의 "후속 처리 계획(2026-11-19)" 절.
+- [CombatCore 후속 처리](CombatCoreWorkRecord.md): 2026-11-19 시작한 2단계 후속 처리(FU) 회차 기록. 상태: 후속 회차 1·2 모두 종료(2026-11-20, 회차 2 reviewer READY·사용자 V11 수락). 결과는 Feature·후속 계획에 반영했고, 사용자 결정 "링크 정리 후 삭제"로 회차 종료 커밋 뒤 삭제 예정이다. 파일 이름은 같지만 위 2단계 원본(5efe005)과 다른 새 기록이다. 연결 Plan은 [2단계 후속 계획](../Plans/CombatCore.md)의 "후속 처리 계획(2026-11-19)" 절.
 - [CombatFoundation](CombatFoundationWorkRecord.md): [기존 후속 확인 Plan](../Plans/CombatFoundation.md) 재개 근거.
 
 최신 상태는 각각의 Plan/WorkRecord를 확인한다. 파일 삭제·단계 전환 시 이 목록과 ChatRoles의 연결도 정리한다.
