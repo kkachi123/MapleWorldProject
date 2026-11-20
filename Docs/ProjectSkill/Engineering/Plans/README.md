@@ -2,6 +2,8 @@
 
 앞으로 할 일·승인 범위·완료 기준을 관리한다. 팀 책임·인계·권한은 [ChatRoles 운영 규칙](../../ChatRoles/README.md), 계획서 자체의 내용·양식은 [공통 Plan 작성 원칙](../../Plan_Writing_Guide.md)을 따른다.
 
+현재(2026-11-20): 3단계 [BattleResult Plan](3_BattleResult.md) Q1~Q16·스크린샷 상한 확정. 사용자 구현 지시 대기이며 구현 승인은 없다.
+
 ## 위치·내용
 
 - 단계별 파일: {단계번호}_{FeatureKey}.md. 번호는 로드맵과 맞춘다.
