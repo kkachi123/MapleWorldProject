@@ -403,6 +403,22 @@
 - 차단 조건: 없음. 상태: DONE(coder).
 - Maker 최종 상태: Stop 확인, `maker_get_current_map` map01·edit. 사용 종료.
 
+### 2026-11-20 coder — 회차 2 O-1 수정 개발 (CombatCore-FU-12 reviewer 지적 O-1, 위 절들과 별개, 기존 절은 그대로)
+
+- 범위·승인: reviewer 회차 2 O-1(사용자 판단 2 (가), 같은 승인 범위). `MonsterAttackMotion.GetEffectFrame` 1곳만 고쳤다. 다른 파일·함수·수치는 바꾸지 않았다. commit·push 없음. 읽은 지침: coder 계약, 팀 계약, 구현 원칙, EnvGuides, msw-general·msw-ui-system·msw-scripting, Foundation 참조 4개와 platform-maple(map01 TileMapMode 0), verify-checklist. `.model`·`.map`·`.ui`는 만지지 않아 builder-protocol은 읽지 않았다.
+- 사전 확인: HEAD `d8c61db`·트리 `3940b24f…`, `map/map01.map` SHA-256 `22b6acbf…987e`, `maker_get_current_map` map01·edit.
+- **변경 diff 요지**(+1/−1, `git diff --stat`): `local elapsed = math.max(0, now - fx.startAction) * fx.motionRate` → `… * fx.motionRate * fx.timeline.rate`. `GetWindupSeconds`·`StartDrivenClip`의 `divisor = timeline.rate * motionRate`와 같은 패턴이다(프레임 Delay ÷ (클립 PlayRate × 배율) = 시간이므로 시간 × 클립 PlayRate × 배율이 Delay 누적과 비교된다). `fx.timeline`은 `GetRuidTimeline`이 `rate`(유한·양수 보정)를 담아 `TrackEffect`가 기록한 값이다. 변경 후 `MonsterAttackMotion.mlua` blob id `8d22ddda9183c257053c1fce14bcc740f3a0a4d9`(변경 전 `da93aea6…`). `.codeblock` 변경 없음.
+- **빌드**: `maker_refresh_workspace` status ok → `maker_build_logs`(로그 시각 15:09:59, 이번 Refresh 직후): `LWA` 0건, `Error` 0건. 검색어 `LEA` 9건은 `ClearStart`·`ClearCounter`·`ClearCombatEffects`·`ClearStunTimer`에 걸린 LIA 1115 Info(이전 QA와 같은 오검출)이고 `LEA-` 진짜 항목은 없다. mlua diagnose는 errors=0·warnings=0(Info 7건은 `GetActionTime`·`ActionRate` 동적 접근, 기존과 같은 종류).
+- **Play 회귀 1회**(15:10:26 시작 ~ Stop, `maker_clear_logs`·스크린샷 0회): 회차 2 개발 절·tester TR8과 같은 방법(`maker_execute_script` server_main 프로브가 자연 3칸 공격의 눈빛·먼지 추적 중 `ApplySlow(1.0, 0.5)`를 걸고 플레이어 `Hp`를 보충, 로그 지문 `[O1R]`). 이펙트 클립 `05113e9d`의 프레임 표는 `count=15 rate=1 delays=0.1×6,0.2,0.3,0.1×5,0.2,0.05`(`timeline.rate`는 1이라 곱해도 값이 같다).
+  - 눈빛: `effect rate windup frame=4 range=4-6 playRate=0.7->0.35 serial=2147483648->2147483649 action=12.846`(시작 액션 12.143, 0.703×0.7=0.492 → f4), `frame=6 range=6-6 playRate=0.35->0.7 serial=…649->…650 action=13.350`(0.504×0.7=0.353, f4·f5 0.2 뒤 f6).
+  - 먼지: `effect rate dust frame=9 range=9-end playRate=0.7->0.35 serial=2147483651->2147483652 action=13.940`(시작 13.733, 0.207×0.7=0.145 → f8 0.1 지나 f9), `frame=12 range=12-end playRate=0.35->0.7 serial=…652->…653 action=14.448`(0.508×0.7=0.356, f9~f11 0.3 뒤 f12).
+  - **[VRF] 대조 결과**: 위 4개 프레임(4·6·9·12)이 위 Delay 표로 직접 계산한 값과 모두 일치한다. 슬로우를 건 시각이 이전 시험과 달라(눈빛 frame=3·2, 먼지 frame=8·9 등) 숫자를 줄 단위로 같은 입력에서 비교할 수는 없으나, 계산식·serial 교체 형태(`serial=…→…`, 끝 프레임 옵션 `6`·`end` 유지)·`playRate 0.7↔0.35` 전환이 이전 [VRF](coder `frame=3 range=3-6`·`frame=8 range=8-end`, tester `frame=2`·`frame=9`)와 같고, 클립 `rate=1`이라 변경은 값에 영향이 없다. 새 `LEA-`·`LWA-` 줄 없음(Play 중 서버·클라이언트 검색 결과는 모두 15:10 이전의 coder·tester 시험 흔적).
+  - 정리: 프로브 스크립트는 `maker_execute_script` 빈 스크립트로 중지한 뒤 Stop했다. 새 `LEA-3051`은 보지 않았다(Stop 뒤 로그는 읽지 않음).
+- **미실시(PASS로 세지 않음)**: PlayRate≠1 클립 효과 자체는 그런 클립이 없어 소스 대조로만 판단한다(Delay ÷ (rate×배율) 식과 같은 패턴). 이어 낸 이펙트의 화면 모양(사용자 V11), 팝업 정지·가드·공격 이펙트 경로, 같은 입력의 전후 줄 단위 비교(변경 전 입력 재현 불가). 스크린샷 사용 0장(회차 상한 소진).
+- **Maker 상태**: Stop 확인, `maker_get_current_map` map01(0a0972ef-ad23-4e24-af63-afbd53120c1d)·edit. 사용 종료.
+- **대상 버전**: 메인 커밋 대기. `git status --porcelain`: ` M .pipeline/…/run.md`(메인), ` M Docs/…/CombatCoreWorkRecord.md`(이 절), ` M RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua`, ` M map/map01.map`(사용자 변경, SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e` 시작·종료 같음, 커밋 제외).
+- 다음 행동: 메인 `[CombatCore][code]` 로컬 커밋 → tester 회귀 → reviewer. 차단 조건 없음. 상태: DONE(coder).
+
 ## QA 기록
 
 ### 2026-11-19 tester — 후속 회차 1 (CombatCore-FU-24·FU-03·FU-23) 독립 시험
@@ -571,6 +587,89 @@
 - 시험 부산물: 제품 파일 변경 0. Play 메모리에서 `AttackInterval`을 9999로 바꾸고 패턴 표를 한 행으로 바꿨다가 모두 되돌렸다(마지막 프로브 시점 5행 복원 확인, 이후 Stop으로 Play 메모리 폐기). 시험 타이머(서버 4개·클라이언트 1개)는 각자 종료 때 정리해 새 `[LEA-3051]`이 없다.
 - Maker 최종: Stop 확인(`maker_run_command stop` status ok), `maker_get_current_map` map01·edit, 사용 종료.
 
+### 2026-11-20 tester — 후속 회차 2 (CombatCore-FU-17·FU-19·FU-12 (가)) 독립 시험 (위 절들과 별개, 기존 절은 그대로)
+
+- **대상 버전**: 로컬 커밋 d8c61db(`d8c61db6dfc18088f2a4f0c84bb67d3deec093dd`), 트리 `3940b24f378ecf9e1fdcd9bb99e9463ef46edd17`, 부모 a593e2b(`a593e2b6c258e9f12ad376f3ed8fe0dbc7f3331d`), push 전. 시험 전·후 `git status --porcelain`은 ` M .pipeline/…/run.md`(메인)·` M map/map01.map` 2건이고 제품 파일을 고치지 않았다. `map/map01.map` SHA-256 `22b6acbf…987e`(시험 전·후 같음).
+- **주체·환경**: msw-tester(독립 실행). Maker `map01`(0a0972ef…, 개인 월드 970621b2…), 시작·종료 모두 edit. Play 2회(14:43 시작 ~14:54 Stop, 14:54:59 시작 ~14:55:08 Stop). 읽은 것: tester·팀 계약, EnvGuides, msw-general·msw-ui-system·msw-scripting·msw-combat-system, Foundation 참조 4개, platform-maple(map01 TileMapMode 0), verify-checklist, Plan 회차 2 절, 이 WorkRecord 개발 절. 스크린샷 2장(coder 10장 + 2 = 회차 12장 한도 소진). `maker_clear_logs` 0회, 로그는 누적이라 시각 14:43 이후만 이번 시험으로 보았다. 로그 지문 `[T2R2]`는 이 시험의 프로브 줄이다.
+- **시험 방법**: 실제 키(↑ `UpArrow` tap, ↓ `DownArrow` down/up `maker_keyboard_input`)와 Play 메모리 프로브(`maker_execute_script` server_main·client)만 썼다. 프로브가 Play 안에서만 바꾼 것: 몬스터 `AttackInterval`(1.0~2.5, 끝에 9999), 패턴 표 Weight(parry.guard만 남김, 끝에 원값 복원), 플레이어 `Hp` 보충, 정지 시험용 `CombatPauseComponent._T.owner`·`SetServerPaused`, 몬스터 `HitEvent` 구독(합계 집계). 프로브 타이머는 시험 때마다 스스로 `ClearTimer`했다.
+
+**기준별 판정**
+
+| ID | 기준(Plan 완료 기준 AI) | 판정 |
+| --- | --- | --- |
+| TR1 | diff가 편집 허용 범위 안(시험 범위 1, AI 5 일부) | PASS |
+| TR2 | Refresh 후 build 로그(AI 5) | PASS(한계 있음) |
+| TR3 | AI 1: `resolveIndex` 0곳 | PASS |
+| TR4 | AI 2: V02 회귀(10타 HP = HitEvent 합, ×2.2 반격 1회) | PASS(화면 피해 숫자 대조는 NOT_RUN) |
+| TR5 | AI 3: 가드 시작·연출·효과음 각 1회, 추가 입력 출처 무증가 | PASS(실제 키 ↓) |
+| TR6 | AI 3: 일반 가드 잔여 40%, 패링 1회 | PASS(패링 입력은 입력 수락 지점 호출) |
+| TR7 | AI 4: 팝업 정지 중 이펙트 정지·재개, 끝 시각 밀림 | PASS(시각 정지는 먼지로 확인) |
+| TR8 | AI 4: 슬로우 시작·끝 눈빛·먼지 배율·이어 재생 | PASS(로그 근거), 시각 모양은 NOT_RUN(사용자 V11) |
+| TR9 | AI 4: 끝난 이펙트를 다시 내지 않음 | PASS |
+| TR10 | AI 4: 사망·대결 종료·Stop 정리 | PASS |
+| TR11 | AI 4: 맵 이탈 정리 | NOT_RUN(Stop 경로는 PASS) |
+| TR12 | AI 4: 1칸 공격·플레이어 공격·가드 이펙트 회귀 | PASS |
+| TR13 | AI 5: git 변경이 범위 파일뿐, 버전 대조 | PASS |
+| TR14 | 표 무효 상태 가드(coder NOT_RUN) | NOT_RUN |
+
+**TR1·TR13 범위·버전(PASS)**: `git diff --stat a593e2b d8c61db`는 `.pipeline/…/run.md`·Plan·WorkRecord 문서 3개와 제품 `.mlua` 4개(`MonsterStateControl` +9/−2, `MonsterAttackMotion` +85/−0, `PlayerCombatComponent` +0/−1, `PlayerGuardComponent` +4/−3, 제품 합 +98/−6)뿐이다(문서 포함 총 220+/27−). `.codeblock`·`.model`·`.map`·`.ui`·DataSet·CSV 변경 0. 바뀐 파일의 `git ls-tree -r d8c61db` blob id와 작업 트리 `git hash-object`가 4개 모두 일치한다: PlayerCombatComponent `52beb46b4a75a6054c3f65e3f9847f9657848a11`, PlayerGuardComponent `2b79931029ccf6dd45441d59dec329a2fd880135`, MonsterAttackMotion `da93aea6cfac8ed8e10f20dba342421a0f98082a`, MonsterStateControl `f67d70c0f73ef7d2b9942568117d571ae2f8eda4`. 바뀌지 않아야 할 4개의 blob id는 a593e2b와 d8c61db가 같고 작업 트리도 같다: CombatPauseComponent `1658387d80672ca210b7cdd050055d04f0e60926`, Monster_Attack `af264b032d20dd76f444686bcc511816eadaa7ea`, UIPopup `3807871f270fdd2f1bc10788633d520630e6c4c7`, OrangeMushroomAttack `62dcb6853dc12171a246faf3e20f7a5ce9cb437e`. diff 내용은 Plan 허용 범위와 맞다: FU-17은 `self._T.resolveIndex = index` 1줄 삭제(`resolveId` 유지), FU-19는 `SetGuarding`의 기록 전 값 지역 변수 `wasGuarding`와 `self.isGuarding = isHeld`를 연출 앞으로 옮기고 끝의 중복 기록 삭제(시작 판단·시작 시각·시작 x·[VRF]·연출·효과음 줄은 그대로), FU-12는 몬스터 이펙트 추적(`TrackEffect`·`GetEffectFrame`·`SyncEffectRates`·`ClearEffects`, `GetRuidTimeline` 분리)·`ApplyMotionClipRate`의 `SyncEffectRates` 호출·`ClearCombatEffects`의 `ClearEffects` 호출뿐이다.
+
+**TR2 build(PASS, 한계)**: `maker_refresh_workspace` 1회 status ok → `maker_build_logs`: `LEA&`·`Error`·`Warning`·`LWA` 검색 각 0건. `LEA` 단순 검색 9건은 `ClearStart` 등 이름의 `Clear` 부분 문자열에 걸린 Info(LIA 1115)이다. 한계: 로그 시각(14:31:14)이 coder의 마지막 Refresh와 같아 내 Refresh가 새로 컴파일했는지는 로그로 구분되지 않는다(이전 QA와 같은 한계). Play에서 4개 스크립트가 정상 동작했다. Play 중 제품 코드에서 난 새 `[LEA-`·`[LWA-` 줄은 0건이다. 누적 로그의 `[LEA-2007]` 1건(14:52:03, `'m'은 nil`)은 내 프로브가 `GetComponent("script.MonsterAttackMotion")`로 잘못 불러 난 시험 흔적이고(`GetComponent(MonsterAttackMotion)`으로 고쳐 다시 올림), 14:33~14:34 3건과 `[LEA-3051]` 12:40·14:39는 coder 시험 흔적이다. 두 번째 Play 시작 때 새 `[LEA-3051]`은 없었다.
+
+**TR3(PASS)**: Grep `resolveIndex`(`*.mlua`·`.codeblock`·`.model`·`.map`·`.ui`·`.csv`·`.userdataset`) 0건.
+
+**TR4 V02 회귀(PASS)**: 몬스터 `HitEvent` 합계를 프로브로 집계했다.
+- 실제 키 ↑ tap 2회(몬스터 HP 100→90, 90→80): 시전마다 `HitEvent` 10회 합 10, HP 감소 10(`manual cast id=1/4 count=10 factor=1`). 14:49:36 시전(`id=11`, factor 1)도 HitEvent 10·HP −10.
+- ×2.2 반격 1회: 14:50:32 패링 성공으로 `counter granted … factor=2.2`(서버 `bonusMultiplier` 2.2, `CounterReady` true), 이어 공격 1회(`manual cast id=16 count=10 factor=2.2`): HitEvent 10회 합 20, 몬스터 HP −20(100→80), 시전 뒤 `CounterReady` false(소비 1회). coder 값(합 20, HP −20)과 같다. 반격 시전 입력은 키가 아니라 클라이언트 `RequestChangeState("ATTACK")`(반격 창이 짧아 키 입력 지연 안에 못 맞춤. 앞의 첫 시도는 키를 눌렀을 때 창이 이미 닫혀(`ready=false`) 일반 시전 factor 1로 나갔다. 결과로 세지 않았다).
+- 화면 피해 숫자와 HP 감소 대조: NOT_RUN(스크린샷 한도). 우연히 정지 시험 스크린샷에 플레이어 쪽 피해 숫자 `12`가 보였고 그 공격의 플레이어 피해(보충 전 12)와 같았다(참고만, 몬스터 쪽 숫자 대조 아님).
+
+**TR5 가드 시작(PASS, 실제 키)**: ↓ `DownArrow` down(14:44:50): `[VRF] PlayerGuard start x=0.000 t=65.874` 1, `guard fx effect=318a4662` 1, `sfx kind=guard ruid=605da1fc` 1(14:44:50 시각 줄 각 1건, 이전 시험들의 줄과 구분). 같은 홀드에 클라이언트 `RequestChangeState("GUARD","probe2")`(`accepted=true`) 추가 뒤에도 시작·연출·효과음 줄이 늘지 않았다. 코드 호출 위치는 `PlayerGuardComponent.SetGuarding`(line 10·20·21 새 줄 번호)이다. **시험 부산물**: 이 `probe2` 출처를 내가 나중에야 해제했다(`ReleaseHeldState("GUARD","probe2")` 14:49:19). 그 사이(14:44:50~14:49:19)는 실제 ↓ 키 해제 후에도 가드 상태가 유지돼 있어서, 이 구간의 P1·P3·P4·P5·P6·P7 패링 시도(지연 시작 가드)는 모두 "이미 가드 중"이라 패링 창에 못 들어갔다. 이 구간 결과는 패링 근거로 세지 않고, 일반 가드 40%(아래)는 가드 홀드 시험이라 유효하다.
+
+**TR6 가드 판정(PASS)**:
+- 일반 가드 잔여 40%: ↓ 실제 키 홀드 중 몬스터 자연 공격 3회(14:45:08~16) 각각 플레이어 HP 100→96→92→88(12×0.40 내림 4, 매번 1회), 서버 `PlayerHealth guard eval x=0.000 cellOk=true areaOk=true attr=PARRY` 줄 3건(14:45:10·13·16)과 매번 플레이어 피해 4(`defense kind` 줄은 따로 읽지 않았고 피해값으로 판단). 1회 기준 충족, 3회 반복.
+- 패링 1회: 입력 수락 지점(`PlayerStateControl.RequestChangeState("GUARD")`) 호출을 예고 남은 시간 약 0.134초에 클라이언트 프로브가 실행(패턴 parry.any 1칸 010)했고 14:49:30(P8, 서버 증가분 `counterGranted` 1)과 14:50:32(P9, seq 61, 예고 남은 0.135) 두 번 `counter granted until=… factor=2.2`가 나왔다. 두 번 모두 "홀드 시작이 판정 시각 −창 안, Pos2 칸(x=0.000), 영역이 Pos2 포함"(guard eval `cellOk=true areaOk=true`) 결과다. 실제 키로 패링 창(저스트 0.20초 이내)에 맞추는 것은 키 입력 지연 때문에 하지 못했다(NOT_RUN, coder와 같음).
+
+**TR7 팝업 정지(PASS)**:
+- 방식: `CombatPauseComponent`에 정지 소유자(플레이어)·세션을 지정하고 서버 `SetServerPaused(true)`, 클라이언트 프로브가 `IsPaused` @Sync를 따라 `SetPresentationPaused(true)`(실제 `_UIPopup:Open` 경로가 아니고, 팝업이 배경을 가려(coder 확인) 사용하지 않음).
+- 눈빛(k3, 14:52:38 정지 2.0초): 액션 시계 `532.914`가 정지 전·중·재개 직전·직후 모두 같고(프레임 f3·playRate 0.7 유지), 이어 먼지가 나온 시각은 전투 시계 `534.957`(눈빛 `533.369` 대비 1.588초, 예고 1.571초 + 표본 오차)로 전투 시계 기준 예고 길이가 그대로이고, 실제 시각은 정지 2.0초만큼 밀렸다(눈빛 14:52:37 → 먼지 14:52:41).
+- 먼지(k4, 14:52:46 정지 24초): 액션 시계 `538.925` 정지 전후 같음(f9). **시각 확인(스크린샷 2장)**: 정지 3초 뒤(14:52:49)와 14초 뒤(14:53:00) 두 장에서 먼지 이펙트가 같은 모양·같은 위치로 보였다(숨겨지지 않고 멈춘 프레임으로 남음). 두 장 모두 가운데 플레이어 위치에 먼지 조각과 피해 숫자 `12`가 같았다. 재개(14:53:10) 뒤 다음 눈빛(14:53:13)이 정상으로 이어졌다.
+- 플레이어 공격·가드 이펙트의 정지는 직접 보지 않았다(한도). 먼지와 같은 `PlayEffect` 경로·같은 클라이언트 시간 배율 0이라고 coder와 같이 판단하지만 시각 PASS는 아니다(NOT_RUN).
+
+**TR8 슬로우 추종(PASS, 로그 근거)**: 프로브가 `ApplySlow(duration, 0.5)`를 걸었다(parry.guard 3칸, 눈빛·먼지는 motionRate 0.7).
+- 눈빛(k1, 공격 시작 +0.3초, 슬로우 1.0초): `[VRF] effect rate windup frame=2 range=2-6 playRate=0.7->0.35 serial=…679->…680 action=523.640`, 슬로우 끝 `frame=5 range=5-6 playRate=0.35->0.7 serial=…680->…681 action=524.156`. 직접 계산: 액션 시계 523.300 시작, 523.640 때 (0.340×0.7)=0.238 → f2(0.2~0.3), 524.156 때 0.599 → f5(0.5~0.6)로 일치. 끝 프레임 옵션은 `6` 그대로. 슬로우 길이 1.0초 → 액션 시계 0.516 진행(기대 0.5).
+- 먼지(k2, 먼지 추적 +0.15초, 슬로우 0.8초): `frame=9 range=9-end playRate=0.7->0.35 action=529.646`, 끝 `frame=11 range=11-end playRate=0.35->0.7 action=530.054`(기대 529.646+0.4=530.046).
+- 먼지가 슬로우 중에 시작해도(k5, 먼지 `playRate=0.35` 시작) 슬로우가 끝나자 `frame=9 0.35->0.7`로 이어졌다.
+- 한계: 이어 낸 이펙트가 화면에서 끊기거나 처음부터 반복되거나 중복으로 겹쳐 보이는지, 배율 0.35에서 눈에 어떻게 보이는지는 스크린샷 한도로 시각 확인을 하지 못했다(NOT_RUN, 사용자 V11). 서버 로그상 시작 프레임 옵션은 계산된 현재 프레임(0 아님)이고 `RemoveEffect(이전 serial)` 뒤 새 serial 한 개만 추적한다(중복 추적 없음). 엔진이 이전 serial을 실제로 지웠는지는 화면 확인이 필요하다.
+
+**TR9 끝난 이펙트(PASS)**: k5에서 눈빛이 끝난 뒤(공격 시작 +1.45초, 눈빛 ~1.14초) 슬로우를 걸자 `[VRF] effect skip windup serial=…691 finished action=543.144`가 나오고 눈빛을 다시 내지 않았다(프로브 로그 추적 목록 n 1 → 0).
+
+**TR10 정리(PASS)**: 이펙트 추적 1건이 있을 때
+- 직접 `ClearCombatEffects`(눈빛 중 14:54:13): `effect clear tracked=1`, 곧바로 슬로우 0.5·0.5초를 걸어도 `effect rate` 줄 없음, 추적 n=0 유지(14:54:14 확인).
+- 사망(눈빛 중 14:54:18, `ApplyDamage(80)`): `effect clear tracked=1`(`MonsterHealthComponent.ApplyDamage`→`ClearCombatEffects`), 추적 n=0, die 상태.
+- 대결 종료(14:55:01, 눈빛 중 플레이어 `Hp=0`): `effect clear tracked=1`(`MonsterManager.RefreshDuelPlayer`→`ClearOpponentExecution`→`ClearCombatEffects`), 공격 취소·IDLE, n=0.
+- Stop(14:55:08~09, 팝업 정지 중 눈빛 추적 n=1): `effect clear tracked=1`(`ClearOpponentExecution` 경유 줄 14:55:09). 정리 뒤 재생 줄은 없었고 Stop·편집 모드 복귀가 정상이었다.
+- 슬로우 중 정리(슬로우였던 이펙트를 다시 내지 않음)는 직접 시험하지 않았다(j1은 정리 직후 슬로우라 순서가 반대). coder 근거와 코드 읽기(`ClearEffects`는 목록만 비움)로만 본다.
+
+**TR11 맵 이탈(NOT_RUN)**: 맵이 map01 하나라 실제 이탈 불가. `OnMapLeave` 단독 호출은 호출 뒤 `_T.pause=nil`로 이후 공격 시험이 막혀 하지 않았다. `OnMapLeave`는 `OnEndPlay`에서도 불리므로 Stop 경로(TR10)가 같은 `ClearCombatEffects`를 지나지만, 14:55:09 줄의 호출 스택이 `ClearOpponentExecution` 경유라 `OnMapLeave` 자체가 불렸다는 직접 증거는 없다.
+
+**TR12 회귀(PASS)**: ① 1칸 공격(parry.any/special.random, EffectClip 없음): 시험 중 수십 회 자연 공격에서 `effect` 줄 없이 정상 판정·복귀했고 새 오류 없음. 3칸(parry.guard)은 눈빛·먼지 추적이 정상. ② 플레이어 기본 공격: 10타 정상(TR4). ③ 가드 이펙트: 시작 때마다 1회(`guard fx effect=318a4662`)이고 `SetGuarding` 순서 변경 뒤에도 가드 판정·연출이 정상. 패링·일반 가드·반격 결과가 이전 회차 값과 같다(HP 4, 반격 ×2.2).
+
+**TR14 표 무효 가드(NOT_RUN)**: 제품 임시 변경 금지 규칙과 Play 메모리 프로브 방법(`_CombatRuleCatalog:GetPlayerActionFx("guard")`가 nil이 되게 하는 것)을 찾지 못해 하지 않았다. `SetGuarding` 순서 변경 소스 대조로만 판단: 시작 판단은 기록 전 값(`wasGuarding`)을 쓰고 `fx == nil`일 때의 `log("[VRF] guard fx off")` 줄과 가드 진행은 기록 순서와 무관하다. 이는 소스 읽기이며 Play 검사가 아니다.
+
+**관찰(결함 아님, reviewer 참고)**
+- O-1 `GetEffectFrame`은 프레임 지연을 `motionRate`만으로 나누고 클립 자체 `PlayRate`(`timeline.rate`)는 쓰지 않는다. 지금 이펙트 클립 `PlayRate`가 1.0이라(coder 확인) 맞지만, 클립 `PlayRate`가 1이 아닌 이펙트가 쓰이면 어긋난다. 접근 클립 쪽 `GetWindupSeconds`·`StartDrivenClip`은 `timeline.rate`를 곱하는 것과 다르다. 지금은 영향 없음.
+- O-2 끝난 이펙트 항목은 다음 `TrackEffect`·`SyncEffectRates`까지 목록에 남을 수 있다(예: k2 먼지 `fnil`이 다음 공격까지 남음, coder가 개발 절에 적은 내용과 같다). 영향 없음.
+- O-3 공격이 취소돼도 이미 재생을 시작한 눈빛·먼지는 화면에서 끝까지 나온다(기존 구조, 정리는 추적만 끊음). 코드 주석 "마지막 재시작 배율로 끝까지 재생"과 같다.
+- O-4 이 시험 중 플레이어 쪽 피해에는 남은 HP 상한이 없어 HP 0이 되어도 `IsDead()`가 false였다(프로브로 `Hp=0` 설정, FU-22 기존 관찰과 같음).
+
+**시험 부산물·프로브 정리**: 제품 파일 변경 0. Play 메모리에서만 바꾼 값(`AttackInterval`, 패턴 Weight, 플레이어 `Hp`, 정지 소유자, 몬스터 사망 상태)은 각 프로브가 복원했고 Stop으로 폐기됐다. 프로브 타이머(서버 P3~P9·F·G·H, 클라이언트 P1·P3~P9·F follower·H follower)는 각자 `ClearTimer`했고 클라이언트 follower F·H는 Stop 때 남아 있었다(Stop 뒤 새 `[LEA-3051]`은 두 번째 Play 시작 때 없었고, 두 번째 Stop 뒤의 값은 다음 Play 시작에서 확인된다). 훅에 막힌 셸 명령은 없었다.
+
+**한계·사용자 직접 확인**
+- 스크린샷 2장(먼지 정지 확인). 회차 전체 12장 한도를 다 썼다. 눈빛·먼지가 슬로우 시작·끝에서 이어 재생되는 화면 모양, 정지 중 플레이어 공격·가드 이펙트, 화면 피해 숫자 대조는 사용자 V11 항목이다.
+- 서버–클라이언트 같은 프로세스(Maker 로컬 Play), 지연 있는 실접속·모바일 NOT_RUN. 정지는 `_UIPopup:Open` 실제 경로가 아니라 서버 `SetServerPaused`+클라이언트 `SetPresentationPaused` 직접 호출이다.
+- 패링·반격 입력은 입력 수락 지점 호출(논리 경로)이며 실제 키가 아니다.
+- Maker 최종: Stop 확인(`maker_run_command stop` status ok), `maker_get_current_map` map01·edit, 사용 종료.
+
 ## 리뷰 기록
 
 ### 2026-11-19 reviewer — 후속 회차 1 (CombatCore-FU-24·FU-03·FU-23)
@@ -735,6 +834,153 @@
 5. (기록용, 지금 결정 불필요) 후보 FU-28(취소·전투 중단 뒤 몬스터 표시·위치)·FU-29(균등화 항목 정리)의 등록·시기.
 
 **검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), `.model` 내용(ModelBuilder 읽기 미실시, 모델 diff 0과 tester 정점 1.38 측정으로 대신), O-3 원인, 실접속·모바일, Bundle 재계산.
+
+### 2026-11-20 reviewer — 후속 회차 2 (CombatCore-FU-17·FU-19·FU-12 (가)) (위 절들과 별개, 기존 절은 그대로)
+
+- **판정: WAITING** — 요구 ID CombatCore-FU-17·FU-19·FU-12. Plan 회차 2 완료 기준 AI 1~5의 필수 근거는 충족했고, 요청 밖 변경은 없다. 남은 것은 사용자 판단 3건이다. ① FU-12 V11 두 항목은 지금 게임 안에서 볼 경로가 없다(아래 판단 3). 그래서 보는 방법을 정해야 한다. ② 새 코드의 잠재 결함 O-1을 이번 회차에 고칠지 정해야 한다. ③ 자연 플레이로 볼 수 있는 회귀 V11이 남아 있다. 이 판정은 사용자 수락·배포 승인이 아니다.
+- **검토 버전**: 로컬 커밋 d8c61db(`d8c61db6dfc18088f2a4f0c84bb67d3deec093dd`), 트리 `3940b24f378ecf9e1fdcd9bb99e9463ef46edd17`, 부모 a593e2b, push 전. 리뷰에서 직접 확인했다.
+  - `git diff --stat a593e2b d8c61db`: 제품은 `.mlua` 4개(MonsterStateControl +9/−2, MonsterAttackMotion +85, PlayerCombatComponent −1, PlayerGuardComponent +4/−3)이고, 나머지는 run·Plan·WorkRecord다. `.codeblock`·`.model`·`.map`·`.ui`·DataSet 변경은 0이다.
+  - `git ls-tree -r d8c61db` blob id와 작업 트리 `git hash-object`가 4개 모두 개발·QA 절 값과 같다. `CombatPauseComponent` `1658387d…0926`은 바뀌지 않았다.
+  - `git status --porcelain`: run.md·이 WorkRecord·`map/map01.map`. `map/map01.map` SHA-256 `22b6acbf…987e`로 기준과 같다.
+  - Grep `resolveIndex`: RootDesk 0건.
+- **주체·방법**: msw-reviewer(독립 실행). Maker는 쓰지 않았고 시험을 반복하지 않았다.
+  - 읽은 지침: reviewer·팀 계약, 구현 원칙, msw-general·msw-ui-system, Foundation 참조 4개, platform-maple(map01 `TileMapMode` 0은 Grep으로 확인), msw-scripting·verify-checklist, msw-combat-system.
+  - 확인한 자료: 위 git 명령과 diff 전문, `MonsterAttackMotion`·`MonsterStateControl`·`PlayerGuardComponent` 전체, `EffectService.d.mlua`, `CombatPauseComponent`(정지·AbortCombat 부분), `Monster_Attack` 40~100행, `MonsterManager` `ClearOpponentExecution`, `MonsterHealthComponent` 사망 부분, `MonsterAttackComponent` 슬로우 호출(211행), CSV 3개(CombatRuleData·MonsterAttackPatternData·MonsterStatData), GameDesign §4.2·§4.3, Grep(호출처·`RequestPopupPause`·`LoadAnimationClipAndWait`).
+
+**요구별 대조(Plan 회차 2 완료 기준 — AI)**
+
+| 기준 | 판단 | 근거 |
+| --- | --- | --- |
+| 범위 | 충족 | 바뀐 파일 4개는 모두 편집 허용 5개 안이다. `CombatPauseComponent`는 바꾸지 않았는데, Plan이 "실제로 고칠 파일은 coder가 정한다"고 했다. `Monster_Attack`·`UIPopup`·`OrangeMushroomAttack`의 blob id도 그대로다. 새 모델·규칙·수치는 없다 |
+| AI 1 FU-17 | 충족 | 쓰기만 하던 1줄을 삭제했다. 리뷰 Grep에서도 0건이고, `resolveId`(247행 규칙이 읽음)는 남아 있다 |
+| AI 2 V02 회귀 | 충족(화면 피해 숫자는 NOT_RUN) | coder·tester가 따로 확인했다. HitEvent 합 = HP 감소이고, ×2.2 반격 1회는 합 20이다. 이번 diff는 피해·HitEvent 경로에서 쓰기 전용 `_T` 필드 1줄만 지웠다. 화면 숫자 대조는 아래 V11 1로 넘긴다 |
+| AI 3 가드 | 충족 | tester가 실제 ↓ 키로 시작·연출·효과음 각 1회와 추가 출처 무증가를 확인했다. 잔여 40%(4)와 패링 2회(입력 수락 지점 호출)도 확인했다. 표 무효 상태는 Plan이 허용한 소스 대조로 판단했다. 리뷰 소스 대조(아래 판단 1)와도 같다 |
+| AI 4 FU-12 | 충족(시각 일부 NOT_RUN) | 정지: 엔진 정지를 측정했다. coder는 정지 중 멈춘 프레임과 재개 뒤 이어짐을 봤고, tester는 먼지 스크린샷 2장으로 같은 결과를 봤다. 액션 시계도 멈췄고 끝 시각은 정지 시간만큼 밀렸다. 슬로우: 눈빛·먼지에서 0.7↔0.35 이어 재생 프레임이 계산값과 일치했다(coder·tester). 끝난 이펙트 재생 안 함, 사망·대결 종료·Stop 정리도 확인했다. 맵 이탈은 AI 4 문구("사망·Stop") 밖이다. `OnMapLeave`→`ClearCombatEffects`로 같은 함수를 지나는 것은 소스로 확인했다 |
+| AI 5 build·git | 충족 | tester build `LEA&`·`Error`·`LWA` 0건이다. 버전 대조는 위 리뷰 확인과 같다 |
+
+- QA 표기: PASS·NOT_RUN·프로브(Play 메모리) 경로를 나눠 적었다. 직접 보지 않은 시각 결과를 PASS로 세지 않았다. 시험 부산물(probe2 홀드, 프로브 LEA-2007)도 공개했고 결과에서 뺐다. 스크린샷은 coder 10장과 tester 2장으로 FU-18 한도 12장 안이다.
+
+**판단 1 — FU-17·FU-19 동작 동일성(소스)**
+
+- FU-19 `SetGuarding`: 옛 코드는 블록 안에 조기 return이 없었고, 끝에서 `self.isGuarding = isHeld`를 무조건 기록했다. 새 코드는 `wasGuarding`로 같은 시작 판단을 하고, 같은 값을 먼저 기록한다.
+  - 블록 안 연출·효과음·`GetCombatTime`·`GetPlayerActionFx`는 `isGuarding`을 읽지 않는다. `isGuarding`은 @Sync가 아닌 일반 속성이다. 그래서 정상 경로의 결과는 같다.
+  - 블록 안에서 오류가 나면 옛 코드는 상태 기록을 놓쳤지만, 새 코드는 기록한다. 리뷰 메모의 취지대로 나아졌다.
+- FU-17: 남은 `_T` 쓰기는 `resolveId`뿐이고, 읽는 곳이 있다.
+
+**판단 2 — FU-12 (가) 판단과 범위**
+
+- **정지 코드를 더하지 않은 판단은 (가)와 GameDesign §4.3에 맞다.**
+  - Plan "coder가 정할 것" 첫 줄: 이미 멈추고 이어지면 같은 일을 하는 코드를 더하지 않는다.
+  - FQ-3 (가): 정지 중에는 멈춘 프레임을 보인다.
+  - 측정 근거: 정지 중 프레임이 그대로 남고, 숨겨지지 않고, 재개 뒤 이어졌다. 엔진이 하는 이 방식은 "남은 프레임부터 다시 재생"보다 끊김이 적다.
+  - `_UtilLogic:SetClientTimeScale(0)`은 클라이언트 전체 시간 배율이다. 그래서 이펙트 종류와 무관하게 적용된다고 본다. 직접 본 것은 서버가 낸 공격 이펙트, 클라이언트 이펙트, 먼지이고, 가드 이펙트는 직접 보지 않았다(한계).
+  - 실접속에서는 서버 정지와 클라이언트 배율 0 사이에 지연 차가 있다. 이는 기존 V12·FU-01과 같은 NOT_RUN 범위다.
+- **슬로우 추종 구현은 Plan 범위 안이다.**
+  - 근거: AI 4 셋째 줄 "슬로우 시작·끝 때 재생 중 눈빛의 배율", 바꿀 파일 FU-12 목록.
+  - 대상을 몬스터 이펙트로 한정한 것은 GameDesign §4.2와 맞다(슬로우 ×0.5는 현재 상대에게만, 플레이어·UI·오디오 제외).
+  - `GetRuidTimeline` 분리는 같은 캐시를 이펙트가 쓰기 위한 최소 변경이다. `GetClipTimeline`의 동작은 같다.
+
+**판단 3 — 새 85줄 코드 검토(MonsterAttackMotion·MonsterStateControl)**
+
+- 추적·프레임 계산:
+  - 지금 프레임 = (액션 시계 경과 × motionRate)를 프레임 Delay에 누적해 구한다. 액션 시계에는 이미 정지(멈춤)와 슬로우(×slowRate)가 반영돼 있고, 이펙트 실제 배율 = motionRate × ActionRate다. 그래서 클립 PlayRate가 1이면 맞다(아래 O-1 예외).
+  - 인덱스 `delays[frame + 1]`은 `frame ≤ lastFrame ≤ count−1`이라 범위 밖으로 나가지 않는다. 시작 프레임이 끝보다 크면 즉시 nil이라 오류가 아니다.
+  - 이어 재생 뒤에는 `startFrame`·`startAction`을 새 이펙트 기준으로 다시 잡는다. 그래서 모델과 화면 이펙트가 다시 맞춰진다. 대신 프레임 안 진행분을 버리므로, 배율이 바뀔 때마다 끝이 최대 한 프레임 늦어진다. coder가 알려진 한계로 적었고 결함이 아니다.
+- RemoveEffect → PlayEffect:
+  - 같은 서버 틱에서 이전 serial을 지운 뒤 새 serial 하나만 추적한다. 새 재생이 실패해 serial이 0이면 항목을 빼므로 중복 추적이 없다.
+  - 같은 배율로 다시 갱신하는 경우(슬로우 갱신·중첩 없음)는 `|Δ| ≤ 1e-6`이라 건드리지 않는다.
+  - 화면에서 이전 이펙트가 실제로 지워지는지, 이어 붙는 순간이 끊기거나 겹치는지는 보지 않았다(NOT_RUN).
+- ExecSpace·동기화:
+  - 새 메서드 4개와 `GetRuidTimeline`은 모두 ServerOnly이고, 호출처(`ApplySlow`·`OnUpdate`·`ClearCombatEffects`·`PlayEffectRange`)도 서버다.
+  - `_EffectService`의 세 메서드는 d.mlua에 ExecSpace 지정이 없다. 기존 `PlayEffectRange`처럼 서버에서 불러 클라이언트에 퍼진다.
+  - 추적 상태는 엔티티별 `_T`(비동기화)이고, 새 @Sync는 없다.
+- 누수·정리:
+  - 목록은 재생 때와 배율 변경 때 끝난 항목을 걷어내므로 한 공격에 최대 2개다.
+  - 사망(`MonsterHealthComponent`), 대결 종료(`ClearOpponentExecution`), 맵 이탈·Stop(`OnMapLeave`/`OnEndPlay`)이 모두 `ClearCombatEffects` → `ClearEffects`를 지난다. `dieStarted`면 `SyncEffectRates`도 비운다.
+  - 새 타이머·이벤트 구독은 없다.
+  - `ClearCombatEffects`는 `ClearEffects`를 배율 1 복귀(`ApplyMotionClipRate`)보다 먼저 부른다. 그래서 정리 순간 다시 재생되지 않는다.
+- 정지 중 배율 변경:
+  - `ApplySlow`는 `pause.IsPaused`면 거부한다.
+  - 슬로우 만료는 전투 시계로 재는데, 정지 중에는 전투 시계가 멈춰 만료되지 않는다.
+  - 정지 중 정리는 목록을 먼저 비운다.
+  - 그래서 정지 중에 다시 재생되는 경로가 없다.
+- 다른 몬스터·여러 공격:
+  - 슬로우는 대결 상대의 `MonsterStateControl`에만 걸리고, 추적은 엔티티별이다.
+  - 눈빛·먼지는 별도 항목이다.
+  - 1칸·2칸 패턴은 `EffectClip`이 비어 호출되지 않는다.
+- **현재 데이터에서 슬로우 추종이 실제로 일어나는 경로가 없다(관찰 R-2, 결함 아님).**
+  - 이펙트가 있는 패턴은 `parry.guard`(3칸 가드형) 하나다. GameDesign §4.2 "가드형 예고는 ↓ 패링만 저스트 성공"이라 이 공격은 JUST(슬로우 유일 원인, `MonsterAttackComponent` 211행)를 만들지 않는다.
+  - 다른 공격의 JUST로 걸린 슬로우(2.0초, ×0.5)는 액션 시계 1.0초에 해당한다. 그런데 다음 공격은 복귀 약 0.5초와 `AttackInterval` 3.0초(액션 시계) 뒤에 시작한다. 그래서 다음 눈빛과 겹치지 않는다.
+  - 이 코드는 승인된 요구대로 만든 것이다. 실제로 쓰이는 때는 다음 경우다: JUST가 나는 공격에 `EffectClip`을 넣을 때, `AttackInterval`·`SlowDurationSec`를 크게 바꿀 때, 6단계에서 몬스터가 늘 때. coder·tester의 슬로우 근거는 모두 프로브(`ApplySlow` 직접 호출)다.
+- 팝업 정지도 게임 안에서 여는 경로가 없다. `RequestPopupPause`는 `UIPopup` 안에서만 부르고, `_UIPopup:Open` 호출처는 0이다(FU-27). 그래서 Plan의 사용자 V11 두 항목은 일반 플레이로 볼 수 없다. Plan 회차 2 V11 문구는 FU-27의 "경로가 생기기 전에는 V11에 넣지 않는다"와도 어긋난다(planner 정리 대상).
+
+**판단 4 — tester 관찰과 리뷰 관찰 분류**
+
+| 관찰 | 분류 | 근거·조치 |
+| --- | --- | --- |
+| O-1 `GetEffectFrame`이 클립 PlayRate(`timeline.rate`)를 곱하지 않음 | **새 코드의 잠재 결함(낮음). 현재 데이터에서는 영향 없음** | (1) 같은 파일의 `GetWindupSeconds`(94행)·`StartDrivenClip`(108행)·`PlayDieOnce`(309행)는 모두 클립 PlayRate를 곱한다. 이 식만 다르다. (2) 지금 이펙트 클립(`05113e9d`)의 PlayRate는 1.0이라 결과가 같다. (3) `EffectClip`은 사용자가 직접 고치는 CSV 칸이다. PlayRate가 1이 아닌 클립으로 바꾸면 이어 재생 프레임이 어긋난다. 배율 >1이면 이미 끝난 이펙트를 진행 중으로 보고 다시 낼 수 있어, AI 4 "끝난 이펙트를 다시 내지 않음"이 깨진다. 수정은 `elapsed`에 `fx.timeline.rate`를 곱하는 1곳이다. 이 파일은 편집 허용 범위 안이다. 처리 방법은 사용자 판단 2. 전제: `PlayEffect`의 PlayRate 옵션이 렌더러처럼 클립 PlayRate와 곱해진다는 것은 이 파일 전체와 같은 가정이며, 검증하지 않았다 |
+| O-2 끝난 항목이 목록에 남음 | 결함 아님(설계) | 다음 재생·배율 변경 때 걷어내고 정리 경로에서 비운다. 최대 1~2개라 누수가 아니다. coder가 개발 절에 적은 내용과 같다. 추적 불필요 |
+| O-3 취소 뒤 이펙트가 끝까지 재생 | 결함 아님(기존 동작 유지) | 변경 전에도 이펙트는 끝까지 재생됐다. (가)는 "기존 이펙트 유지"이고, GameDesign §4.2 "이전 효과 제거"는 슬로우·그로기 같은 효과를 말한다. FU-28(취소 뒤 몬스터 표시 정리)의 관련 관찰로 한 줄 붙인다(새 ID 불필요) |
+| O-4 Hp=0인데 `IsDead()` false | 기존 사항(FU-22) | 이번 diff 밖이다. 3단계 Plan 후보로 그대로 둔다 |
+| R-1(리뷰) 이펙트 클립 첫 동기 로드 | 관찰(낮음), 추적 후보 | `TrackEffect` → `GetRuidTimeline` → `LoadAnimationClipAndWait`가 몬스터 엔티티별 첫 눈빛 때 서버에서 동기로 돈다. 접근 클립은 스폰 때 `MonsterManager` 138행에서 미리 읽지만, 이펙트 클립은 미리 읽지 않는다. `GetClipTimeline` 주석 "진행 중에는 읽지 않는다"와 다르다. `Monster_Attack` 58·59행 순서상 로드 시간만큼 `attackDue`(판정)와 추적 시작이 늦어진다. 측정된 눈빛→먼지 1.576·1.588초(예고 1.571초)는 ±0.05 안이지만, 그 표본이 첫 공격인지는 확인되지 않았다. 미리 읽기는 `MonsterManager`(범위 밖)를 고쳐야 한다. 다시 볼 조건: Play 시작 뒤 첫 3칸 공격의 눈빛→먼지 전투 시계 차, 또는 6단계 몬스터 동작 일반화 |
+| R-2(리뷰) 현재 데이터에서 슬로우 추종 경로 없음 | 관찰, 결함 아님 | 위 판단 3. V11 방법에 영향(사용자 판단 1) |
+
+**판단 5 — 남은 NOT_RUN과 사용자 V11**
+
+- NOT_RUN(PASS로 세지 않음):
+  - 슬로우 이어 재생의 화면 모양(끊김·처음부터 반복·겹침, 이전 이펙트 실제 제거)
+  - 정지 중 플레이어 공격·가드 이펙트의 화면
+  - 화면 피해 숫자와 HP 대조(AI 2 일부)
+  - 맵 이탈 단독(소스로 같은 함수 확인)
+  - 표 무효 가드 Play(Plan이 소스 대조 허용)
+  - 실제 키 패링(Plan 미요구, 회차 1 V11 5 수락)
+  - 첫 공격 로드 시각(R-1)
+  - 실접속·모바일
+- 스크린샷 한도(12장)는 AI 캡처에만 적용된다. 사용자가 직접 화면을 보는 것과는 무관하다.
+- V11을 두 부류로 나눈다(사용자 판단 1·3).
+  - **자연 플레이로 볼 수 있는 것**: 기본 공격 10타의 화면 피해 숫자와 HP 감소, 가드 시작 때 이펙트·소리 1회, 패링·반격 체감이 이전과 같은지(FU-17·19 회귀).
+  - **자연 플레이로 볼 수 없는 것**: 팝업 정지 중 이펙트 모습, 슬로우 중 눈빛·먼지 속도·이어짐.
+
+**판단 6 — 회차 2 종료 가능 여부와 종료 때 처리할 것**
+
+- 사용자 판단 1~3에 답이 오면 닫을 수 있다.
+  - O-1을 이번에 고치기로 하면 같은 승인 범위에서 coder(1줄) → 메인 `[code]` → tester(회귀와, 고르면 V11 시연) → reviewer를 다시 돈다.
+  - 고치지 않으면 코드 수정·재시험은 필요 없다.
+- 회차 2가 끝나면 **이 run의 후속 처리는 모두 끝난다**.
+  - (A) FU-03·17·19·23·24, FU-12(결정됨)·FU-26이 처리된다.
+  - 나머지 (B)(하지 않음, 추적)·(C)·(D)는 Plan 표에서 계속 추적한다. 이 run의 처리 대상이 아니다.
+  - 3단계는 사용자 별도 지시로 시작한다.
+- 종료 정리(planner, 사용자 답 뒤):
+  1. Plan: 회차 2 "구현 상태"(626행 "미커밋, `[code]` 전")를 d8c61db 기준으로 고친다. FU-17·19·12는 "닫은 항목"으로 옮기고 부채 표 행을 정리한다. O-3은 FU-28에 붙이고, O-1(추적 시)과 R-1은 새 행이나 기존 행에 등록한다. V11 결과와 NOT_RUN 사유를 적고, 회차 2 V11 문구와 FU-27 규칙의 불일치를 정리한다. `목표·상태`·"사용자 결정 대기 → 부채 처리 시점" 줄을 회차 2 종료로 고친다.
+  2. Feature(2_CombatCore): 짧게 반영한다.
+     - FU-12: 정지는 엔진 클라이언트 시간 배율로 멈추고 이어지며, 추가 코드는 없다. 슬로우는 몬스터 이펙트를 지금 프레임부터 새 배율로 다시 낸다. 한계는 프레임 단위이고, 현재 데이터에서 자연 발생 경로가 없다.
+     - FU-17·19: 동작 같음.
+     - 남은 NOT_RUN.
+  3. GameDesign: 규칙·수치 변경이 없어 고칠 것이 없다. 로드맵 재개 지점은 3단계 시작 대기로 둔다.
+  4. 메인: `[CombatCore][review]` 회차 종료 커밋(run·WorkRecord 등 이번 회차 문서)과 push. `map/map01.map`은 계속 뺀다.
+  5. run·WorkRecord 삭제: WorkRecord 삭제 조건(회차 1·2 종료, 사용자 V11, Feature·Plan 반영, 링크 정리)이 채워지면 지울 수 있다. 다만 2026-11-19 선례처럼 기준 커밋 링크로 정리한 뒤 지울지는 사용자 확인 사항이다(사용자 판단 4). 사용자 확인이 남아 있으면 유지한다(팀 계약).
+- 참고(경미, 조치 불필요): d8c61db에 run.md가 함께 들어갔다. 회차 1(a18b251)과 같은 사례이고 push 전이라 결과는 같다.
+
+**담당별 다음 행동**
+
+- 메인: 아래 사용자 판단 사항을 묻는다. 답 전에는 `[review]` 커밋·push를 하지 않는다.
+- coder: 사용자 판단 2에서 (가)일 때만 `MonsterAttackMotion.GetEffectFrame`의 `elapsed`에 `fx.timeline.rate`를 곱한다. 그 밖에 수정할 것은 없다.
+- tester: O-1을 고치면 회귀만 한다. 슬로우 이어 재생 [VRF] 프레임이 지금 값과 같아야 한다(클립 PlayRate 1.0이라 결과 동일). 수정의 효과 자체는 PlayRate≠1 클립이 없어 소스 대조로 판단한다. 사용자 판단 1에서 (가)를 고르면 Play 메모리 프로브로 시연한다(제품 변경 0, AI 스크린샷 0). 3칸 공격 중 서버 `SetServerPaused`와 클라이언트 `SetPresentationPaused`, 눈빛·먼지 중 `ApplySlow(1.0~2.0, 0.5)`를 사용자가 Maker 화면으로 보게 한다. R-1을 확인하려면 Play 시작 뒤 첫 3칸 공격의 눈빛·먼지 `clock` 차를 기록한다(필수 아님).
+- planner: 위 판단 6의 종료 정리를 한다.
+
+**사용자 판단 사항**
+
+1. FU-12 V11 방법. 팝업 정지와 슬로우가 이펙트와 겹치는 경로가 지금 게임 안에 없다.
+   - (가) tester가 Play 메모리 프로브로 정지·슬로우를 걸고, 사용자가 Maker 화면에서 눈빛·먼지·공격·가드 이펙트의 정지 모습과 슬로우 이어짐(끊김·반복·겹침)을 본다. 리뷰 권장안이다: 85줄 슬로우 추종의 화면 결과를 아직 아무도 보지 않았다.
+   - (나) NOT_RUN으로 두고 추적한다. 정지는 FU-27, 슬로우는 "이펙트 있는 공격이 슬로우와 겹칠 수 있게 데이터가 바뀌거나 몬스터가 늘 때" 다시 본다. 회차는 AI 근거로 닫는다.
+2. O-1(클립 PlayRate 미반영):
+   - (가) 이번 회차에서 1곳 고친다. 같은 승인 범위이고, 위 1(가)의 tester 시연과 한 번에 돌릴 수 있다. 리뷰 권장안이다.
+   - (나) 고치지 않고 추적 ID로 등록한다. 다시 볼 조건: `EffectClip`을 바꾸거나 새 이펙트를 더할 때, 같은 파일을 고칠 때.
+3. 자연 플레이 V11: 기본 공격 10타 피해 숫자와 HP 감소, 가드 시작 이펙트·소리 1회, 패링·반격 체감이 이전과 같은지.
+4. 회차 종료 정리 뒤 이 run과 WorkRecord를 기준 커밋 링크로 정리하고 지울지(2026-11-19 선례 "링크 정리 후 삭제").
+5. (기록용, 지금 결정 불필요) R-1(이펙트 클립 미리 읽기)을 추적 행으로 등록할 시기. 6단계 몬스터 동작 일반화와 함께 보는 것을 제안한다.
+
+**검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), `PlayEffect` PlayRate 옵션과 클립 PlayRate의 실제 곱 관계, 이어 재생의 클라이언트 화면, R-1 로드 시간, `.model`(`AttackInterval`은 DataSet 3.0이 런타임에 적용됨을 `MonsterManager` 163행으로 확인했고 모델 값은 읽지 않음), 실접속·모바일.
 
 ## 완료 시 이관할 내용
 

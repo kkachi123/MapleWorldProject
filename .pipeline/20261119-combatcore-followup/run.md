@@ -2,9 +2,9 @@
 
 - 요청·승인: 사용자(2026-11-19) "castleenemy 문구 정리(FU-23), DataSet 6종 이관(FU-24), 부채 처리(FU-04~22먼저 하고, 이후 3단계 진행하자". 2단계 후속 항목을 3단계보다 먼저 처리하는 순서 승인. 항목별 구현 범위·값은 planner 분류 뒤 사용자 확인. 3단계는 이 run이 끝난 뒤 별도 지시로 시작.
 - 모드: 계획 → 구현·검증
-- 상태: CODING
+- 상태: TESTING
 - 갱신: 2026-11-20 / 메인 조율 채팅(Claude Code)
-- 현재 담당: msw-coder (후속 회차 2 FU-17·FU-19·FU-12 (가))
+- 현재 담당: msw-tester (회차 2 O-1 회귀·사용자 시연)
 - 다음 행동·대기 사유: 후속 회차 2(FU-17·FU-19·FU-12 (가)): planner 범위 확인 → coder → [code] 커밋 → tester → reviewer → 사용자 V11 → 회차 종료. 기준 a593e2b. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
 - 환경 가이드: 없음
 
@@ -60,3 +60,8 @@
 - 2026-11-20 사용자 "회차 2 시작". planner 범위 확인 호출(기준 a593e2b).
 - 2026-11-20 planner 범위 확인 READY_FOR_CODE(미결정 0, 수치·규칙 변경 없음). 편집 허용 5파일(PlayerCombatComponent·PlayerGuardComponent·MonsterAttackMotion·CombatPauseComponent·MonsterStateControl). FU-12는 클라이언트 SetClientTimeScale(0) 정지 효과 먼저 측정. coder 호출.
 - 2026-11-20 coder 회차 2 완료: .mlua 4개(FU-17 resolveIndex 1줄 삭제, FU-19 SetGuarding 기록 순서, FU-12 MonsterAttackMotion 이펙트 추적·슬로우 추종·정리 + MonsterStateControl 호출). FU-12 정지는 클라이언트 SetClientTimeScale(0)이 이미 멈추고 재개 시 이어짐(측정) → 정지 코드 추가 없음. AI 1~4 PASS, 5 부분(커밋 확인 메인). 스크린샷 10장(FU-18 상한 12). NOT_RUN: 이어 낸 이펙트 시각 정확도·체감, 피해 숫자 화면, 실제 키, 맵 이탈 단독, 표 무효 가드. Maker map01 편집 모드.
+- 2026-11-20 [code] d8c61db(tree 3940b24f378ecf9e1fdcd9bb99e9463ef46edd17) 로컬 커밋, diff --stat a593e2b: .mlua 4개+문서 3개, map01 제외. msw-tester 호출.
+- 2026-11-20 tester 회차 2 완료(d8c61db): FAIL 0. PASS 버전 대조(blob id 일치), 빌드, AI 1·2(실제 키 ↑, ×2.2 반격 1회)·3(실제 키 ↓ 가드 3종·잔여 40%, 패링 2회 호출)·4(정지·슬로우 이어 재생·끝난 이펙트·정리)·5. NOT_RUN: 슬로우 이어 재생 시각, 정지 중 플레이어 이펙트 시각, 피해 숫자 화면, 맵 이탈 단독, 표 무효 가드, 실제 키 패링. 스크린샷 2장(회차 합 12/12). 관찰 O-1 GetEffectFrame 클립 PlayRate 미반영(현재 1.0이라 영향 없음), O-2 끝난 항목 잔존, O-3 취소 뒤 이펙트 끝까지, O-4 Hp=0 IsDead false(FU-22). Maker map01 편집 모드. reviewer 호출.
+- 2026-11-20 reviewer 회차 2 판정 WAITING(d8c61db): AI 1~5 충족, 범위 준수, 85줄 검토 문제 없음. O-1 GetEffectFrame 클립 PlayRate 미반영 = 새 코드 잠재 결함(낮음, 1곳). O-2 설계대로, O-3 FU-28 관찰, O-4 FU-22. R-1 첫 눈빛 이펙트 클립 동기 읽기(추적 후보), R-2 현재 게임에 슬로우·정지와 이펙트가 겹치는 경로 없음 → V11 문구 FU-27 규칙과 불일치. 사용자 질문 대기, [review] 보류.
+- 2026-11-20 사용자 답변: ① 이펙트 정지·슬로우 = 시연 보고 확인(tester 프로브 시연, 제품 무변경·AI 스크린샷 없음) ② O-1 = 이번에 고침(같은 승인 범위, coder→tester→reviewer) ③ 자연 플레이 V11(10타 피해·가드 시작 1회·패링/반격 체감) = 모두 괜찮음 ④ 회차 종료 뒤 run·WorkRecord = 링크 정리 후 삭제. 상태 CODING.
+- 2026-11-20 coder O-1 수정 완료: GetEffectFrame elapsed에 fx.timeline.rate 곱함(+1/−1, blob 8d22ddd). refresh·빌드 오류 0, Play 회귀 1회([O1R]) 슬로우 이어 재생 프레임 4·6·9·12가 Delay 계산과 일치, rate=1이라 값 불변. 스크린샷 0·clear_logs 0. Maker map01 편집 모드 반환. map01 SHA-256 기준값 동일. 메인 [code] 로컬 커밋 후 TESTING.
