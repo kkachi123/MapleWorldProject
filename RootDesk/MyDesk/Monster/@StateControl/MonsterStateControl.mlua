@@ -69,6 +69,10 @@ script MonsterStateControl extends Component
 	method void ClearCombatEffects()
 		-- 대결 종료·사망·이탈은 적 배율과 대기 진행을 정리한다.
 		self:GetActionTime()
+		-- 정리 때는 이펙트 추적을 비운다. 재생 중인 이펙트를 새 배율로 다시 내지 않는다.
+		---@type MonsterAttackMotion
+		local motion = self.Entity:GetComponent(MonsterAttackMotion)
+		if isvalid(motion) then motion:ClearEffects() end
 		local wasSlowed = self._T.slowPlayRateOn == true
 		self._T.slowPlayRateOn = nil
 		self._T.slowUntil = -1
@@ -83,10 +87,13 @@ script MonsterStateControl extends Component
 
 	@ExecSpace("ServerOnly")
 	method void ApplyMotionClipRate()
-		-- 렌더러 PlayRate는 모션 담당이 "현재 클립 배율 x ActionRate"로 계산한다.
+		-- 렌더러 PlayRate는 모션 담당이 "현재 클립 배율 x ActionRate"로 계산한다. 재생 중 이펙트도 같은 배율을 따라간다.
 		---@type MonsterAttackMotion
 		local motion = self.Entity:GetComponent(MonsterAttackMotion)
-		if isvalid(motion) then motion:ApplyClipRate() end
+		if isvalid(motion) then
+			motion:ApplyClipRate()
+			motion:SyncEffectRates()
+		end
 	end
 
 	@ExecSpace("ServerOnly")

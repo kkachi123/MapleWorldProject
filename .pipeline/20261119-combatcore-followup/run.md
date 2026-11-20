@@ -2,10 +2,10 @@
 
 - 요청·승인: 사용자(2026-11-19) "castleenemy 문구 정리(FU-23), DataSet 6종 이관(FU-24), 부채 처리(FU-04~22먼저 하고, 이후 3단계 진행하자". 2단계 후속 항목을 3단계보다 먼저 처리하는 순서 승인. 항목별 구현 범위·값은 planner 분류 뒤 사용자 확인. 3단계는 이 run이 끝난 뒤 별도 지시로 시작.
 - 모드: 계획 → 구현·검증
-- 상태: WAITING_USER
+- 상태: CODING
 - 갱신: 2026-11-20 / 메인 조율 채팅(Claude Code)
-- 현재 담당: 사용자 (후속 회차 2 시작 지시 대기)
-- 다음 행동·대기 사유: 후속 회차 1 종료(b071b5c push). 버전 지문 git 해시 방식 [ops] 반영. 다음: 사용자 지시 시 후속 회차 2(FU-17·FU-19·FU-12 (가)), planner 범위 확인부터. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
+- 현재 담당: msw-coder (후속 회차 2 FU-17·FU-19·FU-12 (가))
+- 다음 행동·대기 사유: 후속 회차 2(FU-17·FU-19·FU-12 (가)): planner 범위 확인 → coder → [code] 커밋 → tester → reviewer → 사용자 V11 → 회차 종료. 기준 a593e2b. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
 - 환경 가이드: 없음
 
 ## 원본 연결
@@ -18,7 +18,7 @@
 - 리뷰 결과: WorkRecord 리뷰 절(2026-11-19 WAITING, 2026-11-20 FU-26 WAITING → 사용자 V11 수락으로 종료)
 
 ## 실행·인계
-- 대상 버전: 회차 1 c6422cd(FU-24·03·23), a18b251(FU-26 1-A); 회차 종료 [review] 커밋
+- 대상 버전: 회차 2 기준 a593e2b(origin/main); 회차 1은 c6422cd·a18b251·b071b5c
 - 실행 주체: 메인 조율(Opus 5.5) / msw-planner·msw-coder·msw-tester·msw-reviewer 서브 에이전트(독립 실행)
 - Maker: 마지막 관찰 map01·편집 모드(2026-11-20 tester 인계, 사용 종료)
 - 전달·완료: 후속 회차 1 결과 확인 완료. 회차 2 미요청
@@ -57,3 +57,6 @@
 - 2026-11-20 사용자 답: V11 점프 ①2·3칸 초반 ②1칸 회귀 없음 ③반응 시간·맞는 구간 동일 ④착지 stand 1프레임 "모두 괜찮음"(O-2 안 보임). PlayerActionFxData.userdataset 재저장분은 "회차 커밋에 포함". 가드 문구 "통일". 버전 지문 "git 해시로 변경"([ops] 별도). planner 회차 1 종료 정리 호출.
 - 2026-11-20 planner 회차 1 종료 정리 완료(Plan·GameDesign §4.2·Feature·FileStructure·로드맵·WorkRecord README·링크 3곳, 가드 문구 5곳 통일, FU-14→FU-16 병합, FU-28·FU-29 (C) 추적 등록, run은 회차 2까지 유지 권고). 메인 [review] 회차 종료 커밋(PlayerActionFxData.userdataset 포함, map01 제외)·push.
 - 2026-11-20 [review] b071b5c push(c6422cd·a18b251 포함, 비밀값 검사 통과). [ops] CLAUDE.md "버전 고정"을 git 트리·blob id 방식으로 변경, .pipeline/README 대상 버전 칸 갱신(사용자 승인 "git 해시로 변경").
+- 2026-11-20 사용자 "회차 2 시작". planner 범위 확인 호출(기준 a593e2b).
+- 2026-11-20 planner 범위 확인 READY_FOR_CODE(미결정 0, 수치·규칙 변경 없음). 편집 허용 5파일(PlayerCombatComponent·PlayerGuardComponent·MonsterAttackMotion·CombatPauseComponent·MonsterStateControl). FU-12는 클라이언트 SetClientTimeScale(0) 정지 효과 먼저 측정. coder 호출.
+- 2026-11-20 coder 회차 2 완료: .mlua 4개(FU-17 resolveIndex 1줄 삭제, FU-19 SetGuarding 기록 순서, FU-12 MonsterAttackMotion 이펙트 추적·슬로우 추종·정리 + MonsterStateControl 호출). FU-12 정지는 클라이언트 SetClientTimeScale(0)이 이미 멈추고 재개 시 이어짐(측정) → 정지 코드 추가 없음. AI 1~4 PASS, 5 부분(커밋 확인 메인). 스크린샷 10장(FU-18 상한 12). NOT_RUN: 이어 낸 이펙트 시각 정확도·체감, 피해 숫자 화면, 실제 키, 맵 이탈 단독, 표 무효 가드. Maker map01 편집 모드.

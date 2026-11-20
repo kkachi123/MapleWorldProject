@@ -265,7 +265,6 @@ script PlayerCombatComponent extends AttackComponent
 		self._T.hitDeadlines[index] = nil
 		self._T.hitsFired = self._T.hitsFired + 1
 		self._T.resolveId = id
-		self._T.resolveIndex = index
 		local failed = self:CheckHitRules(cast, cast.target)
 		if failed ~= "" then
 			if Environment:IsMakerPlay() then log("[VRF] PlayerHitRule fail rule=" .. failed .. " hit=" .. tostring(index)) end

@@ -64,6 +64,12 @@ script MonsterAttackMotion extends Component
 		if not isvalid(animation) then return nil end
 		local ruid = animation.ActionSheet[key]
 		if ruid == nil or ruid == "" then return nil end
+		return self:GetRuidTimeline(ruid)
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetRuidTimeline(string ruid)
+		-- RUID 한 개의 프레임 표를 읽어 캐시한다(접근 클립과 이펙트 클립이 같은 표를 쓴다).
 		self._T.timelines = self._T.timelines or {}
 		local cached = self._T.timelines[ruid]
 		if cached ~= nil then return cached end
@@ -176,6 +182,85 @@ script MonsterAttackMotion extends Component
 		if lastFrame >= 0 then options["EndFrameIndex"] = lastFrame end
 		local serial = _EffectService:PlayEffect(effectRuid, self.Entity, Vector3(x, y, 0), 0, Vector3(1, 1, 1), false, options)
 		if Environment:IsMakerPlay() then log("[VRF] effect " .. label .. " ruid=" .. string.sub(effectRuid, 1, 8) .. " x=" .. string.format("%.3f", x) .. " y=" .. string.format("%.3f", y) .. " frames=" .. tostring(firstFrame) .. "-" .. (lastFrame >= 0 and tostring(lastFrame) or "end") .. " playRate=" .. string.format("%g", motionRate * actionRate) .. " serial=" .. tostring(serial) .. " clock=" .. self:ClockText()) end
+		self:TrackEffect(label, effectRuid, x, y, motionRate, firstFrame, lastFrame, motionRate * actionRate, serial)
+	end
+
+	@ExecSpace("ServerOnly")
+	method void TrackEffect(string label, string effectRuid, number x, number y, number motionRate, number firstFrame, number lastFrame, number playRate, integer serial)
+		-- 재생 중 이펙트의 시작 상태를 기록해 슬로우 시작·끝에 현재 프레임부터 새 배율로 이어 재생할 수 있게 한다. 팝업 정지는 클라이언트 시간 배율 0이 이미 이펙트를 멈추므로 기록하지 않는다.
+		local control = self.Entity:GetComponent("script.MonsterStateControl")
+		local timeline = self:GetRuidTimeline(effectRuid)
+		if serial == 0 or timeline == nil or not isvalid(control) then return end
+		local last = timeline.count - 1
+		if lastFrame >= 0 and lastFrame < last then last = lastFrame end
+		local now = control:GetActionTime()
+		-- 이미 끝난 이펙트는 목록에서 뺀다.
+		local kept = {}
+		for _, old in ipairs(self._T.fx or {}) do
+			if self:GetEffectFrame(old, now) ~= nil then table.insert(kept, old) end
+		end
+		table.insert(kept, { label = label, ruid = effectRuid, x = x, y = y, motionRate = motionRate, lastOption = lastFrame, lastFrame = last,
+			timeline = timeline, startFrame = firstFrame, startAction = now, playRate = playRate, serial = serial })
+		self._T.fx = kept
+		if Environment:IsMakerPlay() then log("[VRF] effect track " .. label .. " serial=" .. tostring(serial) .. " frames=" .. tostring(firstFrame) .. "-" .. tostring(last) .. " playRate=" .. string.format("%g", playRate) .. " tracked=" .. tostring(#kept) .. " action=" .. string.format("%.3f", now)) end
+	end
+
+	@ExecSpace("ServerOnly")
+	method any GetEffectFrame(any fx, number now)
+		-- 액션 시계(정지·슬로우 반영)로 이 이펙트가 지금 표시 중인 프레임 번호를 계산한다. 재생 구간을 모두 지났으면 nil이다.
+		local elapsed = math.max(0, now - fx.startAction) * fx.motionRate
+		local frame = fx.startFrame
+		while frame <= fx.lastFrame do
+			local delay = fx.timeline.delays[frame + 1]
+			if elapsed < delay then return frame end
+			elapsed = elapsed - delay
+			frame = frame + 1
+		end
+		return nil
+	end
+
+	@ExecSpace("ServerOnly")
+	method void SyncEffectRates()
+		-- 슬로우 시작·끝으로 ActionRate가 바뀌면 재생 중 이펙트를 지금 프레임부터 새 배율로 다시 재생한다. 끝난 이펙트는 다시 내지 않고, 배율이 같으면 건드리지 않는다.
+		local list = self._T.fx
+		if list == nil or #list == 0 then return end
+		local control = self.Entity:GetComponent("script.MonsterStateControl")
+		if self._T.dieStarted or not isvalid(control) then self:ClearEffects(); return end
+		local actionRate = control.ActionRate
+		if not _CombatRuleCatalog:IsFinite(actionRate) or actionRate <= 0 then actionRate = 1 end
+		local now = control:GetActionTime()
+		local kept = {}
+		for _, fx in ipairs(list) do
+			local frame = self:GetEffectFrame(fx, now)
+			if frame == nil then
+				if Environment:IsMakerPlay() then log("[VRF] effect skip " .. fx.label .. " serial=" .. tostring(fx.serial) .. " finished action=" .. string.format("%.3f", now)) end
+			else
+				local newRate = fx.motionRate * actionRate
+				if math.abs(newRate - fx.playRate) > 0.000001 then
+					_EffectService:RemoveEffect(fx.serial)
+					local options = {}
+					options["PlayRate"] = newRate
+					options["StartFrameIndex"] = frame
+					if fx.lastOption >= 0 then options["EndFrameIndex"] = fx.lastOption end
+					local serial = _EffectService:PlayEffect(fx.ruid, self.Entity, Vector3(fx.x, fx.y, 0), 0, Vector3(1, 1, 1), false, options)
+					if Environment:IsMakerPlay() then log("[VRF] effect rate " .. fx.label .. " frame=" .. tostring(frame) .. " range=" .. tostring(frame) .. "-" .. (fx.lastOption >= 0 and tostring(fx.lastOption) or "end") .. " playRate=" .. string.format("%g", fx.playRate) .. "->" .. string.format("%g", newRate) .. " serial=" .. tostring(fx.serial) .. "->" .. tostring(serial) .. " action=" .. string.format("%.3f", now)) end
+					fx.serial = serial
+					fx.playRate = newRate
+					fx.startFrame = frame
+					fx.startAction = now
+				end
+				if fx.serial ~= 0 then table.insert(kept, fx) end
+			end
+		end
+		self._T.fx = kept
+	end
+
+	@ExecSpace("ServerOnly")
+	method void ClearEffects()
+		-- 대결 종료·사망·이탈·Stop에서 이펙트 추적을 비운다. 이미 재생 중인 이펙트는 마지막 재시작 배율로 끝까지 재생된다.
+		local count = self._T.fx ~= nil and #self._T.fx or 0
+		self._T.fx = nil
+		if count > 0 and Environment:IsMakerPlay() then log("[VRF] effect clear tracked=" .. tostring(count)) end
 	end
 
 	@ExecSpace("ServerOnly")

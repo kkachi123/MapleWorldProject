@@ -83,7 +83,7 @@ CombatFoundation-F07은 2026-11-19 사용자 "기존 수락으로 닫기"로 완
 | --- | --- | --- |
 | 3단계 시작 | 2단계 완료 뒤 다음 로드맵 단계. 사용자 시작 지시 대기. 2026-11-19 사용자 지시로 아래 후속 처리를 먼저 끝낸 뒤 진행한다 | [로드맵](../DevelopmentRoadmap.md) |
 | CombatCore-FU-25 머쉬맘 수치 | 머쉬맘 수치 조절. 사용자가 CSV에서 직접 조절하며 AI 작업이 아니다 | [Plan §21 부채](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) |
-| 부채 처리 시점 | 위 FU-04~FU-22를 언제 다룰지. → 2026-11-19 사용자 결정: 3단계 전에 먼저 처리. 항목별 분류·회차는 [후속 처리 계획](#후속-처리-계획2026-11-19). 후속 회차 1은 2026-11-20 끝났고 남은 처리는 후속 회차 2다 | 이 문서 |
+| 부채 처리 시점 | 위 FU-04~FU-22를 언제 다룰지. → 2026-11-19 사용자 결정: 3단계 전에 먼저 처리. 항목별 분류·회차는 [후속 처리 계획](#후속-처리-계획2026-11-19). 후속 회차 1은 2026-11-20 끝났고 남은 처리는 후속 회차 2다(2026-11-20 사용자 "회차 2 시작", planner 범위 확인 READY_FOR_CODE) | 이 문서 |
 
 FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처리해 이 표에서 뺐다(아래 [후속 회차 1에서 닫은 항목](#후속-회차-1에서-닫은-항목2026-11-20)).
 
@@ -119,11 +119,11 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 - **구현 승인 상태(2026-11-19 확정)**
   - 후속 회차 1: **구현 승인.** 근거는 위 순서 지시("먼저 하고")와 FQ-1·FQ-2·FQ-7 답이다. 범위는 아래 회차 1 절이 전부다.
     - 2026-11-19 범위 확장: 사용자 V11 중 보고한 결함 FU-26(머쉬맘 2·3칸 점프 초반 공중 끊김)을 사용자 결정 "회차 1에서 처리"로 더했다. 처음에는 진단만 승인했고, 2026-11-20 사용자가 진단 결과를 보고 방안 1-A를 승인했다([FU-26 절](#후속-회차-1-추가--combatcore-fu-26-머쉬맘-23칸-점프-초반-공중-끊김-2026-11-19)).
-    - **2026-11-20 완료.** FU-24·FU-03·FU-23·FU-26 모두 reviewer 충족(결함 0)과 사용자 V11 수락으로 닫았다([후속 회차 1에서 닫은 항목](#후속-회차-1에서-닫은-항목2026-11-20)). 남은 것은 메인의 회차 종료 커밋(`[CombatCore][review]`)·push뿐이다.
-  - 후속 회차 2: 범위 확정(FQ-3 (가)). 회차 1이 끝난 뒤(reviewer 판정, 회차 종료 커밋, 사용자 V11) 시작한다. 시작할 때 planner는 범위 확인만 한다. 2026-11-20 현재 reviewer 판정·사용자 V11은 끝났고 회차 종료 커밋·push가 남았다. 시작 조건 전체는 [회차 2 절](#후속-회차-2--플레이어-공격가드-코드-정리--fu-12-이펙트-정지슬로우-추종가-방식)의 "시작 조건"이다.
+    - **2026-11-20 완료.** FU-24·FU-03·FU-23·FU-26 모두 reviewer 충족(결함 0)과 사용자 V11 수락으로 닫았다([후속 회차 1에서 닫은 항목](#후속-회차-1에서-닫은-항목2026-11-20)). 회차 종료 커밋 `[CombatCore][review]` b071b5c는 2026-11-20 push됐다.
+  - 후속 회차 2: 범위 확정(FQ-3 (가)). **구현 승인(2026-11-20 사용자 "회차 2 시작").** 시작 조건 1~4는 모두 충족했고 planner 범위 확인 결과는 READY_FOR_CODE다(기준 a593e2b). 상세는 [회차 2 절](#후속-회차-2--플레이어-공격가드-코드-정리--fu-12-이펙트-정지슬로우-추종가-방식)의 "시작 조건"과 "범위 확인(2026-11-20 planner)"이다.
   - 후속 회차 3: 회차 1에 합쳤다(FQ-2).
   - 후속 회차 4: 열지 않는다(FQ-4·FQ-5·FQ-6 모두 (가)).
-- run: `.pipeline/20261119-combatcore-followup/run.md`. 기준 버전 16d70b3.
+- run: `.pipeline/20261119-combatcore-followup/run.md`. 기준 버전 16d70b3(회차 1), a593e2b(회차 2).
 - WorkRecord: [CombatCoreWorkRecord](../WorkRecords/CombatCoreWorkRecord.md). 후속 처리 회차 기록이며 2단계 원본(기준 커밋 5efe005)과 다른 새 기록이다.
 - 대상 맵은 map01이고 `TileMapMode` 0(MapleTile)이다(근거: [2단계 Feature](../Features/2_CombatCore.md), 2단계 WorkRecord의 MapBuilder 조회). 이 처리는 맵·Body·규칙·수치·입력 계약을 바꾸지 않는다.
 - 작업 트리의 `map/map01.map` 변경은 범위 밖이다. 사용자가 "그대로 둠"으로 정했고, 어느 회차 커밋에도 섞지 않는다.
@@ -605,7 +605,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
   - 승인으로 수치·규칙이 바뀌었으면 사용자 승인 범위 안에서 GameDesign §4.2를 고친다. 바뀌지 않았으면 GameDesign은 고치지 않는다.
   - 사용자 승인 후보 처리(2026-11-20):
     - 가드 문구 통일: 사용자 승인 2026-11-20, 반영 완료. GameDesign §4.2·2단계 Feature·이 계획 회차 2 완료 기준 3의 가드 문구를 "잔여 피해 40%(60% 경감)"으로 맞췄다. 규칙·수치는 그대로다(reviewer 발견 5, tester 측정 rate=0.4·12→4).
-    - Bundle 개선 후보: 사용자 승인 2026-11-20, [ops]로 반영 예정.
+    - Bundle 개선 후보: 사용자 승인 2026-11-20, [ops]로 반영 예정. → 2026-11-20 [ops] a593e2b로 반영(Bundle 폐지, git 트리·blob id 방식).
 - 위 정리는 2026-11-20 끝났다(결과는 [후속 회차 1에서 닫은 항목](#후속-회차-1에서-닫은-항목2026-11-20)).
 - 지난 기록(WorkRecord 이전 절·run)은 고쳐 쓰지 않는다.
 
@@ -615,16 +615,48 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 
 **시작 조건**: 회차 1이 끝난 뒤(reviewer 판정, 회차 종료 커밋, 사용자 V11). FU-12가 같은 파일(PlayerCombatComponent·PlayerGuardComponent)을 고치므로 세 항목을 한 회차에서 한 번에 고친다.
 
-- 2026-11-20 상태: reviewer 판정·사용자 V11·planner 문서 정리는 끝났다. 남은 조건은 아래다.
-  1. 메인 `[CombatCore][review]` 회차 종료 커밋과 `origin main` push(push 전 미push 커밋 전체 비밀값·개인정보 검사).
-  2. 권장: Bundle 개선 `[ops]`를 회차 2 coder 시작 전에 반영한다. 회차 2부터 새 버전 지문 방식을 쓰게 하기 위해서다(운영 규칙 변경은 메인 담당).
-  3. 회차 2 기준 버전 = 위 `[review]` 커밋(또는 그 뒤 `[ops]` 커밋) 해시. 시작 시 작업 트리의 제품 변경은 `map/map01.map`(`22b6acbf…987e`, 커밋 제외)뿐이어야 한다.
-  4. planner는 범위 확인만 한다. 새 사용자 결정은 없다(FQ-3 (가)·원래 순서로 확정).
+- 2026-11-20 상태: 아래 조건 1~4를 모두 충족했다(planner 확인).
+  1. 충족. 메인 `[CombatCore][review]` 회차 종료 커밋 b071b5c를 `origin main`에 push했다(run 2026-11-20 기록, 비밀값 검사 통과).
+  2. 충족. 버전 확인 방식 변경은 `[ops]` a593e2b로 반영됐다. CLAUDE.md "버전 고정"(2026-11-20 사용자 결정)에 따라 회차 2부터 Bundle(확장자별 파일 묶음 지문)은 쓰지 않고 git으로만 확인한다:
+     - 커밋 해시와 트리 id(`git rev-parse <커밋>^{tree}`);
+     - 바뀐 제품 파일은 `git diff --stat <부모> <커밋>`과 `git ls-tree -r <커밋> -- <경로>`의 blob id;
+     - 작업 트리 미커밋 변경은 `git status --porcelain`, 커밋에서 뺀 범위 밖 파일(`map/map01.map`)은 SHA-256.
+  3. 충족. 회차 2 기준 버전 = a593e2b(`origin/main`과 같음), 트리 id `d7ab128dc93ff5b8120882a8fcfd72a905a15f08`. `git status --porcelain` 결과 제품 변경은 ` M map/map01.map`(SHA-256 `22b6acbf8163ca880c30a4b2597a4b043954ba75d147e019660cb0d58de4987e`, 커밋 제외)뿐이고, 나머지는 메인이 관리하는 ` M .pipeline/20261119-combatcore-followup/run.md`다. `RootDesk/` 미커밋 변경 0.
+  4. 충족. planner는 범위 확인만 했다. 새 사용자 결정은 없다(FQ-3 (가)·원래 순서로 확정). 구현 승인은 사용자 "회차 2 시작"(2026-11-20)이다.
+- 구현 상태(2026-11-20 coder): FU-17·FU-19·FU-12 (가) 구현·기본 검증 완료(미커밋, 메인 `[code]` 커밋 전). 변경은 `PlayerCombatComponent`·`PlayerGuardComponent`·`MonsterAttackMotion`·`MonsterStateControl` 4개이고 `CombatPauseComponent`는 바꾸지 않았다(정지·재개는 클라이언트 시간 배율 0이 이미 이펙트를 멈춘 프레임으로 두고 이어 재생함을 측정으로 확인, 슬로우 추종만 몬스터 이펙트에 구현). 근거·미실시는 WorkRecord 개발 절 "후속 회차 2". 이후 QA·리뷰·사용자 V11 전까지 이전 판정은 이 변경에 적용되지 않는다.
 - FU-29(도약 균등화 코드 정리)는 `OrangeMushroomAttack.mlua`라 회차 2 범위가 아니다. 사용자가 따로 승인해야만 들어간다.
+
+**범위 확인(2026-11-20 planner, 기준 a593e2b, Read·Grep·git 읽기만)**
+
+- 대상 파일 7개의 a593e2b blob id(coder 시작 전 대조용):
+
+  | 파일 | blob id |
+  | --- | --- |
+  | `RootDesk/MyDesk/Player/PlayerCombatComponent.mlua` | `598794553e22af79a08182f8dbe3a3a5a37bff81` |
+  | `RootDesk/MyDesk/Player/PlayerGuardComponent.mlua` | `d6f9621c7bb7d73041cb8e705d6e98d2a92804d6` |
+  | `RootDesk/MyDesk/Monster/MonsterAttackMotion.mlua` | `ee41483064115a24de76a1e8dc935475ff9d5e2b` |
+  | `RootDesk/MyDesk/Combat/CombatPauseComponent.mlua` | `1658387d80672ca210b7cdd050055d04f0e60926` |
+  | `RootDesk/MyDesk/Monster/@StateControl/MonsterStateControl.mlua` | `3bbc84c3143682f7dc10d946193391d796c909fd` |
+  | (바꾸지 않음, 대조만) `RootDesk/MyDesk/Monster/@StateControl/Monster_Attack.mlua` | `af264b032d20dd76f444686bcc511816eadaa7ea` |
+  | (바꾸지 않음, 대조만) `RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua` | `62dcb6853dc12171a246faf3e20f7a5ce9cb437e` |
+
+- 회차 1과의 겹침: `git diff --stat 16d70b3 a593e2b -- RootDesk/`에서 위 바꿀 파일 5개는 바뀌지 않았다. 회차 1의 이동(DataSet/·Catalog/·UI/)은 이 5개의 경로를 바꾸지 않았다(`CombatPauseComponent`는 그대로 `Combat/`에 있고, 같은 폴더에서 옮겨진 것은 `CombatRuleCatalog`뿐이다). FU-26 1-A는 `OrangeMushroomAttack.mlua` 1개만 바꿨고 이 회차의 바꿀 파일이 아니다.
+- FU-17: `self._T.resolveIndex = index`가 `PlayerCombatComponent.mlua` 268행(`ResolveScheduledHit` 안)에 그대로 있다. RootDesk 전체 Grep `resolveIndex`는 이 1곳뿐이라 읽는 곳 0이다. 바로 위 267행 `self._T.resolveId = id`는 247행 `RuleSameCast` 규칙이 읽으므로 지우지 않는다. 기획 수치·규칙 변경 없음.
+- FU-19: `PlayerGuardComponent.mlua` `SetGuarding`(10~35행)은 12행에서 `self.isGuarding`(기록 전 값)으로 시작을 판단하고, 연출(26행 `PlayEffect`, 28행 [VRF], 29행 효과음) 뒤 34행에서 `self.isGuarding = isHeld`를 기록한다. 함수 안 연출·효과음 경로는 `isGuarding`을 읽지 않는다(`isGuarding`을 읽는 곳은 `PlayerHealthComponent` 49행 피해 판정뿐이고 같은 서버 호출 안에서 끼어들지 않는다). 그래서 순서만 바꿔도 결과는 같아야 한다. 호출처 4곳(`Player_Guard` 10·18행, `CombatPauseComponent` 98행, `PlayerHealthComponent` 102행)은 바꾸지 않는다. 기획 수치·규칙 변경 없음.
+- FU-12: 이펙트 재생 지점은 RootDesk 전체에서 3곳이다.
+  - `MonsterAttackMotion.mlua` 177행 `PlayEffectRange`(ServerOnly) — 눈빛(186행 `PlayWindupEffect`)·먼지(194행 `PlayDustEffect`). serial을 이미 받고 `PlayRate`·`StartFrameIndex`·`EndFrameIndex` 옵션을 쓴다. 호출은 `Monster_Attack.mlua` 58·91행이다.
+  - `PlayerCombatComponent.mlua` 166행(`DoAttack`, ServerOnly) — 옵션·serial 없음.
+  - `PlayerGuardComponent.mlua` 26행(`SetGuarding`, ServerOnly) — 옵션·serial 없음.
+  - 엔진 `_EffectService`는 `PlayEffect`·`PlayEffectAttached`·`RemoveEffect`만 있다(`Environment/NativeScripts/Service/EffectService.d.mlua` 8·12·16행). Plan 분류의 전제와 같다.
+  - 정지·재개 신호: 서버 `CombatPauseComponent.SetServerPaused`(52~72행, `IsPaused` @Sync·전투 시계 정지). 클라이언트 `SetPresentationPaused`(114~126행, ClientOnly)는 `_UtilLogic:SetClientTimeScale(0)`으로 클라이언트 연출 시간을 멈춘다. 그래서 **팝업 정지 중 재생 중 이펙트가 이미 클라이언트에서 멈추는지**가 소스로는 정해지지 않는다. coder가 먼저 측정한다(아래 "coder가 정할 것" 첫 줄).
+  - 슬로우 신호: `MonsterStateControl` `ApplySlow`(47~66행), 만료(102~106행), `ClearCombatEffects`(69~82행)가 모두 `ApplyMotionClipRate`(85~90행) → `MonsterAttackMotion.ApplyClipRate`(147~157행)를 부른다. 슬로우는 몬스터만 받는다(GameDesign §4.2 "플레이어·팝업/토스트·오디오는 늦추지 않는다"). 그래서 슬로우 추종 대상은 몬스터 이펙트(눈빛·먼지)뿐이고, 플레이어 공격·가드 이펙트는 정지만 대상이다.
+  - 규칙 근거: GameDesign §4.3 "전투 연출을 모두 정지", §4.2 "행동·모션 진행 ×0.5". 기획 수치·규칙 변경 없음.
+- 편집 허용 파일(이 5개 밖은 범위 밖, 중단 조건): `Player/PlayerCombatComponent.mlua`, `Player/PlayerGuardComponent.mlua`, `Monster/MonsterAttackMotion.mlua`, `Combat/CombatPauseComponent.mlua`, `Monster/@StateControl/MonsterStateControl.mlua`. Maker가 만드는 이 5개의 `.codeblock` 갱신은 함께 커밋할 수 있다. `Monster_Attack.mlua`(이펙트 호출처)·`UI/UIPopup.mlua`(클라이언트 정지 호출처)·`OrangeMushroomAttack.mlua`(FU-29)는 바꿀 파일 목록에 없으므로 고쳐야 하면 멈추고 메인에 반환한다.
+- 판단: **READY_FOR_CODE.** 구현 승인(사용자 "회차 2 시작")이 있고, 결과를 바꾸는 미결정이 없다.
 
 **바꿀 파일**
 
-- `Player/PlayerCombatComponent.mlua`: `self._T.resolveIndex = index` 한 줄을 지운다.
+- `Player/PlayerCombatComponent.mlua`: `self._T.resolveIndex = index` 한 줄(a593e2b 기준 268행)을 지운다.
 - `Player/PlayerGuardComponent.mlua` `SetGuarding`:
   - 시작 여부는 기록 전 값으로 판단한다.
   - `self.isGuarding` 기록을 연출 호출보다 앞에 둔다.
@@ -635,10 +667,11 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
   - 정지·재개와 슬로우 시작·끝을 알리는 곳(`Combat/CombatPauseComponent`, `Monster/@StateControl/MonsterStateControl`). 실제로 고칠 파일은 coder가 정하고 개발 절에 적는다.
   - 새 `.model`은 만들지 않는다((가)).
 
-**바꾸지 않을 파일**: 규칙·수치·DataSet·`.ui`·`.map`·`.model`, Player_Attack·Player_Guard·MonsterAttackComponent, 판정·피해 경로, 회차 1에서 옮긴 파일의 위치.
+**바꾸지 않을 파일**: 규칙·수치·DataSet·`.ui`·`.map`·`.model`, Player_Attack·Player_Guard·MonsterAttackComponent, 판정·피해 경로, 회차 1에서 옮긴 파일의 위치. 2026-11-20 범위 확인에서 명시: `Monster_Attack.mlua`(이펙트 호출처), `UI/UIPopup.mlua`(클라이언트 정지 호출처), `OrangeMushroomAttack.mlua`(FU-29)도 바꾸지 않는다. 편집 허용은 위 "바꿀 파일"의 5개 `.mlua`(와 Maker가 만드는 그 `.codeblock`)뿐이다.
 
 **coder가 정할 것**(FU-12, 승인 범위 안)
 
+- 먼저 측정: 지금 코드 그대로 팝업 정지(클라이언트 `SetClientTimeScale(0)`) 중 재생 중 이펙트(눈빛·먼지·플레이어 공격·가드)가 화면에서 멈추는지, 재개 뒤 남은 프레임부터 이어지는지. 이미 멈추고 이어지면 정지 쪽은 측정 근거만 적고 같은 일을 하는 코드를 더하지 않는다. 슬로우 추종(몬스터 이펙트)은 이와 따로 판단한다;
 - 정지·재개·배율 변경을 받을 위치;
 - 재생 중 이펙트 serial과 진행 프레임을 추적하는 방법;
 - 남은 프레임부터 다시 재생할 때의 프레임 계산(기존 `PlayEffectRange` 옵션 재사용);
@@ -662,7 +695,7 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
    - 슬로우 시작·끝 때 재생 중 눈빛의 배율이 ×0.5·×1로 바뀌는지;
    - 재생이 끝난 이펙트를 다시 내지 않는지;
    - 사망·Stop 때 추적이 정리되는지.
-5. build 로그 오류 0, git 변경이 범위 파일뿐이다.
+5. build 로그 오류 0, git 변경이 범위 파일뿐이다. 확인 방법(2026-11-20 CLAUDE.md "버전 고정", Bundle 쓰지 않음): `[code]` 커밋 해시·트리 id, `git diff --stat a593e2b <커밋>`이 편집 허용 5개 `.mlua`(+ 그 `.codeblock`)와 Plan·WorkRecord 문서뿐이고, 바뀐 파일은 `git ls-tree -r <커밋> -- <경로>` blob id로 대조한다. `git status --porcelain`에는 `map/map01.map`(SHA-256 `22b6acbf…987e` 그대로)과 메인의 run.md 말고 남은 제품 변경이 없다.
 
 **스크린샷(FU-18)**: 목적은 "팝업 정지 중 이펙트가 멈춤/숨김/계속 재생 중 무엇으로 보이는지 확인" 하나다. 이펙트 종류마다 정지 직전·정지 중·재개 직후 3장 안팎, 회차 전체 12장 이하. 그 밖의 용도는 쓰지 않는다.
 
@@ -674,6 +707,16 @@ FU-23(원장 문구)·FU-24(기존 파일 이동)는 후속 회차 1에서 처�
 - 범위 밖 파일을 고쳐야 한다.
 - (가) 방식으로 정지·재개를 표현할 수 없다(측정 근거와 함께 메인에 반환).
 - 새 모델이 필요해진다.
+- 시작 때 대상 파일 blob id가 위 "범위 확인" 표와 다르거나, `map/map01.map` SHA-256이 `22b6acbf…987e`가 아니거나, `maker_get_current_map`이 map01이 아니다.
+
+**coder 절차(2026-11-20 planner 인계)**
+
+1. 사전 확인: `git rev-parse HEAD`(a593e2b 또는 그 뒤 메인 커밋), `git status --porcelain`, 대상 파일 blob id, `map/map01.map` SHA-256, `maker_get_current_map`(map01·편집 모드).
+2. FU-17: 268행 1줄 삭제. Grep `resolveIndex` 0곳.
+3. FU-19: `SetGuarding`에서 기록 전 값을 지역 변수로 잡아 시작 판단에 쓰고, `self.isGuarding = isHeld`를 연출 호출 앞으로 옮긴다. 시작 시각·시작 x·[VRF]·연출·효과음 1회는 그대로.
+4. FU-12 측정(위 "coder가 정할 것" 첫 줄) → 필요한 만큼만 구현((가), 새 `.model` 없음, 편집 허용 5개 파일 안). [VRF]는 재생 시작·정지 처리·재개 재생(남은 프레임 범위·배율)·배율 변경·끝난 이펙트 건너뜀·정리(사망·Stop·맵 이탈)에 둔다.
+5. `maker_refresh_workspace` → build 로그 → Play 한 사이클로 완료 기준 AI 1~5 근거 수집(스크린샷은 FU-18 범위 안).
+6. Maker 편집 모드 인계, WorkRecord 개발 절에 회차 2 기록(대상 버전은 메인 `[code]` 커밋 해시·트리 id·blob id로 메인이 적는다). commit·push는 하지 않는다.
 
 #### 후속 회차 3 — 회차 1에 합침(2026-11-19)
 
