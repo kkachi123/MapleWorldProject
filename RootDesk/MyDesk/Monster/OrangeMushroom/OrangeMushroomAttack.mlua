@@ -3,8 +3,8 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 
 	property number JumpHeight = 0.8
 	property number JumpDuration = 0.5
-	-- 2·3칸 접근(실제 점프)의 높이. 0이면 수평 이동만이고 높이는 클립이 그린 도약이 담당한다(D-Q5). 1칸 접근·복귀 점프는 JumpHeight를 쓴다.
-	property number LeapJumpHeight = 0
+	-- 2·3칸 접근(실제 점프)의 높이. 도약 시작(W)에 클립을 jump로 바꾸므로 높이는 이 시간 포물선이 담당한다(FU-26 1-A, 1칸과 같은 0.8). 1칸 접근·복귀 점프는 JumpHeight를 쓴다.
+	property number LeapJumpHeight = 0.8
 	-- 2·3칸 구동 클립의 도약 프레임(JumpStartFrame ~ 마지막 프레임 바로 앞)을 같은 시간으로 나눈다. 기본 true. 끄면 원작 비율이다. 점프 시작·착지·판정 시각은 같다. 공격 시작 때 한 번 읽는다.
 	property boolean EqualizeLeapFrames = true
 	-- 2·3칸 접근의 수평 이동에 가속·감속 곡선(smoothstep)을 쓴다. 기본 true. 끄면 일정 속도 직선이다. 높이(LeapJumpHeight)는 이 값과 무관하게 시간 포물선이다. 공격 시작 때 한 번 읽는다.
@@ -157,7 +157,7 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 	method void CompleteMotion()
 		-- The timer and update loop converge on one exact endpoint.
 		if not self.JumpActive and not self._T.windupPending then return end
-		-- 착지 시각까지의 프레임(f4 시작)을 먼저 올린 뒤 stand로 바꾼다.
+		-- 도약 시작(W) 뒤에는 구동이 끝나 있어 이 호출은 할 일이 없다(착지 전에 끝나는 경로 대비로 남김).
 		self:TickClip()
 		self.JumpActive = false
 		self._T.windupPending = false
@@ -197,15 +197,18 @@ script OrangeMushroomAttack extends MonsterAttackMotion
 			self:CancelMotion()
 			return
 		end
-		-- 접근 클립은 서버가 액션 시계로 프레임을 올린다(22.16.12).
-		self:TickClip()
 		local now = self._T.control:GetActionTime()
 		if self._T.windupPending then
-			-- 제자리 구간: 움직이지 않는다. 도약 프레임 시작 시각이 되면 실제 점프로 넘어간다.
-			if now < self._T.leapStart then return end
+			-- 제자리 구간: 움직이지 않는다. 기 모으기 클립은 서버가 액션 시계로 프레임을 올린다(22.16.12).
+			if now < self._T.leapStart then
+				self:TickClip()
+				return
+			end
 			self._T.windupPending = false
 			self.JumpActive = true
 			self.Segment = "approach"
+			-- 도약 시작(W): 높이는 스크립트 포물선이 담당하므로 클립을 1칸 점프와 같은 jump(배율 1)로 한 번 바꾼다. 이 지정이 프레임 구동을 끝내 f1~f3 계단 높이가 사라진다(FU-26 1-A).
+			self:SetMotionClip("jump", 1)
 			if Environment:IsMakerPlay() then log("[VRF] leap start x=" .. string.format("%.3f", self.Entity.TransformComponent.WorldPosition.x) .. " duration=" .. string.format("%.3f", self._T.activeDuration) .. " height=" .. string.format("%g", self._T.activeHeight) .. " equalize=" .. tostring(self._T.equalizeText) .. " ease=" .. tostring(self._T.easeActive) .. " clock=" .. self:ClockText()) end
 		end
 		local t = math.max(0, (now - self.JumpStartTime) / self._T.activeDuration)
