@@ -34,24 +34,24 @@
 - HP: 플레이어·몬스터 HP 바에 현재/최대를 표시한다. 피해 숫자는 실제 HP 감소와 같다.
 - 머쉬맘 연출(패턴 표의 값):
   - 1칸 공격: jump 모션과 player 점프음.
-  - 2칸 공격: attack1 모션.
-  - 3칸 가드형: skill1 모션. 눈빛 이펙트는 예고 때, 먼지 이펙트는 착지 때 보인다.
+  - 2칸 공격: 제자리 기 모으기는 attack1 첫 자세, 도약은 jump 자세와 높이 0.8 포물선(2026-11-20 FU-26 방안 1-A).
+  - 3칸 가드형: 제자리 기 모으기는 skill1 첫 자세, 도약은 2칸과 같이 jump 자세와 높이 0.8 포물선. 눈빛 이펙트는 예고 때, 먼지 이펙트는 착지 때 보인다.
   - 피격음·플레이어 피격음·사망음은 MonsterSoundData의 값이다.
 - 조작 버튼: simplefantasy 원형 배경에 흰 아이콘(↑ 칼, 나머지 화살표).
 - 가드: alert 모션. 가드를 시작할 때 로얄 가드 이펙트·효과음을 한 번씩 낸다.
 
 ### 데이터 계약
 
-CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/MyDesk/` 기준이다.
+CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/MyDesk/` 기준이다. 2026-11-19 후속 회차 1(FU-24)에서 DataSet 8종이 모두 `DataSet/` 한 곳에 모였다. 표를 읽는 로더(CombatRuleCatalog·PlayerSkillEffectTable·PlayerBaseStatCatalog)는 `Catalog/`, 팝업·토스트 Logic(UIPopup·UIToast)은 `UI/`에 있다. 참조는 경로가 아니라 이름·키라 옮겨도 동작은 같다.
 
 | 표 | 위치 | 열(id 제외) | 현재 행 |
 | --- | --- | --- | --- |
-| CombatRuleData | `@Assist/DataSet/` | JustWindowSec, ParryWindowSec, GuardDamageRate, CounterWindowSec, CounterDamageMultiplier, SlowDurationSec, SlowRate, GroggyDurationSec | default 0.20·0.20·0.40·2.0·2.2·2.0·0.5·1.5 |
-| PlayerBaseStatData | `@Assist/DataSet/` | MaxHp, MoveSpeed, ReturnSpeed | default 100·12·12 |
-| AttackSkillData | `@Assist/DataSet/` | name, ruid, FrameCount, Direction, Damage, AttackCount | 1 player.basic(Damage 1·AttackCount 10) |
-| MonsterData | `@Assist/DataSet/` | name, modelid | 1 머쉬맘 `model://mushmom` |
-| MonsterStatData | `@Assist/DataSet/` | MaxHp, AttackDamage, AttackInterval | default·mushmom 100·12·3.0 |
-| MonsterAttackPatternData | `@Assist/DataSet/` | modelId, ResponseType, AttackAttribute, AreaFromAnchor, AreaToAnchor, AreaPaddingX, AreaHeight, AreaOffsetY, TelegraphLeadSec, Weight, AreaTarget, MotionClip, AttackSound, EffectClip, MotionPlayRate, JumpStartFrame | mushmom 5행(parry.left·parry.right·parry.any·special.random·parry.guard) |
+| CombatRuleData | `DataSet/` | JustWindowSec, ParryWindowSec, GuardDamageRate, CounterWindowSec, CounterDamageMultiplier, SlowDurationSec, SlowRate, GroggyDurationSec | default 0.20·0.20·0.40·2.0·2.2·2.0·0.5·1.5 |
+| PlayerBaseStatData | `DataSet/` | MaxHp, MoveSpeed, ReturnSpeed | default 100·12·12 |
+| AttackSkillData | `DataSet/` | name, ruid, FrameCount, Direction, Damage, AttackCount | 1 player.basic(Damage 1·AttackCount 10) |
+| MonsterData | `DataSet/` | name, modelid | 1 머쉬맘 `model://mushmom` |
+| MonsterStatData | `DataSet/` | MaxHp, AttackDamage, AttackInterval | default·mushmom 100·12·3.0 |
+| MonsterAttackPatternData | `DataSet/` | modelId, ResponseType, AttackAttribute, AreaFromAnchor, AreaToAnchor, AreaPaddingX, AreaHeight, AreaOffsetY, TelegraphLeadSec, Weight, AreaTarget, MotionClip, AttackSound, EffectClip, MotionPlayRate, JumpStartFrame | mushmom 5행(parry.left·parry.right·parry.any·special.random·parry.guard) |
 | MonsterSoundData | `DataSet/` | DamagedSound, HitPlayerSound, DieSound | mushmom |
 | PlayerActionFxData | `DataSet/` | EffectClip, EffectSound | guard |
 
@@ -66,10 +66,11 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 
 - **판정·피해·시간**: CombatRuleData.
 - **패턴별 범위·예고 시간·비중·모션·효과음·이펙트·재생 배율**: MonsterAttackPatternData.
-  - 2·3칸 행: TelegraphLeadSec 1.571429, MotionPlayRate 0.7.
+  - 2·3칸 행: TelegraphLeadSec 1.571429, MotionPlayRate 0.7(제자리 모션과 이펙트에 적용. 도약 구간 jump 자세는 배율 1).
   - 1칸 행: 0.5, 1.
 - **도약 조절 항목**: 데이터가 아니라 스크립트 속성 기본값이다.
-  - OrangeMushroomAttack: JumpDuration 0.5, JumpHeight 0.8, LeapJumpHeight 0, EqualizeLeapFrames·EaseLeapMove·WindupHittable true.
+  - OrangeMushroomAttack: JumpDuration 0.5, JumpHeight 0.8, LeapJumpHeight 0.8(2026-11-20 1-A, 이전 0), EqualizeLeapFrames·EaseLeapMove·WindupHittable true.
+  - 1-A 뒤 도약 구간에는 attack1·skill1 프레임이 보이지 않아 EqualizeLeapFrames는 화면 효과가 없다. 남은 코드 정리는 [후속 계획](../Plans/CombatCore.md) FU-29에서 추적한다.
   - MonsterAttackMotion: EffectWindupLastFrame 6·EffectDustFirstFrame 8.
   - 확정 표는 [Plan §22.16.9](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md)다.
 - **BattlePos1/2/3**: map01 엔티티 위치(X -1.5/0/1.5)다. Pos2 경계 ±0.75와 기준점 간격은 DataSet이 아니다. 이동 시점은 [로드맵 §3](../DevelopmentRoadmap.md)의 "2:" 절을 따른다.
@@ -80,7 +81,7 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 
 **전투 규칙**
 
-- 2026-10-20: D01~D04를 선택·답변으로 정했다. 대응·0.20초 창·가드 잔여 40%·반격 2.0초 ×2.2·슬로우·그로기, 그리고 1:1 상대 고정이다.
+- 2026-10-20: D01~D04를 선택·답변으로 정했다. 대응·0.20초 창·가드 잔여 피해 40%(60% 경감)·반격 2.0초 ×2.2·슬로우·그로기, 그리고 1:1 상대 고정이다.
 
 **V11 피드백으로 바꾼 것 (2026-11-02~11-04)**
 
@@ -119,6 +120,14 @@ CSV를 고친 뒤 Maker Refresh → Play로 반영한다. 경로는 `RootDesk/My
 - 모바일·다중 환경 시험 없이 2단계 완료를 결정했다.
 - CombatFoundation-F07 실제 연출 평가(피해 숫자 가시성·피격·die 연출)를 "기존 수락으로 닫기"로 정했다. 회차 C V11 8번(모바일·터치·사운드·CF-F07) "이상 없음"(2026-11-06)과 회차 D·E의 PC 수락을 F07 완료로 인정했다. 평가 기준은 PC Maker이고, 모바일·실기기는 V11 모바일 부분 NOT_RUN으로 추적한다.
 
+**2단계 후속 회차 1 (2026-11-19 지시, 2026-11-20 수락)**
+
+- 2026-11-19: DataSet 6종 이관(FU-24)·castleenemy 문구 정리(FU-23)·부채 처리 순서를 지시했다. 빈 `@Assist` 계열 폴더는 Maker에서 직접 지웠다.
+- 2026-11-19 V11 "모두 문제없음": 1 Maker 작업 공간 창, 2 피해 숫자와 HP, 3 die 마지막 프레임, 5 실제 키 JUST·PARRY와 반격, 6 전투 화면 전반을 수락했다. 4 팝업·토스트 모양은 게임 안에서 여는 경로가 없어 볼 수 없었다(NOT_RUN, 후속 계획 FU-27).
+- 2026-11-19 V11 보고: "머쉬맘이 2칸,3칸 점프할때 점프 초반 즘 공중에서 자연스럽게 이어지지 않음.(1칸 공격은 ㄱㅊ음)". 회차 1에서 처리하기로 했다(FU-26).
+- 2026-11-20: 원인 진단을 보고 방안 1-A(도약 구간을 jump 자세·높이 0.8 포물선으로)를 골랐고, 결과를 본 뒤 "1-A 유지"로 2-b(제자리 점프)를 쓰지 않기로 했다. V11 "모두 괜찮음".
+- 2026-11-20: 가드 문구를 "잔여 피해 40%(60% 경감)"으로 맞추는 것과 버전 지문 운영 개선을 승인했다(규칙·수치 불변).
+
 **이 문서에 없는 평가**
 
 - 사용자 평가는 위 답변에 있는 것만 적는다.
@@ -138,7 +147,7 @@ AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder
 | V03 타이밍·방향 경계 | PASS(실행 조건). 회차 A의 Pos2 조건은 QA8. 사람 손 0.20초 입력은 회차 A V11에서 사용자 확인. 모든 네트워크 도착 순서는 NOT_RUN |
 | V04~V07 반격·슬로우·그로기·팝업 | PASS(실행 조건, QA1·QA2 외 회차별 회귀) |
 | V08 사망·Stop·재진입 | PASS(실행 조건). 실제 다른 맵 전환은 NOT_RUN |
-| V09 DataSet 반영·오류 거부 | PASS. 런타임 스키마는 QA1, CSV 변경 반영은 coder·QA9. 필수 열 누락 경고 줄은 직접 실행하지 않음(NOT_RUN) |
+| V09 DataSet 반영·오류 거부 | PASS. 런타임 스키마는 QA1, CSV 변경 반영은 coder·QA9. 필수 열 누락 경고 줄은 2026-11-19 후속 회차 1(FU-03)에서 실행했다: PlayerActionFxData 헤더 임시 변경 때 경고 1회·가드 연출만 꺼짐·전투 계속, 원 바이트 복원 뒤 정상 로드(coder 실행, tester 로그·해시 대조). tester 독립 재현은 NOT_RUN |
 | V10 키·버튼 입력 | PASS(실제 키·마우스). 회차 E 버튼 교체 뒤 QA15 회귀. 모바일 다중 터치는 NOT_RUN |
 | V11 사용자 직접 평가 | 사용자 / Maker(PC) / 2026-11-02~11-19 회차별 수락. **모바일·실기기 터치 부분은 NOT_RUN(사용자가 하지 않기로 함)** |
 | V12 상대 격리 | AI PASS(QA1): 단일 참조·상대 교체 시 이전 참조 무효·사망 뒤 상대 없음에서 공격·효과 거부. **실제 비전투 몬스터·다른 플레이어 환경은 NOT_RUN(사용자가 하지 않기로 함)** |
@@ -151,9 +160,13 @@ AI / 2026-10-24~2026-11-16 / map01·MapleTile / Maker server_main·client. coder
   - 회차 D·D2 마지막 제품 5ce65d6.
   - 회차 E coder 3e29a35, 리뷰 a81afcf.
   - 회차 E 종료 문서 정리 daf7c42.
+  - 후속 회차 1: 파일 이동·FU-03·원장 c6422cd, 머쉬맘 도약 1-A a18b251.
+- **후속 회차 1 결과(2026-11-20)**: AI / map01·MapleTile / Maker 26.11 PC. 두 버전 모두 coder 기본 검증 → 같은 버전 tester(FAIL 0) → reviewer WAITING(결함 0) → 사용자 V11 수락이다. 파일 이동(22파일, 바이트 그대로)·FU-03·원장 정리와 머쉬맘 2·3칸 도약(jump 자세, 정점 Home.y + 0.8, W·판정·착지 위치·피격 구간·1칸 경로 그대로)을 확인했다. 상세는 [후속 계획](../Plans/CombatCore.md)과 [WorkRecord](../WorkRecords/CombatCoreWorkRecord.md)다.
 - **그 밖의 NOT_RUN**(통과로 세지 않음):
   - 지연 있는 실접속에서의 위치 동기화.
   - 맵 이동 뒤 복귀·재접속 때 플레이어 최대 HP.
+  - 후속 회차 1: 1-A 뒤 실접속·모바일 화면, 1-A 뒤 JUST·PARRY 판정 재확인(판정 경로 diff 0으로 대신), FU-03 tester 독립 재현.
+  - 접근 이동의 클라이언트 정지 1프레임(FU-16, 2·3칸 약 72%·1칸 약 67%)은 측정됐지만 고치지 않았다. 사용자 V11에서는 눈에 띄지 않았다. 다시 볼 조건은 후속 계획 FU-16 행이다.
 - **추적 위치**:
   - 위 NOT_RUN과 V11 모바일 부분(CF-F07의 모바일 연출 포함): [후속 계획](../Plans/CombatCore.md).
   - 실제 맵 전환: [CombatFoundation-F03](../Plans/CombatFoundation.md)·[CombatPause-F01](../Plans/CombatPause.md).

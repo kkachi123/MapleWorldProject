@@ -9,7 +9,7 @@
 2026-10-18 AI 진단 요약이며 현재 소스를 새로 검증한 결과가 아니다.
 
 - [OrangeMushroomAttack](../../../../RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua): JumpDuration=0.5초·JumpHeight=0.8. 접근/복귀 공통 시간이며 먼 지점일수록 수평 이동이 빠르게 보인다.
-- [MonsterData.csv](../../../../RootDesk/MyDesk/@Assist/DataSet/MonsterData.csv)는 id/name/modelid만 연결한다. 점프 열만 추가해도 적용되지 않는다.
+- [MonsterData.csv](../../../../RootDesk/MyDesk/DataSet/MonsterData.csv)는 id/name/modelid만 연결한다. 점프 열만 추가해도 적용되지 않는다.
 - 공격은 착지 시 1회, 박스 크기 (1,1)·오프셋 (0,0.4)·기본 피해 12. 착지 높이는 Home 기준이다. 지속 공격·다른 높이의 지형 지원을 전제하지 않는다.
 - 과거 MonsterCombat-V01은 설정 소유자, V02~V05는 이른 대기 시 피해 12, V06은 저스트 회피 피해 0·자동 반격 2, V07은 판정 후 진입 시 추가 판정 없음 확인이다.
 - 각 조건 1회·즉시 이동 버전의 AI Maker 확인이다. 현재 걷기 패턴 전체의 재검증이나 사용자가 겪은 상황의 원인 확정이 아니다. 당시 종료 프로브 해제 오류 2건도 있어 전체 무오류로 표현하지 않는다.

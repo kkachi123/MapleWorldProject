@@ -3,14 +3,14 @@
 - 구분: 이 파일은 2026-11-19 시작한 2단계 후속 처리 회차의 새 기록이다. 같은 이름의 2단계 원본 기록은 [기준 커밋 5efe005의 CombatCoreWorkRecord](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md)에만 있으며, 여기에 옮기거나 고쳐 쓰지 않는다.
 - 연결 Plan: [2단계 후속 계획 "후속 처리 계획(2026-11-19)"](../Plans/CombatCore.md#후속-처리-계획2026-11-19)
 - run: `.pipeline/20261119-combatcore-followup/run.md`
-- 상태·갱신일: 후속 회차 1 coder 완료(절차 8~11) → tester·reviewer WAITING·사용자 V11 완료. FU-26 진단 완료, 사용자 승인 방안 1-A 구현·기본 검증 완료(미커밋, 메인 `[code]` 커밋 대기) / 2026-11-20 coder
+- 상태·갱신일: 후속 회차 1 종료(FU-24·03·23·26, c6422cd·a18b251, 사용자 V11 수락). 후속 회차 2 대기 / 2026-11-20 메인
 - 삭제 조건: 후속 회차 1·2가 끝나고(사용자 V11 포함) 결과를 [2단계 Feature](../Features/2_CombatCore.md)와 후속 계획 표에 반영하고 링크를 정리한 뒤.
 
 ## 현재 재개 지점
 
-- 마지막 상태(2026-11-20): FU-26 방안 1-A 구현·기본 검증 완료(coder, 제품 1파일 `OrangeMushroomAttack.mlua`, 아래 "FU-26 구현(1-A)" 절). 진단은 "FU-26 진단" 절. 후속 회차 1의 FU-24·FU-03·FU-23은 `[code]` c6422cd·tester·reviewer WAITING·사용자 V11까지 끝났고 변경 없음.
-- 다음 행동: 메인이 `[CombatCore][code]` 로컬 커밋 → 같은 버전 tester(FU-26 완료 기준 AI) → reviewer. 사용자는 화면에서 2·3칸 도약을 보고 2-b(제자리 점프)로 갈지 판단한다.
-- 차단 조건: 없음. Maker 재저장으로 바뀐 `PlayerActionFxData.userdataset`(CoreVersion 1줄)은 그대로 두었다(메인 판단, 이번에도 새 재저장 없음).
+- 마지막 상태(2026-11-20 planner): **후속 회차 1 종료, 회차 2 대기.** FU-24·FU-03·FU-23(c6422cd)과 FU-26 방안 1-A(a18b251)가 모두 tester FAIL 0·reviewer 결함 0·사용자 V11 수락으로 끝났다. planner 회차 종료 문서 정리(Plan·GameDesign §4.2·Feature·FileStructure·링크·로드맵)도 끝났다.
+- 다음 행동: 메인 `[CombatCore][review]` 회차 종료 커밋(`PlayerActionFxData.userdataset` CoreVersion 1줄 재저장 포함, 사용자 결정 "회차 커밋에 포함") → push. 사용자 승인 버전 지문 개선은 메인 `[ops]`(회차 2 coder 전 권장). 그 뒤 후속 회차 2(FU-17·FU-19·FU-12 (가)): planner 범위 확인 → coder → tester → reviewer → 사용자 V11. 시작 조건은 [후속 계획 회차 2 절](../Plans/CombatCore.md#후속-회차-2--플레이어-공격가드-코드-정리--fu-12-이펙트-정지슬로우-추종가-방식).
+- 차단 조건: 없음. 회차 2 시작 때 작업 트리의 제품 변경은 `map/map01.map`(`22b6acbf…987e`, 커밋 제외)뿐이어야 한다.
 
 ## 역할 간 인계
 
@@ -418,6 +418,104 @@
 - Bash 훅 주의: 해시 계산 스크립트를 처음 셸 명령 안에 쓰다 `.model` 문자열 때문에 훅에 막혔고, 문자열을 쪼개 우회하려다 권한 분류기에 거절됐다. 이후 우회 없이 스크립트를 파일로 쓰고 실행했다. 제품 파일은 열거나 고치지 않았다.
 - Maker 최종: map01·edit 모드, Stop 확인, 사용 종료.
 
+### 2026-11-20 tester — FU-26 방안 1-A 독립 시험 (위 11-19 절과 별개, 기존 절은 그대로)
+
+- **대상 버전**: 로컬 커밋 a18b251(부모 c6422cd, push 전). 시험 전·후 `git status`는 같았고(`.pipeline/.../run.md`·`PlayerActionFxData.userdataset`·`map/map01.map` 미커밋 변경 3건, 모두 범위 밖) 제품 파일을 고치지 않았다. `OrangeMushroomAttack.mlua` SHA-256 `d3c8d2fd535106c107e980c0e7e94f7a673a87abe09589b67ad5e9d1122a89df`(blob 62dcb685…, coder 값과 같음), `map/map01.map` `22b6acbf…987e`(시험 전·후 같음), `PlayerActionFxData.userdataset` `c4a19587…fd62`(coder 값과 같음).
+- **주체·환경**: msw-tester(독립 실행). Maker `map01`(0a0972ef…, 개인 월드 970621b2…), 시작·종료 모두 edit. 읽은 것: tester 계약, 팀 계약, msw-general·msw-ui-system·msw-scripting·msw-combat-system, Foundation 참조 4개, platform-maple(map01 TileMapMode 0, 11-19 QA 기록과 같음), animation-state·monster, verify-checklist. `maker_clear_logs`·스크린샷 0회. Play 1회(13:42:30 시작, 13:50 Stop). 로그가 누적이라 시각 13:42:30 이후만 이번 시험으로 보았다. 기존 흔적 `[LEA-3051] MakerScript` 12:40:16 1건(coder 진단)은 제외했고 새 `[LEA-`·`[LWA-` 항목은 없다(Play 중 시험 타이머는 전부 스스로 정리, 새 `[LEA-3051]` 없음).
+- **시험 방법**: Play 메모리 프로브만 썼다(`maker_execute_script`; 패턴 표를 한 행으로 바꿔 `ChangeState("ATTACK")`로 강제, 끝에 원 표 5행·`AttackInterval` 복원 확인). 서버(`server_main`) 1ms 타이머가 서버 프레임(약 17ms)마다 위치·구간·`IsHittableNow()`·렌더러 RUID/Start/End/PlayRate를 기록하고, 클라이언트 1ms 타이머가 몬스터 `WorldPosition`·렌더러 값을 매 프레임 기록하며 `SpriteAnimPlayerChangeFrameEvent`를 센다(같은 `ServerElapsedSeconds`). 프로브 표본 오차: 공격 시작 시각이 첫 표본 기준이라 시각이 최대 약 0.017초 작게 나온다. 시험 중 플레이어 `Hp`를 매번 최대로 채웠다(시험 한정).
+
+**기준별 판정**
+
+| ID | 기준(Plan 완료 기준 AI) | 판정 |
+| --- | --- | --- |
+| TF1 | diff가 승인 1-A 범위 안(AI 7 일부, 시험 범위 1) | PASS |
+| TF2 | Refresh 후 build 로그 Error·Warning·LEA-(AI 7) | PASS |
+| TF3 | 결함 지표: 계단 높이 → 연속 포물선(AI 1) | PASS |
+| TF4 | 시각·위치: W·판정·착지 x·y(AI 2) | PASS |
+| TF5 | 프레임·클립(AI 3, 승인으로 바뀐 항목) | PASS(바뀐 기준 적용) |
+| TF6 | 피격 구간(AI 6) | PASS |
+| TF7 | 3칸 먼지·눈빛(AI 6) | PASS |
+| TF8 | 슬로우 D-Q6, windup PlayRate(AI 4, coder NOT_RUN) | PASS(한계 있음) |
+| TF9 | 1칸 회귀(AI 5) | PASS(복귀 높이는 미측정) |
+| TF10 | 판정 결과 1회(AI 6, coder NOT_RUN) | PASS(HIT·GUARD), JUST·PARRY NOT_RUN |
+| TF11 | 일시정지 중 몬스터 정지(AI 6, coder NOT_RUN) | PASS |
+| TF12 | 공격 취소·사망 처리, die 1회 정지(AI 6, coder NOT_RUN) | PASS(관찰 2건) |
+| TF13 | 기본 공격 피해·가드 잔여 40%·1칸·전투 시작 회귀(시험 범위 5) | PASS |
+| TB | Bundle 일치 | NOT_RUN(재현 못함, 파일별 일치로 대체) |
+
+**TF1 범위(PASS)**: `git diff --name-only c6422cd a18b251 -- Global RootDesk map ui`는 `OrangeMushroomAttack.mlua` 1개뿐이다. diff는 +10/−7이고 내용은 정확히 ① `LeapJumpHeight` 0 → 0.8과 주석, ② `OnUpdate`의 무조건 `TickClip()` 삭제 후 windup(`now < leapStart`) 안에서만 `TickClip()`+return, ③ approach 전환 블록에 `SetMotionClip("jump", 1)` 1줄, ④ `CompleteMotion` 주석 1줄이다. 수평 이동(`progress`·`x` 식·smoothstep), 판정 시각(`JumpStartTime`·`activeDuration` 계산), 착지 x(`JumpTargetX`·`CompleteMotion`의 `SetPosition`), 영역(`PerformAttackMotion` 앞부분), 피격 선언(`WindupHittable`·`ApproachHittable`·`ReturnHittable`·`IsSegmentHittable`), 복귀(`PerformReturnMotion`), 1칸 경로(`JumpToLocalX`), CSV·이펙트·소리 코드(`Monster_Attack`·`MonsterAttackMotion` 포함)는 diff에 없다. 같은 범위 diff에 `.codeblock`·CSV·모델 변경 0.
+- **버전 대조**: coder Bundle `ade8670a…30c7`은 작업 트리 기준이라 미커밋 `PlayerActionFxData.userdataset`(`CoreVersion` 26.10.0.0 → 26.11.0.0, Maker 재저장 1줄)가 섞여 있다. 작업 트리와 a18b251의 제품 차이는 그 파일 1개(+Bundle에서 빼는 `map01.map`)뿐임을 `git diff --stat a18b251`로 확인했다. 즉 같은 구성이라면 커밋 기준 Bundle은 coder 값과 정확히 그 파일 때문에 다르다. 내 재구성(경로 UTF-8 바이트순, `경로 TAB sha256 LF` 연결 SHA-256, 확장자 mlua·model·map·ui·userdataset·csv·config·gamelogic·stateset, `map01.map` 제외 58경로)으로는 작업 트리 `fc433df8…26aa`, a18b251 `71b9b2ad…6b58`, c6422cd `e14ad35c…4913`이 나왔고 coder 값 `ade8670a…`을 재현하지 못했다(구성 세부가 달라 같은 지문이라고 말할 수 없다). 이 계산은 읽기 전용 스크립트(파일 바이트 해시만)였고, 같은 스크립트를 변형하는 셸 명령 하나가 `.model` 문자열 훅에 막혀 우회 없이 거기서 멈췄다. 파일별 SHA-256(위)과 `git diff`로 대신했다.
+
+**TF2 build 로그(PASS)**: `maker_refresh_workspace` 1회 status ok → `maker_build_logs` 전체 93건(로그 시각 13:29:29). 전부 `logType` Info(LIA 1114/1115, `LIA&Default&11` 검색도 93건). `LEA-`·`LEA&`·`LWA` 검색 각 0건, Error·Warning 0. 한계: 로그 시각이 coder의 마지막 Refresh와 같은 때라 내 Refresh가 새 컴파일을 일으켰는지는 로그만으로 구분되지 않는다(11-19 QA와 같은 한계). Play에서 스크립트가 정상 동작해(아래) 로드는 됐다.
+
+**측정(서버 10회, 시험 1)** — 2칸 좌 run1·4, 우 run2·5, 3칸 run3·6, 1칸 run7·10, 슬로우 run8(3칸)·run9(2칸 좌). 공격 시작 = 첫 ATTACK 표본.
+
+| run | 패턴 | W(approach 첫 표본) | 판정(return 첫 표본) | 착지 첫 표본 x / y | 접근 최고 y | 정점 수·골짜기 | 접근 표본 클립(개수) | 판정 결과 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | left | 1.148 | 1.574 | 0.750 / 0.581 | 1.381 | 1·0 | jump(25) | 1회, 피해 12 |
+| 2 | right | 1.157 | 1.590 | −0.750 / 0.581 | 1.380 | 1·0 | jump(25) | 1회, 12 |
+| 3 | guard(3칸) | 1.151 | 1.580 | 0.000 / 0.581 | 1.381 | 1·0 | jump(25) | 1회, 12 |
+| 4 | left | 1.149 | 1.581 | 0.750 / 0.581 | 1.381 | 1·0 | jump(25) | 1회, 12 |
+| 5 | right | 1.148 | 1.577 | −0.743 / 0.587 | 1.380 | 1·0 | jump(25) | 1회, 12 |
+| 6 | guard | 1.159 | 1.591 | 0.000 / 0.581 | 1.380 | 1·0 | jump(24) | 1회, 12 |
+| 7 | any(1칸) | 0.000(시작과 동시) | 0.504 | 0.000 / 0.581 | 1.380 | 1·0 | jump(29) | 1회, 12 |
+| 10 | any(1칸) | 0.000 | 0.503 | 0.000 / 0.581 | 1.381 | 1·0 | jump(29) | 1회, 12 |
+| 8 | guard, 슬로우 W | 1.798 | 2.574 | 0.000 / 0.581 | 1.381 | 1·0 | jump(45) | 1회, 12 |
+| 9 | left, 슬로우 A | 1.159 | 1.866 | 0.752 / 0.584 | 1.381 | 1·0 | jump(41) | 1회, 12 |
+
+- 공통: 접근 표본의 렌더러 범위는 전부 `0-2147483647`(jump 전체 범위), 접근 중 attack1·skill1 표본 0. windup 표본의 클립은 attack1(90c5456e) 또는 skill1(b9345875), 범위 `0-0`, `PlayRate` 0.700(슬로우 없음). 구간 값 `IsHittableNow()`: 8회(2·3칸) 모두 windup true, approach false, return false, none true(1칸 2회는 windup 없이 approach false, return false, none true). 접근 y 한 표본 최대 변화 0.099~0.127(계단 0.88·0.62 없음). `seq=1`: 공격 한 번에 `AttackSequence` 1 증가, `resolutionCount` 1 증가(판정 정확히 1회).
+- 서버 표본 오차를 감안하면 W 1.148~1.159(+≤0.017)는 기대 1.1429 ±0.05, 판정 1.574~1.591은 기대 1.5714 ±0.05 안이다. 1칸 0.503·0.504(기대 0.5).
+- 첫 표본 착지 x는 목표 0.750/−0.750/0.000에서 최대 0.007 벗어난다(run5 −0.743, y 0.587; 이후 표본에서 −0.750으로 정착). ±0.01 안. 착지 y는 Home.y 0.581 대비 최대 +0.006.
+
+**측정(클라이언트, 시험 2)** — 한 번에 62초 기록, 에피소드 16개 중 이번 강제 10회(ep4~13)에 더해 Play 초반 자연 공격(ep2·ep3, 2칸 좌)도 같은 기준으로 보았다. ep1은 앞 자연 공격과 이어 붙어 시작 x가 0이라 제외, ep14~16은 프로브가 끝난 뒤 자연 1칸 공격이다.
+
+| 에피소드(run) | W(클라이언트 jump 전환) | 착지 시각 | 착지 x / y | 정점·골짜기 | 접근 한 프레임 최대 y 변화 | attack1·skill1 프레임≥1 이벤트 |
+| --- | --- | --- | --- | --- | --- | --- |
+| ep2 자연 2칸 좌 | 1.159 | 1.587 | 0.750 / 0.581 | 1·0 | 0.127 | 0 |
+| ep3 자연 2칸 좌 | 1.151 | 1.568 | 0.750 / 0.581 | 1·0 | 0.118 | 0 |
+| ep4(run1 좌) | 1.146 | 1.575 | 0.750 / 0.581 | 1·0 | 0.119 | 0 |
+| ep5(run2 우) | 1.151 | 1.585 | −0.750 / 0.581 | 1·0 | 0.124 | 0 |
+| ep6(run3 3칸) | 1.139 | 1.571 | 0.000 / 0.581 | 1·0 | 0.230 | 0 |
+| ep7(run4 좌) | 1.132 | 1.565 | 0.750 / 0.581 | 1·0 | 0.147 | 0 |
+| ep8(run5 우) | 1.153 | 1.576 | −0.743 / 0.587 | 1·0 | 0.229 | 0 |
+| ep9(run6 3칸) | 1.157 | 1.572 | 0.000 / 0.581 | 1·0 | 0.169 | 0 |
+| ep11(run8 3칸 슬로우 W) | 1.795 | 2.580 | 0.000 / 0.581 | 1·0 | 0.126 | 0 |
+| ep12(run9 좌 슬로우 A) | 1.163 | 1.864 | 0.752 / 0.584 | 1·0 | 0.113 | 0 |
+
+- 클라이언트 클립 순서는 2·3칸 10개 모두 attack1(또는 skill1) → jump 한 번 바뀜(`90c5@0 → 5ecb@W`, `b934@0 → 5ecb@W`). 프레임 이벤트는 attack1/skill1의 f0 3건(공격 시작)과 jump f0 3건(W), 마지막 stand f0 1건뿐이고 f1~f3 이벤트는 없다(coder 측정 "각 2건 도착"과 같은 이중 도착 3건씩 보이나 프레임 번호는 모두 0). 접근 구간 Start·End 표본은 전부 `0-2147483647`(`0-0` 표본은 windup뿐).
+- 한 프레임 최대 y 변화 0.230·0.229(ep6·ep8)는 서버 두 틱 간격(약 0.115 × 2) 크기로, 계단이 아니라 연속 포물선 위의 프레임 건너뜀이다(정점 1·골짜기 0이라 되돌림·불연속 없음).
+- 1칸(ep10 run7, ep13 run10, 자연 ep14~16): 착지 시각 0.503·0.499~0.511, 착지 x 0.000·1.500(자연 오른쪽 칸 1건)·0.006, 접근 최고 y 1.380~1.381, 정점 1.
+
+**TF3·TF4·TF5 판단(PASS)**: 결함 지표(주원인 = 클립 계단 높이)는 서버·클라이언트 모두 사라졌다. 수정 전(coder 진단 기록)은 W에 +0.88 한 번 올림 → 0.286초에 −0.62 한 번 내림이었고, 이번엔 W 직후 y 0.61~0.70에서 정점 1.38(= Home.y 0.581 + 0.8) 하나로 올랐다 내려와 Home.y로 착지한다. 승인으로 바뀐 프레임 기준(AI 3)은 "접근 클립 변경 1회(attack1/skill1 → jump), f1 이상 이벤트 0"으로 읽어 PASS로 적는다(원래 0→1→2→3 순서 기준은 더 이상 해당 없음, coder가 밝힌 대로). 서버 f4 쓰기는 이 구조에서 더 이상 없고(W 뒤 구동 종료) 판정 = `CompleteMotion` 호출 시각으로 측정했다. 접근 중 클라이언트 x 정지 1프레임(FU-16 부원인)의 빈도는 이번에 통계로 다시 재지 않았다(NOT_RUN, coder도 개선 판정 안 함).
+
+**TF6 피격 구간(PASS)**: 위 8회(2·3칸) 서버 `IsHittableNow()`가 windup true, approach false, return false, none true, 1칸 2회는 approach·return false. 사망·취소·일시정지 시험에서도 이 값과 충돌이 없었다.
+
+**TF7 3칸 이펙트(PASS)**: 서버 `[VRF] effect windup ruid=05113e9d x=3.000 y=0.581 frames=0-6 playRate=0.7`가 공격 시작 틱(`Monster_Attack.OnEnter`)마다 머쉬맘 위치에서 나왔다(내 3칸 run3·run6·run8 포함). 판정 때 `effect dust ruid=05113e9d x=0.000 y=0.581 frames=8-end playRate=0.7`가 `Monster_Attack.OnAttackComplete`에서 나왔다. run3: 눈빛 clock 123.693 → 먼지 125.274(1.581), run8(슬로우 W): 눈빛 138.723 → 먼지 141.298(2.575, 슬로우가 2.5초에 끝난 뒤라 먼지 playRate 0.7). 먼지 x는 착지 x와 같은 0.000, y는 Home.y다. 시험 한정 범위로 run3·run8만 정확한 시계 로그와 맞췄고 나머지 3칸 실행의 먼지는 호출 존재만 로그로 본다.
+
+**TF8 슬로우(PASS, 한계)**: 슬로우(ActionRate 0.5, 2초)를 W 전(run8, 시작 0.5초 뒤)과 접근 중(run9, W 뒤 약 0.1초)에 적용했다. run8: W 1.798·판정 2.574(액션 시계 기대 1.786·2.571). 렌더러 `PlayRate`: windup 0.350~0.700(0.7 × ActionRate 측정, coder NOT_RUN이던 값), 접근 0.500~1.000(1 × ActionRate). 클립 되돌림·위치 되돌림 없음(클라이언트 ep11·ep12 순서 `b934/90c5 → 5ecb` 한 번, 정점 1). run9: W 1.159(슬로우 전), 판정 1.866(슬로우를 W+Δ에 걸면 1.1429 + 0.857 − Δ이므로 Δ = 0.100~0.134초(프로브 표본 지연)이면 1.866~1.900. 적용 시각을 로그로 남기지 않아 Δ를 확정하지 못했고, 관측값은 기대 범위 끝이며 1.900 기준 −0.034로 ±0.05 안). 접근 시간 0.707(= 0.134 + (0.4286 − 0.134)×2 = 0.723과 0.016 차이, 표본 단위 안).
+
+**TF9 1칸(PASS)**: 접근 0.503·0.504, 정점 1.380·1.381(=+0.8), 접근 jump 클립 전체 범위, 착지 x 0.000. 복귀 표본 수 29~30(약 0.5초). 복귀 높이는 접근 구간만 정점을 셌으므로 이번에 따로 재지 않았다(복귀 경로 소스 diff 0, 위 TF1). 자연 1칸 3건(ep14~16)도 같은 모양이다.
+
+**TF10 판정 결과(PASS, JUST·PARRY NOT_RUN)**: 강제 실행 10회 + 일시정지 2회 + 가드 1회 모두 `resolutionCount` +1, `AttackSequence` +1(공격당 판정 1회). 플레이어 피해: 입력 없는 HIT은 12, 취소·사망 시험은 0(판정 없음). 가드는 실제 키(↓ 홀드, `maker_keyboard_input` `DownArrow` down→up)로 3칸 공격(parry.guard)을 맞아 피해 4(12 × 0.40 내림), 판정 1회였다. JUST·PARRY는 이번에 입력하지 않았다(NOT_RUN, 변경 경로 밖이며 11-19 QA T4c가 논리 경로로 확인했다).
+
+**TF11 일시정지(PASS)**: 서버 `CombatPauseComponent`에 정지 소유자(플레이어)를 지정하고 `SetServerPaused(true)` 0.993초, `false`로 재개했다. windup 중(공격 시작 0.483초 뒤, pauseW): 정지 59표본 동안 x 3.000·y 0.581 고정, 렌더러 `b9345875 0-0`·ATTACK/windup 그대로, 재개 뒤 W 2.162·판정 2.594(정지 길이만큼 밀림 기대 2.136·2.564, +0.026·+0.030이라 ±0.05 안), 판정 1회·피해 12. 접근 중(공격 시작 1.306초 뒤, pauseA): 정지 59표본 동안 x 2.270·y 1.335 고정(공중에서 정지), 렌더러 `5ecbcc40 0-2147483647` 그대로, 재개 뒤 판정 2.594(기대 2.564 +0.030), 판정 1회. **무효 처리한 첫 시도**: 처음에는 정지 소유자를 지정하지 않아 제품 코드 `OnUpdate`가 곧바로 `AbortCombat`으로 공격을 취소했고 몬스터가 ATTACK 상태로 남았다. 제품 정지 경로의 설계(소유자 필요)를 내 프로브가 어긴 것이라 이 두 표본은 결과로 세지 않았다. 소유자를 지정해 다시 시험한 값이 위 값이다.
+
+**TF12 취소·사망(PASS, 관찰 2건)**: ① 접근 중 취소(W+0.16초에 `ChangeState("IDLE")`, cancelA): 곧바로 seg none·`JumpActive` false·IDLE, 판정 0회·피해 0(먼지·판정 없음), 몬스터는 땅에 내려와 x 2.187에 서고(집으로 복귀하지 않음) 렌더러는 jump 클립·전체 범위·`PlayRate` 1로 1.5초 이어졌다. ② windup 중 취소(0.497초, cancelW): IDLE, 범위 `0-0`이 `0-2147483647`로 복구, `PlayRate` 0.70 → 1.00, 클립은 skill1 그대로, x 3.000, 판정 0회. ③ 접근 중 사망(W+0.158초에 `health:ApplyDamage(Hp)`): `ATTACK/approach`(jump) → 0.018초 뒤 seg none(`CancelPendingAttack`) → 0.22초 뒤 `DEAD` + die 클립(ec90f0b6, 전체 범위, `PlayRate` 1.00, 첫 표본 간격이 0.22초로 길어진 것은 die 클립 동기 로드로 보인다) → 약 0.81초 뒤 Start=End=5(마지막 프레임) 고정, 이후 3.6초 동안 클립·범위 변화 없음(jump·stand 덮어쓰기 없음). 판정 0회, 피해 0, `[VRF] MonsterDie start` 1건·`MonsterDie freeze frame=5` 1건(freeze 0.812초, 계산값 0.800). 사망 몬스터는 접근 중이던 x 2.255에 서 있다.
+- **관찰 O-1(결함 아님, reviewer 참고)**: 접근 중(jump)·windup 중 공격이 취소되면 클립을 stand로 되돌리는 경로가 없어 취소 뒤에도 jump(또는 skill1) 클립이 남는다. 취소 경로(`CancelMotion`)는 diff 밖이라 c6422cd에서도 같은 구조였고(이전에는 접근 중 취소 때 attack1 클립이 남았다), 1-A로 바뀐 것은 남는 클립의 모습뿐이다. 일반 플레이에서 접근 중 취소는 플레이어 사망·이탈·정지 중단 때만 생긴다.
+- **관찰 O-2(착지 때 stand 1프레임)**: 클라이언트 2·3칸 10개 중 1개(ep9, run6 3칸)에서 착지 순간 `8601`(stand)이 1프레임(1.572~1.591) 끼었다가 바로 jump(복귀)로 돌아왔다. `CompleteMotion`의 `SetVisualClip("stand")` 다음 `PerformReturnMotion`의 `SetMotionClip("jump")`가 같은 서버 틱에서 이어지는 기존 코드이고(diff 밖) coder는 "클라이언트에서 안 보였다"고 적었다. 10개 중 1개라 보이는 빈도는 낮고, 이번 변경이 만든 것은 아니다. 사용자 화면 판단 항목이다.
+
+**TF13 회귀(PASS)**: ① 기본 공격(↑ 실제 키 `UpArrow` tap): 머쉬맘 HP 100 → 90(10타 × 1). ② 가드(↓ 실제 키 홀드)로 맞는 피해 12 → 4(잔여 40%, 위 TF10). ③ 1칸 공격(parry.any): 강제 2회·자연 3건 정상. ④ 전투 시작: Play 시작 `[VRF] MonsterManager spawned parent=map01 x=3.0` 1건(13:42:30), 강제 시험 전에 몬스터가 `AttackInterval` 3.0으로 스스로 자연 공격을 시작했다(2칸 좌 2건·1칸 포함).
+- **관찰 O-3(원인 미확정, 시험 부산물 추정)**: 위 `ALLDONE` 뒤 몬스터 `AttackInterval`을 3.0으로 복원해 두었더니 자연 공격이 이어졌고, 플레이어 HP를 채우지 않아 누적 피해가 났다. 13:46:45 자연 공격은 몬스터 x −0.750에서 시작했고(`windup` 이펙트 x −0.750), 13:47:30에는 1칸 공격이 접근 0.52초에 ATTACK → IDLE로 끝나며 x 0.000에 남았다(복귀 없음, `OFFHOME idle`). 5초 뒤 x 3.000·IDLE·플레이어 HP 100/100으로 돌아와 있었다. 플레이어 HP 소진 뒤 전투 초기화로 추정하지만 로그로 확정하지는 못했다. 변경 경로(2·3칸 접근 전환)가 아닌 1칸 경로에서 나왔고 소스 diff 밖이다. 이후 강제 시험은 매번 위치·상태·HP를 초기화하고 진행했다.
+
+**TB Bundle(NOT_RUN)**: 위 TF1 버전 대조 참조(coder 지문 재현 불가, 파일별 SHA-256·`git diff`로 대신).
+
+**한계·사용자 직접 확인**
+- 스크린샷 0장: 화면 체감(그림과 이동의 어울림, 착지 때 stand 1프레임 O-2, 높이 0.8이 눈에 어떻게 보이는지)은 사용자 V11이며, 사용자가 이미 화면을 보고 "1-A 유지"를 선택했다(이번 시험 대상 아님).
+- 서버–클라이언트 같은 프로세스(Maker 로컬 Play): 지연 있는 실접속·모바일 NOT_RUN. JUST·PARRY 입력, FU-16 정지 1프레임 빈도(통계), 복귀 높이 별도 측정은 NOT_RUN.
+- 판정 결과·W 시각의 표본 오차: 서버 프로브 표본 간격 약 17ms, 시각 값은 최대 0.017초 작게 나올 수 있다.
+- 시험 부산물: 제품 파일 변경 0. Play 메모리에서 `AttackInterval`을 9999로 바꾸고 패턴 표를 한 행으로 바꿨다가 모두 되돌렸다(마지막 프로브 시점 5행 복원 확인, 이후 Stop으로 Play 메모리 폐기). 시험 타이머(서버 4개·클라이언트 1개)는 각자 종료 때 정리해 새 `[LEA-3051]`이 없다.
+- Maker 최종: Stop 확인(`maker_run_command stop` status ok), `maker_get_current_map` map01·edit, 사용 종료.
+
 ## 리뷰 기록
 
 ### 2026-11-19 reviewer — 후속 회차 1 (CombatCore-FU-24·FU-03·FU-23)
@@ -497,6 +595,91 @@
 6. 전투 화면 전반이 이동 전과 같다. 모바일·실접속은 기존대로 NOT_RUN이다(V11·V12 범위 밖).
 
 **검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), Bundle 재계산(`.model` 셸 읽기 훅), `.ui` 내용, 회차 A·C 전수 회귀(Plan에서 NOT_RUN으로 정함).
+
+### 2026-11-20 reviewer — FU-26 방안 1-A (위 11-19 절과 별개, 기존 절은 그대로)
+
+- **판정: WAITING** — 요구 ID CombatCore-FU-26. AI 쪽 필수 근거(Plan FU-26 절 완료 기준 AI 1~7)는 충족했고 결함·요청 밖 변경은 없다. 남은 것은 사용자 V11(점프) 확인 범위 1건과 회차 종료 결정 4건이다. coder 수정 대상 없음. 이 판정은 사용자 수락·배포 승인이 아니다.
+- **검토 버전**: 로컬 커밋 a18b251(부모 c6422cd, push 전). 리뷰에서 직접 확인한 것:
+  - `git diff --name-only c6422cd a18b251`: 제품 경로는 `RootDesk/MyDesk/Monster/OrangeMushroom/OrangeMushroomAttack.mlua` 1개(+10/−7), 나머지는 run·FileStructure·Plan·WorkRecord 문서다.
+  - 대상 파일 blob `62dcb685…`, 작업 트리 SHA-256 `d3c8d2fd…89df`(coder·tester 값과 같음). `map/map01.map` `22b6acbf…987e`(Plan 기준과 같음). `PlayerActionFxData.userdataset` `c4a19587…fd62`.
+  - `git diff a18b251 --stat -- RootDesk Global map ui Environment`: 작업 트리와의 제품 차이는 `PlayerActionFxData.userdataset`(CoreVersion 26.10→26.11 1줄)·`map/map01.map`뿐이다. 둘 다 범위 밖 미커밋이다.
+- **주체·방법**: msw-reviewer(독립 실행). Maker를 쓰지 않았고 시험을 반복하지 않았다. 읽은 지침: reviewer 계약, 팀 계약, 구현 원칙, msw-general·msw-ui-system, Foundation 참조 4개, platform-maple(map01 `TileMapMode` 0을 Grep으로 확인), msw-scripting·verify-checklist, msw-combat-system, animation-state·monster. 확인한 자료: 위 git 명령, `OrangeMushroomAttack.mlua` 전체, `MonsterAttackMotion.mlua` 1~160행(SetMotionClip·StartDrivenClip·TickClip·StopDrive), `CombatPauseComponent.AbortCombat`, 패턴 표 열 5개, GameDesign §4.2 해당 줄, Grep(`OrangeMushroomAttack` 사용처: Mushmom·OrangeMushroom 모델 2개, 파일 이름만).
+
+**요구별 대조(Plan FU-26 절 완료 기준 — AI)**
+
+| 기준 | 판단 | 근거 |
+| --- | --- | --- |
+| 범위(1-A 승인 내용) | 충족 | 승인 문구(run 2026-11-20): "W에서 jump 클립 1회 전환·TickClip 구동 종료 + LeapJumpHeight 포물선(약 0.8)". diff는 ① `LeapJumpHeight` 0→0.8 ② 무조건 `TickClip()` 삭제 → windup 안에서만 호출 ③ W 블록에 `SetMotionClip("jump", 1)` ④ 주석 2곳뿐이다. `SetMotionClip`이 `_T.drive = nil`·전체 범위·배율 1×ActionRate를 쓰므로 새 메서드 없이 승인 동작이 된다. 수평 식·판정 시각·착지 x·피격 선언·복귀·1칸·CSV·모델은 diff 밖이다. 편집 허용 후보 파일 안이다 |
+| AI 1 결함 지표 | 충족 | coder·tester 모두 계단(W +0.88, 0.286초 −0.62)이 사라지고 정점 1개·골짜기 0인 포물선(정점 1.38 = Home.y 0.581 + 0.8)을 측정했다. 부원인(정지 프레임)은 1-A 대상이 아니라 판정하지 않았다(아래 4) |
+| AI 2 시각·위치 | 충족 | tester W 1.148~1.159, 판정 1.574~1.591, 착지 x 최대 0.007 벗어남, 착지 y ≤+0.006. 높이는 승인으로 바뀌어 "approach 중 y ±0.01"은 해당 없다 |
+| AI 3 프레임 | 충족(승인으로 바뀐 기준) | 아래 판단 1 |
+| AI 4 D-Q6 | 충족(한계 기록됨) | slowW(windup 중 시작, approach 중 종료)·slowA(approach 중 시작)로 S1~S3를 덮었다. windup PlayRate 0.7×ActionRate(coder NOT_RUN)를 tester가 0.350~0.700으로 측정했다. run9 Δ를 로그로 남기지 않은 한계는 tester가 밝혔고 관측값이 ±0.05 안이다. "f1↔W·f4↔판정"은 1-A에서 f1·f4가 보이지 않아 W·판정 시각으로 대신했다(같은 승인 변경) |
+| AI 5 1칸 회귀 | 충족 | 접근 0.503·0.504, 정점 +0.8, 착지 x. 복귀 높이는 tester가 따로 재지 않았으나 coder가 복귀 0.5초·정점 1.38을 쟀고, 기준 문구대로 복귀·1칸 경로 소스 diff 0이다 |
+| AI 6 회귀 | 충족(JUST·PARRY NOT_RUN 정당) | 피격 구간 8/8, 판정 1회(HIT 12·GUARD 4), 3칸 눈빛·먼지, die 1회 정지, 일시정지(windup·approach). JUST·PARRY는 판정 경로가 diff 밖이고 11-19 QA가 논리 경로를 확인했다 |
+| AI 7 build·git | 충족 | tester build 93건 Info·Error 0. git 제품 변경은 승인 파일 1개, map01 해시 그대로·커밋 제외(리뷰 확인) |
+
+- 직접 실행하지 않은 결과를 완료 근거로 쓴 곳은 없다. coder·tester 모두 NOT_RUN(실접속·모바일·정지 프레임 통계·JUST·PARRY·화면 체감)을 따로 적었다. tester는 이번에 훅 막힘에서 우회하지 않고 멈췄다.
+- 다른 모델 영향: `OrangeMushroom.model`도 이 스크립트를 쓰지만 패턴 표에 orangemushroom 행이 없고 `.mlua`·CSV·map에서 부르는 곳이 0이라 `LeapJumpHeight` 기본값 변경의 현재 실행 영향은 없다. 6단계에서 일반 몬스터 행을 넣을 때 이 기본값이 적용된다는 점만 Plan에 남긴다.
+
+**판단 1 — 바뀐 기준 적용과 사용자 확인**
+
+- **프레임 기준 교체는 정당하다.** AI 3 "0→1→2→3 순서, 건너뜀·되돌림 0"은 attack1·skill1의 f1~f3를 보여 준다는 전제다. 사용자가 승인한 1-A는 그 f1~f3 표시를 없애는 것 자체이므로 원래 문구는 적용 대상이 사라졌다. Plan 완료 기준 1이 "원인을 확정하지 못한 채 승인했다면 그 승인안이 정한 관찰 지표"를 허용하고, "유지할 기존 승인 규칙"도 "승인안이 바꾸기로 한 항목 말고는"이다. tester의 대체 지표(접근 중 attack1·skill1 f≥1 이벤트 0, 클립 변경 1회, 되돌림 0)는 원래 기준의 취지(건너뜀·되돌림 없음)를 보존한다. 기준을 낮춰 통과시킨 경우가 아니다.
+- **다만 문서가 승인을 따라오지 않았다(정리 대상, 결함 아님).** Plan FU-26 절에는 1-A 승인 문구·내용, 바뀐 AI 3 기준, "착지 = 판정 = 서버 f4 쓰기"(1-A 뒤 f4 쓰기 없음, 판정 = `CompleteMotion`), "2·3칸 접근 높이 0"이 아직 옛 문구다(546행 진행 메모만 있음). GameDesign §4.2의 "도약 높이 0(수평 이동만)"·"2·3칸 모션·이펙트는 원작의 0.7배"(1-A 뒤 도약 구간은 jump 정지 자세·배율 1)도 같다. 회차 종료 때 planner가 1-A 승인 범위 안에서 고친다(Plan "회차 종료 때 문서 정리" 2026-11-19 추가 항목 그대로).
+- **"1-A 유지"를 V11 수락으로 볼 수 있는가: 부분적으로만.** 사용자는 a18b251(tester와 같은 버전, 커밋 뒤 확인)을 화면으로 보고 2-b 대신 1-A를 골랐다. 이는 완료 기준 — 사용자 첫 항목("2칸 좌·우·3칸 점프 초반 공중 동작이 자연스럽게 이어진다")을 받아들였다는 뜻으로 읽을 수 있다. 그러나 그 질문은 "1-A 유지 / 2-b" 방향 선택이었고, 나머지 두 항목(1칸 회귀 없음, 반응 시간·속도·맞는 구간 체감이 이전과 같음)과 tester 관찰 O-2(착지 때 stand 1프레임, 10회 중 1회)는 묻지 않았다. Plan "회차 1 남은 흐름" 8도 V11(점프)을 reviewer 뒤에 따로 둔다. 그래서 별도 시험을 다시 요구하지는 않고, 메인이 사용자에게 한 번 확인한다: "1-A 유지는 V11 점프 3항목 수락 뜻인가, 1칸·체감·착지 순간(O-2)에 문제는 없었나". 답이 "그렇다"면 FU-26의 사용자 기준은 충족이다.
+- 애니메이션 확인 규칙: 1-A는 기존 ActionSheet 키 `jump`를 쓰는 안이고, 진단 1절에 머쉬맘 ActionSheet 7개 키·RUID 목록이 있으며 사용자가 그 안을 골랐다. run 기록에는 메인이 그 목록을 사용자에게 보였다는 문구가 없다. 결과를 이미 화면으로 보고 골랐으므로 판정에는 반영하지 않는다.
+
+**판단 2 — 버전 근거**
+
+- **같은 버전 근거로 충분하다.** 대상 버전은 커밋 해시 a18b251로 고정됐고(CLAUDE.md 버전 고정 기준), 대상 파일은 blob id·SHA-256이 coder·tester·reviewer 셋에서 같다. 작업 트리와 커밋의 제품 차이는 범위 밖 두 파일뿐임을 리뷰에서도 git으로 확인했다. git 해시는 내용 주소라 바이트 동일성의 근거로 Bundle보다 강하다.
+- **Bundle 방식의 문제(운영, 제품 결함 아님)**: (가) 계산 규칙(대상 확장자·경로 정렬·줄 형식·제외 목록)이 계약·문서 어디에도 없다(Grep: ship references 0건, Docs는 이 WorkRecord만). 그래서 구현마다 값이 다르다. 11-19에는 우연히 같은 구현이 같은 값을 냈다. (나) coder 값은 커밋 전 작업 트리 기준이라 범위 밖 미커밋 파일(`PlayerActionFxData.userdataset`)이 섞였고, 정의상 커밋 기준 값과 비교할 수 없다. (다) `.model`·`.ui`를 셸로 읽어야 해서 훅과 부딪힌다(11-19 우회 시도, 이번 정지의 원인).
+- **11-19 리뷰 발견 2의 개선 후보와 연결**: 이번 일이 그 후보의 구체적 근거다. 제안(운영 규칙 변경이라 사용자 승인 뒤 `[ops]`): 바이트 지문을 ① `git rev-parse <커밋>^{tree}`(또는 `git ls-tree -r <커밋> -- RootDesk Global map ui`의 blob id 목록) ② 담당 시작·종료 때 `git status --porcelain`과, 범위 밖 미커밋 파일이 있으면 그 파일의 SHA-256으로 바꾼다. 모두 git 객체만 읽으므로 구현 차이·훅 충돌이 없다. 커밋 전 coder 단계에서는 `git diff --stat`과 바뀐 파일의 SHA-256만 적고, 지문은 메인 `[code]` 커밋 해시로 고정한다. 바꿀 곳은 CLAUDE.md "버전 고정" 줄과 ship coder·tester 계약의 해당 문구다(메인·사용자 결정).
+
+**판단 3 — tester 관찰 분류**
+
+| 관찰 | 분류 | 근거 | 추적 제안 |
+| --- | --- | --- | --- |
+| O-1 취소 때 클립이 stand로 돌아오지 않음 | FU-26 결함 아님. 기존 구조의 표시 공백(낮음) | `CancelMotion`은 "HIT·DEAD 위에 stand를 쓰지 않는다"는 의도로 클립을 건드리지 않는다(diff 밖, c6422cd에서도 attack1이 남았다). 1-A로 바뀐 것은 남는 그림(attack1 → jump 정지 자세)뿐이다. 실제 플레이에서는 플레이어 사망·정지 중단(`AbortCombat`)·맵 이탈 때만 생기고, 그때 몬스터는 집으로 돌아가지 않고 그 자리에 선다 | 후보 FU-28(가칭) "전투 중단·공격 취소 뒤 몬스터 표시·위치 정리(IDLE로 끝난 취소에서 stand 복귀·집 복귀)". (C) 추적. 다시 볼 조건: 사용자가 플레이어 사망·정지 중단 뒤 어색함을 보고하거나, 3단계 이후 전투 재시작 흐름을 만들 때 |
+| O-2 착지 때 stand 1프레임(1/10) | FU-26 결함 아님. 기존 코드의 같은 틱 이중 클립 쓰기(낮음) | `CompleteMotion`의 `SetVisualClip("stand")` 뒤 같은 서버 틱에 `PerformReturnMotion`의 `SetMotionClip("jump")`가 이어진다(둘 다 diff 밖). 1-A 전에도 attack1 → stand → jump 순서였다. 다만 1-A 뒤에는 앞뒤가 같은 jump 자세라 끼인 stand가 더 눈에 띌 수 있어 사용자 화면 판단이 필요하다 | 같은 순간(착지)을 다루는 FU-13 행에 관찰로 붙인다(새 ID 불필요). 사용자가 V11에서 보인다고 하면 그때 결함으로 올리고 수정안(복귀가 바로 이어질 때 stand 쓰기 생략 등)은 승인 대상으로 둔다 |
+| O-3 자연 공격 이상 2건 | 판단 보류(원인 미확정), FU-26 범위 밖 | 1칸 경로이며 diff 밖이다. 시험 부산물(플레이어 HP 미보충으로 누적 피해) 조건에서 나왔다. 1칸 공격이 0.52초에 ATTACK → IDLE로 끝나고 집으로 돌아가지 않은 모습은 플레이어 사망 → `AbortCombat` → `CancelPendingAttack` → `CancelMotion` 경로(O-1과 같은 구조)와 맞는다. 시작 x −0.750은 앞 시험의 위치가 남은 것으로 보이나 로그가 없다 | 별도 FU 없이 FU-28 후보의 재현 조건으로 묶는다. 확인이 필요하면 tester 조건: 자연 공격 중 플레이어 HP를 보충하지 않고, 플레이어 사망·부활 시각, 몬스터 상태·구간·x, `[VRF] CombatPause abort`를 같은 시계로 기록한다. FU-26 종료에 필수 아님 |
+
+**판단 4 — 부원인 FU-16**
+
+- 1-A로 다루지 않은 것은 적절하다. 사용자는 A~D(이동 방식 변경 포함)를 고르지 않고 클립 쪽(1-A)을 골랐으며, 이동 방식 변경은 Plan "사용자 승인 대상"이다. 1-A는 수평 이동·위치 쓰기를 바꾸지 않았으므로 정지 프레임은 그대로라고 보는 것이 맞고, coder·tester 모두 개선으로 판정하지 않았다(표본 4회 0건은 근거로 쓰지 않음).
+- 남은 추적: 진단 결과가 Plan 행에 아직 없다. 회차 종료 때 planner가 정리한다 — FU-16: 측정 확정(2·3칸 18회 중 13회, 1칸 6회 중 4회, `MoveVelocity` 0회, 26.10/26.11 무관), 속도 기반 이동 가능성(`WalkSpeed`·`InputSpeed` 런타임 상향 시험), 수정안 A의 위험. 다시 볼 조건 "1-A 뒤에도 '가끔 툭 건너뜀'이 보이면". FU-14: 정지 프레임과 같은 현상일 가능성이 높다는 진단을 적고 FU-16에 합칠지 사용자·planner가 정한다. FU-15: 이번 결함의 원인으로 지지되지 않음, 기존 다시 볼 조건 유지.
+
+**판단 5 — EqualizeLeapFrames·EqualizeLeapBounds 잔존 코드**
+
+- 1-A 뒤 `TickClip`은 windup(f0만 표시) 안에서만 돌고, 균등화는 W 이후 경계(f2·f3)만 바꾸므로 화면·시각 효과가 0이다. `CompleteMotion`의 `TickClip()`도 W 뒤에는 할 일이 없다. 남은 효과는 `[VRF] leap bounds`·`equalize=` 로그뿐이다.
+- 구현 원칙 §3("자신의 변경 때문에 쓰이지 않게 된 것은 제거")에 걸리지만, `EqualizeLeapFrames`는 사용자가 요구하고 기본값을 수락한 조절 항목(GameDesign §4.2)이라 지우는 것은 사용자 승인 대상이고, 1-A를 되돌리는 선택지가 V11 전까지 열려 있었다. 그래서 이번 미제거는 결함이 아니다.
+- **정리 후보로 둔다**: 후보 FU-29(가칭) "2·3칸 도약 균등화 항목 정리". 선택지 (가) V11 수락 뒤 `EqualizeLeapFrames` 속성·`EqualizeLeapBounds`·`CompleteMotion`의 `TickClip()`·`equalize=` 로그를 지우고 GameDesign §4.2 조절 항목 문구를 고친다(권장 — 의미 없는 인스펙터 항목이 남으면 다음 조정 때 오해를 부른다. 같은 파일 계열을 고치는 후속 회차 2나 6단계 몬스터 동작 일반화에 묶으면 비용이 적다), (나) 1-A 되돌리기 대비로 둔다. 그동안 8행 주석은 "1-A 뒤 화면 효과 없음"을 반영하지 않으므로 정리 때 함께 고친다. `StartDrivenClip`·`TickClip` 자체는 windup 구동에 계속 쓰이므로 대상이 아니다.
+
+**판단 6 — 회차 1 종료 가능 여부와 종료 때 처리할 항목**
+
+- FU-24·FU-03·FU-23은 11-19 리뷰와 사용자 V11로 끝났다(다시 판정하지 않음). c6422cd 뒤 제품 diff는 FU-26 승인 파일 1개뿐이다(Plan 회차 1 남은 흐름 7 확인 완료).
+- **회차 1은 위 판단 1의 사용자 확인 한 번이 끝나면 닫을 수 있다.** 코드 수정·재시험은 필요 없다. 그 뒤 planner 종료 정리 → 메인 `[CombatCore][review]` 커밋·push 순서다.
+- 종료 때 처리할 항목:
+  1. `PlayerActionFxData.userdataset` 재저장분(CoreVersion 1줄, 범위 밖): (가) bb3ec01 선례처럼 따로 `[ops]` 커밋(권장 — 사용자의 같은 성격 결정과 FileStructure §7 "섞지 않는다"에 맞음), (나) `[review]` 커밋에 함께 넣음(§7과 어긋나 예외 기록 필요), (다) 되돌림(다음 Maker 저장 때 다시 생겨 권장하지 않음). 사용자 결정.
+  2. 가드 문구 통일(11-19 발견 5, GameDesign §4.2 "40% 경감" → "잔여 피해 40%(60% 경감)", 규칙·수치 불변): 사용자 승인 후보. 승인되면 planner가 종료 정리에 넣는다.
+  3. Bundle 개선(위 판단 2): 사용자 승인 후보. 승인되면 메인이 `[ops]`로 CLAUDE.md·ship 계약을 고친다. 회차 2부터 적용.
+  4. Feature 반영(planner): 2단계 Feature에 FU-26 결과(1-A: W에서 jump 전환·높이 0.8 포물선, 계단 높이 제거, 정지 프레임은 FU-16으로 남음, 실접속·모바일 NOT_RUN)와 회차 1 V11 결과. Plan에는 1-A 승인 문구·바뀐 AI 3·유지 규칙의 f4·높이 문구, FU-26 행 정리, FU-14·15·16 행 갱신(판단 4), 후보 FU-28·29와 O-2의 FU-13 관찰 추가. GameDesign §4.2의 도약 높이·0.7배 문구는 1-A 승인 범위 안에서 고친다.
+- 참고(경미, 조치 불필요): a18b251에 FileStructure §7 예외 1줄과 run.md가 함께 들어갔다. CLAUDE.md 표의 `[code]` 포함 목록(제품·Plan·WorkRecord)보다 넓지만 둘 다 이 회차 문서이고 push 전이며 회차 커밋과 함께 push되므로 결과는 같다.
+
+**담당별 다음 행동**
+
+- 메인: 사용자에게 아래 "사용자 판단 사항"을 묻는다. 답 전에는 `[review]` 커밋·push를 하지 않는다. 1에서 (가)를 고르면 `[ops]` 커밋을 따로 한다.
+- planner(사용자 답 뒤): Plan 회차 1 "회차 종료 때 문서 정리"와 위 판단 6의 4를 처리한다.
+- coder: 수정할 것 없음.
+- tester: 필수 추가 실행 없음. O-3 확인은 사용자·메인이 원할 때만 위 조건으로 한다.
+
+**사용자 판단 사항**
+
+1. "1-A 유지"가 V11 점프 3항목(2·3칸 초반 자연스러움, 1칸 회귀 없음, 반응 시간·속도·맞는 구간 체감 동일)의 수락인지, 착지 순간 stand 한 프레임(O-2, 10회 중 1회)이 보였는지.
+2. `PlayerActionFxData.userdataset` 재저장분 처리: (가) 따로 `[ops]` / (나) `[review]`에 포함 / (다) 되돌림.
+3. 가드 문구 통일 승인 여부.
+4. 버전 지문을 Bundle 대신 git tree·blob id로 바꾸는 운영 변경 승인 여부.
+5. (기록용, 지금 결정 불필요) 후보 FU-28(취소·전투 중단 뒤 몬스터 표시·위치)·FU-29(균등화 항목 정리)의 등록·시기.
+
+**검사하지 않은 범위**: Maker 실행·런타임 재확인(reviewer 역할 밖), `.model` 내용(ModelBuilder 읽기 미실시, 모델 diff 0과 tester 정점 1.38 측정으로 대신), O-3 원인, 실접속·모바일, Bundle 재계산.
 
 ## 완료 시 이관할 내용
 

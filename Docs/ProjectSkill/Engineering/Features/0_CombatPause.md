@@ -11,7 +11,7 @@
 - 닫으면 공격은 남은 실행부터 재개한다. 가드·회피 홀드는 비우고 회피는 중앙 복귀한다. 정지 중 입력을 다시 실행하지 않는다.
 - 사망·이탈·종료는 재개보다 우선한다. BGM·효과음은 정지하지 않는 코드 정책이며 실제 청취 확인은 남아 있다.
 
-[CombatPauseComponent](../../../../RootDesk/MyDesk/Combat/CombatPauseComponent.mlua)가 맵의 전투 시계·정지 상태를 관리한다. 공격·몬스터 모션은 전투 시계를, [UIPopup](../../../../RootDesk/MyDesk/UIPopup.mlua)·[UIToast](../../../../RootDesk/MyDesk/UIToast.mlua)는 실시간을 사용한다. 서버는 요청자·현재 맵·세션과 해당 맵 사용자 1명 조건을 확인한다. 이는 여러 사용자의 Run 격리 시스템 완성을 뜻하지 않는다.
+[CombatPauseComponent](../../../../RootDesk/MyDesk/Combat/CombatPauseComponent.mlua)가 맵의 전투 시계·정지 상태를 관리한다. 공격·몬스터 모션은 전투 시계를, [UIPopup](../../../../RootDesk/MyDesk/UI/UIPopup.mlua)·[UIToast](../../../../RootDesk/MyDesk/UI/UIToast.mlua)는 실시간을 사용한다. 서버는 요청자·현재 맵·세션과 해당 맵 사용자 1명 조건을 확인한다. 이는 여러 사용자의 Run 격리 시스템 완성을 뜻하지 않는다.
 
 새 전투 기능은 같은 전투 시계와 사망/종료 우선순위에 연결해야 한다. 별도 사용자 조절 수치는 이번 결과에 추가하지 않았다.
 

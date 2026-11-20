@@ -2,10 +2,10 @@
 
 - 요청·승인: 사용자(2026-11-19) "castleenemy 문구 정리(FU-23), DataSet 6종 이관(FU-24), 부채 처리(FU-04~22먼저 하고, 이후 3단계 진행하자". 2단계 후속 항목을 3단계보다 먼저 처리하는 순서 승인. 항목별 구현 범위·값은 planner 분류 뒤 사용자 확인. 3단계는 이 run이 끝난 뒤 별도 지시로 시작.
 - 모드: 계획 → 구현·검증
-- 상태: CODING
-- 갱신: 2026-11-19 / 메인 조율 채팅(Claude Code)
-- 현재 담당: msw-coder (FU-26 방안 1-A 구현·기본 검증)
-- 다음 행동·대기 사유: 후속 회차 1(Plan CombatCore.md 후속 처리 계획 회차 1): coder 사전 확인·1차 이동(PlayerBaseStatData·UIToast) → 사용자 1차 Maker 동기화(WAITING_USER) → coder 1차 확인·2차 이동 → 사용자 2차 동기화(빈 @Assist·Player/@Assist 폴더 Maker 삭제 요청) → coder 2차 확인·FU-03·원장·통합 Play → [code] 커밋 → tester → reviewer → 사용자 V11. 동기화 전 coder Refresh 금지. 범위 밖: 작업 트리 map/map01.map(사용자 "그대로 둠", 커밋 제외).
+- 상태: WAITING_USER
+- 갱신: 2026-11-20 / 메인 조율 채팅(Claude Code)
+- 현재 담당: 사용자 (후속 회차 2 시작 지시 대기)
+- 다음 행동·대기 사유: 후속 회차 1 종료(FU-24·03·23·26, [code] c6422cd·a18b251, [review] 커밋·push). 다음: 버전 지문 git 해시 방식 [ops] 반영(사용자 승인 2026-11-20) → 사용자 지시 시 후속 회차 2(FU-17·FU-19·FU-12 (가)), planner 범위 확인부터. 범위 밖: 작업 트리 map/map01.map(사용자 변경, 커밋 제외, 해시 22b6acbf…987e).
 - 환경 가이드: 없음
 
 ## 원본 연결
@@ -13,15 +13,15 @@
 - Feature: Docs/ProjectSkill/Engineering/Features/2_CombatCore.md
 - WorkRecord: Docs/ProjectSkill/Engineering/WorkRecords/CombatCoreWorkRecord.md (2단계 후속 처리 FU 회차 기록)
 - 기획 결과: Plans/CombatCore.md "후속 처리 계획(2026-11-19)" 절
-- 구현 결과: 미기록
-- 테스트 결과: 미기록
-- 리뷰 결과: 미기록
+- 구현 결과: WorkRecord 개발 절(회차 1 절차 1~11, FU-26 진단·구현 1-A)
+- 테스트 결과: WorkRecord QA 절(2026-11-19 회차 1, 2026-11-20 FU-26 1-A)
+- 리뷰 결과: WorkRecord 리뷰 절(2026-11-19 WAITING, 2026-11-20 FU-26 WAITING → 사용자 V11 수락으로 종료)
 
 ## 실행·인계
-- 대상 버전: 기준 16d70b3(origin/main)
+- 대상 버전: 회차 1 c6422cd(FU-24·03·23), a18b251(FU-26 1-A); 회차 종료 [review] 커밋
 - 실행 주체: 메인 조율(Opus 5.5) / msw-planner·msw-coder·msw-tester·msw-reviewer 서브 에이전트(독립 실행)
-- Maker: 마지막 관찰 map01·편집 모드(2026-11-16 tester 인계). 이 run에서는 아직 사용 안 함
-- 전달·완료: planner 요청
+- Maker: 마지막 관찰 map01·편집 모드(2026-11-20 tester 인계, 사용 종료)
+- 전달·완료: 후속 회차 1 결과 확인 완료. 회차 2 미요청
 
 ## 기록
 - 2026-11-19 메인: run 생성. 이전 run 20261020-combat-core는 2단계 완료 뒤 삭제(기준 커밋 5efe005).
@@ -50,3 +50,9 @@
 - 2026-11-20 coder 추가 진단 완료(제품 변경 0, Maker map01 편집 모드). 주원인 확정: attack1·skill1 클립의 계단식 공중 높이(0→+0.88→+0.70→+0.08→0, 보간 없음, 수평 이동 없음) + 스크립트 수평 smoothstep. 부원인: FU-16 정지 프레임("가끔"). 방안 1-A(권장)/1-B(비권장)/1-C, 2-a(비권장)/2-b. 판정 영역은 몬스터 x와 무관(MonsterAttackComponent 189~190). 사용자 선택 대기.
 - 2026-11-20 사용자 승인: "일단 1-A로 진행하고 결과 보여줘. 결과 확인하고 2-b할지 판단할게". 1-A = 2·3칸 도약 시작(W)에서 jump 클립 1회 전환·TickClip 구동 종료 + LeapJumpHeight 포물선(약 0.8). 순서: coder 구현·기본 검증 → [code] 로컬 커밋 → 사용자 화면 확인(1-A 유지/2-b 판단) → 1-A 유지 시 tester → reviewer. coder 호출.
 - 2026-11-20 coder 1-A 구현 완료: OrangeMushroomAttack.mlua 1파일(+10/−7, LeapJumpHeight 0→0.8, W에서 SetMotionClip("jump",1), TickClip은 windup 구간만). 모델 무변경. 빌드 Error 0. 서버 11회·클라이언트 4회: 높이 연속 포물선(정점 1.38), W·판정·착지 x·피격 구간·슬로우·1칸 PASS. NOT_RUN: 판정 결과 1회, 3칸 눈빛, die 정지, 일시정지, 취소·사망, windup 슬로우 PlayRate. 작업 트리 Bundle ade8670a…30c7(미커밋 PlayerActionFxData.userdataset 재저장 포함). Maker map01 편집 모드 인계.
+- 2026-11-20 [code] a18b251 로컬 커밋(1-A + 문서, map01·PlayerActionFxData.userdataset 제외, push 안 함). 사용자 화면 확인 대기.
+- 2026-11-20 사용자 화면 확인 후 "1-A 유지"(2-b 불채택). msw-tester 호출(대상 a18b251).
+- 2026-11-20 tester 완료(a18b251): FAIL 0. PASS TF1~TF13(범위, 빌드, 연속 포물선, W·판정·착지, 클립 전환, 피격 구간, 3칸 눈빛·먼지, 슬로우·windup PlayRate, 1칸, 판정 1회, 일시정지, 취소·사망·die, 회귀). NOT_RUN: JUST·PARRY 입력, FU-16 정지 프레임 재측정, 복귀 높이, Bundle 일치(coder 지문 재현 불가, 파일 SHA·git diff로 대신; 작업 트리 차이는 PlayerActionFxData.userdataset 1개). 관찰 O-1 취소 시 클립 미복귀(기존 구조), O-2 착지 stand 1프레임 1/10(기존 코드), O-3 자연 공격 이상 2건(원인 미확정, 1칸 경로·diff 밖). 훅 막힘에서 우회 없이 정지. Maker map01 편집 모드. reviewer 호출.
+- 2026-11-20 reviewer 판정 WAITING(FU-26, a18b251): AI 1~7 충족, 결함 0, 기준 교체(jump 전환 1회) 정당. 남은 것: 사용자 V11(2·3칸 초반 / 1칸 회귀 / 반응 시간·맞는 구간 체감)과 O-2 확인, userdataset 재저장 처리((가) 별도 [ops] 권장), 가드 문구 통일, Bundle→git tree·blob id 운영 변경, 후보 FU-28(취소 뒤 표시·위치 정리, O-1·O-3)·FU-29(Equalize 잔존 정리) 등록. O-2는 FU-13 관찰로. 종료 정리 planner: Plan FU-26 절·GameDesign §4.2 옛 문구, FU-14·15·16 행.
+- 2026-11-20 사용자 답: V11 점프 ①2·3칸 초반 ②1칸 회귀 없음 ③반응 시간·맞는 구간 동일 ④착지 stand 1프레임 "모두 괜찮음"(O-2 안 보임). PlayerActionFxData.userdataset 재저장분은 "회차 커밋에 포함". 가드 문구 "통일". 버전 지문 "git 해시로 변경"([ops] 별도). planner 회차 1 종료 정리 호출.
+- 2026-11-20 planner 회차 1 종료 정리 완료(Plan·GameDesign §4.2·Feature·FileStructure·로드맵·WorkRecord README·링크 3곳, 가드 문구 5곳 통일, FU-14→FU-16 병합, FU-28·FU-29 (C) 추적 등록, run은 회차 2까지 유지 권고). 메인 [review] 회차 종료 커밋(PlayerActionFxData.userdataset 포함, map01 제외)·push.

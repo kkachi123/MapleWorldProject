@@ -14,7 +14,7 @@
 
 ### 회차 D 에셋 ([Plan §22](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락으로 "사용 예정"에서 옮김)
 
-회차 D·D2 사용자 V11 수락(2026-11-16, 위치·크기·시점·음량 기본안 포함)으로 "사용 중"이 됐다. 그래도 아래는 모두 **임시**이며, 6단계 헤네시스 견본 아트·사운드 확정 때 사용자가 확정한다. 패턴 표는 `RootDesk/MyDesk/@Assist/DataSet/MonsterAttackPatternData.csv`, 소리 표는 `RootDesk/MyDesk/DataSet/MonsterSoundData.csv`다.
+회차 D·D2 사용자 V11 수락(2026-11-16, 위치·크기·시점·음량 기본안 포함)으로 "사용 중"이 됐다. 그래도 아래는 모두 **임시**이며, 6단계 헤네시스 견본 아트·사운드 확정 때 사용자가 확정한다. 패턴 표는 `RootDesk/MyDesk/DataSet/MonsterAttackPatternData.csv`, 소리 표는 `RootDesk/MyDesk/DataSet/MonsterSoundData.csv`다.
 
 | 용도 | 출처 | 키 → RUID | 임시 여부 | 확정 조건 |
 | --- | --- | --- | --- | --- |

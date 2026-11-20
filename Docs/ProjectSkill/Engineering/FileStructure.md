@@ -23,7 +23,7 @@
 - 파일을 만들거나 고치거나 지운 뒤에는 항상 refresh. Play 중에는 편집·refresh를 하지 않는다(Stop 먼저).
 - 참조는 경로가 아니라 이름·키로 이어진다(스크립트 `script.이름`, 모델 `model://키`, DataSet `_DataService:GetTable(이름)`). 그래서 이동은 원칙상 참조를 깨지 않는다. 다만 Maker가 이동을 "같은 항목"으로 인식하는지는 참조 문서에 절차가 없다. 이동 회차에서 시험 이동 1건으로 먼저 확인한다(§5).
 - .model·.ui는 셸로 읽거나 복사하지 않는다(빌더 전용 훅). 파일 단위 이동·삭제는 `node -e "require('fs')..."` 후 refresh로 한다.
-- 손으로 만드는 DataSet 래퍼(.userdataset)의 `CoreVersion`은 만드는 그때의 `Environment/config` 값을 쓴다(msw-general platform.md §16). 2026-11-19 현재 26.11.0.0이다([ops] d0d095b). 이미 만든 파일(예: PlayerActionFxData 26.10.0.0)은 작성 당시 값이라 고치지 않는다(2026-11-19 회차 E 리뷰 메모). 빌더 출력은 버전을 따로 다루지 않는다.
+- 손으로 만드는 DataSet 래퍼(.userdataset)의 `CoreVersion`은 만드는 그때의 `Environment/config` 값을 쓴다(msw-general platform.md §16). 2026-11-19 현재 26.11.0.0이다([ops] d0d095b). 이미 만든 파일은 작성 당시 값이라 손으로 고치지 않는다(2026-11-19 회차 E 리뷰 메모). 예로 들던 PlayerActionFxData(26.10.0.0)는 2026-11-19 Maker 재저장으로 26.11.0.0이 됐다(손 편집 아님, §7 "범위 밖 재저장" 예외 2). 빌더 출력은 버전을 따로 다루지 않는다.
 
 ## 3. 폴더별 용도와 이름 규칙
 
@@ -63,25 +63,29 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 
 회차 C에서 생기는 새 파일: `RootDesk/MyDesk/Models/Monsters/Mushmom.model` 하나다(다른 새 제품 파일 없음). 에셋 목록은 문서 `Docs/ProjectSkill/Engineering/AssetList.md`다.
 
-회차 D([Plan §22](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset`·`MonsterSoundData.csv` 짝 하나다(위 2번 규칙대로 DataSet/). 이 회차에서 최상위 `RootDesk/MyDesk/DataSet/` 폴더가 처음 생겼고, 폴더 메타데이터 `RootDesk/MyDesk/DataSet.directory`는 Maker Refresh가 만들었다(직접 쓰지 않음). 기존 DataSet 6종은 아직 `@Assist/DataSet/`에 있으며 §5 이동 회차까지 그대로 둔다. 그래서 지금은 DataSet 폴더가 두 곳에 있다(새 표 = DataSet/, 기존 표 = @Assist/DataSet/).
+회차 D([Plan §22](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-16 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/MonsterSoundData.userdataset`·`MonsterSoundData.csv` 짝 하나다(위 2번 규칙대로 DataSet/). 이 회차에서 최상위 `RootDesk/MyDesk/DataSet/` 폴더가 처음 생겼고, 폴더 메타데이터 `RootDesk/MyDesk/DataSet.directory`는 Maker Refresh가 만들었다(직접 쓰지 않음). 당시 기존 DataSet 6종은 `@Assist/DataSet/`에 있어 DataSet 폴더가 두 곳이었다. 2026-11-19 후속 회차 1에서 옮겨 지금은 `DataSet/` 한 곳이다(아래 후속 회차 1 기록).
 
-회차 E([Plan §24](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset`·`PlayerActionFxData.csv` 짝 하나다(위 2번 규칙, 이름 규칙 `{대상}Data`). 로더는 새 Catalog 파일을 만들지 않고 기존 `Combat/CombatRuleCatalog.mlua` 안에 두었다(Plan §24.10, MonsterSoundData 선례). 새 .mlua·새 폴더는 없다. 이 표도 이미 `DataSet/`에 있어 §5 이동 대상이 아니다. 회차 E가 바꾼 나머지 파일(CombatScreen.ui, PlayerStateControl, PlayerGuardComponent, CombatRuleCatalog)은 제자리에서 고쳤다.
+회차 E([Plan §24](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-19 사용자 V11 수락)에서 생긴 새 파일: `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset`·`PlayerActionFxData.csv` 짝 하나다(위 2번 규칙, 이름 규칙 `{대상}Data`). 로더는 새 Catalog 파일을 만들지 않고 기존 CombatRuleCatalog 안에 두었다(Plan §24.10, MonsterSoundData 선례. CombatRuleCatalog는 당시 `Combat/`, 후속 회차 1부터 `Catalog/`). 새 .mlua·새 폴더는 없다. 이 표도 이미 `DataSet/`에 있어 §5 이동 대상이 아니었다. 회차 E가 바꾼 나머지 파일(CombatScreen.ui, PlayerStateControl, PlayerGuardComponent, CombatRuleCatalog)은 제자리에서 고쳤다.
 
-## 5. 기존 파일 → 새 위치 대응표 (이동은 회차 C 뒤 별도 회차)
+2단계 후속 회차 1([후속 계획](Plans/CombatCore.md) CombatCore-FU-24, 2026-11-19 이동, 2026-11-20 사용자 V11 수락, `[code]` c6422cd): §5 대응표의 기존 파일 22개(DataSet 6쌍, 로더 3쌍, UIPopup·UIToast 짝)를 바이트 그대로 옮겼다(git R100). 이때 최상위 `Catalog/` 폴더가 처음 생겼고 `RootDesk/MyDesk/Catalog.directory`는 Maker가 만들었다(직접 쓰지 않음). 새 제품 파일은 없다. 빈 폴더 결과는 §7이다.
+
+## 5. 기존 파일 → 새 위치 대응표 (이동은 회차 C 뒤 별도 회차, 2026-11-20 완료)
+
+아래 이동은 2단계 후속 회차 1(CombatCore-FU-24, `[code]` c6422cd, 2026-11-20 사용자 V11 수락)에서 모두 끝났다. "유지" 행은 그대로다.
 
 | 기존 | 새 위치 | 비고 |
 | --- | --- | --- |
-| @Assist/DataSet/AttackSkillData·CombatRuleData·MonsterAttackPatternData·MonsterData·MonsterStatData·PlayerBaseStatData(.userdataset·.csv) | DataSet/ | 짝으로 함께 |
+| @Assist/DataSet/AttackSkillData·CombatRuleData·MonsterAttackPatternData·MonsterData·MonsterStatData·PlayerBaseStatData(.userdataset·.csv) | DataSet/ | 짝으로 함께. **완료(후속 회차 1)** |
 | @Assist/DataSet/AssistModel(.userdataset·.csv) | 없음 | 회차 C에서 삭제 |
 | @Assist/RangeGizmo/AttackRangeGizmo.model | 없음 | 회차 C에서 삭제 |
 | Player/@Assist/AttackRange/AttackRangeGizmo·AttackRangeTuner | 없음 | 회차 C에서 삭제 |
-| Combat/CombatRuleCatalog.mlua | Catalog/ | |
-| Player/@Assist/Skill/PlayerSkillEffectTable.mlua | Catalog/ | 이름 유지(스킬 교체 단계에서 재검토 가능) |
-| Player/@Assist/Stat/PlayerBaseStatCatalog.mlua | Catalog/ | |
-| UIPopup.mlua·UIToast.mlua(MyDesk 바로 아래) | UI/ | |
+| Combat/CombatRuleCatalog.mlua | Catalog/ | **완료(후속 회차 1)**, .codeblock 짝 함께 |
+| Player/@Assist/Skill/PlayerSkillEffectTable.mlua | Catalog/ | 이름 유지(스킬 교체 단계에서 재검토 가능). **완료(후속 회차 1)** |
+| Player/@Assist/Stat/PlayerBaseStatCatalog.mlua | Catalog/ | **완료(후속 회차 1)** |
+| UIPopup.mlua·UIToast.mlua(MyDesk 바로 아래) | UI/ | **완료(후속 회차 1)** |
 | Models/Monsters/주황버섯.model | Models/Monsters/OrangeMushroom.model | **완료(회차 C2, [Plan §23](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md), 2026-11-08 사용자 V11 수락, 회차 종료 커밋 7a796aa).** 키 orangemushroom은 회차 C에서 먼저 정리했고 그대로 둔다. 파일 이름은 사용자가 Maker 작업 공간에서 바꿨고, Maker가 모델 Name도 OrangeMushroom으로 함께 바꿨다. 그래서 coder는 ModelBuilder로 다시 쓰지 않았다(의미 차이 Name 1곳) |
 | Monster/OrangeMushroom/OrangeMushroomAttack.mlua | 유지 | 6단계 몬스터 일반화 때 이름·폴더 결정 |
-| 빈 폴더 @Assist·Player/@Assist·Models/Effects | @Assist 계열은 제거, Effects는 유지 | 폴더 메타데이터 정리 방식은 이동 회차에서 확인 |
+| 빈 폴더 @Assist·Player/@Assist·Models/Effects | @Assist 계열은 제거, Effects는 유지 | **완료(후속 회차 1)**: @Assist 계열은 사용자가 Maker에서 지웠다. 결과는 §7 |
 | 그 밖(Combat/·Managers/·Monster/·Player/·UI/·@StateControl, ui/·map/) | 유지 | |
 
 ## 6. 루트·Docs 기타 위치 제안 (이동은 같은 별도 회차, 사용자 확인)
@@ -99,8 +103,8 @@ ui/: .ui 파일 이름 = UIGroup(루트) 이름, 평면 유지. map/: 지금 map
 | --- | --- |
 | Maker 재인식: 이동한 스크립트가 새 항목으로 잡히거나 옛 .codeblock이 남아 이름이 겹침 | Stop 상태에서 위험이 낮은 1건(예: UIToast .mlua+.codeblock 짝)을 먼저 옮겨 refresh → 빌드 로그 오류 0, 같은 이름 스크립트 1개, .codeblock Id 유지, Play [VRF]를 본다. 실패하면 이동을 멈추고 Maker UI 이동(사용자)으로 돌린다 |
 | 모델·DataSet 재인식 | 모델 EntryKey와 DataSet 이름이 그대로인지(ModelBuilder.read, GetTable), 스폰·로드 [VRF] |
-| 빈 폴더 .directory 잔존 | refresh 뒤 결과 기록. .directory를 손으로 고치지 않는다 |
+| 빈 폴더 .directory 잔존 | refresh 뒤 결과 기록. .directory를 손으로 고치지 않는다. **결과(후속 회차 1, 2026-11-19):** 빈 `@Assist`·`Player/@Assist` 계열 폴더는 사용자가 Maker에서 지웠고, 그 `.directory` 7개가 Maker 동기화로 지워졌다. 새 `Catalog.directory`는 Maker가 만들었다. 에이전트가 손으로 만들거나 지운 `.directory`는 없다 |
 | `.maplestory-skill-maker-ledger.md` 경로 | **완료(회차 C2, 2026-11-08 수락):** 주황버섯 모델 1곳(23행)을 새 경로 `RootDesk/MyDesk/Models/Monsters/OrangeMushroom.model`로 갱신했다([Plan §23](https://github.com/kkachi123/MapleWorldProject/blob/5efe005d4bd5bf45453e52f6ff692780b3b63135/Docs/ProjectSkill/Engineering/Plans/2_CombatCore.md) 순서 5, coder). 원장 규칙에 정리 조항이 없어 경로만 고쳤다. 같은 원장의 낡은 castleenemy 문구는 범위 밖 남은 사항이며 정리 시점은 사용자가 정한다(Plan §23.6). 앞으로 다른 파일을 옮길 때도 원장이 그 경로를 가리키면 같은 규칙으로 갱신한다 |
-| 문서 링크 | 현재 기준 문서(이 문서, 진행 중 Plan 대상 표, GameDesign·로드맵, Features/README)만 갱신. 지난 회차 기록(Plan 이전 절·WorkRecord·run)은 고쳐 쓰지 않는다 |
-| 회차 A·B·C 회귀 | 이동 뒤 한 통합 회차: DataSet 로드 값과 실패 동작(회차 B), die 1회 정지(F12)·Pos2 JUST·PARRY(F13), 팝업 정지·토스트(UIPopup·UIToast), 머쉬맘 스폰·피격 규칙(회차 C) |
-| 범위 밖 재저장 | refresh가 다른 파일을 다시 저장하면 기록하고 이동 커밋에 섞지 않는다. **예외(2026-11-19 사용자 결정 "하나의 커밋으로"):** 후속 회차 1의 `[code]` c6422cd에 들어간 `RootDesk/MyDesk.directory`·`RootDesk/MyDesk/Player.directory`(Maker 26.11 재저장, CoreVersion 1줄씩)는 나누지 않고 둔다. 같은 동기화의 `Global/common.gamelogic`·`ui` 4개는 [ops] bb3ec01로 분리했고 `map/map01.map`은 커밋하지 않는다([후속 계획 회차 1 위험 4](Plans/CombatCore.md#2-fu-24-영향-조사-2026-11-19-planner-소스-읽기)). 다음 이동에서는 이 예외를 선례로 쓰지 않고 다시 분리를 기본으로 한다 |
+| 문서 링크 | 현재 기준 문서(이 문서, 진행 중 Plan 대상 표, GameDesign·로드맵, Features/README)만 갱신. 지난 회차 기록(Plan 이전 절·WorkRecord·run)은 고쳐 쓰지 않는다. **결과(후속 회차 1, 2026-11-20 planner):** 2단계 Feature 데이터 계약 위치, Features/0_CombatPause.md(UIPopup·UIToast), Plans/MonsterCombat.md(MonsterData.csv), AssetList.md(패턴 표)를 새 경로로 고쳤다 |
+| 회차 A·B·C 회귀 | 이동 뒤 한 통합 회차: DataSet 로드 값과 실패 동작(회차 B), die 1회 정지(F12)·Pos2 JUST·PARRY(F13), 팝업 정지·토스트(UIPopup·UIToast), 머쉬맘 스폰·피격 규칙(회차 C). **결과(후속 회차 1):** coder 통합 Play와 같은 버전 tester(FAIL 0), reviewer 결함 0, 사용자 V11 1·2·3·5·6 수락. JUST·PARRY·팝업·토스트는 입력 수락 지점·함수 호출 근거이고, 팝업·토스트 모양(V11 4)은 NOT_RUN([후속 계획](Plans/CombatCore.md) FU-27) |
+| 범위 밖 재저장 | refresh가 다른 파일을 다시 저장하면 기록하고 이동 커밋에 섞지 않는다. **예외 1(2026-11-19 사용자 결정 "하나의 커밋으로"):** 후속 회차 1의 `[code]` c6422cd에 들어간 `RootDesk/MyDesk.directory`·`RootDesk/MyDesk/Player.directory`(Maker 26.11 재저장, CoreVersion 1줄씩)는 나누지 않고 둔다. 같은 동기화의 `Global/common.gamelogic`·`ui` 4개는 [ops] bb3ec01로 분리했고 `map/map01.map`은 커밋하지 않는다([후속 계획 회차 1 위험 4](Plans/CombatCore.md#2-fu-24-영향-조사-2026-11-19-planner-소스-읽기)). **예외 2(2026-11-20 사용자 결정 "회차 커밋에 포함"):** `RootDesk/MyDesk/DataSet/PlayerActionFxData.userdataset`의 Maker 26.11 재저장(2026-11-19, CoreVersion 26.10.0.0 → 26.11.0.0 1줄)은 c6422cd·a18b251에 들어가지 않았고, 후속 회차 1 종료 `[review]` 커밋에 넣는다. 다음 이동에서는 두 예외 모두 선례로 쓰지 않고 다시 분리를 기본으로 한다 |
